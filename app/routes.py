@@ -3819,10 +3819,9 @@ def get_notifications():
 
 @app.route('/api/notifications/read', methods=['POST'])
 @login_required
-def mark_notifications_read():
+def mark_notifications_as_read():  # 新しい名前
     try:
         notification_ids = request.json.get('notification_ids', [])
-        
         if not notification_ids:
             return jsonify({'error': '通知IDが指定されていません'}), 400
             
