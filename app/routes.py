@@ -32,6 +32,7 @@ import stripe
 import shutil
 from calendar import monthrange
 from sqlalchemy.types import String  # String型を正しくインポート
+from urllib.parse import urlparse
 
 # カスタムコレータの定義（ファイルの先頭付近に配置）
 def custom_login_required(f):
@@ -108,22 +109,20 @@ class LoginForm(FlaskForm):
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    # ロイン済みの場合はマイページへリダイレクト
     if current_user.is_authenticated:
-        return redirect(url_for('mypage_home'))  # mypage → mypage_home に変更
-        
+        return redirect(url_for('index'))
     form = LoginForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data).first()
-        if user and user.check_password(form.password.data):
-            login_user(user)
-            flash('ログインしました', 'success')
-            # ログイン成功時もmypage_homeへリダイレクト
-            return redirect(url_for('mypage_home'))  # mypage → mypage_home に変更
-        else:
-            flash('メールアドレスまたはパスワードが正しくありません', 'error')
-    
-    return render_template('login.html', form=form)
+        user = User.query.filter_by(username=form.username.data).first()
+        if user is None or not user.check_password(form.password.data):
+            flash('Invalid username or password')
+            return redirect(url_for('login'))
+        login_user(user, remember=form.remember_me.data)
+        next_page = request.args.get('next')
+        if not next_page or urlparse(next_page).netloc != '':  # ここを修正
+            next_page = url_for('index')
+        return redirect(next_page)
+    return render_template('login.html', title='Sign In', form=form)
 
 @app.route('/logout')
 def logout():
