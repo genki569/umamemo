@@ -1,5 +1,5 @@
 from datetime import datetime
-from app import db, login, app
+from app import db, login, app, cache
 import json
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -181,9 +181,9 @@ class Race(db.Model):
             'recent_results': recent_results or []
         } for entry, horse, jockey, recent_results in entries]
 
-    @cache.memoize(timeout=300)
+    # @cache.memoize(timeout=300)  # コメントアウト
     def get_race_statistics(self):
-        """レース統計情報を取得（キャッシュ付き）"""
+        """レース統計情報を取得"""
         return db.session.query(
             func.count(Entry.id).label('total_entries'),
             func.avg(Entry.odds).label('avg_odds'),
@@ -193,7 +193,7 @@ class Race(db.Model):
             Entry.race_id == self.id
         ).first()
 
-    @cache.memoize(timeout=300)
+    # @cache.memoize(timeout=300)  # コメントアウト
     def get_track_condition_stats(self, horse_ids):
         """馬場状態別の成績を取得（キャッシュ付き）"""
         return db.session.query(
@@ -211,7 +211,7 @@ class Race(db.Model):
             Race.track_condition
         ).all()
 
-    @cache.memoize(timeout=300)
+    # @cache.memoize(timeout=300)  # コメントアウト
     def get_jockey_stats(self, horse_ids):
         """騎手別の成績を取得（キャッシュ付き）"""
         return db.session.query(

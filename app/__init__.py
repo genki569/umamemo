@@ -23,6 +23,11 @@ app.config['UPLOAD_FOLDER'] = os.path.join(basedir, 'static', 'uploads')
 if not os.path.exists(app.config['UPLOAD_FOLDER']):
     os.makedirs(app.config['UPLOAD_FOLDER'])
 
+# キャッシュの設定
+cache = Cache(app, config={
+    'CACHE_TYPE': 'simple'
+})
+
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
@@ -31,16 +36,6 @@ login.login_view = 'login'
 login.login_message = 'このページにアクセスするにはログインが必要です。'
 
 csrf = CSRFProtect(app)
-
-# キャッシュの設定
-cache = Cache(config={
-    'CACHE_TYPE': 'simple',  # 開発環境用
-    # 本番環境では以下のような設定を使用
-    # 'CACHE_TYPE': 'redis',
-    # 'CACHE_REDIS_URL': 'redis://localhost:6379/0',
-    'CACHE_DEFAULT_TIMEOUT': 300  # 5分
-})
-cache.init_app(app)
 
 @app.template_filter('nl2br')
 def nl2br_filter(text):
