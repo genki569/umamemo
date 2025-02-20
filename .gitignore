@@ -18,3 +18,7 @@ race_data_checkpoint*.pkl
 *.pkl
 netkeiba_*.csv
 race_data_checkpoint*
+.DS_Store
+venv/
+*.pkl
+aux | grep gunicorn
