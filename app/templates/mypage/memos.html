@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="mypage-container">
+    <!-- ヘッダー部分 -->
+    <div class="mypage-header">
+        <h1 class="header-title">
+            <i class="fas fa-sticky-note"></i> メモ一覧
+        </h1>
+        <p class="header-subtitle">レースと馬のメモを管理できます</p>
+    </div>
+
+    <!-- タブナビゲーション -->
+    <div class="memo-tabs">
+        <button class="tab-item active" data-tab="race-memos">
+            <i class="fas fa-flag"></i> レースメモ
+        </button>
+        <button class="tab-item" data-tab="horse-memos">
+            <i class="fas fa-horse"></i> 馬メモ
+        </button>
+    </div>
+
+    <!-- レースメモセクション -->
+    <div class="memo-section" id="race-memos">
+        <div class="memos-grid">
+            {% if race_memos %}
+                {% for memo in race_memos %}
+                    <div class="memo-card">
+                        <div class="memo-race-name">
+                            <i class="fas fa-flag"></i>
+                            {{ memo.race.name if memo.race else '不明なレース' }}
+                        </div>
+                        <div class="memo-content">
+                            {% if memo.content %}
+                                {% if memo.content.startswith('[') %}
+                                    {% set memo_data = memo.content|from_json %}
+                                    {% for item in memo_data %}
+                                        {{ item.content|safe|replace('\n', '<br>')|replace('\\n', '<br>') }}
+                                    {% endfor %}
+                                {% else %}
+                                    {{ memo.content|safe|replace('\n', '<br>')|replace('\\n', '<br>') }}
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                        <div class="memo-footer">
+                            <span class="memo-date">
+                                <i class="far fa-clock"></i>
+                                {{ memo.created_at.strftime('%Y年%m月%d日') }}
+                            </span>
+                            <div class="memo-actions">
+                                <button class="memo-action-btn edit-memo" data-memo-id="{{ memo.id }}">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="memo-action-btn delete-memo" data-memo-id="{{ memo.id }}">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="no-content">
+                    <i class="fas fa-sticky-note"></i>
+                    <p>レースメモはまだありません</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- 馬メモセクション -->
+    <div class="memo-section" id="horse-memos" style="display: none;">
+        <div class="memos-grid">
+            {% if horses %}
+                {% for horse in horses %}
+                    <div class="memo-card">
+                        <div class="memo-horse-name">
+                            <i class="fas fa-horse"></i>
+                            {{ horse.name }}
+                        </div>
+                        <div class="memo-content">
+                            {{ horse.memo|safe|nl2br if horse.memo else '메모가 없습니다' }}
+                        </div>
+                        <div class="memo-footer">
+                            <div class="memo-actions">
+                                <button class="memo-action-btn edit-memo" data-horse-id="{{ horse.id }}">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="memo-action-btn delete-memo" data-horse-id="{{ horse.id }}">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="no-content">
+                    <i class="fas fa-horse"></i>
+                    <p>馬メモはまだありません</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- メモ編集モーダル -->
+<div class="memo-modal" id="memoModal">
+    <div class="memo-modal-content">
+        <h3>メモを編集</h3>
+        <textarea id="memoText" rows="4"></textarea>
+        <div class="modal-actions">
+            <button class="btn-cancel">キャンセル</button>
+            <button class="btn-save">保存</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // タブ切り替え
+    const tabs = document.querySelectorAll('.tab-item');
+    tabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            const targetId = this.dataset.tab;
+            
+            // タブのアクティブ状態を切り替え
+            tabs.forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+            
+            // セクションの表示を切り替え
+            document.querySelectorAll('.memo-section').forEach(section => {
+                section.style.display = section.id === targetId ? 'block' : 'none';
+            });
+        });
+    });
+});
+</script>
+{% endblock %} 

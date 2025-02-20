@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card auth-card">
+                <div class="card-body">
+                    <!-- フラッシュメッセージの表示 -->
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div class="alert alert-{{ category }}">{{ message }}</div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+
+                    <div class="text-center mb-4">
+                        <h2 class="fw-bold" style="background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">ログイン</h2>
+                        <p class="text-muted">馬メモへようこそ</p>
+                    </div>
+                    
+                    <form method="POST" action="{{ url_for('login') }}">
+                        {{ form.csrf_token }}  <!-- CSRFトークンを追加 -->
+                        
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <i class="fas fa-envelope me-2"></i>メールアドレス
+                            </label>
+                            <input type="email" class="form-control" name="email" required>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="form-label">
+                                <i class="fas fa-lock me-2"></i>パスワード
+                            </label>
+                            <input type="password" class="form-control" name="password" required>
+                        </div>
+                        
+                        <div class="text-center mb-4">
+                            <button type="submit" class="btn btn-gradient px-5">
+                                <i class="fas fa-sign-in-alt me-2"></i>ログイン
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <div class="text-center">
+                        <p class="mb-0">
+                            アカウントをお持ちでない方は<br>
+                            <a href="{{ url_for('register') }}" class="auth-link">会員登録はこちら</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

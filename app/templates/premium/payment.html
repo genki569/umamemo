@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">プレミアム会員登録</h1>
+
+    <div class="row">
+        <!-- プラン選択 -->
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">プラン選択</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <h5 class="card-title">1ヶ月プラン</h5>
+                                    <h2 class="price mb-3">¥980</h2>
+                                    <button class="btn btn-outline-primary select-plan" 
+                                            data-plan="monthly" 
+                                            data-price="980"
+                                            data-duration="30">
+                                        選択する
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="card h-100 border-primary">
+                                <div class="card-body text-center">
+                                    <h5 class="card-title">6ヶ月プラン</h5>
+                                    <h2 class="price mb-3">¥4,980</h2>
+                                    <p class="text-success">15%お得！</p>
+                                    <button class="btn btn-primary select-plan" 
+                                            data-plan="half_yearly" 
+                                            data-price="4980"
+                                            data-duration="180">
+                                        選択する
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <h5 class="card-title">1年プラン</h5>
+                                    <h2 class="price mb-3">¥9,800</h2>
+                                    <p class="text-success">17%お得！</p>
+                                    <button class="btn btn-outline-primary select-plan" 
+                                            data-plan="yearly" 
+                                            data-price="9800"
+                                            data-duration="365">
+                                        選択する
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 支払い情報フォーム -->
+            <div class="card" id="paymentForm" style="display: none;">
+                <div class="card-header">
+                    <h5 class="mb-0">お支払い情報</h5>
+                </div>
+                <div class="card-body">
+                    <form id="premiumSubscriptionForm">
+                        <div class="mb-3">
+                            <label class="form-label">カード番号</label>
+                            <input type="text" class="form-control" id="cardNumber" required>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">有効期限</label>
+                                <input type="text" class="form-control" id="cardExpiry" placeholder="MM/YY" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">セキュリティコード</label>
+                                <input type="text" class="form-control" id="cardCvc" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <span id="selectedPlanPrice"></span>で登録する
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- 特典説明 -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">プレミアム会員特典</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled">
+                        <li class="mb-2">✓ AIによる予想の閲覧</li>
+                        <li class="mb-2">✓ 詳細な統計データの閲覧</li>
+                        <li class="mb-2">✓ レース分析レポートの閲覧</li>
+                        <li class="mb-2">✓ 予想の投稿機能</li>
+                        <li class="mb-2">✓ メモ機能の利用</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let selectedPlan = null;
+    
+    // プラン選択時の処理
+    document.querySelectorAll('.select-plan').forEach(button => {
+        button.addEventListener('click', function() {
+            selectedPlan = {
+                type: this.dataset.plan,
+                price: this.dataset.price,
+                duration: this.dataset.duration
+            };
+            
+            // 選択状態の更新
+            document.querySelectorAll('.select-plan').forEach(btn => {
+                btn.classList.remove('btn-primary');
+                btn.classList.add('btn-outline-primary');
+            });
+            this.classList.remove('btn-outline-primary');
+            this.classList.add('btn-primary');
+            
+            // 支払いフォームの表示
+            document.getElementById('paymentForm').style.display = 'block';
+            document.getElementById('selectedPlanPrice').textContent = `¥${selectedPlan.price}`;
+        });
+    });
+    
+    // 支払い処理
+    document.getElementById('premiumSubscriptionForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        if (!selectedPlan) {
+            alert('プランを選択してください');
+            return;
+        }
+        
+        try {
+            const response = await fetch('/premium/subscribe', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    plan: selectedPlan.type,
+                    duration: selectedPlan.duration,
+                    price: selectedPlan.price,
+                    // 実際の決済処理では、カード情報も送信
+                    cardNumber: document.getElementById('cardNumber').value,
+                    cardExpiry: document.getElementById('cardExpiry').value,
+                    cardCvc: document.getElementById('cardCvc').value
+                })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                window.location.href = '/premium/complete';
+            } else {
+                alert(data.message || 'エラーが発生しました');
+            }
+        } catch (error) {
+            console.error(error);
+            alert('エラーが発生しました');
+        }
+    });
+});
+</script>
+{% endblock %} 

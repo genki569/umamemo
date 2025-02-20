@@ -1,0 +1,146 @@
+# 競馬情報システム 要件定義書
+
+## 1. データベース構造
+
+### 1.1 主要モデル
+
+#### Race (レース情報)
+- 主要フィールド:
+  - id: レースID (15桁)
+  - name: レース名
+  - date: 開催日
+  - venue: 開催場所
+  - venue_id: 会場コード
+  - race_number: レース番号
+  - distance: 距離
+  - track_type: コース種別
+- 関連:
+  - entries: Entry (1:多)
+  - shutuba_entries: ShutubaEntry (1:多)
+  - detail: RaceDetail (1:1)
+  - memos: RaceMemo (1:多)
+
+#### Horse (競走馬)
+- 主要フィールド:
+  - id: 馬ID
+  - name: 馬名
+  - sex: 性別
+  - trainer: 調教師
+  - memo: メモ
+- 関連:
+  - entries: Entry (1:多)
+  - favorites: Favorite (1:多)
+  - memos: HorseMemo (1:多)
+  - shutuba_entries: ShutubaEntry (1:多)
+
+#### Entry (出走登録/結果)
+- 主要フィールド:
+  - id: エントリーID (17桁)
+  - race_id: レースID
+  - horse_id: 馬ID
+  - jockey_id: 騎手ID
+  - position: 着順
+  - odds: オッズ
+  - time: タイム
+- 関連:
+  - race: Race (多:1)
+  - horse: Horse (多:1)
+  - jockey: Jockey (多:1)
+
+#### User (ユーザー)
+- 主要フィールド:
+  - id: ユーザーID
+  - username: ユーザー名
+  - email: メールアドレス
+  - is_premium: プレミアム会員フラグ
+  - point_balance: ポイント残高
+- 関連:
+  - favorites: Favorite (1:多)
+  - reviews: RaceReview (1:多)
+  - notifications: Notification (1:多)
+  - payment_logs: PaymentLog (1:多)
+
+### 1.2 補助モデル
+
+#### ShutubaEntry (出馬表専用エントリー)
+- 主要フィールド:
+  - race_id: レースID
+  - horse_id: 馬ID
+  - bracket_number: 枠番
+  - horse_number: 馬番
+  - weight_carry: 斤量
+  - odds: オッズ
+- 関連:
+  - race: Race (多:1)
+  - horse: Horse (多:1)
+  - jockey: Jockey (多:1)
+
+#### Notification (通知)
+- 主要フィールド:
+  - user_id: ユーザーID
+  - message: 通知メッセージ
+  - type: 通知タイプ
+  - is_read: 既読フラグ
+- 関連:
+  - user: User (多:1)
+
+## 2. ルーティング構造
+
+### 2.1 メインルート
+- /: トップページ
+- /index: インデックスページ
+- /races: レース一覧
+- /races/<race_id>: レース詳細
+- /races/<race_id>/shutuba: 出馬表
+
+### 2.2 ユーザー関連
+- /login: ログイン
+- /logout: ログアウト
+- /mypage/settings: マイページ設定
+- /mypage/favorites: お気に入り一覧
+
+### 2.3 管理者機能
+- /admin/users: ユーザー管理
+- /admin/races: レース管理
+- /debug/create-user: デバッグユーザー作成（開発環境のみ）
+
+## 3. テンプレート構造
+
+### 3.1 メインテンプレート
+- base.html: 基本レイアウト
+- index.html: トップページ
+- races.html: レース一覧
+- race_detail.html: レース詳細
+- shutuba.html: 出馬表
+
+### 3.2 ユーザー関連
+- login.html: ログインフォーム
+- mypage/settings.html: マイページ設定
+- mypage/favorites.html: お気に入り一覧
+
+## 4. 機能要件
+
+### 4.1 レース情報
+- レース一覧表示
+- レース詳細表示
+- 出馬表表示
+- レース結果表示
+- レースメモ機能
+
+### 4.2 競走馬情報
+- 馬情報表示
+- 戦績表示
+- お気に入り登録
+- メモ機能
+
+### 4.3 ユーザー機能
+- ログイン/ログアウト
+- プロフィール設定
+- お気に入り管理
+- ポイント管理
+- プレミアム会員機能
+
+### 4.4 通知機能
+- システム通知
+- プレミアム会員関連通知
+- お気に入り馬の出走通知

@@ -1,0 +1,62 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+<div class="analytics-dashboard">
+    <!-- 成長率グラフ -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>ユーザー成長率</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="userGrowthChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>プレミアム会員統計</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="premiumStatsChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 詳細な統計情報 -->
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5>レビュー分析</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>指標</th>
+                                    <th>値</th>
+                                    <th>前月比</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- レビュー統計データ -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js の読み込み -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// グラフの初期化コード
+</script>
+{% endblock %}

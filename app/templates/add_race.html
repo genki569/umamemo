@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>新しいレースを追加</h1>
+<form method="POST">
+    <div>
+        <label for="name">レース名:</label>
+        <input type="text" id="name" name="name" required>
+    </div>
+    <div>
+        <label for="date">日付:</label>
+        <input type="date" id="date" name="date" required>
+    </div>
+    <div>
+        <label for="venue">開催場所:</label>
+        <input type="text" id="venue" name="venue" required>
+    </div>
+    <button type="submit">追加</button>
+</form>
+<a href="{{ url_for('main.index') }}">戻る</a>
+{% endblock %}

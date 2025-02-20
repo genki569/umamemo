@@ -1,0 +1,108 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+<div class="admin-dashboard">
+    <!-- 統計概要 -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">総ユーザー数</h6>
+                    <h2 class="card-title">{{ total_users }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">登録馬数</h6>
+                    <h2 class="card-title">{{ total_horses }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">総レビュー数</h6>
+                    <h2 class="card-title">{{ total_reviews }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 最近の登録ユーザー -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>最近の登録ユーザー</h5>
+        </div>
+        <div class="card-body">
+            <div class="list-group">
+                {% for user in recent_users %}
+                <div class="list-group-item">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-0">{{ user.username }}</h6>
+                            <small class="text-muted">{{ user.email }}</small>
+                        </div>
+                        <small class="text-muted">{{ user.created_at.strftime('%Y/%m/%d %H:%M') }}</small>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- 最近のレビュー -->
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5>最近のレビュー</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        {% for review in recent_reviews %}
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-0">{{ review.race.name }}</h6>
+                                    <small class="text-muted">by {{ review.user.username }}</small>
+                                </div>
+                                <small class="text-muted">{{ review.created_at.strftime('%Y/%m/%d %H:%M') }}</small>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 最近の売上 -->
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5>最近の売上</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        {% for sale in recent_sales %}
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-0">{{ sale.plan_type }}</h6>
+                                    <small class="text-muted">{{ sale.user.username }}</small>
+                                </div>
+                                <div class="text-end">
+                                    <h6 class="mb-0">{{ sale.amount|format_yen }}</h6>
+                                    <small class="text-muted">{{ sale.payment_date.strftime('%Y/%m/%d %H:%M') }}</small>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

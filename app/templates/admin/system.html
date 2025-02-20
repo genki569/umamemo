@@ -1,0 +1,119 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+<div class="system-dashboard">
+    <!-- サーバー概要 -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>サーバー状態</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>稼働時間:</strong> {{ server_load.uptime }}</p>
+                    <p><strong>負荷平均:</strong> {{ server_load.load }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- リソース使用状況 -->
+    <div class="row">
+        <!-- CPU使用率 -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">CPU使用率</h5>
+                    <div class="progress mb-2">
+                        <div class="progress-bar {% if system_stats.cpu.percent > 80 %}bg-danger
+                                                {% elif system_stats.cpu.percent > 60 %}bg-warning
+                                                {% else %}bg-success{% endif %}"
+                             role="progressbar" 
+                             style="width: {{ system_stats.cpu.percent }}%">
+                            {{ "%.1f"|format(system_stats.cpu.percent) }}%
+                        </div>
+                    </div>
+                    <small class="text-muted">コア数: {{ system_stats.cpu.cores }}</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- メモリ使用率 -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">メモリ使用率</h5>
+                    <div class="progress mb-2">
+                        <div class="progress-bar {% if system_stats.memory.percent > 80 %}bg-danger
+                                                {% elif system_stats.memory.percent > 60 %}bg-warning
+                                                {% else %}bg-success{% endif %}"
+                             role="progressbar" 
+                             style="width: {{ system_stats.memory.percent }}%">
+                            {{ "%.1f"|format(system_stats.memory.percent) }}%
+                        </div>
+                    </div>
+                    <small class="text-muted">
+                        利用可能: {{ system_stats.memory.available }}GB / 
+                        合計: {{ system_stats.memory.total }}GB
+                    </small>
+                </div>
+            </div>
+        </div>
+
+        <!-- ディスク使用率 -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">ディスク使用率</h5>
+                    <div class="progress mb-2">
+                        <div class="progress-bar {% if system_stats.disk.percent > 80 %}bg-danger
+                                                {% elif system_stats.disk.percent > 60 %}bg-warning
+                                                {% else %}bg-success{% endif %}"
+                             role="progressbar" 
+                             style="width: {{ system_stats.disk.percent }}%">
+                            {{ system_stats.disk.percent }}%
+                        </div>
+                    </div>
+                    <small class="text-muted">
+                        利用可能: {{ system_stats.disk.available }} / 
+                        合計: {{ system_stats.disk.total }}
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- プロセス情報 -->
+    <div class="card mt-4">
+        <div class="card-header">
+            <h5>実行中のプロセス（Top 5）</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>ユーザー</th>
+                            <th>PID</th>
+                            <th>CPU %</th>
+                            <th>メモリ %</th>
+                            <th>コマンド</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for proc in system_stats.process %}
+                        <tr>
+                            <td>{{ proc.user }}</td>
+                            <td>{{ proc.pid }}</td>
+                            <td>{{ "%.1f"|format(proc.cpu) }}%</td>
+                            <td>{{ "%.1f"|format(proc.mem) }}%</td>
+                            <td>{{ proc.command }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

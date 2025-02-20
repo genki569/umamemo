@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>購入済みレビュー一覧</h2>
+    
+    {% if error %}
+    <div class="alert alert-danger">
+        {{ error }}
+    </div>
+    {% endif %}
+    
+    {% if purchases and purchases.items %}
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>購入日</th>
+                        <th>レース名</th>
+                        <th>レビュータイトル</th>
+                        <th>支払ポイント</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for purchase in purchases.items %}
+                    <tr>
+                        <td>{{ purchase.created_at.strftime('%Y-%m-%d') if purchase.created_at is not string else purchase.created_at }}</td>
+                        <td>{{ purchase.race_name }} ({{ purchase.race_date }})</td>
+                        <td>{{ purchase.title }}</td>
+                        <td>{{ purchase.price }}ポイント</td>
+                        <td>
+                            <a href="{{ url_for('view_review', review_id=purchase.id) }}" 
+                               class="btn btn-primary btn-sm">閲覧する</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        {% if purchases.pages > 1 %}
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
+                {% for page in purchases.iter_pages() %}
+                    {% if page %}
+                        <li class="page-item {% if page == purchases.page %}active{% endif %}">
+                            <a class="page-link" href="{{ url_for('mypage_purchased_reviews', page=page) }}">
+                                {{ page }}
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">...</span>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </nav>
+        {% endif %}
+    {% else %}
+        <div class="alert alert-info">
+            購入済みのレビューはありません。
+        </div>
+    {% endif %}
+</div>
+{% endblock %} 

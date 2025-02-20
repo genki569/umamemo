@@ -1,0 +1,266 @@
+/* プレミアムページ専用のスコープ */
+.premium-page {
+    background: #fff;
+}
+
+/* プレミアムヘッダー */
+.premium-page .premium-header {
+    background: linear-gradient(135deg, #4a90e2, #50b45a);
+    padding: 4rem 0;
+    margin-bottom: 4rem;
+    color: white;
+    text-align: center;
+    position: relative;
+}
+
+.premium-page .premium-title {
+    color: white;
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.premium-page .premium-description {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1.2rem;
+}
+
+/* プラン比較表 */
+.premium-page .plan-comparison {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    margin: 2rem auto 4rem;
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border: none;
+}
+
+.premium-page .plan-comparison th,
+.premium-page .plan-comparison td {
+    padding: 1.5rem;
+    text-align: center;
+    border: none;
+    position: relative;
+}
+
+.premium-page .plan-comparison th {
+    background: #f8f9fa;
+    font-weight: 700;
+    color: #2c3e50;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.premium-page .plan-comparison th:first-child {
+    text-align: left;
+}
+
+.premium-page .plan-comparison td {
+    background: #fff;
+    color: #555;
+    font-size: 1rem;
+}
+
+.premium-page .plan-comparison td:first-child {
+    text-align: left;
+    font-weight: 500;
+    color: #2c3e50;
+}
+
+/* チェックマークとバツ印のスタイル */
+.premium-page .plan-comparison .fa-check {
+    color: #50b45a;
+    font-size: 1.2rem;
+    background: rgba(80, 180, 90, 0.1);
+    padding: 8px;
+    border-radius: 50%;
+}
+
+.premium-page .plan-comparison .fa-times {
+    color: #dc3545;
+    font-size: 1.2rem;
+    background: rgba(220, 53, 69, 0.1);
+    padding: 8px;
+    border-radius: 50%;
+}
+
+/* プレミアムバッジ */
+.premium-page .premium-badge {
+    background: linear-gradient(45deg, #4a90e2, #50b45a);
+    color: white;
+    padding: 0.4rem 1.2rem;
+    border-radius: 25px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: inline-block;
+    box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
+    margin-bottom: 0.5rem;
+}
+
+/* プランカード */
+.premium-page .plan-card {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    transition: transform 0.3s ease;
+    height: 100%;
+    margin-bottom: 2rem;
+}
+
+.premium-page .plan-card:hover {
+    transform: translateY(-5px);
+}
+
+/* 機能カード */
+.premium-page .feature-card {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    transition: transform 0.3s ease;
+    height: 100%;
+    margin-bottom: 2rem;
+}
+
+.premium-page .feature-card:hover {
+    transform: translateY(-5px);
+}
+
+/* ボタン */
+.premium-page .btn-gradient {
+    background: linear-gradient(45deg, #4a90e2, #50b45a);
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 30px;
+    transition: opacity 0.3s ease;
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+    display: block;
+}
+
+.premium-page .btn-gradient:hover {
+    opacity: 0.9;
+    color: white;
+}
+
+/* 行のホバーエフェクト */
+.premium-page .plan-comparison tbody tr {
+    transition: all 0.3s ease;
+}
+
+.premium-page .plan-comparison tbody tr:hover {
+    background-color: rgba(74, 144, 226, 0.03);
+}
+
+/* 交互の行の色 */
+.premium-page .plan-comparison tbody tr:nth-child(even) {
+    background-color: #fafbfc;
+}
+
+/* プレミアム列のハイライト */
+.premium-page .plan-comparison th:last-child,
+.premium-page .plan-comparison td:last-child {
+    background: rgba(74, 144, 226, 0.02);
+    position: relative;
+}
+
+.premium-page .plan-comparison td:last-child {
+    font-weight: 600;
+    color: #4a90e2;
+}
+
+/* モバイル対応 */
+@media (max-width: 768px) {
+    .premium-page .premium-header {
+        padding: 2rem 0;
+        margin-bottom: 2rem;
+    }
+
+    .premium-page .premium-title {
+        font-size: 1.8rem;
+        padding: 0 1rem;
+    }
+
+    .premium-page .premium-description {
+        font-size: 1rem;
+        padding: 0 1rem;
+    }
+
+    .premium-page .plan-comparison {
+        margin: 1rem;
+        border-radius: 15px;
+    }
+
+    .premium-page .plan-comparison th,
+    .premium-page .plan-comparison td {
+        padding: 1rem;
+        font-size: 0.9rem;
+    }
+
+    .premium-page .premium-badge {
+        padding: 0.3rem 0.8rem;
+        font-size: 0.8rem;
+    }
+
+    .premium-page .plan-comparison .fa-check,
+    .premium-page .plan-comparison .fa-times {
+        font-size: 1rem;
+        padding: 6px;
+    }
+
+    .premium-page .feature-card {
+        margin: 0 1rem 1.5rem;
+        padding: 1.5rem;
+    }
+
+    .premium-page .feature-card h5 {
+        font-size: 1.2rem;
+    }
+
+    .premium-page .feature-card p,
+    .premium-page .feature-card li {
+        font-size: 0.9rem;
+    }
+
+    .premium-page .btn-gradient {
+        padding: 0.8rem 1.5rem;
+        font-size: 1rem;
+        margin: 1rem auto;
+    }
+
+    /* テーブルを横スクロール可能に */
+    .premium-page .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+/* 小さいモバイル画面用 */
+@media (max-width: 480px) {
+    .premium-page .premium-title {
+        font-size: 1.5rem;
+    }
+
+    .premium-page .plan-comparison th,
+    .premium-page .plan-comparison td {
+        padding: 0.8rem;
+        font-size: 0.8rem;
+    }
+
+    .premium-page .plan-comparison .fa-check,
+    .premium-page .plan-comparison .fa-times {
+        padding: 4px;
+    }
+
+    .premium-page .feature-card {
+        padding: 1rem;
+    }
+
+    .premium-page .feature-card h5 {
+        font-size: 1.1rem;
+    }
+}

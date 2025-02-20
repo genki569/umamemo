@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>レースデータのスクレイピング</h1>
+<form id="scrape-form" method="POST">
+    <label for="url">レースURL:</label>
+    <input type="text" id="url" name="url" required>
+    <button type="submit">スクレイピング開始</button>
+</form>
+<div id="result"></div>
+
+<script>
+document.getElementById('scrape-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    fetch('/scrape', {
+        method: 'POST',
+        body: new FormData(this)
+    })
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById('result').innerHTML = data.message || data.error;
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        document.getElementById('result').innerHTML = 'エラーが発生しました。';
+    });
+});
+</script>
+{% endblock %}

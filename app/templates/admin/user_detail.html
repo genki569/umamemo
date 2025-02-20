@@ -1,0 +1,197 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+<div class="admin-user-detail">
+    <!-- ヘッダー部分 -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4>ユーザー詳細</h4>
+        <div class="actions">
+            <a href="{{ url_for('admin_users') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> 戻る
+            </a>
+        </div>
+    </div>
+
+    <!-- ユーザー基本情報 -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>基本情報</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <table class="table table-borderless">
+                        <tr>
+                            <th style="width: 150px;">ユーザーID</th>
+                            <td>{{ user.id }}</td>
+                        </tr>
+                        <tr>
+                            <th>ユーザー名</th>
+                            <td>{{ user.username }}</td>
+                        </tr>
+                        <tr>
+                            <th>メールアドレス</th>
+                            <td>{{ user.email }}</td>
+                        </tr>
+                        <tr>
+                            <th>登録日時</th>
+                            <td>{{ user.created_at.strftime('%Y/%m/%d %H:%M') }}</td>
+                        </tr>
+                        <tr>
+                            <th>プレミアム会員</th>
+                            <td>
+                                <span class="badge {% if user.is_premium %}bg-success{% else %}bg-secondary{% endif %}">
+                                    {{ 'プレミアム' if user.is_premium else '一般' }}
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>ポイント残高</th>
+                            <td>
+                                {{ user.point }} pt
+                                <button type="button" class="btn btn-sm btn-outline-primary ms-2" 
+                                        data-bs-toggle="modal" data-bs-target="#addPointModal">
+                                    <i class="fas fa-plus"></i> ポイント追加
+                                </button>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ポイント履歴 -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>ポイント履歴</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>日時</th>
+                            <th>変動</th>
+                            <th>種類</th>
+                            <th>詳細</th>
+                            <th>残高</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for log in point_logs %}
+                        <tr>
+                            <td>{{ log.created_at.strftime('%Y/%m/%d %H:%M') }}</td>
+                            <td class="{{ 'text-success' if log.amount > 0 else 'text-danger' }}">
+                                {{ '+' if log.amount > 0 else '' }}{{ log.amount }}
+                            </td>
+                            <td>{{ log.type }}</td>
+                            <td>{{ log.description }}</td>
+                            <td>{{ log.balance }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- レビュー履歴 -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>レビュー履歴</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>日時</th>
+                            <th>レース</th>
+                            <th>評価</th>
+                            <th>ステータス</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for review in user.reviews %}
+                        <tr>
+                            <td>{{ review.created_at.strftime('%Y/%m/%d %H:%M') }}</td>
+                            <td>{{ review.race.name }}</td>
+                            <td>{{ review.rating }}/5</td>
+                            <td>
+                                <span class="badge {% if review.is_public %}bg-success{% else %}bg-warning{% endif %}">
+                                    {{ '公開' if review.is_public else '非公開' }}
+                                </span>
+                            </td>
+                            <td>
+                                <a href="{{ url_for('review_detail', review_id=review.id) }}" 
+                                   class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-eye"></i> 詳細
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- 管理アクション -->
+    <div class="card">
+        <div class="card-header">
+            <h5>管理アクション</h5>
+        </div>
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('admin_user_update', user_id=user.id) }}" class="mb-3">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="is_premium" 
+                                   name="is_premium" {% if user.is_premium %}checked{% endif %}>
+                            <label class="form-check-label" for="is_premium">プレミアム会員</label>
+                        </div>
+                        <div class="form-check form-switch mt-2">
+                            <input class="form-check-input" type="checkbox" id="is_active" 
+                                   name="is_active" {% if user.is_active %}checked{% endif %}>
+                            <label class="form-check-label" for="is_active">アカウント有効</label>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary">更新</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- ポイント追加モーダル -->
+<div class="modal fade" id="addPointModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">ポイント追加</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="{{ url_for('admin_add_point', user_id=user.id) }}">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="amount" class="form-label">ポイント数</label>
+                        <input type="number" class="form-control" id="amount" name="amount" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">理由</label>
+                        <input type="text" class="form-control" id="description" name="description" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">キャンセル</button>
+                    <button type="submit" class="btn btn-primary">追加</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %} 

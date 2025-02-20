@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">{{ horse.name }} のメモを編集</h1>
+    <form method="POST">
+        <div class="form-group">
+            <label for="memo">メモ</label>
+            <textarea class="form-control" id="memo" name="memo" rows="5">{{ horse.memo or '' }}</textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">保存</button>
+        <a href="{{ url_for('main.memos') }}" class="btn btn-secondary">キャンセル</a>
+    </form>
+</div>
+{% endblock %}

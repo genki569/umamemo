@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>レース回顧一覧</h2>
+
+    <!-- 検索フォーム -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <form class="d-flex" method="get">
+                <input class="form-control me-2" type="search" 
+                       placeholder="レース名で検索" 
+                       name="search" 
+                       value="{{ search_query }}">
+                <button class="btn btn-outline-primary" type="submit">検索</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 回顧カード一覧 -->
+    <div class="row row-cols-1 row-cols-md-2 g-4">
+        {% for review in reviews %}
+        <div class="col">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <a href="{{ url_for('race_detail', race_id=review.race_id) }}">
+                            {{ review.race.name }}
+                        </a>
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">
+                        {{ review.created_at.strftime('%Y-%m-%d %H:%M') }}
+                    </h6>
+                    
+                    {% if review.pace_analysis %}
+                    <div class="mb-2">
+                        <strong>ペース分析:</strong>
+                        <p class="card-text">{{ review.pace_analysis[:100] }}...</p>
+                    </div>
+                    {% endif %}
+
+                    {% if review.overall_impression %}
+                    <div class="mb-2">
+                        <strong>総評:</strong>
+                        <p class="card-text">{{ review.overall_impression[:100] }}...</p>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="card-footer">
+                    <a href="{{ url_for('race_reviews', race_id=review.race_id) }}" 
+                       class="btn btn-sm btn-primary">
+                        詳細を見る
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %} 

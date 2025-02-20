@@ -1,0 +1,311 @@
+{% extends "base.html" %}
+
+{% block styles %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/race_detail.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="race-detail-container">
+    <!-- ヘッダー部分をラップ -->
+    <div class="race-header-wrapper">
+        <div class="mb-3">
+            <a href="{{ url_for('races') }}" class="nav-btn">
+                <i class="fas fa-list"></i> レース一覧に戻る
+            </a>
+        </div>
+
+        <div class="race-header" data-venue="{{ race.venue }}">
+            <div class="d-flex justify-content-between align-items-center">
+                {% if prev_race %}
+                    <a href="{{ url_for('race_detail', race_id=prev_race.id) }}" class="nav-btn">
+                        <i class="fas fa-chevron-left"></i> 前のレース
+                    </a>
+                {% else %}
+                    <div></div>
+                {% endif %}
+
+                <div class="race-title-container text-center">
+                    <div class="d-flex align-items-center justify-content-center gap-2">
+                        <h2 class="race-title mb-0">{{ race.name }}</h2>
+                    </div>
+                    <div class="race-info">
+                        <span class="race-venue">{{ race.venue }}</span>
+                        <span class="race-time">{{ race.start_time }}</span>
+                    </div>
+                </div>
+
+                {% if next_race %}
+                    <a href="{{ url_for('race_detail', race_id=next_race.id) }}" class="nav-btn">
+                        次のレース <i class="fas fa-chevron-right"></i>
+                    </a>
+                {% else %}
+                    <div></div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- レース基本情報をラップ -->
+    <div class="race-info-wrapper">
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <table class="table table-bordered race-info-table">
+                    <tbody>
+                        <tr>
+                            <th>開催日</th>
+                            <td>{{ race.date }}</td>
+                        </tr>
+                        <tr>
+                            <th>発走時刻</th>
+                            <td>{{ race.start_time }}</td>
+                        </tr>
+                        <tr>
+                            <th>コース</th>
+                            <td>{{ race.track_type }}{{ race.direction }} {{ race.distance }}m</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-md-6">
+                <table class="table table-bordered race-info-table">
+                    <tbody>
+                        <tr>
+                            <th>天候</th>
+                            <td>{{ race.weather or '不明' }}</td>
+                        </tr>
+                        <tr>
+                            <th>馬場状態</th>
+                            <td>{{ race.track_condition or '不明' }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- レース詳細情報 -->
+    {% if race.details %}
+    <div class="race-details mb-4">
+        <h3>レース詳細</h3>
+        <div class="card bg-light">
+            <div class="card-body">
+                {% for line in race.details.split('\n') %}
+                    {% if line|trim %}
+                        <p class="mb-2">{{ line|trim }}</p>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- メモセクション -->
+    <div class="race-memo-section minimized">
+        <button type="button" class="memo-toggle">
+            <i class="fas fa-bookmark"></i>
+        </button>
+        <div class="memo-content">
+            <!-- 新規メモ入力フォーム -->
+            <form method="POST" action="{{ url_for('save_race_memo', race_id=race.id) }}" class="sticky-note">
+                <textarea name="memo" class="sticky-note-content" placeholder="メモを入力..."></textarea>
+                <button type="submit" class="btn btn-sm btn-primary mt-2">保存</button>
+            </form>
+            
+            <!-- 既存のメモ一覧 -->
+            {% if race.get_memos() %}
+                {% for memo in race.get_memos()|reverse %}
+                <div class="sticky-note" id="memo-{{ memo.id }}">
+                    <div class="sticky-note-content">{{ memo.content }}</div>
+                    <button type="button" class="btn btn-sm btn-danger sticky-note-delete" 
+                            onclick="deleteRaceMemo({{ race.id }}, {{ memo.id }})">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- 結果表をラップ -->
+    <div class="race-results-wrapper">
+        <div class="table-responsive">
+            <!-- 出走馬一覧 -->
+            {% if entries %}
+            <div class="race-entries">
+                <h3>出走馬一覧</h3>
+                <div class="table-responsive" style="margin: 0 auto; max-width: 95%;">
+                    <table class="table table-striped table-bordered entry-table">
+                        <thead>
+                            <tr>
+                                <th>着順</th>
+                                <th>枠番</th>
+                                <th>馬番</th>
+                                <th>馬名</th>
+                                <th>騎手</th>
+                                <th>タイム</th>
+                                <th>着差</th>
+                                <th>通過</th>
+                                <th>上り</th>
+                                <th>体重</th>
+                                <th>人気</th>
+                                <th>オッズ</th>
+                                <th>メモ</th>
+                                <th>お気に入り</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for entry in entries %}
+                                <tr>
+                                    <td>{{ entry.position or '-' }}</td>
+                                    <td>{{ entry.frame_number or '-' }}</td>
+                                    <td>{{ entry.horse_number or '-' }}</td>
+                                    <td>
+                                        <a href="{{ url_for('horse_detail', horse_id=entry.horse.id) }}" class="text-decoration-none">
+                                            {{ entry.horse.name }}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        {% if entry.jockey %}
+                                        <a href="{{ url_for('jockey_detail', jockey_id=entry.jockey.id) }}" class="text-decoration-none">
+                                            {{ entry.jockey.name }}
+                                        </a>
+                                        {% else %}
+                                        -
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ entry.time or '-' }}</td>
+                                    <td>{{ entry.margin or '-' }}</td>
+                                    <td>{{ entry.passing or '-' }}</td>
+                                    <td>{{ entry.last_3f or '-' }}</td>
+                                    <td>{{ entry.horse_weight }}{% if entry.weight_change %}({{ entry.weight_change }}){% endif %}</td>
+                                    <td>{{ entry.popularity or '-' }}</td>
+                                    <td>{{ entry.odds if entry.odds else '-' }}</td>
+                                    <td>
+                                        <form method="POST" action="{{ url_for('save_horse_memo', horse_id=entry.horse_id) }}" class="memo-form">
+                                            <div class="input-group">
+                                                <textarea class="form-control form-control-sm" name="content" rows="2" placeholder="メモを入力..."></textarea>
+                                                <button type="submit" class="btn btn-sm btn-outline-primary">
+                                                    <i class="fas fa-save"></i>
+                                                </button>
+                                            </div>
+                                            {% if entry.horse.get_memos() %}
+                                                <div class="mt-2">
+                                                    {% for memo in entry.horse.get_memos()|reverse %}
+                                                        <div class="small text-muted mb-1">
+                                                            {{ memo.content }}
+                                                            <br>
+                                                            <small>{{ memo.created_at }}</small>
+                                                        </div>
+                                                    {% endfor %}
+                                                </div>
+                                            {% endif %}
+                                        </form>
+                                    </td>
+                                    <td>
+                                        <button type="button" 
+                                                class="btn btn-sm {% if entry.horse.is_favorite(1) %}btn-warning{% else %}btn-outline-warning{% endif %}" 
+                                                onclick="toggleFavorite({{ entry.horse.id }})">
+                                            <i class="fas fa-star"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% else %}
+            <div class="alert alert-info">
+                このレースの出走馬情報はまだ登録されていません。
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- 走馬一覧の後に追加 -->
+    <div class="race-review-section mt-4">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h3 class="mb-0">レース回顧</h3>
+                {% if current_user.is_authenticated %}
+                <a href="{{ url_for('race_review', race_id=race.id) }}" class="btn btn-primary">
+                    <i class="fas fa-edit"></i> 回顧を書く
+                </a>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                {% if reviews %}
+                    {% for review in reviews %}
+                    <div class="review-card mb-3">
+                        <div class="review-header d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>{{ review.user.username }}</strong>
+                                <small class="text-muted">{{ review.created_at.strftime('%Y/%m/%d %H:%M') }}</small>
+                            </div>
+                            {% if review.is_premium %}
+                            <span class="badge bg-warning">Premium</span>
+                            {% endif %}
+                        </div>
+                        
+                        {% if review.is_premium and not current_user.is_premium %}
+                        <div class="alert alert-warning mt-2">
+                            <i class="fas fa-lock"></i> 回顧プミア会員限定です
+                        </div>
+                        {% else %}
+                        <div class="review-content mt-3">
+                            {% if review.pace_analysis %}
+                            <div class="review-section">
+                                <h5>ペース展開</h5>
+                                <p>{{ review.pace_analysis }}</p>
+                            </div>
+                            {% endif %}
+                            
+                            {% if review.race_flow %}
+                            <div class="review-section">
+                                <h5>レース展開</h5>
+                                <p>{{ review.race_flow }}</p>
+                            </div>
+                            {% endif %}
+                            
+                            {% if review.notable_performances %}
+                            <div class="review-section">
+                                <h5>注目べき馬</h5>
+                                <p>{{ review.notable_performances }}</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                {% else %}
+                <div class="text-center py-4">
+                    <p class="text-muted">まだ回顧ノートが投稿されていません。</p>
+                    {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('race_review', race_id=race.id) }}" class="btn btn-outline-primary">
+                        <i class="fas fa-edit"></i> 最初の回顧を書く
+                    </a>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- レース結の表示部分の後に加 -->
+    <div class="mt-4">
+        <a href="{{ url_for('race_review', race_id=race.id) }}" class="btn btn-primary">
+            レース回顧を書く
+        </a>
+        <a href="{{ url_for('race_reviews', race_id=race.id) }}" class="btn btn-info">
+            回顧一覧を見る
+        </a>
+    </div>
+</div>
+{% endblock content %}
+
+{% block scripts %}
+{{ super() }}
+<!-- JavaScriptファイルを明示的に読み込む -->
+<script src="{{ url_for('static', filename='js/race_memo.js') }}" type="text/javascript"></script>
+{% endblock %}

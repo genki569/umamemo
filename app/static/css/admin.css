@@ -1,0 +1,138 @@
+/* 基本レイアウト */
+.admin-layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* サイドバー */
+.admin-sidebar {
+    width: 250px;
+    background: #2c3e50;
+    color: white;
+    padding: 20px;
+}
+
+.sidebar-header h3 {
+    color: white;
+    margin-bottom: 30px;
+}
+
+.sidebar-nav ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar-nav li {
+    margin-bottom: 10px;
+}
+
+.sidebar-nav a {
+    color: white;
+    text-decoration: none;
+    display: block;
+    padding: 10px;
+}
+
+.sidebar-nav li.active a {
+    background: #34495e;
+    border-radius: 5px;
+}
+
+/* メインコンテンツ */
+.admin-main {
+    flex: 1;
+    padding: 20px;
+    background: #f5f6fa;
+}
+
+/* 統計カード */
+.stat-card {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+
+.stat-content h3 {
+    font-size: 24px;
+    margin-bottom: 5px;
+    color: #2c3e50;
+}
+
+.stat-content p {
+    color: #7f8c8d;
+    margin: 0;
+}
+
+/* カード */
+.card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+
+.card-header {
+    padding: 15px 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.card-body {
+    padding: 20px;
+}
+
+/* リストグループ */
+.list-group-item {
+    border: none;
+    border-bottom: 1px solid #eee;
+    padding: 15px 0;
+}
+
+.list-group-item:last-child {
+    border-bottom: none;
+}
+
+/* ヘッダー */
+.admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding: 15px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.header-search input {
+    padding: 8px 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    width: 250px;
+}
+
+.header-user {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+/* アラート */
+.alert {
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+}
+
+.alert-success {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.alert-danger {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}

@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">お気に入りの馬一覧</h2>
+
+    {% if favorite_horses %}
+        <div class="row">
+            {% for horse in favorite_horses %}
+                <div class="col-md-6 col-lg-4 mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <a href="{{ url_for('horse_detail', horse_id=horse.id) }}" class="text-decoration-none">
+                                    {{ horse.name }}
+                                </a>
+                            </h5>
+                            <p class="card-text">
+                                <small class="text-muted">性別: {{ horse.sex }}</small>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info">お気に入りの馬はまだありません。</div>
+    {% endif %}
+</div>
+{% endblock %} 

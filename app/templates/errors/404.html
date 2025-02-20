@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="alert alert-danger">
+        <h4 class="alert-heading">404 - ページが見つかりません</h4>
+        <p>お探しのページは存在しないか、移動または削除された可能性があります。</p>
+        <hr>
+        <p class="mb-0">
+            <a href="{{ url_for('main.index') }}" class="alert-link">トップページに戻る</a>
+        </p>
+    </div>
+</div>
+{% endblock %} 

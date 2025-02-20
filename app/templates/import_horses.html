@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>馬データのインポート</h1>
+<form method="POST">
+    <p>horse_list_all.csv ファイルからデータをインポートします。</p>
+    <button type="submit">インポート開始</button>
+</form>
+<a href="{{ url_for('main.index') }}">戻る</a>
+{% endblock %}

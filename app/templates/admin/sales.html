@@ -1,0 +1,292 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+<div class="admin-sales">
+    <!-- 売上概要 -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">今月の売上</h6>
+                    <h3 class="card-title">{{ monthly_sales|format_yen }}</h3>
+                    <p class="card-text text-{% if monthly_diff > 0 %}success{% else %}danger{% endif %}">
+                        <i class="fas fa-caret-{% if monthly_diff > 0 %}up{% else %}down{% endif %}"></i>
+                        {{ monthly_diff|abs|format_yen }} (前月比)
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">今月のポイント購入</h6>
+                    <h3 class="card-title">{{ monthly_points|format_number }}pt</h3>
+                    <p class="card-text text-{% if monthly_points_diff > 0 %}success{% else %}danger{% endif %}">
+                        <i class="fas fa-caret-{% if monthly_points_diff > 0 %}up{% else %}down{% endif %}"></i>
+                        {{ monthly_points_diff|abs|format_number }}pt (前月比)
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">今月のレビュー購入数</h6>
+                    <h3 class="card-title">{{ monthly_reviews|format_number }}</h3>
+                    <p class="card-text text-{% if monthly_reviews_diff > 0 %}success{% else %}danger{% endif %}">
+                        <i class="fas fa-caret-{% if monthly_reviews_diff > 0 %}up{% else %}down{% endif %}"></i>
+                        {{ monthly_reviews_diff|abs|format_number }} (前月比)
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">今月のプレミアム会員数</h6>
+                    <h3 class="card-title">{{ monthly_premium|format_number }}</h3>
+                    <p class="card-text text-{% if monthly_premium_diff > 0 %}success{% else %}danger{% endif %}">
+                        <i class="fas fa-caret-{% if monthly_premium_diff > 0 %}up{% else %}down{% endif %}"></i>
+                        {{ monthly_premium_diff|abs|format_number }} (前月比)
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 売上グラフ -->
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5>売上推移</h5>
+            <div class="btn-group">
+                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="updateChart('daily')">日次</button>
+                <button type="button" class="btn btn-outline-secondary btn-sm active" onclick="updateChart('monthly')">月次</button>
+                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="updateChart('yearly')">年次</button>
+            </div>
+        </div>
+        <div class="card-body">
+            <canvas id="salesChart"></canvas>
+        </div>
+    </div>
+
+    <!-- 取引履歴 -->
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5>取引履歴</h5>
+            <div class="header-actions">
+                <select class="form-select form-select-sm d-inline-block" style="width: 150px;" id="typeFilter">
+                    <option value="">全ての取引</option>
+                    <option value="point">ポイント購入</option>
+                    <option value="review">レビュー購入</option>
+                    <option value="premium">プレミアム会員</option>
+                </select>
+                <input type="text" class="form-control form-control-sm d-inline-block ms-2" 
+                       style="width: 200px;" id="searchInput" placeholder="検索...">
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>日時</th>
+                            <th>ユーザー</th>
+                            <th>取引種別</th>
+                            <th>金額</th>
+                            <th>ポイント</th>
+                            <th>ステータス</th>
+                            <th>詳細</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for log in payment_logs %}
+                        <tr>
+                            <td>{{ log.created_at.strftime('%Y/%m/%d %H:%M') }}</td>
+                            <td>{{ log.user.username }}</td>
+                            <td>{{ log.type_display }}</td>
+                            <td>{{ log.amount|format_yen }}</td>
+                            <td>{{ log.points|format_number if log.points else '-' }}</td>
+                            <td>
+                                <span class="badge bg-{{ log.status_color }}">
+                                    {{ log.status_display }}
+                                </span>
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-sm btn-outline-primary"
+                                        onclick="viewTransaction({{ log.id }})">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- ページネーション -->
+            <nav aria-label="ページ送り">
+                <ul class="pagination justify-content-center">
+                    {% if pagination.has_prev %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('admin_sales', page=pagination.prev_num) }}">前へ</a>
+                    </li>
+                    {% endif %}
+                    
+                    {% for page in pagination.iter_pages() %}
+                        {% if page %}
+                            <li class="page-item {{ 'active' if page == pagination.page else '' }}">
+                                <a class="page-link" href="{{ url_for('admin_sales', page=page) }}">{{ page }}</a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled"><span class="page-link">...</span></li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if pagination.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('admin_sales', page=pagination.next_num) }}">次へ</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+<!-- 取引詳細モーダル -->
+<div class="modal fade" id="transactionModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">取引詳細</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="transactionContent">
+                    <!-- Ajax で動的に内容を表示 -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">閉じる</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js の読み込み -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+let salesChart;
+
+// グラフの初期化
+function initChart(data) {
+    const ctx = document.getElementById('salesChart').getContext('2d');
+    salesChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: data.labels,
+            datasets: [{
+                label: '売上',
+                data: data.sales,
+                borderColor: 'rgb(75, 192, 192)',
+                tension: 0.1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+}
+
+// グラフの更新
+function updateChart(period) {
+    fetch(`/admin/api/sales-stats?period=${period}`)
+        .then(response => response.json())
+        .then(data => {
+            salesChart.data.labels = data.labels;
+            salesChart.data.datasets[0].data = data.sales;
+            salesChart.update();
+            
+            // ボタンのアクティブ状態を更新
+            document.querySelectorAll('.btn-group .btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        });
+}
+
+// 取引詳細の表示
+function viewTransaction(logId) {
+    fetch(`/admin/api/payment-logs/${logId}`)
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('transactionContent').innerHTML = `
+                <dl class="row">
+                    <dt class="col-sm-4">取引ID</dt>
+                    <dd class="col-sm-8">${data.id}</dd>
+                    
+                    <dt class="col-sm-4">日時</dt>
+                    <dd class="col-sm-8">${data.created_at}</dd>
+                    
+                    <dt class="col-sm-4">ユーザー</dt>
+                    <dd class="col-sm-8">${data.username}</dd>
+                    
+                    <dt class="col-sm-4">取引種別</dt>
+                    <dd class="col-sm-8">${data.type_display}</dd>
+                    
+                    <dt class="col-sm-4">金額</dt>
+                    <dd class="col-sm-8">${data.amount}</dd>
+                    
+                    <dt class="col-sm-4">ポイント</dt>
+                    <dd class="col-sm-8">${data.points || '-'}</dd>
+                    
+                    <dt class="col-sm-4">ステータス</dt>
+                    <dd class="col-sm-8">
+                        <span class="badge bg-${data.status_color}">
+                            ${data.status_display}
+                        </span>
+                    </dd>
+                    
+                    <dt class="col-sm-4">決済ID</dt>
+                    <dd class="col-sm-8">${data.payment_id || '-'}</dd>
+                    
+                    <dt class="col-sm-4">メモ</dt>
+                    <dd class="col-sm-8">${data.memo || '-'}</dd>
+                </dl>
+            `;
+            const modal = new bootstrap.Modal(document.getElementById('transactionModal'));
+            modal.show();
+        });
+}
+
+// 初期表示
+document.addEventListener('DOMContentLoaded', function() {
+    fetch('/admin/api/sales-stats?period=monthly')
+        .then(response => response.json())
+        .then(data => initChart(data));
+});
+
+// フィルタリング
+document.getElementById('typeFilter').addEventListener('change', function(e) {
+    const type = e.target.value;
+    window.location.href = `/admin/sales?type=${type}`;
+});
+
+// 検索
+document.getElementById('searchInput').addEventListener('input', function(e) {
+    const searchTerm = e.target.value.toLowerCase();
+    const rows = document.querySelectorAll('tbody tr');
+    
+    rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(searchTerm) ? '' : 'none';
+    });
+});
+</script>
+{% endblock %}

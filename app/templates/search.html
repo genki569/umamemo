@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">検索結果: "{{ query }}"</h2>
+    
+    <!-- レース検索結果 -->
+    {% if races %}
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-transparent">
+            <h5 class="mb-0">レース</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                {% for race in races %}
+                <div class="col-md-6 mb-3">
+                    <div class="search-result-item">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="mb-1">
+                                    <a href="{{ url_for('main.race_detail', race_id=race.id) }}" 
+                                       class="text-decoration-none">
+                                        {{ race.name }}
+                                    </a>
+                                </h6>
+                                <div class="small text-muted">
+                                    {{ race.date.strftime('%Y年%m月%d日') }}
+                                </div>
+                            </div>
+                            {% if race.venue %}
+                                <span class="venue-badge">{{ race.venue }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- 馬検索結果 -->
+    {% if horses %}
+    <div class="card shadow-sm">
+        <div class="card-header bg-transparent">
+            <h5 class="mb-0">競走馬</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                {% for horse in horses %}
+                <div class="col-md-6 mb-3">
+                    <div class="search-result-item">
+                        <h6 class="mb-1">
+                            <a href="{{ url_for('main.horse_detail', horse_id=horse.id) }}" 
+                               class="text-decoration-none">
+                                {{ horse.name }}
+                            </a>
+                        </h6>
+                        <div class="d-flex align-items-center">
+                            <span class="badge bg-secondary me-2">{{ horse.sex }}</span>
+                            <span class="small text-muted">{{ horse.wins }}勝</span>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %} 

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>レース編集</h1>
+<form method="POST">
+    <div class="form-group">
+        <label for="name">レース名</label>
+        <input type="text" class="form-control" id="name" name="name" value="{{ race.name }}" required>
+    </div>
+    <div class="form-group">
+        <label for="date">日付</label>
+        <input type="date" class="form-control" id="date" name="date" value="{{ race.date.strftime('%Y-%m-%d') }}" required>
+    </div>
+    <div class="form-group">
+        <label for="course">コース</label>
+        <input type="text" class="form-control" id="course" name="course" value="{{ race.course }}" required>
+    </div>
+    <div class="form-group">
+        <label for="distance">距離</label>
+        <input type="number" class="form-control" id="distance" name="distance" value="{{ race.distance }}" required>
+    </div>
+    <div class="form-group">
+        <label for="race_type">レースタイプ</label>
+        <input type="text" class="form-control" id="race_type" name="race_type" value="{{ race.race_type }}" required>
+    </div>
+    <div class="form-group">
+        <label for="prize">賞金</label>
+        <input type="number" class="form-control" id="prize" name="prize" value="{{ race.prize }}" required>
+    </div>
+    <button type="submit" class="btn btn-primary">更新</button>
+</form>
+{% endblock %}

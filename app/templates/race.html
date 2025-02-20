@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    {% if error %}
+    <div class="alert alert-danger" role="alert">
+        {{ error }}
+    </div>
+    {% endif %}
+
+    {% if race %}
+    <h1>{{ race.name }}</h1>
+    
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">
+                    <p><strong>開催日：</strong> {{ race.date }}</p>
+                    <p><strong>発走時刻：</strong> {{ race.start_time }}</p>
+                </div>
+                <div class="col-md-4">
+                    <p><strong>会場：</strong> {{ race.venue }}</p>
+                    <p><strong>距離：</strong> {{ race.distance }}m</p>
+                </div>
+                <div class="col-md-4">
+                    <p><strong>天候：</strong> {{ race.weather }}</p>
+                    <p><strong>馬場状態：</strong> {{ race.track_condition }}</p>
+                </div>
+            </div>
+            {% if race.details %}
+            <div class="mt-3">
+                <p><strong>レース詳細：</strong></p>
+                <p>{{ race.details }}</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <h2>出走馬一覧</h2>
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>馬番</th>
+                    <th>馬名</th>
+                    <th>性別</th>
+                    <th>斤量</th>
+                    <th>騎手</th>
+                    <th>オッズ</th>
+                    <th>人気</th>
+                    <th>着順</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for entry in entries %}
+                <tr>
+                    <td>{{ entry.number or '-' }}</td>
+                    <td>{{ entry.horse_name }}</td>
+                    <td>{{ entry.sex or '-' }}</td>
+                    <td>{{ entry.weight or '-' }}</td>
+                    <td>{{ entry.jockey or '-' }}</td>
+                    <td>{{ entry.odds or '-' }}</td>
+                    <td>{{ entry.popularity or '-' }}</td>
+                    <td>{{ entry.result or '-' }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="8" class="text-center">出走馬情報がありません</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+    
+    <div class="mt-3">
+        <a href="{{ url_for('main.races') }}" class="btn btn-secondary">レース一覧に戻る</a>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-4">
+    <h2>レース回顧を作成</h2>
+    <form method="POST" class="mt-4">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        
+        <!-- 基本情報 -->
+        <div class="mb-3">
+            <label class="form-label">タイトル</label>
+            <input type="text" name="title" class="form-control" required>
+        </div>
+
+        <!-- レース分析セクション -->
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">レース分析</h5>
+                
+                <div class="mb-3">
+                    <label class="form-label">ペース分析</label>
+                    <textarea name="pace_analysis" class="form-control" rows="3"></textarea>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">馬場状態</label>
+                    <textarea name="track_condition_note" class="form-control" rows="3"></textarea>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">レース展開</label>
+                    <textarea name="race_flow" class="form-control" rows="3"></textarea>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">総評</label>
+                    <textarea name="overall_impression" class="form-control" rows="3"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- 馬の分析セクション -->
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">馬の分析</h5>
+                
+                <div class="mb-3">
+                    <label class="form-label">勝ち馬分析</label>
+                    <textarea name="winner_analysis" class="form-control" rows="3"></textarea>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">上位馬分析</label>
+                    <textarea name="placed_horses_analysis" class="form-control" rows="3"></textarea>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">注目すべき馬</label>
+                    <textarea name="notable_performances" class="form-control" rows="3"></textarea>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">今後の展望</label>
+                    <textarea name="future_prospects" class="form-control" rows="3"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- 公開設定 -->
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">公開設定</h5>
+                
+                <div class="mb-3">
+                    <select name="sale_status" class="form-select" id="saleStatus">
+                        <option value="free">無料公開</option>
+                        <option value="paid">有料販売</option>
+                        <option value="draft">下書き</option>
+                    </select>
+                </div>
+
+                <div id="priceSection" class="mb-3" style="display: none;">
+                    <label class="form-label">販売価格（円）</label>
+                    <input type="number" name="price" class="form-control" min="100" step="100">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">説明文</label>
+                    <textarea name="description" class="form-control" rows="3"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">保存する</button>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}  {# 親テンプレートのscriptsブロックを継承 #}
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+<script>
+document.getElementById('saleStatus').addEventListener('change', function() {
+    const priceSection = document.getElementById('priceSection');
+    priceSection.style.display = this.value === 'paid' ? 'block' : 'none';
+});
+</script>
+{% endblock %} 

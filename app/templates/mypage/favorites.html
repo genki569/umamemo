@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- ヘッダー部分 -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>お気に入り馬</h2>
+        <a href="{{ url_for('mypage_home') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i>マイページに戻る
+        </a>
+    </div>
+
+    <!-- デバッグ情報（開発時のみ表示） -->
+    {% if config.DEBUG %}
+    <div class="debug-info" style="margin-bottom: 20px; padding: 10px; background: #f8f9fa;">
+        <p>デバッグ情報:</p>
+        <ul>
+            <li>ユーザーID: {{ current_user.id }}</li>
+            <li>お気に入り数: {{ favorites.total if favorites else 0 }}</li>
+        </ul>
+    </div>
+    {% endif %}
+
+    <!-- お気に入り馬一覧 -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-body">
+            {% if favorites %}
+                <div class="row g-4">
+                    {% for horse in favorites %}
+                        <div class="col-md-4">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ horse.name }}</h5>
+                                    <div class="d-flex justify-content-between align-items-center mt-3">
+                                        <a href="{{ url_for('horse_detail', horse_id=horse.id) }}" 
+                                           class="btn btn-sm btn-outline-primary">
+                                            詳細を見る
+                                        </a>
+                                        <button class="btn btn-sm btn-outline-danger remove-favorite"
+                                                data-horse-id="{{ horse.id }}">
+                                            <i class="fas fa-heart-broken"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <!-- ページネーション -->
+                {% if favorites.pages > 1 %}
+                    <nav class="mt-4">
+                        <ul class="pagination justify-content-center">
+                            {% for page in favorites.iter_pages() %}
+                                {% if page %}
+                                    <li class="page-item {{ 'active' if page == favorites.page else '' }}">
+                                        <a class="page-link" href="{{ url_for('mypage_favorites', page=page) }}">
+                                            {{ page }}
+                                        </a>
+                                    </li>
+                                {% else %}
+                                    <li class="page-item disabled">
+                                        <span class="page-link">...</span>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
+                    </nav>
+                {% endif %}
+            {% else %}
+                <div class="text-center py-5">
+                    <p class="text-muted mb-0">お気に入りの馬がいません</p>
+                    <a href="{{ url_for('horses') }}" class="btn btn-primary mt-3">
+                        馬を探す
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- お気に入り解除用のJavaScript -->
+{% block scripts %}
+<script>
+document.querySelectorAll('.remove-favorite').forEach(button => {
+    button.addEventListener('click', async function() {
+        const horseId = this.dataset.horseId;
+        if (confirm('お気に入りから削除してもよろしいですか？')) {
+            try {
+                const response = await fetch(`/api/favorites/${horseId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').content
+                    }
+                });
+                
+                const data = await response.json();
+                if (response.ok) {
+                    this.closest('.col-md-4').remove();
+                    if (document.querySelectorAll('.col-md-4').length === 0) {
+                        location.reload(); // 最後の要素を削除した場合はページを更新
+                    }
+                } else {
+                    alert(data.message || 'エラーが発生しました');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('エラーが発生しました');
+            }
+        }
+    });
+});
+</script>
+{% endblock %}
+{% endblock %} 

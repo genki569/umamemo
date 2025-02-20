@@ -1,0 +1,93 @@
+# 競馬情報システム要件定義書
+
+## 1. データベース構造
+
+### 1.1 主要テーブル
+- races (レース情報)
+  - id: BigInteger (PK)
+  - name: String(100)
+  - date: Date
+  - venue: String(50)
+  - venue_id: String(50)
+  - race_number: Integer
+  - track_type: String(20)
+  - distance: Integer
+  - weather: String(20)
+  - track_condition: String(20)
+
+- horses (馬情報)
+  - id: Integer (PK)
+  - name: String(100)
+  - sex: String(10)
+  - trainer: String(100)
+  - memo: Text
+
+- entries (出走登録)
+  - id: BigInteger (PK)
+  - race_id: BigInteger (FK -> races.id)
+  - horse_id: Integer (FK -> horses.id)
+  - jockey_id: Integer (FK -> jockeys.id)
+  - position: Integer
+  - time: Time
+  - odds: Float
+
+### 1.2 関連テーブル
+- race_memos (レースメモ)
+  - id: Integer (PK)
+  - race_id: BigInteger (FK)
+  - user_id: Integer (FK)
+  - content: Text
+  - created_at: DateTime
+
+- favorites (お気に入り)
+  - id: Integer (PK)
+  - user_id: Integer (FK)
+  - horse_id: Integer (FK)
+  - created_at: DateTime
+
+## 2. ファイル構造
+
+### 2.1 モデル定義
+app/models.py:
+- Race: レース情報モデル
+- Horse: 馬情報モデル
+- Entry: 出走登録モデル
+- RaceMemo: レースメモモデル
+- Favorite: お気に入りモデル
+
+### 2.2 ルーティング
+app/routes.py:
+- /: トップページ
+- /races: レース一覧
+- /races/<race_id>: レース詳細
+- /races/<race_id>/shutuba: 出馬表
+
+### 2.3 テンプレート
+app/templates/:
+- index.html: トップページ
+- races.html: レース一覧
+- race_detail.html: レース詳細
+- shutuba.html: 出馬表
+
+## 3. 機能要件
+
+### 3.1 レース情報
+- レース一覧表示
+- レース詳細表示
+- 出馬表表示
+- レース結果表示
+
+### 3.2 データ分析
+- 過去の戦績表示
+- 同コースでの成績
+- 騎手との相性
+- 馬場状態との相性
+
+### 3.3 ユーザー機能
+- お気に入り登録/解除
+- メモ機能
+- レビュー投稿/閲覧
+
+## 4. リレーションシップ
+
+### 4.1 Race モデル

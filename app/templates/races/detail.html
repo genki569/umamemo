@@ -1,0 +1,13 @@
+<!-- レース詳細画面のプレミアム機能部分 -->
+{% if not current_user.is_premium %}
+    <div class="alert alert-info">
+        <h5 class="alert-heading">
+            <i class="fas fa-crown text-warning me-2"></i>プレミアム会員限定機能
+        </h5>
+        <p>より詳細な分析をご覧いただけます。</p>
+        <hr>
+        <a href="{{ url_for('premium_features') }}" class="btn btn-primary">
+            詳細を見る
+        </a>
+    </div>
+{% endif %} 

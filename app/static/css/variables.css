@@ -1,0 +1,25 @@
+:root {
+    /* カラー */
+    --color-background: #ffffff;
+    --color-surface: #f8f9fa;
+    --color-text: #1a1a1a;
+    --color-text-light: #6c757d;
+    --color-border: #e9ecef;
+    --color-primary: #2B7BF4;
+    --color-secondary: #50b45a;
+    --color-success: #28a745;
+    --color-warning: #ffc107;
+    --color-danger: #dc3545;
+
+    /* スペーシング */
+    --space-xs: 0.25rem;
+    --space-sm: 0.5rem;
+    --space-md: 1rem;
+    --space-lg: 1.5rem;
+    --space-xl: 2rem;
+
+    /* その他の変数 */
+    --border-radius: 8px;
+    --border-radius-lg: 12px;
+    --transition: all 0.2s ease-in-out;
+}

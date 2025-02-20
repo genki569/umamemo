@@ -1,0 +1,26 @@
+# CGIの基本設定
+AddHandler cgi-script .cgi
+Options +ExecCGI
+
+# インデックスファイルの設定
+DirectoryIndex index.cgi index.html
+
+# CGIファイルの実行権限
+<Files ~ "\.cgi$">
+    Options +ExecCGI
+    SetHandler cgi-script
+    Order allow,deny
+    Allow from all
+</Files>
+
+# 静的ファイルの許可
+<Files ~ "\.(jpg|jpeg|png|gif|css|js|ico)$">
+    Order allow,deny
+    Allow from all
+</Files>
+
+# CGIルーティング
+RewriteEngine On
+RewriteBase /
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^(.*)$ /index.cgi/$1 [QSA,L]

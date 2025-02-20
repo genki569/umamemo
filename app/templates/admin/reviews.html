@@ -1,0 +1,228 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+<div class="admin-reviews">
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5>レビュー管理</h5>
+            <div class="header-actions">
+                <select class="form-select form-select-sm d-inline-block" style="width: 150px;" id="statusFilter">
+                    <option value="">全てのステータス</option>
+                    <option value="public">公開</option>
+                    <option value="private">非公開</option>
+                    <option value="reported">報告あり</option>
+                </select>
+                <input type="text" class="form-control form-control-sm d-inline-block ms-2" 
+                       style="width: 200px;" id="searchInput" placeholder="検索...">
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>投稿日時</th>
+                            <th>レース</th>
+                            <th>投稿者</th>
+                            <th>評価</th>
+                            <th>販売価格</th>
+                            <th>購入数</th>
+                            <th>報告</th>
+                            <th>ステータス</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for review in reviews %}
+                        <tr>
+                            <td>{{ review.id }}</td>
+                            <td>{{ review.created_at.strftime('%Y/%m/%d %H:%M') }}</td>
+                            <td>
+                                <a href="{{ url_for('race_detail', race_id=review.race.id) }}" target="_blank">
+                                    {{ review.race.name }}
+                                </a>
+                            </td>
+                            <td>{{ review.user.username }}</td>
+                            <td>{{ review.rating }}/5</td>
+                            <td>{{ review.price }}pt</td>
+                            <td>{{ review.purchases|length }}</td>
+                            <td>
+                                {% if review.reports|length > 0 %}
+                                <span class="badge bg-danger">{{ review.reports|length }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge {% if review.is_public %}bg-success{% else %}bg-secondary{% endif %}">
+                                    {{ '公開' if review.is_public else '非公開' }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <button type="button" class="btn btn-outline-primary"
+                                            onclick="viewReview({{ review.id }})">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-outline-warning"
+                                            onclick="toggleStatus({{ review.id }})">
+                                        <i class="fas fa-sync-alt"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-outline-danger"
+                                            onclick="confirmDelete({{ review.id }})">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- ページネーション -->
+            <nav aria-label="ページ送り">
+                <ul class="pagination justify-content-center">
+                    {% if pagination.has_prev %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('admin_reviews', page=pagination.prev_num) }}">前へ</a>
+                    </li>
+                    {% endif %}
+                    
+                    {% for page in pagination.iter_pages() %}
+                        {% if page %}
+                            <li class="page-item {{ 'active' if page == pagination.page else '' }}">
+                                <a class="page-link" href="{{ url_for('admin_reviews', page=page) }}">{{ page }}</a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled"><span class="page-link">...</span></li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if pagination.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('admin_reviews', page=pagination.next_num) }}">次へ</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+<!-- レビュー詳細モーダル -->
+<div class="modal fade" id="reviewModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">レビュー詳細</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="reviewContent">
+                    <!-- Ajax で動的に内容を表示 -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">閉じる</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 削除確認モーダル -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">レビューの削除確認</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>このレビューを削除してもよろしいですか？</p>
+                <p class="text-danger">この操作は取り消せません。購入履歴も全て削除されます。</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">キャンセル</button>
+                <form id="deleteForm" method="POST" style="display: inline;">
+                    <button type="submit" class="btn btn-danger">削除</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// レビュー詳細の表示
+function viewReview(reviewId) {
+    fetch(`/admin/api/reviews/${reviewId}`)
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('reviewContent').innerHTML = `
+                <div class="review-detail">
+                    <h6>レース情報</h6>
+                    <p>${data.race_name} (${data.race_date})</p>
+                    
+                    <h6>投稿者</h6>
+                    <p>${data.username}</p>
+                    
+                    <h6>評価</h6>
+                    <p>${data.rating}/5</p>
+                    
+                    <h6>本文</h6>
+                    <p>${data.content}</p>
+                    
+                    <h6>報告内容</h6>
+                    <ul>
+                        ${data.reports.map(report => `
+                            <li>${report.reason} - ${report.created_at}</li>
+                        `).join('')}
+                    </ul>
+                </div>
+            `;
+            const modal = new bootstrap.Modal(document.getElementById('reviewModal'));
+            modal.show();
+        });
+}
+
+// ステータス切り替え
+function toggleStatus(reviewId) {
+    fetch(`/admin/reviews/${reviewId}/toggle`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        }
+    });
+}
+
+// 削除確認
+function confirmDelete(reviewId) {
+    const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+    const form = document.getElementById('deleteForm');
+    form.action = `/admin/reviews/${reviewId}/delete`;
+    modal.show();
+}
+
+// フィルタリング
+document.getElementById('statusFilter').addEventListener('change', function(e) {
+    const status = e.target.value;
+    window.location.href = `/admin/reviews?status=${status}`;
+});
+
+// 検索
+document.getElementById('searchInput').addEventListener('input', function(e) {
+    const searchTerm = e.target.value.toLowerCase();
+    const rows = document.querySelectorAll('tbody tr');
+    
+    rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(searchTerm) ? '' : 'none';
+    });
+});
+</script>
+{% endblock %}

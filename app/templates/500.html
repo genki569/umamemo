@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>エラーが発生しました</h1>
+    <p>申し訳ありませんが、サーバーでエラーが発生しました。</p>
+    <p>しばらくしてから再度お試しください。</p>
+    <p><a href="{{ url_for('index') }}">ホームページに戻る</a></p>
+{% endblock %}

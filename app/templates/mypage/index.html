@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="dashboard-container">
+    <!-- メインビジュアル -->
+    <div class="main-visual" data-aos="fade-down">
+        <div class="profile-banner">
+            <div class="profile-info">
+                <div class="profile-image-wrapper">
+                    {% if current_user.profile_image %}
+                        <img src="{{ current_user.profile_image }}" alt="プロフィール" class="profile-image">
+                    {% else %}
+                        <div class="profile-image-placeholder">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="profile-text">
+                    <h1>{{ current_user.username }}</h1>
+                    {% if current_user.is_premium %}
+                        <div class="premium-badge">
+                            <i class="fas fa-crown"></i> Premium Member
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- クイックステータス -->
+    <div class="quick-stats" data-aos="fade-up">
+        <div class="stat-card points">
+            <div class="stat-icon">
+                <i class="fas fa-coins"></i>
+            </div>
+            <div class="stat-content">
+                <h3>{{ current_user.point_balance }}</h3>
+                <p>ポイント</p>
+            </div>
+        </div>
+        <div class="stat-card reviews">
+            <div class="stat-icon">
+                <i class="fas fa-star"></i>
+            </div>
+            <div class="stat-content">
+                <h3>{{ current_user.reviews.count() }}</h3>
+                <p>レビュー</p>
+            </div>
+        </div>
+        <div class="stat-card favorites">
+            <div class="stat-icon">
+                <i class="fas fa-heart"></i>
+            </div>
+            <div class="stat-content">
+                <h3>{{ current_user.favorite_horses.count() }}</h3>
+                <p>お気に入り馬</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- メインコンテンツ -->
+    <div class="dashboard-grid">
+        <!-- 通知セクション -->
+        <div class="dashboard-card notifications-card" data-aos="fade-up" data-aos-delay="50">
+            <div class="card-header">
+                <h3><i class="fas fa-bell"></i> 通知</h3>
+                <a href="{{ url_for('view_all_notifications') }}" class="view-all">すべて見る</a>
+            </div>
+            <div class="card-content">
+                <div class="notification-list" id="dashboard-notifications">
+                    {% if notifications %}
+                        {% for notification in notifications[:5] %}
+                            <div class="notification-item {% if not notification.read %}unread{% endif %}"
+                                 data-id="{{ notification.id }}">
+                                <div class="notification-icon">
+                                    <i class="fas {{ notification.icon_class }}"></i>
+                                </div>
+                                <div class="notification-content">
+                                    <p class="notification-text">{{ notification.message }}</p>
+                                    <span class="notification-time">{{ notification.created_at|timeago }}</span>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="no-content">新しい通知はありません</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- 最近のレビュー -->
+        <div class="dashboard-card reviews-card" data-aos="fade-up" data-aos-delay="100">
+            <div class="card-header">
+                <h3><i class="fas fa-pen"></i> 最近のレビュー</h3>
+                <a href="{{ url_for('mypage_reviews') }}" class="view-all">すべて見る</a>
+            </div>
+            <div class="card-content">
+                {% if recent_reviews %}
+                    {% for review in recent_reviews[:3] %}
+                        <div class="review-item">
+                            <div class="review-meta">
+                                <span class="review-date">{{ review.created_at.strftime('%Y/%m/%d') }}</span>
+                                <span class="review-race">{{ review.race.name }}</span>
+                            </div>
+                            <p class="review-text">{{ review.content|truncate(100) }}</p>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="no-content">レビューはまだありません</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- お気に入り馬 -->
+        <div class="dashboard-card favorites-card" data-aos="fade-up" data-aos-delay="200">
+            <div class="card-header">
+                <h3><i class="fas fa-horse"></i> お気に入り馬</h3>
+                <a href="{{ url_for('mypage_favorites') }}" class="view-all">すべて見る</a>
+            </div>
+            <div class="card-content">
+                <div class="favorite-horses-grid">
+                    {% if current_user.favorite_horses %}
+                        {% for horse in current_user.favorite_horses[:6] %}
+                            <div class="horse-item">
+                                <a href="{{ url_for('horse_detail', horse_id=horse.id) }}" class="horse-link">
+                                    <div class="horse-icon">🐎</div>
+                                    <h4>{{ horse.name }}</h4>
+                                </a>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="no-content">お気に入りの馬はまだいません</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- 最近のメモ -->
+        <div class="dashboard-card memos-card" data-aos="fade-up" data-aos-delay="300">
+            <div class="card-header">
+                <h3><i class="fas fa-sticky-note"></i> メモ</h3>
+                <a href="{{ url_for('mypage_memos') }}" class="view-all">すべ��見る</a>
+            </div>
+            <div class="card-content memo-grid">
+                {% if horse_memos %}
+                    {% for memo in horse_memos[:4] %}
+                        <div class="memo-item">
+                            <div class="memo-content">
+                                <h4>{{ memo.horse.name }}</h4>
+                                <p>{{ memo.content|truncate(50) }}</p>
+                                <span class="memo-date">{{ memo.created_at.strftime('%Y/%m/%d') }}</span>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="no-content">メモはまだありません</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

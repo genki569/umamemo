@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="race-header">
+        <h2>{{ race.name }} 出馬表</h2>
+        <p>{{ race.venue }} {{ race.start_time }}発走</p>
+        <p>{{ race.track_type }}{{ race.distance }}m</p>
+    </div>
+
+    <div class="race-info mt-3 mb-4">
+        <h5>レース条件</h5>
+        <p class="mb-0">{{ race.details if race.details else '情報なし' }}</p>
+    </div>
+
+    <div class="race-entries">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>馬番</th>
+                    <th>馬名</th>
+                    <th>性</th>
+                    <th>騎手</th>
+                    <th>メモ</th>
+                    <th>編集</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for entry in entries %}
+                <tr>
+                    <td>{{ entry.display_number }}</td>
+                    <td>
+                        <a href="{{ url_for('horse_detail', horse_id=entry.horse.id) }}" class="text-decoration-none">
+                            {{ entry.horse.name }}
+                        </a>
+                    </td>
+                    <td>{{ entry.horse.sex }}</td>
+                    <td>{{ entry.jockey.name if entry.jockey else '' }}</td>
+                    <td>
+                        {% if entry.horse.memo %}
+                            {% set memo_list = entry.horse.memo|from_json %}
+                            {% if memo_list %}
+                                {{ memo_list[-1].content }}
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary" type="button" 
+                                data-bs-toggle="collapse" 
+                                data-bs-target="#memo-form-{{ entry.horse.id }}">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <div class="collapse" id="memo-form-{{ entry.horse.id }}">
+                            <div class="mt-2">
+                                <form method="POST" 
+                                      action="{{ url_for('save_horse_memo', horse_id=entry.horse.id) }}" 
+                                      class="d-flex">
+                                    <input type="text" name="memo" 
+                                           value="{% if entry.horse.memo %}{{ memo_list[-1].content if memo_list else '' }}{% endif %}" 
+                                           class="form-control form-control-sm">
+                                    <button type="submit" class="btn btn-sm btn-primary ms-1">保存</button>
+                                </form>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %} 

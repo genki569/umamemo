@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>新しい馬を追加</h1>
+<form method="POST">
+    <div>
+        <label for="name">馬名:</label>
+        <input type="text" id="name" name="name" required>
+    </div>
+    <button type="submit">追加</button>
+</form>
+<a href="{{ url_for('main.index') }}">戻る</a>
+{% endblock %}

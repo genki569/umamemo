@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+
+{# CSSの読み込み #}
+{% block styles %}
+    {{ super() }}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/market.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="market-header">
+    <div class="container py-5">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h1 class="display-4 mb-3">回顧マーケット</h1>
+                <p class="lead text-muted">
+                    競馬ファンによる、競馬ファンのための分析と洞察
+                </p>
+                <p class="market-description">
+                    プロ・アマチュア問わず、熱心な競馬ファンたちによる
+                    レース分析や回顧をご覧いただけます。
+                    <span class="highlight">あなたの競馬観をより豊かに</span>
+                </p>
+            </div>
+            <div class="col-lg-4 text-center">
+                <div class="market-stats p-4 rounded-3 shadow-sm">
+                    <div class="mb-3">
+                        <i class="fas fa-book-open fa-2x text-primary"></i>
+                        <h3 class="mt-2">{{ reviews.total }}件</h3>
+                        <p class="text-muted">公開中の回顧ノート</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container py-5">
+    <!-- フィルターセクション -->
+    <div class="filter-section mb-4">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <select class="form-select">
+                    <option selected>価格帯で絞る</option>
+                    <option value="free">無料のみ</option>
+                    <option value="paid">有料のみ</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <select class="form-select">
+                    <option selected>開催日で絞る</option>
+                    <option value="recent">最近1週間</option>
+                    <option value="month">今月</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    {% if reviews.items %}
+        <div class="row g-4">
+            {% for review in reviews.items %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="card review-card h-100 border-0 shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <h5 class="card-title text-truncate mb-0">{{ review.title }}</h5>
+                                {% if review.sale_status == 'free' %}
+                                    <span class="badge bg-success rounded-pill">無料</span>
+                                {% else %}
+                                    <span class="badge bg-primary rounded-pill">{{ review.price }}P</span>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="race-info mb-3">
+                                <div class="d-flex align-items-center mb-2">
+                                    <i class="fas fa-flag-checkered text-muted me-2"></i>
+                                    <span>{{ races[review.race_id].name }}</span>
+                                </div>
+                                <div class="d-flex align-items-center mb-2">
+                                    <i class="far fa-calendar text-muted me-2"></i>
+                                    <span>{{ races[review.race_id].date.strftime('%Y/%m/%d') }}</span>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-map-marker-alt text-muted me-2"></i>
+                                    <span>{{ races[review.race_id].venue }}</span>
+                                </div>
+                            </div>
+
+                            <div class="action-buttons">
+                                {% if review.id in purchased_review_ids %}
+                                    <a href="{{ url_for('view_review', race_id=review.race_id, review_id=review.id) }}" 
+                                       class="btn btn-outline-primary w-100">
+                                       <i class="fas fa-book-reader me-2"></i>閲覧する
+                                    </a>
+                                {% else %}
+                                    {% if review.sale_status == 'free' %}
+                                        <a href="{{ url_for('view_review', race_id=review.race_id, review_id=review.id) }}" 
+                                           class="btn btn-primary w-100">
+                                           <i class="fas fa-book-reader me-2"></i>閲覧する
+                                        </a>
+                                    {% else %}
+                                        <form action="{{ url_for('review_purchase', race_id=review.race_id, review_id=review.id) }}" 
+                                              method="POST" class="d-inline w-100">
+                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                            <button type="submit" class="btn btn-primary w-100 purchase-review" 
+                                                    data-review-id="{{ review.id }}"
+                                                    data-race-id="{{ review.race_id }}"
+                                                    data-review-price="{{ review.price }}"
+                                                    data-user-points="{{ current_user.point_balance if current_user.is_authenticated else 0 }}">
+                                                <i class="fas fa-shopping-cart me-2"></i>購入する
+                                            </button>
+                                        </form>
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        
+        <!-- ページネーション -->
+        {% if reviews.pages > 1 %}
+        <nav aria-label="Page navigation" class="mt-5">
+            <ul class="pagination justify-content-center">
+                {% for page in reviews.iter_pages() %}
+                    {% if page %}
+                        <li class="page-item {% if page == reviews.page %}active{% endif %}">
+                            <a class="page-link" href="{{ url_for('review_market', page=page) }}">{{ page }}</a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled"><span class="page-link">...</span></li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </nav>
+        {% endif %}
+    {% else %}
+        <div class="text-center py-5">
+            <i class="fas fa-book-open fa-3x text-muted mb-3"></i>
+            <p class="lead">現在、公開されているレビューはありません。</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('form').forEach(form => {
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const button = form.querySelector('.purchase-review');
+            const reviewId = button.dataset.reviewId;
+            const raceId = button.dataset.raceId;
+            const price = parseInt(button.dataset.reviewPrice);
+            const userPoints = parseInt(button.dataset.userPoints);
+
+            if (userPoints < price) {
+                window.location.href = `/mypage/charge-points?required_points=${price}&return_to=${encodeURIComponent(window.location.href)}`;
+                return;
+            }
+
+            if (!confirm('このレビューを購入しますか？')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': form.querySelector('[name="csrf_token"]').value
+                    }
+                });
+                
+                if (response.ok) {
+                    window.location.href = `/race/${raceId}/review/${reviewId}`;
+                } else {
+                    const data = await response.json();
+                    alert(data.message || 'エラーが発生しました');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('購入処理に失敗しました');
+            }
+        });
+    });
+});
+</script>
+{% endblock %} 

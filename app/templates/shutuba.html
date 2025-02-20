@@ -1,0 +1,242 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="shutuba-container">
+    <!-- レースヘッダー -->
+    <div class="shutuba-race-header">
+        <h2>{{ race.name }}</h2>
+        <div class="race-details">
+            <span>{{ race.venue }}</span>
+            <span>{{ race.date.strftime('%Y/%m/%d') }}</span>
+            <span>{{ race.distance }}m</span>
+            <span>{{ race.course_type }}</span>
+            <span>発走 {{ race.start_time.strftime('%H:%M') }}</span>
+        </div>
+    </div>
+    <div class="back-to-races">
+        <a href="{{ url_for('race_list') }}" class="btn-back">
+            <i class="fas fa-arrow-left"></i> レース一覧に戻る
+        </a>
+    </div>
+
+    <!-- タブ切り替え用のラジオボタン -->
+    <div class="tab-controls">
+        <input type="radio" name="tabs" id="tab1" checked>
+        <input type="radio" name="tabs" id="tab2">
+        <input type="radio" name="tabs" id="tab3">
+        
+        <div class="tab-buttons">
+            <label for="tab1" class="tab-button">出馬表</label>
+            <label for="tab2" class="tab-button">過去戦績</label>
+            <label for="tab3" class="tab-button">分析データ</label>
+        </div>
+
+        <!-- タブコンテンツ -->
+        <div class="tab-contents">
+            <div class="tab-content" id="shutuba-content">
+                <div class="shutuba-table">
+                    <div class="shutuba-table-wrapper">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>枠番</th>
+                                    <th>馬番</th>
+                                    <th>馬名</th>
+                                    <th>性齢</th>
+                                    <th>騎手</th>
+                                    <th>斤量</th>
+                                    <th>オッズ</th>
+                                    <th>人気</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for entry in entries %}
+                                <tr>
+                                    <td class="text-center">
+                                        <span class="badge bg-bracket-{{ entry.bracket_number }}">
+                                            {{ entry.bracket_number }}
+                                        </span>
+                                    </td>
+                                    <td class="text-center horse-number">{{ entry.horse_number }}</td>
+                                    <td>
+                                        <a href="{{ url_for('horse_detail', horse_id=entry.horse.id) }}" class="horse-name">
+                                            {{ entry.horse.name }}
+                                        </a>
+                                    </td>
+                                    <td class="text-center horse-age">
+                                        {{ entry.horse.sex }}{{ entry.horse.age }}
+                                    </td>
+                                    <td>
+                                        {% if entry.jockey %}
+                                            <a href="{{ url_for('jockey_detail', jockey_id=entry.jockey.id) }}" class="jockey-name">
+                                                {{ entry.jockey.name }}
+                                            </a>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-center">{{ entry.weight_carry }}</td>
+                                    <td class="text-end odds">{{ "%.1f"|format(entry.odds) if entry.odds else '-' }}</td>
+                                    <td class="text-center popularity">{{ entry.popularity if entry.popularity else '-' }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="results-content">
+                <!-- 過去戦績セクション -->
+                <div class="past-results mt-5">
+                    {% for entry in entries %}
+                    <div class="horse-results mb-4">
+                        <div class="horse-results-header">
+                            {{ entry.horse.name }}の戦績
+                            <span class="recent-races">（最近5走）</span>
+                        </div>
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>開催日</th>
+                                    <th>開催</th>
+                                    <th>レース名</th>
+                                    <th>着順</th>
+                                    <th>人気</th>
+                                    <th>騎手</th>
+                                    <th>斤量</th>
+                                    <th>距離</th>
+                                    <th>馬場</th>
+                                    <th>タイム</th>
+                                    <th>着差</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for result in entry.recent_results %}
+                                <tr>
+                                    <td>{{ result.date.strftime('%y/%m/%d') }}</td>
+                                    <td>{{ result.venue }}</td>
+                                    <td>{{ result.name }}</td>
+                                    <td>{{ result.position }}着</td>
+                                    <td>{{ result.popularity if result.popularity else '-' }}</td>
+                                    <td>{{ result.jockey_name }}</td>
+                                    <td>{{ result.weight_carry }}</td>
+                                    <td>{{ result.distance }}m</td>
+                                    <td>{{ result.track_condition }}</td>
+                                    <td>{{ result.time }}</td>
+                                    <td>{{ result.margin }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="tab-content" id="analysis-content">
+                <div class="analysis-data">
+                    {% for entry in entries %}
+                    <div class="analysis-card">
+                        <div class="analysis-header">
+                            {{ entry.horse.name }}の分析データ
+                        </div>
+                        <div class="stats-container">
+                            <!-- 同距離デー��� -->
+                            <div class="stats-section">
+                                <h6 class="stats-title">{{ race.distance }}mでの成績</h6>
+                                {% if entry.distance_stats %}
+                                    <div class="stats-grid">
+                                        <div class="stats-item">
+                                            <span class="stats-label">総レース数</span>
+                                            <span class="stats-value">{{ entry.distance_stats.total }}</span>
+                                        </div>
+                                        <div class="stats-item">
+                                            <span class="stats-label">勝利</span>
+                                            <span class="stats-value win-rate">
+                                                {{ entry.distance_stats.wins }}
+                                                <small>({{ "%.1f"|format(entry.distance_stats.win_rate) }}%)</small>
+                                            </span>
+                                        </div>
+                                        <div class="stats-item">
+                                            <span class="stats-label">複��</span>
+                                            <span class="stats-value place-rate">
+                                                {{ entry.distance_stats.top3 }}
+                                                <small>({{ "%.1f"|format(entry.distance_stats.top3_rate) }}%)</small>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    {% if entry.best_time %}
+                                        <div class="best-time-box">
+                                            <div class="best-time-header">最速タイム</div>
+                                            <div class="best-time-content">
+                                                <span class="time">{{ entry.best_time.time }}</span>
+                                                <span class="details">
+                                                    {{ entry.best_time.date.strftime('%y/%m/%d') }}
+                                                    {{ entry.best_time.venue }}
+                                                    {{ entry.best_time.track_condition }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                {% else %}
+                                    <p class="no-data">同距離のレース実績なし</p>
+                                {% endif %}
+                            </div>
+
+                            <!-- 月別成績データ -->
+                            <div class="stats-section">
+                                <h6 class="stats-title">月別成績</h6>
+                                {% if entry.month_stats %}
+                                    <table class="table table-sm month-stats">
+                                        <thead>
+                                            <tr>
+                                                <th>月</th>
+                                                <th>総数</th>
+                                                <th>勝利</th>
+                                                <th>勝率</th>
+                                                <th>複勝率</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for month in range(1, 13) %}
+                                                {% if month in entry.month_stats %}
+                                                    <tr>
+                                                        <td>{{ month }}月</td>
+                                                        <td>{{ entry.month_stats[month].total }}</td>
+                                                        <td>{{ entry.month_stats[month].wins }}</td>
+                                                        <td>{{ "%.1f"|format(entry.month_stats[month].win_rate) }}%</td>
+                                                        <td>{{ "%.1f"|format(entry.month_stats[month].top3_rate) }}%</td>
+                                                    </tr>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                {% else %}
+                                    <p class="no-data">月別成績データなし</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="back-to-races mt-4">
+                    <a href="{{ url_for('race_list') }}" class="btn-back">
+                        <i class="fas fa-arrow-left"></i> レース一覧に戻る
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 枠番の色用のCSS -->
+<style>
+.bg-bracket-1 { background-color: #FFFFFF; color: #000000; border: 1px solid #000000; }
+.bg-bracket-2 { background-color: #000000; color: #FFFFFF; }
+.bg-bracket-3 { background-color: #FF0000; color: #FFFFFF; }
+.bg-bracket-4 { background-color: #0000FF; color: #FFFFFF; }
+.bg-bracket-5 { background-color: #FFFF00; color: #000000; }
+.bg-bracket-6 { background-color: #00FF00; color: #000000; }
+.bg-bracket-7 { background-color: #FFA500; color: #000000; }
+.bg-bracket-8 { background-color: #FFC0CB; color: #000000; }
+</style>
+{% endblock %}

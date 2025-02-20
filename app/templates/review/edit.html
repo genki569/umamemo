@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>回顧ノートの編集</h2>
+    
+    <form method="POST" class="mt-4">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">基本情報</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label">タイトル</label>
+                    <input type="text" name="title" class="form-control" value="{{ review.title }}" required>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">説明文</label>
+                    <textarea name="description" class="form-control" rows="3">{{ review.description }}</textarea>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">レース分析</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label">ペース分析</label>
+                    <textarea name="pace_analysis" class="form-control" rows="3">{{ review.pace_analysis }}</textarea>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">馬場状態</label>
+                    <textarea name="track_condition_note" class="form-control" rows="3">{{ review.track_condition_note }}</textarea>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">レースの流れ</label>
+                    <textarea name="race_flow" class="form-control" rows="3">{{ review.race_flow }}</textarea>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">総評</label>
+                    <textarea name="overall_impression" class="form-control" rows="3">{{ review.overall_impression }}</textarea>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">馬の分析</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label">勝ち馬分析</label>
+                    <textarea name="winner_analysis" class="form-control" rows="3">{{ review.winner_analysis }}</textarea>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">上位馬分析</label>
+                    <textarea name="placed_horses_analysis" class="form-control" rows="3">{{ review.placed_horses_analysis }}</textarea>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">注目すべき馬</label>
+                    <textarea name="notable_performances" class="form-control" rows="3">{{ review.notable_performances }}</textarea>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">今後の展望</label>
+                    <textarea name="future_prospects" class="form-control" rows="3">{{ review.future_prospects }}</textarea>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">販売設定</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <div class="form-check">
+                        <input type="checkbox" name="is_public" class="form-check-input" id="is_public" 
+                               {% if review.is_public %}checked{% endif %}>
+                        <label class="form-check-label" for="is_public">公開する</label>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">販売価格（ポイント）</label>
+                    <input type="number" name="price" class="form-control" value="{{ review.price or 0 }}" min="0">
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">販売状態</label>
+                    <select name="sale_status" class="form-select">
+                        <option value="draft" {% if review.sale_status == 'draft' %}selected{% endif %}>下書き</option>
+                        <option value="on_sale" {% if review.sale_status == 'on_sale' %}selected{% endif %}>販売中</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+            <a href="{{ url_for('mypage_reviews') }}" class="btn btn-secondary me-2">キャンセル</a>
+            <button type="submit" class="btn btn-primary">更新する</button>
+        </div>
+    </form>
+</div>
+{% endblock %} 

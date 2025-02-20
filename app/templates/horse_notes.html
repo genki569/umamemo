@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>馬の回顧一覧</h2>
+    
+    {% for note in notes %}
+    <div class="card mb-3">
+        <div class="card-body">
+            <h5 class="card-title">
+                <a href="{{ url_for('horse_detail', horse_id=note.horse.id) }}">
+                    {{ note.horse.name }}
+                </a>
+            </h5>
+            <p class="card-text">{{ note.note }}</p>
+            <div class="text-muted small">
+                投稿者: {{ note.user.username or '名無し' }} | 
+                投稿日時: {{ note.created_at.strftime('%Y/%m/%d %H:%M') }}
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <p>まだ回顧が投稿されていません。</p>
+    {% endfor %}
+</div>
+{% endblock %} 

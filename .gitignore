@@ -1,0 +1,8 @@
+.env*
+*.pyc
+__pycache__/ # SSH keys
+*.key
+*.pub
+conoha_key*
+.env
+credentials.json

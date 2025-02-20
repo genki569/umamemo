@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block head %}
+{{ super() }}
+<script src="https://js.stripe.com/v3/"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>レビュー購入</h2>
+    
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">購入するレビュー</h5>
+            <p class="card-text">{{ review.title }}</p>
+            <p class="card-text">価格: {{ review.price }}ポイント</p>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">現在のポイント残高</h5>
+            <h3 class="text-primary">{{ current_user.point_balance }}ポイント</h3>
+        </div>
+    </div>
+
+    {% if current_user.point_balance < review.price %}
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">ポイントチャージ</h5>
+            <p>必要なポイント: {{ review.price - current_user.point_balance }}ポイント</p>
+            
+            <form id="payment-form" class="mt-3">
+                <div class="mb-3">
+                    <label class="form-label">チャージ金額</label>
+                    <select class="form-select" id="charge-amount">
+                        {% for amount in suggested_amounts %}
+                        <option value="{{ amount }}">{{ amount }}ポイント ({{ amount }}円)</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="card-element" class="form-label">クレジットカード情報</label>
+                    <div id="card-element" class="form-control"></div>
+                    <div id="card-errors" class="text-danger mt-2"></div>
+                </div>
+
+                <button type="submit" class="btn btn-primary" id="submit-button">
+                    チャージして購入する
+                </button>
+            </form>
+        </div>
+    </div>
+    {% else %}
+    <form action="{{ url_for('review_purchase', race_id=review.race_id, review_id=review.id) }}" method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit" class="btn btn-primary">ポイントで購入する</button>
+    </form>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+{% if current_user.point_balance < review.price %}
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+const stripe = Stripe('{{ stripe_public_key }}');
+const elements = stripe.elements();
+const card = elements.create('card', {
+    style: {
+        base: {
+            fontSize: '16px',
+            color: '#32325d',
+        },
+    }
+});
+
+card.mount('#card-element');
+
+const form = document.getElementById('payment-form');
+const submitButton = document.getElementById('submit-button');
+
+form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    submitButton.disabled = true;
+
+    const amount = document.getElementById('charge-amount').value;
+
+    try {
+        // 支払いインテントを作成
+        const response = await fetch('{{ url_for("create_review_purchase_session") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({
+                amount: amount,
+                review_id: '{{ review.id }}'
+            })
+        });
+
+        const data = await response.json();
+
+        if (data.error) {
+            throw new Error(data.error);
+        }
+
+        // カード決済を確定
+        const result = await stripe.confirmCardPayment(data.clientSecret, {
+            payment_method: {
+                card: card,
+                billing_details: {
+                    email: '{{ current_user.email }}'
+                }
+            }
+        });
+
+        if (result.error) {
+            throw new Error(result.error.message);
+        }
+
+        // 決済成功時の処理
+        window.location.href = '{{ url_for("review_purchase_complete") }}?' + 
+                             'payment_intent=' + result.paymentIntent.id + 
+                             '&review_id={{ review.id }}';
+
+    } catch (error) {
+        document.getElementById('card-errors').textContent = error.message;
+        submitButton.disabled = false;
+    }
+});
+</script>
+{% endif %}
+{% endblock %} 

@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="mb-4">
+        <h2>{{ review.title }}</h2>
+        <div class="text-muted">
+            作成者: {{ review.user.username }} | 
+            作成日: {{ review.created_at.strftime('%Y年%m月%d日') }}
+        </div>
+    </div>
+
+    <!-- レース情報 -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">レース情報</h5>
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>レース名:</strong> {{ review.race.name }}</p>
+                    <p><strong>開催日:</strong> {{ review.race.date }}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>場所:</strong> {{ review.race.venue }}</p>
+                    <p><strong>コース:</strong> {{ review.race.track_type }} {{ review.race.distance }}m</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- レース分析 -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">レース分析</h5>
+            
+            {% if review.pace_analysis %}
+            <div class="mb-3">
+                <h6>ペース分析</h6>
+                <p>{{ review.pace_analysis|nl2br }}</p>
+            </div>
+            {% endif %}
+            
+            {% if review.track_condition_note %}
+            <div class="mb-3">
+                <h6>馬場状態</h6>
+                <p>{{ review.track_condition_note|nl2br }}</p>
+            </div>
+            {% endif %}
+            
+            {% if review.race_flow %}
+            <div class="mb-3">
+                <h6>レース展開</h6>
+                <p>{{ review.race_flow|nl2br }}</p>
+            </div>
+            {% endif %}
+            
+            {% if review.overall_impression %}
+            <div class="mb-3">
+                <h6>総評</h6>
+                <p>{{ review.overall_impression|nl2br }}</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- 馬の分析 -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">馬の分析</h5>
+            
+            {% if review.winner_analysis %}
+            <div class="mb-3">
+                <h6>勝ち馬分析</h6>
+                <p>{{ review.winner_analysis|nl2br }}</p>
+            </div>
+            {% endif %}
+            
+            {% if review.placed_horses_analysis %}
+            <div class="mb-3">
+                <h6>上位馬分析</h6>
+                <p>{{ review.placed_horses_analysis|nl2br }}</p>
+            </div>
+            {% endif %}
+            
+            {% if review.notable_performances %}
+            <div class="mb-3">
+                <h6>注目すべき馬</h6>
+                <p>{{ review.notable_performances|nl2br }}</p>
+            </div>
+            {% endif %}
+            
+            {% if review.future_prospects %}
+            <div class="mb-3">
+                <h6>今後の展望</h6>
+                <p>{{ review.future_prospects|nl2br }}</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- レビューの作成者の場合のみ編集ボタンを表示 -->
+    {% if current_user.id == review.user_id %}
+    <div class="mt-3">
+        <a href="{{ url_for('edit_review', review_id=review.id) }}" 
+           class="btn btn-outline-primary">
+            編集する
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %} 

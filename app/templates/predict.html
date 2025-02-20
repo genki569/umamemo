@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>レース予測: {{ race.name }}</h1>
+<form id="predict-form" method="POST">
+    <button type="submit">予測開始</button>
+</form>
+<div id="prediction-result"></div>
+
+<script>
+document.getElementById('predict-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    fetch('/predict/{{ race.id }}', {
+        method: 'POST'
+    })
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById('prediction-result').innerHTML = JSON.stringify(data, null, 2);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        document.getElementById('prediction-result').innerHTML = 'エラーが発生しました。';
+    });
+});
+</script>
+{% endblock %}

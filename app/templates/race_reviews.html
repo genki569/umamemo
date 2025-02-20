@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>{{ race.name }} の回顧一覧</h2>
+    
+    <div class="mb-3">
+        <a href="{{ url_for('race_detail', race_id=race.id) }}" class="btn btn-secondary">
+            レース詳細に戻る
+        </a>
+        <a href="{{ url_for('race_review', race_id=race.id) }}" class="btn btn-primary">
+            新しい回顧を書く
+        </a>
+    </div>
+
+    {% if reviews %}
+        {% for review in reviews %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">{{ review.title or '無題' }}</h5>
+                <p class="card-text"><small class="text-muted">投稿日時: {{ review.created_at.strftime('%Y-%m-%d %H:%M') }}</small></p>
+                
+                {% if review.pace_analysis %}
+                <h6>ペース分析</h6>
+                <p>{{ review.pace_analysis }}</p>
+                {% endif %}
+
+                {% if review.track_condition_note %}
+                <h6>馬場状態</h6>
+                <p>{{ review.track_condition_note }}</p>
+                {% endif %}
+
+                {% if review.race_flow %}
+                <h6>レース展開</h6>
+                <p>{{ review.race_flow }}</p>
+                {% endif %}
+
+                {% if review.overall_impression %}
+                <h6>総評</h6>
+                <p>{{ review.overall_impression }}</p>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <p>まだ回顧がありません。</p>
+    {% endif %}
+</div>
+{% endblock %} 

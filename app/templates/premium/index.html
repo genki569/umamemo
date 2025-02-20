@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+
+{% block styles %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/premium.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="premium-page">
+    <div class="premium-header">
+        <div class="container">
+            <h2 class="premium-title">
+                プレミアム会員の特典 <i class="fas fa-crown" style="color: #FFD700;"></i>
+            </h2>
+            <p class="premium-description">より深い競馬分析のための機能が使い放題</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- プラン比較表 -->
+        <div class="row justify-content-center mb-5">
+            <div class="col-12">
+                <div class="table-responsive">
+                    <table class="table plan-comparison">
+                        <thead>
+                            <tr>
+                                <th>機能</th>
+                                <th class="text-center">無料プラン</th>
+                                <th class="text-center">
+                                    <span class="premium-badge">プレミアム</span>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>基本的なメモ機能</td>
+                                <td class="text-center"><i class="fas fa-check"></i></td>
+                                <td class="text-center"><i class="fas fa-check"></i></td>
+                            </tr>
+                            <tr>
+                                <td>詳細なラップ分析</td>
+                                <td class="text-center">月3回まで</td>
+                                <td class="text-center">無制限</td>
+                            </tr>
+                            <tr>
+                                <td>血統適性診断</td>
+                                <td class="text-center"><i class="fas fa-times"></i></td>
+                                <td class="text-center"><i class="fas fa-check"></i></td>
+                            </tr>
+                            <tr>
+                                <td>プロの回顧閲覧</td>
+                                <td class="text-center">一部のみ</td>
+                                <td class="text-center">全て閲覧可能</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 料金プラン -->
+        <div class="row justify-content-center g-4 mb-5">
+            <!-- 無料プラン -->
+            <div class="col-md-6 col-lg-4">
+                <div class="card plan-card shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="plan-header">
+                            <div class="premium-badge invisible d-inline-block mb-2">非表示用</div><!-- 高さ揃え用 -->
+                            <h5 class="fw-bold mb-4">無料プラン</h5>
+                            <div class="price-tag">
+                                <span class="amount free-price">0</span>
+                                <span class="currency">円</span>
+                                <span class="period">ずっと無料</span>
+                            </div>
+                        </div>
+                        <ul class="list-unstyled plan-features mb-4">
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>基本的なメモ機能</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>レース結果の閲覧</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>基本的な回顧機能</li>
+                            <li class="mb-2 text-muted"><i class="fas fa-times me-2"></i>詳細なラップ分析</li>
+                            <li class="mb-2 text-muted"><i class="fas fa-times me-2"></i>血統適性診断</li>
+                            <li class="mb-2 text-muted"><i class="fas fa-times me-2"></i>プロの回顧閲覧</li>
+                        </ul>
+                        <div class="plan-action mt-auto">
+                            <p class="text-muted mb-3">
+                                <small><i class="fas fa-info-circle me-1"></i>基本機能が無料で使えます</small>
+                            </p>
+                            <a href="{{ url_for('register') }}" class="btn btn-outline-primary btn-lg w-100 rounded-pill">
+                                無料で始める
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- プレミアムプラン -->
+            <div class="col-md-6 col-lg-4">
+                <div class="card plan-card featured shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="plan-header">
+                            <div class="premium-badge d-inline-block mb-2">おすすめ</div>
+                            <h5 class="fw-bold mb-4">プレミアムプラン</h5>
+                            <div class="price-tag">
+                                <span class="amount">980</span>
+                                <span class="currency">円</span>
+                                <span class="period">月額（税込）</span>
+                            </div>
+                        </div>
+                        <ul class="list-unstyled plan-features mb-4">
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>基本的なメモ機能</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>レース結果の閲覧</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>基本的な回顧機能</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>詳細なラップ分析</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>血統適性診断</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>プロの回顧閲覧</li>
+                        </ul>
+                        <div class="plan-action mt-auto">
+                            <p class="text-muted mb-3">
+                                <small><i class="fas fa-info-circle me-1"></i>いつでも解約可能</small>
+                            </p>
+                            {% if current_user.is_authenticated %}
+                                <a href="{{ url_for('start_trial') }}" class="btn btn-gradient btn-lg w-100 rounded-pill">
+                                    14日間無料トライアル
+                                </a>
+                            {% else %}
+                                {% if debug %}
+                                    <a href="{{ url_for('create_debug_user') }}?next={{ url_for('start_trial') }}" 
+                                       class="btn btn-gradient btn-lg w-100 rounded-pill">
+                                        デバッグユーザーでログイン
+                                    </a>
+                                {% else %}
+                                    <a href="{{ url_for('login') }}" class="btn btn-gradient btn-lg w-100 rounded-pill">
+                                        ログインして始める
+                                    </a>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 機能詳細 -->
+        <div class="premium-features mb-5">
+            <h4 class="text-center fw-bold mb-4">プレミアム機能の詳細</h4>
+            <div class="row g-4">
+                <!-- ラップ分析 -->
+                <div class="col-md-4">
+                    <div class="card feature-card shadow-sm">
+                        <div class="card-body p-4">
+                            <div class="feature-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <h5 class="fw-bold mb-3">詳細ラップ分析</h5>
+                            <p class="text-muted mb-3">各馬のラップタイム詳細分析</p>
+                            <ul class="list-unstyled">
+                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i>区間ラップ比較</li>
+                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i>位置取り評価</li>
+                                <li><i class="fas fa-check text-success me-2"></i>脚質適性診断</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 血統分析 -->
+                <div class="col-md-4">
+                    <div class="card feature-card shadow-sm">
+                        <div class="card-body p-4">
+                            <div class="feature-icon">
+                                <i class="fas fa-dna"></i>
+                            </div>
+                            <h5 class="fw-bold mb-3">血統適性診断</h5>
+                            <p class="text-muted mb-3">血統からみる適性評価</p>
+                            <ul class="list-unstyled">
+                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i>距離適性診断</li>
+                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i>血統適性の詳細な情報</li>
+                                <li><i class="fas fa-check text-success me-2"></i>血統適性の詳細な分析</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- プロの回顧閲覧 -->
+                <div class="col-md-4">
+                    <div class="card feature-card shadow-sm">
+                        <div class="card-body p-4">
+                            <div class="feature-icon">
+                                <i class="fas fa-eye"></i>
+                            </div>
+                            <h5 class="fw-bold mb-3">プロの回顧閲覧</h5>
+                            <p class="text-muted mb-3">プロの回顧閲覧の詳細な情報を提供</p>
+                            <ul class="list-unstyled">
+                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i>プロの回顧閲覧の詳細な情報</li>
+                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i>プロの回顧閲覧の詳細な分析</li>
+                                <li><i class="fas fa-check text-success me-2"></i>プロの回顧閲覧の詳細な診断</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

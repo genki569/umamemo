@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>出馬表管理</h1>
+<form method="POST">
+    <div>
+        <label for="race_id">レース:</label>
+        <select id="race_id" name="race_id" required>
+            {% for race in races %}
+            <option value="{{ race.id }}">{{ race.name }} ({{ race.date.strftime('%Y-%m-%d') }})</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div>
+        <label for="horse_id">馬:</label>
+        <select id="horse_id" name="horse_id" required>
+            {% for horse in horses %}
+            <option value="{{ horse.id }}">{{ horse.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <button type="submit">登録</button>
+</form>
+
+<h2>現在の出馬表</h2>
+<ul>
+    {% for entry in entries %}
+    <li>{{ entry.race.name }} - {{ entry.horse.name }}</li>
+    {% endfor %}
+</ul>
+
+<a href="{{ url_for('main.index') }}">戻る</a>
+{% endblock %}

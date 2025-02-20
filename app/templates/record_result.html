@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>{{ race.name }} の結果を記録</h1>
+<form method="POST">
+    <div class="form-group">
+        <label for="horse">馬</label>
+        <select class="form-control" id="horse" name="horse_id" required>
+            {% for horse in horses %}
+                <option value="{{ horse.id }}">{{ horse.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="finish_position">着順</label>
+        <input type="number" class="form-control" id="finish_position" name="finish_position" required>
+    </div>
+    <div class="form-group">
+        <label for="jockey">騎手</label>
+        <input type="text" class="form-control" id="jockey" name="jockey" required>
+    </div>
+    <div class="form-group">
+        <label for="odds">オッズ</label>
+        <input type="number" step="0.1" class="form-control" id="odds" name="odds" required>
+    </div>
+    <button type="submit" class="btn btn-primary">結果を記録</button>
+</form>
+{% endblock %}

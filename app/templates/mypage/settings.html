@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>プロフィール設定</h2>
+
+    <form method="POST" action="{{ url_for('mypage_settings') }}" enctype="multipart/form-data">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">基本情報</h5>
+            </div>
+            <div class="card-body">
+                <!-- プロフィール画像 -->
+                <div class="mb-3">
+                    <label class="form-label">プロフィール画像</label>
+                    {% if current_user.profile_image %}
+                        <div class="mb-2">
+                            <img src="{{ current_user.profile_image }}" alt="現在のプロフィール画像" class="img-thumbnail" style="max-width: 200px;">
+                        </div>
+                    {% endif %}
+                    <input type="file" name="profile_image" class="form-control" accept="image/*">
+                </div>
+
+                <!-- 自己紹介 -->
+                <div class="mb-3">
+                    <label class="form-label">自己紹介</label>
+                    <textarea name="introduction" class="form-control" rows="3">{{ current_user.introduction }}</textarea>
+                </div>
+
+                <!-- SNSリンク -->
+                <div class="mb-3">
+                    <label class="form-label">Twitter</label>
+                    <input type="text" name="twitter" class="form-control" value="{{ current_user.twitter }}">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">note</label>
+                    <input type="text" name="note" class="form-control" value="{{ current_user.note }}">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">ブログ</label>
+                    <input type="text" name="blog" class="form-control" value="{{ current_user.blog }}">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">YouTube</label>
+                    <input type="text" name="youtube" class="form-control" value="{{ current_user.youtube }}">
+                </div>
+
+                <!-- 得意分野 -->
+                <div class="mb-3">
+                    <label class="form-label">得意分野</label>
+                    <input type="text" name="specialties" class="form-control" value="{{ current_user.specialties }}">
+                </div>
+
+                <!-- 分析スタイル -->
+                <div class="mb-3">
+                    <label class="form-label">分析スタイル</label>
+                    <input type="text" name="analysis_style" class="form-control" value="{{ current_user.analysis_style }}">
+                </div>
+            </div>
+        </div>
+
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+            <button type="submit" class="btn btn-primary">保存する</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            
+            fetch("{{ url_for('mypage_settings') }}", {
+                method: 'POST',
+                body: formData,
+                credentials: 'same-origin'
+            })
+            .then(response => {
+                if (response.ok) {
+                    window.location.href = "{{ url_for('mypage_settings') }}";
+                } else {
+                    throw new Error('Network response was not ok');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('エラーが発生しました');
+            });
+        });
+    }
+});
+</script>
+{% endblock %} 

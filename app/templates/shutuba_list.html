@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="races-header">
+    <div class="container">
+        <div class="header-content" data-aos="fade-up">
+            <h1>出馬表一覧</h1>
+            <p class="header-description">
+                JRAの出馬表をチェックできます。
+                <span class="highlight">{{ dates|length }}日分</span>の出馬表を確認できます。
+            </p>
+        </div>
+    </div>
+</div>
+
+<div class="race-list-container">
+    <!-- 日付選択部分 -->
+    <div class="date-selector">
+        <div class="date-navigation">
+            <button class="date-nav-btn" onclick="navigateDate('prev')">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <div class="date-buttons">
+                {% for date in dates %}
+                <a href="{{ url_for('shutuba_list', date=date.value) }}" 
+                   class="date-btn {% if date.value == selected_date %}active{% endif %}">
+                    {{ date.month }}/{{ date.day }}<br>
+                    ({{ date.weekday }})
+                </a>
+                {% endfor %}
+            </div>
+            <button class="date-nav-btn" onclick="navigateDate('next')">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+        
+        <div class="date-selector-container">
+            <select id="date-selector" onchange="changeDate(this.value)">
+                {% for date in dates %}
+                    <option value="{{ date.value }}"
+                            {% if date.value == selected_date %}selected{% endif %}>
+                        {{ date.month }}/{{ date.day }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
+    <!-- 会場ごとのセクション -->
+    <div class="venue-grid">
+        {% for venue_id, venue_data in venue_races.items() %}
+            <div class="venue-card">
+                <div class="venue-header">
+                    <h3>{{ venue_data.venue_name }}</h3>
+                </div>
+                <div class="race-items">
+                    {% for race in venue_data.races|sort(attribute='race_number') %}
+                        <div class="race-item">
+                            <div class="race-number">{{ race.race_number }}R</div>
+                            <div class="race-info">
+                                <div class="race-time">{{ race.start_time or '--:--' }}</div>
+                                <div class="race-name">{{ race.name }}</div>
+                                <div class="race-details">
+                                    {{ race.track_type or '不明' }} {{ race.distance or '不明' }}m
+                                </div>
+                                <div class="race-links">
+                                    <a href="{{ url_for('race_shutuba', race_id=race.id) }}" class="btn btn-outline-primary btn-sm">
+                                        <i class="fas fa-horse"></i> 出馬表
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    {% if not venue_races %}
+    <div class="alert alert-info text-center">
+        この日の出馬表はありません。
+    </div>
+    {% endif %}
+</div>
+
+<script>
+function changeDate(date) {
+    window.location.href = '/shutuba?date=' + date;
+}
+</script>
+{% endblock %} 

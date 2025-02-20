@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">
+                <i class="fas fa-bell me-2"></i>通知一覧
+            </h4>
+            {% if notifications %}
+                <button class="btn btn-link text-muted mark-all-read">
+                    すべて既読にする
+                </button>
+            {% endif %}
+        </div>
+        <div class="card-body">
+            {% if notifications %}
+                <div class="notification-list">
+                    {% for notification in notifications %}
+                        <div class="notification-item {% if not notification.read %}unread{% endif %}"
+                             data-id="{{ notification.id }}">
+                            <div class="notification-icon">
+                                <i class="fas {{ notification.icon_class }}"></i>
+                            </div>
+                            <div class="notification-content">
+                                <div class="notification-text">{{ notification.message }}</div>
+                                <div class="notification-time">{{ notification.created_at|timeago }}</div>
+                            </div>
+                            {% if not notification.read %}
+                                <button class="notification-close" onclick="markAsRead({{ notification.id }})">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <div class="text-muted mb-3">
+                        <i class="fas fa-bell-slash fa-3x"></i>
+                    </div>
+                    <p>新しい通知はありません</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% if notifications %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // すべて既読にするボタンの処理
+    document.querySelector('.mark-all-read').addEventListener('click', function() {
+        fetch('/api/notifications/mark-read', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({})
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            }
+        });
+    });
+});
+
+// 個別の通知を既読にする
+function markAsRead(notificationId) {
+    fetch('/api/notifications/mark-read', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            notification_ids: [notificationId]
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const item = document.querySelector(`.notification-item[data-id="${notificationId}"]`);
+            item.classList.remove('unread');
+            item.querySelector('.notification-close').remove();
+        }
+    });
+}
+</script>
+{% endif %}
+{% endblock %} 

@@ -1,0 +1,232 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="jockeys-header">
+    <div class="container">
+        <h1 class="display-4 mb-3">騎手一覧</h1>
+        <p class="lead">
+            中央・地方の騎手成績を一覧で確認できます
+        </p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="filter-buttons">
+        <div class="row g-3">
+            <div class="col-md-6">
+                <div class="btn-group w-100 fade-in" data-aos="fade-right">
+                    <button type="button" class="btn btn-outline-primary active" onclick="filterJockeys('all')">
+                        <i class="fas fa-users"></i> 全て
+                    </button>
+                    <button type="button" class="btn btn-outline-primary" onclick="filterJockeys('central')">
+                        <i class="fas fa-horse-head"></i> 中央所属
+                    </button>
+                    <button type="button" class="btn btn-outline-primary" onclick="filterJockeys('local')">
+                        <i class="fas fa-map-marker-alt"></i> 地方所属
+                    </button>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="btn-group w-100 fade-in" data-aos="fade-left">
+                    <button type="button" class="btn btn-outline-secondary active" onclick="sortJockeys('wins')">
+                        <i class="fas fa-trophy"></i> 勝利数順
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary" onclick="sortJockeys('winrate')">
+                        <i class="fas fa-percentage"></i> 勝率順
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary" onclick="sortJockeys('totalrides')">
+                        <i class="fas fa-horse"></i> 騎乗数順
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-container fade-in" data-aos="fade-up">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>騎手名</th>
+                        <th>所属</th>
+                        <th>総騎乗数</th>
+                        <th>1着</th>
+                        <th>2着</th>
+                        <th>3着</th>
+                        <th>着外</th>
+                        <th>勝率</th>
+                        <th>複勝率</th>
+                        <th>詳細</th>
+                    </tr>
+                </thead>
+                <tbody id="jockey-table-body">
+                    {% for stat in jockey_stats %}
+                        <tr class="jockey-row" 
+                            data-affiliation="{{ stat.affiliation }}"
+                            data-wins="{{ stat.wins }}"
+                            data-winrate="{{ stat.win_rate }}"
+                            data-totalrides="{{ stat.total_rides }}">
+                            <td>{{ stat.name }}</td>
+                            <td>{{ stat.affiliation }}</td>
+                            <td>{{ stat.total_rides }}</td>
+                            <td>{{ stat.wins }}</td>
+                            <td>{{ stat.seconds }}</td>
+                            <td>{{ stat.thirds }}</td>
+                            <td>{{ stat.others }}</td>
+                            <td>{{ stat.win_rate }}%</td>
+                            <td>{{ stat.place_rate }}%</td>
+                            <td>
+                                <a href="{{ url_for('jockey_detail', jockey_id=stat.id) }}" 
+                                   class="btn btn-sm btn-primary">詳細</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="pagination-container mt-4 fade-in" data-aos="fade-up" data-aos-delay="200">
+    <div class="d-flex justify-content-between align-items-center">
+        <div class="entries-info">
+            全 <span id="total-entries">0</span> 件中 
+            <span id="showing-entries">0-0</span> 件を表示
+        </div>
+        <div class="pagination-controls">
+            <button class="btn btn-outline-primary" onclick="changePage('prev')" id="prev-btn">
+                <i class="fas fa-chevron-left"></i> 前へ
+            </button>
+            <span class="mx-3" id="page-info">1 / 1</span>
+            <button class="btn btn-outline-primary" onclick="changePage('next')" id="next-btn">
+                次へ <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentFilter = 'all';
+let currentSort = 'wins';
+let currentPage = 1;
+const itemsPerPage = 20;
+
+function filterJockeys(filter) {
+    currentFilter = filter;
+    updateTable();
+    
+    // ボタンのアクティブ状態を更新
+    document.querySelectorAll('.btn-group .btn-outline-primary').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.textContent.includes(filter === 'all' ? '全て' : 
+                                   filter === 'central' ? '中央所属' : '地方所属')) {
+            btn.classList.add('active');
+        }
+    });
+}
+
+function sortJockeys(sort) {
+    currentSort = sort;
+    updateTable();
+    
+    // ボタンのアクティブ状態を更新
+    document.querySelectorAll('.btn-group .btn-outline-secondary').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.textContent.includes(sort === 'wins' ? '勝利数順' : 
+                                   sort === 'winrate' ? '勝率順' : '騎乗数順')) {
+            btn.classList.add('active');
+        }
+    });
+}
+
+function updateTable() {
+    const tableBody = document.getElementById('jockey-table-body');
+    const rows = Array.from(document.getElementsByClassName('jockey-row'));
+    
+    // フィルタリング
+    const filteredRows = rows.filter(row => {
+        if (currentFilter === 'all') return true;
+        if (currentFilter === 'central') return row.dataset.affiliation === '中央';
+        if (currentFilter === 'local') return row.dataset.affiliation === '地方';
+        return false;
+    });
+    
+    // ソート
+    filteredRows.sort((a, b) => {
+        let aValue, bValue;
+        
+        switch(currentSort) {
+            case 'wins':
+                aValue = parseInt(a.dataset.wins);
+                bValue = parseInt(b.dataset.wins);
+                break;
+            case 'winrate':
+                aValue = parseFloat(a.dataset.winrate);
+                bValue = parseFloat(b.dataset.winrate);
+                break;
+            case 'totalrides':
+                aValue = parseInt(a.dataset.totalrides);
+                bValue = parseInt(b.dataset.totalrides);
+                break;
+        }
+        
+        return bValue - aValue;
+    });
+    
+    // ページネーション
+    const totalItems = filteredRows.length;
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
+    
+    // 表示するデータを抽出
+    const visibleRows = filteredRows.slice(startIndex, endIndex);
+    
+    // テーブルを更新
+    tableBody.innerHTML = '';
+    visibleRows.forEach((row, index) => {
+        const newRow = row.cloneNode(true);
+        newRow.classList.add('fade-in');
+        newRow.setAttribute('data-aos', 'fade-up');
+        newRow.setAttribute('data-aos-delay', (index * 50).toString());  // 段階的なアニメーション
+        tableBody.appendChild(newRow);
+    });
+    
+    // AOSを再初期化
+    if (typeof AOS !== 'undefined') {
+        AOS.refresh();
+    }
+    
+    // ページネーション情報を更新
+    updatePaginationInfo(totalItems, startIndex + 1, endIndex, totalPages);
+}
+
+function updatePaginationInfo(total, start, end, totalPages) {
+    document.getElementById('total-entries').textContent = total;
+    document.getElementById('showing-entries').textContent = `${start}-${end}`;
+    document.getElementById('page-info').textContent = `${currentPage} / ${totalPages}`;
+    
+    // ボタンの有効/無効を設定
+    document.getElementById('prev-btn').disabled = currentPage === 1;
+    document.getElementById('next-btn').disabled = currentPage === totalPages;
+}
+
+function changePage(direction) {
+    const totalRows = document.getElementsByClassName('jockey-row').length;
+    const totalPages = Math.ceil(totalRows / itemsPerPage);
+    
+    if (direction === 'prev' && currentPage > 1) {
+        currentPage--;
+    } else if (direction === 'next' && currentPage < totalPages) {
+        currentPage++;
+    }
+    
+    updateTable();
+}
+
+// 初期ソート
+document.addEventListener('DOMContentLoaded', function() {
+    updateTable();
+});
+</script>
+{% endblock %} 

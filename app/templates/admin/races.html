@@ -1,0 +1,194 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+<div class="admin-races">
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5>レース管理</h5>
+            <div class="header-actions">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addRaceModal">
+                    <i class="fas fa-plus"></i> 新規登録
+                </button>
+                <input type="date" class="form-control form-control-sm d-inline-block ms-2" 
+                       style="width: 200px;" id="raceDate">
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>日付</th>
+                            <th>開催</th>
+                            <th>レース名</th>
+                            <th>グレード</th>
+                            <th>出走数</th>
+                            <th>レビュー数</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for race, entry_count, review_count in races %}
+                        <tr>
+                            <td>{{ race.id }}</td>
+                            <td>{{ race.date.strftime('%Y/%m/%d') }}</td>
+                            <td>{{ VENUE_NAMES.get(race.venue_id, '不明') }}</td>
+                            <td>{{ race.name }}</td>
+                            <td>{{ race.grade or '-' }}</td>
+                            <td>{{ entry_count }}</td>
+                            <td>{{ review_count }}</td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <a href="{{ url_for('race_detail', race_id=race.id) }}" 
+                                       class="btn btn-outline-primary">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <button type="button" class="btn btn-outline-danger"
+                                            onclick="confirmDelete({{ race.id }})">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- ページネーション -->
+            <nav aria-label="ページ送り">
+                <ul class="pagination justify-content-center">
+                    {% if page > 1 %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('admin_races', page=page-1, date=selected_date) }}">前へ</a>
+                    </li>
+                    {% endif %}
+                    
+                    {% for p in range(max(1, page-2), min(total_pages+1, page+3)) %}
+                        <li class="page-item {{ 'active' if p == page else '' }}">
+                            <a class="page-link" href="{{ url_for('admin_races', page=p, date=selected_date) }}">{{ p }}</a>
+                        </li>
+                    {% endfor %}
+                    
+                    {% if page < total_pages %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('admin_races', page=page+1, date=selected_date) }}">次へ</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+<!-- レース登録モーダル -->
+<div class="modal fade" id="addRaceModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">レースの新規登録</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="{{ url_for('admin_add_race') }}">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="date" class="form-label">開催日 <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" id="date" name="date" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="venue_id" class="form-label">開催場所 <span class="text-danger">*</span></label>
+                            <select class="form-select" id="venue_id" name="venue_id" required>
+                                {% for code, name in VENUE_NAMES.items() %}
+                                <option value="{{ code }}">{{ name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="race_number" class="form-label">レース番号 <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" id="race_number" name="race_number" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="name" class="form-label">レース名 <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="name" name="name" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="grade" class="form-label">グレード</label>
+                            <select class="form-select" id="grade" name="grade">
+                                <option value="">なし</option>
+                                <option value="G1">G1</option>
+                                <option value="G2">G2</option>
+                                <option value="G3">G3</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="weather" class="form-label">天候</label>
+                            <select class="form-select" id="weather" name="weather">
+                                <option value="晴">晴</option>
+                                <option value="曇">曇</option>
+                                <option value="雨">雨</option>
+                                <option value="雪">雪</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="track_condition" class="form-label">馬場状態</label>
+                            <select class="form-select" id="track_condition" name="track_condition">
+                                <option value="良">良</option>
+                                <option value="稍重">稍重</option>
+                                <option value="重">重</option>
+                                <option value="不良">不良</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">キャンセル</button>
+                    <button type="submit" class="btn btn-primary">登録</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- 削除確認モーダル -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">レースの削除確認</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>このレースを削除してもよろしいですか？</p>
+                <p class="text-danger">この操作は取り消せません。関連するレビューやメモも全て削除されます。</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">キャンセル</button>
+                <form id="deleteForm" method="POST" style="display: inline;">
+                    <button type="submit" class="btn btn-danger">削除</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function confirmDelete(raceId) {
+    const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+    const form = document.getElementById('deleteForm');
+    form.action = `/admin/races/${raceId}/delete`;
+    modal.show();
+}
+
+// 日付による絞り込み
+document.getElementById('raceDate').addEventListener('change', function(e) {
+    const date = e.target.value;
+    window.location.href = `/admin/races?date=${date}`;
+});
+</script>
+{% endblock %} 

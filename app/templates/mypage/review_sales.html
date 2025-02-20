@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>レビュー売上管理</h2>
+    
+    {% if error %}
+    <div class="alert alert-danger">
+        {{ error }}
+    </div>
+    {% endif %}
+    
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">総売上</h5>
+            <h3 class="text-primary">{{ total_revenue }}ポイント</h3>
+        </div>
+    </div>
+    
+    {% if sales_summary %}
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>レビュータイトル</th>
+                        <th>レース名</th>
+                        <th>レース日</th>
+                        <th>購入数</th>
+                        <th>売上</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for sale in sales_summary %}
+                    <tr>
+                        <td>
+                            <a href="{{ url_for('view_review', review_id=sale.id) }}">
+                                {{ sale.title }}
+                            </a>
+                        </td>
+                        <td>{{ sale.race_name }}</td>
+                        <td>{{ sale.race_date }}</td>
+                        <td>{{ sale.purchase_count }}件</td>
+                        <td>{{ sale.total_sales }}ポイント</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            まだ売上データがありません。
+        </div>
+    {% endif %}
+</div>
+{% endblock %} 

@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="horses-header">
+    <div class="container">
+        <div class="header-content" data-aos="fade-up">
+            <h1>登録馬一覧</h1>
+            <p class="header-description">
+                JRA所属の現役競走馬を一覧で確認できます。
+                <span class="highlight">10000頭</span>の競走馬が登録されており、
+                各馬の詳細情報や過去のレース成績を閲覧できます。
+            </p>
+        </div>
+    </div>
+</div>
+
+<div class="container mt-4">
+    <!-- 検索フォーム -->
+    <div class="search-container" data-aos="fade-up" data-aos-delay="100">
+        <form class="search-form" method="get" action="{{ url_for('horses') }}">
+            <div class="input-group">
+                <input type="text" class="form-control" name="search" 
+                       placeholder="馬名を入力..." value="{{ search }}">
+                <button class="btn btn-primary" type="submit">
+                    <i class="fas fa-search"></i> 検索
+                </button>
+                {% if search %}
+                    <a href="{{ url_for('horses') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-times"></i> クリア
+                    </a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+    
+    <!-- 馬一覧 -->
+    <div class="row row-cols-1 row-cols-md-3 g-4 mt-3">
+        {% for horse in horses %}
+        <div class="col" data-aos="fade-up" data-aos-delay="{{ loop.index * 50 }}">
+            <div class="horse-card">
+                <div class="card-body">
+                    <div class="horse-icon">
+                        <i class="fas fa-horse"></i>
+                    </div>
+                    <h5 class="horse-name">{{ horse.name }}</h5>
+                    <div class="horse-stats">
+                        <span class="stat-item">
+                            <i class="fas fa-flag"></i>
+                            {{ horse.unique_race_count }}回出走
+                        </span>
+                        <span class="stat-item">
+                            <i class="fas fa-venus-mars"></i>
+                            {{ horse.sex }}
+                        </span>
+                    </div>
+                    <a href="{{ url_for('horse_detail', horse_id=horse.id) }}" 
+                       class="btn btn-outline-primary mt-3 w-100">
+                        詳細を見る
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- ページネーション -->
+    {% if pagination %}
+    <nav aria-label="Page navigation" class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% for page in pagination.iter_pages() %}
+                {% if page %}
+                    <li class="page-item {% if page == pagination.page %}active{% endif %}">
+                        <a class="page-link" href="{{ url_for('horses', page=page, search=search) }}">{{ page }}</a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}

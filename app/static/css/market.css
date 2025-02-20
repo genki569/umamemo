@@ -1,0 +1,311 @@
+/* モダンな変数定義 */
+:root {
+    --primary: #2c5282;
+    --secondary: #276749;
+    --gradient-start: #4299e1;
+    --gradient-end: #48bb78;
+    --background: #f8f9fa;
+    --text: #2d3748;
+    --text-light: #4a5568;
+    --white: #FFFFFF;
+    --card-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    --hover-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* 全体のスタイリング */
+body {
+    background-color: var(--background);
+    color: var(--text);
+}
+
+/* ヘッダーセクション */
+.market-header {
+    background: var(--color-surface);
+    position: relative;
+    padding: calc(var(--space-xl) * 1.5) 0;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.market-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 0.1;
+}
+
+.market-header h1 {
+    font-size: var(--font-size-3xl);
+    font-weight: 700;
+    color: var(--color-primary);
+    margin-bottom: var(--space-md);
+    line-height: 1.2;
+}
+
+.market-description {
+    color: var(--color-text-light);
+    font-size: var(--font-size-lg);
+    line-height: 1.6;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: var(--space-sm);
+}
+
+.lead.text-muted {
+    color: var(--white) !important;
+    font-weight: 500;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    background: rgba(0, 0, 0, 0.15);
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    display: inline-block;
+    margin-bottom: 1rem;
+}
+
+.highlight {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(4px);
+    padding: 0.3rem 1rem;
+    border-radius: 20px;
+    font-weight: 600;
+    color: var(--white);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* マーケット統計 */
+.market-stats {
+    background: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
+    padding: var(--space-lg);
+}
+
+.market-stats h3 {
+    color: var(--white);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.market-stats p.text-muted {
+    color: var(--white) !important;
+    opacity: 0.9;
+}
+
+/* フィルターセクション */
+.filter-section {
+    background: var(--color-background);
+    border-radius: var(--border-radius);
+    padding: var(--space-lg);
+    border: 1px solid var(--color-border);
+    margin: calc(var(--space-xl) * -1) auto var(--space-xl);
+    position: relative;
+    z-index: 10;
+}
+
+.form-select {
+    border: 2px solid #E2E8F0;
+    border-radius: 12px;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    color: var(--text);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%234F46E5'%3e%3cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3e%3c/svg%3e");
+}
+
+.form-select:hover {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+}
+
+/* レビューカード */
+.review-card {
+    background: var(--color-background);
+    border-radius: var(--border-radius);
+    border: 1px solid var(--color-border);
+    transition: all var(--transition);
+    position: relative;
+    overflow: hidden;
+}
+
+.review-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(to right, var(--primary), var(--secondary));
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.review-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+}
+
+.review-card:hover::before {
+    opacity: 1;
+}
+
+.card-body {
+    padding: 2rem;
+}
+
+.card-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 1.5rem;
+}
+
+/* バッジ */
+.badge {
+    padding: 0.6em 1.2em;
+    font-weight: 600;
+    font-size: 0.875rem;
+    letter-spacing: 0.025em;
+    border-radius: 9999px;
+    text-transform: uppercase;
+}
+
+.badge.bg-success {
+    background: var(--secondary) !important;
+    color: var(--white);
+    font-weight: 600;
+}
+
+.badge.bg-primary {
+    background: var(--primary) !important;
+    color: var(--white);
+    font-weight: 600;
+}
+
+/* レース情報 */
+.race-info {
+    color: var(--text-light);
+    font-size: 0.95rem;
+}
+
+.race-info i {
+    color: var(--primary);
+    width: 24px;
+}
+
+/* ボタン */
+.btn {
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    border-radius: 12px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    letter-spacing: 0.025em;
+}
+
+.btn-primary {
+    background: var(--primary);
+    border: none;
+    color: var(--white);
+    font-weight: 600;
+    padding: 0.5rem 1.5rem;
+}
+
+.btn-primary:hover {
+    background: var(--gradient-start);
+    transform: translateY(-2px);
+}
+
+.btn-outline-primary {
+    border: 2px solid var(--primary);
+    color: var(--primary);
+}
+
+.btn-outline-primary:hover {
+    background: var(--primary);
+    color: var(--white);
+}
+
+/* ページネーション */
+.pagination {
+    gap: 0.5rem;
+    margin-top: 4rem;
+}
+
+.page-link {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px !important;
+    border: none;
+    color: #4B5563;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.page-link:hover {
+    background: #F3F4F6;
+    color: #6366F1;
+    transform: scale(1.1);
+}
+
+.page-item.active .page-link {
+    background: linear-gradient(135deg, #6366F1, #8B5CF6);
+    color: #fff;
+}
+
+/* アニメーション */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.review-card {
+    animation: fadeInUp 0.6s ease backwards;
+}
+
+.review-card:nth-child(2) { animation-delay: 0.1s; }
+.review-card:nth-child(3) { animation-delay: 0.2s; }
+.review-card:nth-child(4) { animation-delay: 0.3s; }
+
+/* レスポンシブデザイン */
+@media (max-width: 768px) {
+    .market-header {
+        padding: 2rem 0 3rem;
+    }
+
+    .market-header h1 {
+        font-size: 2rem;
+    }
+
+    .market-stats {
+        margin-top: 2rem;
+    }
+
+    .filter-section {
+        padding: 1rem;
+    }
+
+    .form-select {
+        padding: 0.75rem 1.25rem;
+    }
+
+    .card-body {
+        padding: 2rem;
+    }
+
+    .market-description {
+        font-size: 1rem;
+        padding: 0.75rem;
+    }
+} 

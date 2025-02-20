@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container my-4">
+    <h2>ポイントチャージ</h2>
+    
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <form id="payment-form">
+                        <div class="mb-3">
+                            <label for="amount" class="form-label">チャージ金額</label>
+                            <select class="form-select" id="amount" name="amount">
+                                <option value="500">500円 (500ポイント)</option>
+                                <option value="1000">1,000円 (1,000ポイント)</option>
+                                <option value="3000">3,000円 (3,000ポイント)</option>
+                                <option value="5000">5,000円 (5,000ポイント)</option>
+                            </select>
+                        </div>
+                        
+                        <div id="payment-element"></div>
+                        <button id="submit" class="btn btn-primary mt-3 w-100">
+                            <span id="button-text">チャージする</span>
+                            <div class="spinner hidden" id="spinner"></div>
+                        </button>
+                        <div id="payment-message" class="hidden"></div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-4">
+        <div class="col-md-6 offset-md-3">
+            <div class="text-center">
+                <small class="text-muted">
+                    <a href="{{ url_for('commercial_transactions') }}" target="_blank">特定商取引法に基づく表記</a>
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const stripe = Stripe('{{ config.STRIPE_PUBLIC_KEY }}');
+    let elements;
+    
+    async function initialize() {
+        try {
+            const response = await fetch("/create-payment-intent", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ 
+                    amount: document.getElementById('amount').value 
+                })
+            });
+            
+            if (!response.ok) {
+                throw new Error('Payment Intent creation failed');
+            }
+            
+            const { clientSecret } = await response.json();
+            
+            const appearance = {
+                theme: 'stripe'
+            };
+            
+            elements = stripe.elements({ appearance, clientSecret });
+            const paymentElement = elements.create("payment");
+            paymentElement.mount("#payment-element");
+            
+        } catch (e) {
+            console.error('Initialization error:', e);
+            document.getElementById('payment-message').textContent = 'エラーが発生しました。';
+        }
+    }
+    
+    initialize();
+    
+    document.getElementById('amount').addEventListener('change', initialize);
+    
+    document.getElementById('payment-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const { error } = await stripe.confirmPayment({
+            elements,
+            confirmParams: {
+                return_url: window.location.origin + "/mypage/point-charge-complete"
+            }
+        });
+        
+        if (error) {
+            const messageDiv = document.getElementById('payment-message');
+            messageDiv.textContent = error.message;
+            messageDiv.classList.remove('hidden');
+        }
+    });
+});
+</script>
+
+<style>
+.hidden {
+    display: none;
+}
+.spinner {
+    width: 20px;
+    height: 20px;
+    border: 3px solid #ffffff;
+    border-radius: 50%;
+    border-top-color: transparent;
+    animation: spin 1s linear infinite;
+    display: inline-block;
+}
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+</style>
+{% endblock %} 

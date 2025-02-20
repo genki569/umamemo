@@ -1,0 +1,287 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- ヒーローセクション -->
+<div class="hero-wrapper">
+    <div class="hero-decoration"></div>
+    <div class="hero-decoration"></div>
+    <section class="hero-section">
+        <div class="container">
+            <div class="hero-content">
+                <p class="hero-eyecatch">競馬ファンのための</p>
+                <h1 class="hero-title">
+                    ありそうでなかった<br>
+                    レース回顧＆予想メモアプリ
+                </h1>
+                <p class="hero-description">レース後の印象をメモして、次の予想に活かそう</p>
+                <div class="hero-buttons">
+                    {% if not current_user.is_authenticated %}
+                        <a href="{{ url_for('register') }}" class="btn-start">無料で始める</a>
+                    {% endif %}
+                    <a href="{{ url_for('review_market') }}" class="btn-market">回顧マーケット</a>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- 主な機能セクション -->
+<section class="features-section">
+    <div class="container">
+        <h2 class="section-title fade-in">主な機能</h2>
+        <div class="features-grid">
+            <!-- レース回顧機能 -->
+            <div class="feature-card shadow-hover fade-in">
+                <div class="feature-icon">
+                    <i class="fas fa-search"></i>
+                </div>
+                <h3>レース回顧に活用</h3>
+                <p>レース後の印象を詳細に記録し、次走での予想に活かすための総合的な回顧システム。</p>
+                <ul class="feature-list">
+                    <li>レース後の馬の様子を詳細にメモ</li>
+                    <li>上がり順位やラップタイムを自動記録</li>
+                    <li>馬場状態との相性を数値化して管理</li>
+                    <li>次走での狙い目ポイントを整理・分析</li>
+                    <li>パドックや返し馬の画像を保存可能</li>
+                    <li>カスタムタグで効率的に整理</li>
+                    <li>AI分析による客観的な評価付け</li>
+                    <li>他ユーザーの回顧と比較可能</li>
+                    <li>血統との相性を自動分析</li>
+                </ul>
+            </div>
+            <!-- 予想活用機能 -->
+            <div class="feature-card shadow-hover fade-in">
+                <div class="feature-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h3>予想に活用</h3>
+                <p>過去の回顧データとAI分析を組み合わせた、より精度の高い予想支援システム。</p>
+                <ul class="feature-list">
+                    <li>過去のメモを時系列で振り返り</li>
+                    <li>AI搭載の好走パターン分析</li>
+                    <li>条件適性をスコアで可視化</li>
+                    <li>独自の予想指数を自動生成</li>
+                    <li>血統的な相性を深層分析</li>
+                    <li>ビッグデータに基づく予想支援</li>
+                    <li>天候変化による影響を予測</li>
+                    <li>オッズ推移との相関分析</li>
+                    <li>類似レースの自動ピックアップ</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 便利な機能セクション -->
+<section class="useful-features">
+    <div class="container">
+        <h2 class="section-title fade-in">便利な機能</h2>
+        <div class="features-grid-3">
+            <!-- 馬名検索 -->
+            <div class="feature-item shadow-hover scale-in">
+                <div class="feature-icon-wrapper">
+                    <i class="fas fa-horse"></i>
+                </div>
+                <h3>スマート検索</h3>
+                <p>AIを活用した高度な検索機能で<br>欲しい情報にすぐアクセス。</p>
+                <ul class="feature-details">
+                    <li>自然言語での検索に対応</li>
+                    <li>血統からの詳細検索可能</li>
+                    <li>調教師・騎手情報との連携</li>
+                    <li>類似馬の自動サジェスト</li>
+                    <li>過去走との比較分析</li>
+                </ul>
+            </div>
+
+            <!-- レース結果分析 -->
+            <div class="feature-item shadow-hover scale-in">
+                <div class="feature-icon-wrapper">
+                    <i class="fas fa-chart-bar"></i>
+                </div>
+                <h3>データ分析</h3>
+                <p>ビッグデータを活用した<br>詳細な傾向分析。</p>
+                <ul class="feature-details">
+                    <li>AIによるパターン認識</li>
+                    <li>レース展開シミュレーション</li>
+                    <li>上がり順位の自動計算</li>
+                    <li>馬場状態との相関分析</li>
+                    <li>血統的な相性診断</li>
+                </ul>
+            </div>
+
+            <!-- レース通知 -->
+            <div class="feature-item shadow-hover scale-in">
+                <div class="feature-icon-wrapper">
+                    <i class="fas fa-bell"></i>
+                </div>
+                <h3>スマート通知</h3>
+                <p>カスタマイズ可能な<br>インテリジェント通知システム。</p>
+                <ul class="feature-details">
+                    <li>出走予定をプッシュ通知</li>
+                    <li>オッズ変動アラート</li>
+                    <li>天候変化の自動通知</li>
+                    <li>注目馬の自動ピックアップ</li>
+                    <li>メモ更新リマインダー</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- メリットセクション -->
+<section class="benefits-section">
+    <div class="container">
+        <h2 class="section-title fade-in">馬メモを使うメリット</h2>
+        <div class="benefits-grid">
+            <!-- いつでもどこでも -->
+            <div class="benefit-item scale-in">
+                <div class="benefit-icon">
+                    <i class="fas fa-mobile-alt"></i>
+                </div>
+                <h3 class="benefit-title">いつでもどこでも</h3>
+                <p class="benefit-description">
+                    スマートフォンがあれば、競馬場でも自宅でも、いつでも簡単にメモを取ることができます。
+                </p>
+            </div>
+
+            <!-- 探しやすい -->
+            <div class="benefit-item scale-in">
+                <div class="benefit-icon">
+                    <i class="fas fa-search"></i>
+                </div>
+                <h3 class="benefit-title">探しやすい</h3>
+                <p class="benefit-description">
+                    馬名やレース名、日付など、様々な方法で過去のメモを検索できます。
+                </p>
+            </div>
+
+            <!-- 共有できる -->
+            <div class="benefit-item scale-in">
+                <div class="benefit-icon">
+                    <i class="fas fa-share-alt"></i>
+                </div>
+                <h3 class="benefit-title">共有できる</h3>
+                <p class="benefit-description">
+                    気になるメモは仲間と共有可能。みんなで予想の精度を高めましょう。
+                </p>
+            </div>
+
+            <!-- 安全に保存 -->
+            <div class="benefit-item scale-in">
+                <div class="benefit-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h3 class="benefit-title">安全に保存</h3>
+                <p class="benefit-description">
+                    大切なメモはクラウドで安全に保存。端末の紛失でも心配ありません。
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 使い方セクション -->
+<section class="usage-section">
+    <div class="container">
+        <h2 class="section-title fade-in">基本的な使い方</h2>
+        <div class="steps-container">
+            <div class="step-item shadow-hover scale-in" data-aos="fade-up">
+                <div class="step-number">1</div>
+                <h3>会員登録</h3>
+                <p>メールアドレスで<br>簡単に登録できます</p>
+                <div class="step-details">
+                    <p>メールアドレスのみで登録可能</p>
+                    <p>SNSアカウントでも登録OK</p>
+                </div>
+            </div>
+            <div class="step-item shadow-hover scale-in" data-aos="fade-up" data-aos-delay="200">
+                <div class="step-number">2</div>
+                <h3>レースを選ぶ</h3>
+                <p>気になるレースの<br>結果をチェック</p>
+                <div class="step-details">
+                    <p>開催日程から簡単検索</p>
+                    <p>お気に入りレース登録可能</p>
+                </div>
+            </div>
+            <div class="step-item shadow-hover scale-in" data-aos="fade-up" data-aos-delay="400">
+                <div class="step-number">3</div>
+                <h3>馬を探す</h3>
+                <p>気になる馬を<br>検索して見つけます。</p>
+                <div class="step-details">
+                    <p>血統からも検索可能</p>
+                    <p>フリーワード検索対応</p>
+                </div>
+            </div>
+            <div class="step-item shadow-hover scale-in" data-aos="fade-up" data-aos-delay="600">
+                <div class="step-number">4</div>
+                <h3>メモを残す</h3>
+                <p>レース後の印象を<br>自由に記録</p>
+                <div class="step-details">
+                    <p>テンプレート機能で簡単入力</p>
+                    <p>画像の添付も可能</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- プラン比較セクション -->
+<section class="plans-section">
+    <div class="container">
+        <h2 class="section-title fade-in">料金プラン</h2>
+        <div class="plans-grid">
+            <div class="plan-card shadow-hover fade-in" data-aos="fade-up">
+                <h3>無料プラン</h3>
+                <div class="price">¥0</div>
+                <ul class="plan-features">
+                    <li>基本的なメモ機能</li>
+                    <li>レース検索</li>
+                    <li>馬名検索</li>
+                    <li>基本的な通知機能</li>
+                </ul>
+                <a href="{{ url_for('register') }}" class="btn-plan">今すぐ始める</a>
+            </div>
+            <div class="plan-card premium shadow-hover fade-in" data-aos="fade-up" data-aos-delay="200">
+                <h3>プレミアム</h3>
+                <div class="price">¥980<span>/月</span></div>
+                <ul class="plan-features">
+                    <li>全ての無料機能</li>
+                    <li>AI分析機能</li>
+                    <li>データエクスポート</li>
+                    <li>広告非表示</li>
+                    <li>優先サポート</li>
+                </ul>
+                <a href="{{ url_for('premium') }}" class="btn-plan premium">詳細を見る</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTAセクション -->
+<section class="cta-section">
+    <div class="container">
+        <div class="cta-content fade-in" data-aos="fade-up">
+            <h2>さっそく始めてみましょう</h2>
+            <p>無料で全ての基本機能をお使いいただけます。</p>
+            <div class="cta-buttons">
+                {% if not current_user.is_authenticated %}
+                    <a href="{{ url_for('register') }}" class="btn-start">無料で始める</a>
+                {% endif %}
+                <a href="{{ url_for('review_market') }}" class="btn-market">回顧マーケットを見る</a>
+            </div>
+            <p class="cta-note">※会員登録後いつでもアップグレード可能です</p>
+        </div>
+    </div>
+</section>
+
+{% if current_user.is_authenticated and current_user.is_admin %}
+<div class="container mt-4">
+    <div class="admin-card">
+        <h5>管理者メニュー</h5>
+        <a href="{{ url_for('admin_dashboard') }}" class="btn-admin">
+            <i class="fas fa-cog"></i>管理画面へ
+        </a>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

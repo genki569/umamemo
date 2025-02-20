@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="jockey-detail-header">
+    <div class="container">
+        <h1 class="display-4">{{ jockey.name }}</h1>
+        <div class="badge bg-light text-primary fs-6 mt-2">{{ stats.affiliation }}所属</div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="jockey-stats-card">
+        <div class="card-body">
+            <h2 class="h4 mb-4">通算成績</h2>
+            <div class="row g-4">
+                <div class="col-md-3">
+                    <div class="stats-item">
+                        <div class="stats-label">総騎乗</div>
+                        <div class="stats-value">{{ stats.total_rides }}</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stats-item">
+                        <div class="stats-label">勝利数</div>
+                        <div class="stats-value">{{ stats.wins }}</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stats-item">
+                        <div class="stats-label">勝率</div>
+                        <div class="stats-value">{{ stats.win_rate }}%</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stats-item">
+                        <div class="stats-label">複勝率</div>
+                        <div class="stats-value">{{ stats.place_rate }}%</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row g-4 mt-3">
+                <div class="col-md-6">
+                    <div class="stats-item">
+                        <div class="stats-label">中央レース数</div>
+                        <div class="stats-value">{{ stats.central_races }}</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="stats-item">
+                        <div class="stats-label">地方レース数</div>
+                        <div class="stats-value">{{ stats.local_races }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="recent-rides-container">
+        <h2 class="h4 mb-4">最近の騎乗</h2>
+        <div class="table-responsive">
+            <table class="table recent-rides-table">
+                <thead>
+                    <tr>
+                        <th>日付</th>
+                        <th>レース名</th>
+                        <th>馬名</th>
+                        <th>着順</th>
+                        <th>タイム</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry, race, horse in recent_rides %}
+                        <tr>
+                            <td>{{ race.formatted_date }}</td>
+                            <td>
+                                <a href="{{ url_for('race_detail', race_id=race.id) }}" class="race-link">
+                                    {{ race.name }}
+                                </a>
+                            </td>
+                            <td>
+                                <a href="{{ url_for('horse_detail', horse_id=horse.id) }}" class="horse-link">
+                                    {{ horse.name }}
+                                </a>
+                            </td>
+                            <td>{{ entry.position }}着</td>
+                            <td>{{ entry.time }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <a href="{{ url_for('jockeys') }}" class="back-button">
+        <i class="fas fa-arrow-left me-2"></i>騎手一覧に戻る
+    </a>
+</div>
+{% endblock %} 
