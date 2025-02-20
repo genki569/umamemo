@@ -8,22 +8,21 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    permissions: write-all 
+    permissions: write-all
     steps:
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
 
       - name: Set up SSH
         uses: webfactory/ssh-agent@v0.5.4
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Add SSH key to known hosts
+      - name: Deploy to server
         run: |
           mkdir -p ~/.ssh
           ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
-
-      - name: Deploy to server
-        run: |
           ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} "cd /var/www/umamemo && \
           git pull origin main && \
           source venv/bin/activate && \
