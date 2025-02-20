@@ -3819,7 +3819,7 @@ def get_notifications():
 
 @app.route('/api/notifications/read', methods=['POST'])
 @login_required
-def mark_notifications_read():
+def mark_notifications_as_read():  # 関数名を変更
     try:
         notification_ids = request.json.get('notification_ids', [])
         
