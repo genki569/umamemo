@@ -5,34 +5,26 @@ from app.models import (
     RaceReview, RaceMemo, UserSettings, ReviewPurchase, 
     Notification, LoginHistory, SupportTicket, 
     MembershipChangeLog, PaymentLog, ShutubaEntry,
-)  # UserPoint と UserPointLog を削除
+)
 from datetime import datetime, timedelta
 from flask_wtf import FlaskForm
 from wtforms import StringField, TextAreaField, SubmitField, PasswordField
-from wtforms.validators import DataRequired
-import os
-from sqlalchemy import desc, func, or_, distinct, case, String, Integer, DateTime, cast
-from sqlalchemy.orm import joinedload, subqueryload
-from collections import defaultdict
+from wtforms.validators import DataRequired, Email as EmailValidator
 from flask_login import login_required, current_user, login_user, UserMixin, LoginManager, logout_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 import traceback
 import json
-from sqlalchemy import and_
+from sqlalchemy import and_, desc, func, or_, distinct, case, String, Integer, DateTime, cast
+from sqlalchemy.orm import joinedload, subqueryload, load_only
+from collections import defaultdict
 from app.payments import PaymentManager
-from werkzeug.urls import url_parse
-from wtforms.validators import Email as EmailValidator
-from app.forms import ChargePointForm  # フォーをインポート
-from app.forms import RegistrationForm  # クをインポート
+from app.forms import ChargePointForm, RegistrationForm
 from werkzeug.utils import secure_filename
 from functools import lru_cache
-from sqlalchemy.orm import load_only
 import stripe
 import shutil
 from calendar import monthrange
-from sqlalchemy.types import String  # String型を正しくインポート
-from urllib.parse import urlparse
 
 # カスタムコレータの定義（ファイルの先頭付近に配置）
 def custom_login_required(f):
@@ -50,62 +42,66 @@ def index():
     try:
         today = datetime.now().date()
         
-        # 今日または次回のレース情報を取得
-        next_race = Race.query\
+        # 次回のレース情報を取得（今日以降で最も近い日付のレース）
+        next_race = db.session.query(Race)\
             .filter(Race.date >= today)\
             .order_by(Race.date.asc())\
+            .options(load_only('id', 'date', 'venue'))\
             .first()
             
         if next_race:
             next_race_date = next_race.date
-            next_races = Race.query\
+            next_races = db.session.query(Race)\
                 .filter(func.date(Race.date) == next_race_date)\
+                .options(load_only('id', 'venue', 'name'))\
                 .all()
             next_race_venues = list(set([race.venue for race in next_races]))
         else:
             next_race_date = None
             next_race_venues = []
 
-        # 最近のース結果を取得
-        recent_races = Race.query\
-            .filter(Race.date < today)\
-            .order_by(Race.date.desc())\
-            .limit(5)\
-            .all()
+        # 最近のレース結果を取得（クエリを最適化）
+        recent_results = db.session.query(
+            Race.id,
+            Race.date,
+            Race.venue,
+            Race.name,
+            Entry.horse_id,
+            Horse.name.label('horse_name')
+        ).join(
+            Entry, and_(Entry.race_id == Race.id, Entry.position == 1)
+        ).join(
+            Horse, Horse.id == Entry.horse_id
+        ).filter(
+            Race.date < today
+        ).order_by(
+            Race.date.desc()
+        ).limit(5).all()
 
-        recent_results = []
-        for race in recent_races:
-            winning_entry = Entry.query\
-                .filter_by(race_id=race.id, position=1)\
-                .first()
-            
-            # dateがstr型の場合はdatetimeに変換
-            race_date = race.date
-            if isinstance(race_date, str):
-                race_date = datetime.strptime(race_date, '%Y-%m-%d')
-            
-            result = {
-                'id': race.id,
-                'date': race_date.strftime('%Y/%m/%d'),
-                'venue': race.venue,
-                'race_name': race.name,
-                'winner': winning_entry.horse.name if winning_entry else '結果未定'
-            }
-            recent_results.append(result)
+        results = [{
+            'id': r.id,
+            'date': r.date.strftime('%Y/%m/%d'),
+            'venue': r.venue,
+            'race_name': r.name,
+            'winner': r.horse_name
+        } for r in recent_results]
 
         return render_template('index.html',
                             next_race_date=next_race_date,
                             next_race_venues=next_race_venues,
-                            recent_results=recent_results)
+                            recent_results=results)
 
     except Exception as e:
         app.logger.error(f"Error in index route: {str(e)}")
-        return render_template('index.html', races=[])
+        return render_template('index.html', 
+                             next_race_date=None,
+                             next_race_venues=[],
+                             recent_results=[])
 
 class LoginForm(FlaskForm):
     email = StringField('メールアドレス', validators=[DataRequired(), EmailValidator()])
-    password = PasswordField('パワド', validators=[DataRequired()])
-    submit = SubmitField('ログン')
+    password = PasswordField('パスワード', validators=[DataRequired()])
+    submit = SubmitField('ログイン')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -113,16 +109,16 @@ def login():
         return redirect(url_for('index'))
     form = LoginForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(username=form.username.data).first()
+        user = User.query.filter_by(email=form.email.data).first()  # usernameをemailに変更
         if user is None or not user.check_password(form.password.data):
-            flash('Invalid username or password')
+            flash('メールアドレスまたはパスワードが正しくありません')
             return redirect(url_for('login'))
-        login_user(user, remember=form.remember_me.data)
+        login_user(user)  # remember_meフィールドを削除
         next_page = request.args.get('next')
-        if not next_page or urlparse(next_page).netloc != '':  # ここを修正
+        if not next_page or urlparse(next_page).netloc != '':
             next_page = url_for('index')
         return redirect(next_page)
-    return render_template('login.html', title='Sign In', form=form)
+    return render_template('login.html', title='ログイン', form=form)
 
 @app.route('/logout')
 def logout():
@@ -130,39 +126,21 @@ def logout():
     flash('ログアウトしました', 'success')
     return redirect(url_for('index'))
 
-# 会場コードと会場名の辞書を追加（ファイル先頭の定数定義部分に）
+# 会場コードと会場名の辞書を定数として定義
 VENUE_NAMES = {
-    '101': '札幌',
-    '102': '函館',
-    '103': '福島',
-    '104': '新潟',
-    '105': '東京',
-    '106': '中山',
-    '107': '中京',
-    '108': '京都',
-    '109': '阪神',
-    '110': '小倉',
-    '201': '門別',
-    '202': '帯広',
-    '203': '盛岡',
-    '204': '水沢',
-    '205': '浦和',
-    '206': '船橋',
-    '207': '大井',
-    '208': '川崎',
-    '209': '金沢',
-    '210': '笠松',
-    '211': '名古屋',
-    '212': '園田',
-    '213': '姫路',
-    '214': '高知',
+    '101': '札幌', '102': '函館', '103': '福島', '104': '新潟',
+    '105': '東京', '106': '中山', '107': '中京', '108': '京都',
+    '109': '阪神', '110': '小倉', '201': '門別', '202': '帯広',
+    '203': '盛岡', '204': '水沢', '205': '浦和', '206': '船橋',
+    '207': '大井', '208': '川崎', '209': '金沢', '210': '笠松',
+    '211': '名古屋', '212': '園田', '213': '姫路', '214': '高知',
     '215': '佐賀'
 }
 
 @app.route('/races')
 def races():
     try:
-        # デフォルト日付の設定
+        # デフォルト日付の設定と日付パラメータの処理
         default_date = datetime.now().date()
         selected_date = request.args.get('date')
         
@@ -174,7 +152,7 @@ def races():
         else:
             selected_date = default_date
 
-        # 必要最小限のデータのみを取得
+        # 効率的なクエリ実行
         races_data = (db.session.query(
             Race.id,
             Race.name,
@@ -188,9 +166,11 @@ def races():
         ).order_by(
             Race.venue,
             Race.race_number
+        ).options(
+            load_only('id', 'name', 'date', 'venue', 'race_number', 'weather', 'track_condition')
         ).all())
 
-        # 会場ごとにグループ化
+        # 会場ごとにデータを整理
         venue_races = defaultdict(lambda: {
             'venue_name': None,
             'weather': None,
@@ -198,17 +178,13 @@ def races():
             'races': []
         })
 
-        # 日付リストの作成（前後3日）
-        base_date = selected_date
-        dates = []
-        for i in range(-3, 4):
-            date = base_date + timedelta(days=i)
-            dates.append({
-                'value': date.strftime('%Y-%m-%d'),
-                'month': date.month,
-                'day': date.day,
-                'weekday': ['月', '火', '水', '木', '金', '土', '日'][date.weekday()]
-            })
+        # 日付リストの生成（前後3日）
+        dates = [{
+            'value': (selected_date + timedelta(days=i)).strftime('%Y-%m-%d'),
+            'month': (selected_date + timedelta(days=i)).month,
+            'day': (selected_date + timedelta(days=i)).day,
+            'weekday': ['月', '火', '水', '木', '金', '土', '日'][(selected_date + timedelta(days=i)).weekday()]
+        } for i in range(-3, 4)]
 
         # レースデータの整理
         for race in races_data:
@@ -241,51 +217,64 @@ def races():
 @app.route('/races/<int:race_id>')
 def race_detail(race_id):
     try:
-        race = Race.query.get_or_404(race_id)
+        # レースと関連データを効率的に取得
+        race = db.session.query(Race).get_or_404(race_id)
         
-        # 明示的にカラムを指定して結合行う
+        # エントリー情報を最適化されたクエリで取得
         entries = db.session.query(Entry)\
-            .join(Horse, Horse.id == Entry.horse_id)\
-            .outerjoin(Jockey, Jockey.id == Entry.jockey_id)\
+            .join(Horse)\
+            .outerjoin(Jockey)\
             .filter(Entry.race_id == race_id)\
             .options(
-                db.contains_eager(Entry.horse).load_only(
+                joinedload(Entry.horse).load_only(
                     Horse.id,
                     Horse.name,
                     Horse.sex,
                     Horse.memo
                 ),
-                db.contains_eager(Entry.jockey).load_only(
+                joinedload(Entry.jockey).load_only(
                     Jockey.id,
                     Jockey.name
                 )
             )\
             .order_by(
-                db.case(
+                case(
                     [(Entry.position.is_(None), 999999)],
                     else_=Entry.position
-                )
+                ).asc(),
+                Entry.horse_number.asc()
             )\
             .all()
+
+        # 前後のレースを効率的に取得
+        prev_race = db.session.query(Race)\
+            .filter(
+                Race.date == race.date,
+                Race.id < race_id
+            )\
+            .order_by(Race.id.desc())\
+            .options(load_only('id', 'name'))\
+            .first()
         
-        # 以下は更なし
-        if all(entry.position is None for entry in entries):
-            entries.sort(key=lambda x: x.horse_number or float('inf'))
+        next_race = db.session.query(Race)\
+            .filter(
+                Race.date == race.date,
+                Race.id > race_id
+            )\
+            .order_by(Race.id.asc())\
+            .options(load_only('id', 'name'))\
+            .first()
         
-        prev_race = Race.query.filter(
-            Race.date == race.date,
-            Race.id < race_id
-        ).order_by(Race.id.desc()).first()
-        
-        next_race = Race.query.filter(
-            Race.date == race.date,
-            Race.id > race_id
-        ).order_by(Race.id.asc()).first()
-        
-        reviews = RaceReview.query\
-            .filter_by(race_id=race_id)\
-            .filter_by(is_public=True)\
+        # レビューを取得（公開済みのみ）
+        reviews = db.session.query(RaceReview)\
+            .filter(
+                RaceReview.race_id == race_id,
+                RaceReview.is_public == True
+            )\
             .order_by(RaceReview.created_at.desc())\
+            .options(
+                joinedload(RaceReview.user).load_only('id', 'username')
+            )\
             .all()
         
         return render_template('race_detail.html', 
@@ -297,27 +286,51 @@ def race_detail(race_id):
                              current_user=current_user)
                              
     except Exception as e:
-        print(f"Error fetching race details: {str(e)}")
+        current_app.logger.error(f"Error fetching race details: {str(e)}")
+        flash('レース情報の取得中にエラーが発生しました', 'error')
         return render_template('race_detail.html',
                              race=None,
                              entries=[],
-                             error="レース情報の取得中にエラーが発生しました。")
+                             prev_race=None,
+                             next_race=None,
+                             reviews=[],
+                             error="レース情報の取得中にエラーが発生しました")
 
 @app.route('/race/<int:race_id>')
 def race(race_id):
     try:
-        race = Race.query.get_or_404(race_id)
-        entries = Entry.query.filter_by(race_id=race_id)\
-                           .join(Horse)\
-                           .all()
+        # レースと関連データを1回のクエリで効率的に取得
+        race = db.session.query(Race).options(
+            load_only(
+                'id', 'name', 'date', 'start_time', 'venue',
+                'distance', 'track_type', 'weather',
+                'track_condition', 'details'
+            )
+        ).get_or_404(race_id)
+        
+        # エントリー情報を効率的に取得
+        entries = db.session.query(
+            Entry,
+            Horse.name.label('horse_name'),
+            Horse.sex,
+            Jockey.name.label('jockey_name')
+        ).join(
+            Horse,
+            Entry.horse_id == Horse.id
+        ).outerjoin(
+            Jockey,
+            Entry.jockey_id == Jockey.id
+        ).filter(
+            Entry.race_id == race_id
+        ).all()
         
         # レース情報を整形
         race_data = {
             'id': race.id,
             'name': race.name,
-            'date': race.date,
-            'start_time': race.start_time or 'N/A',
-            'venue': race.venue or 'N/A',
+            'date': race.date.strftime('%Y-%m-%d') if race.date else 'N/A',
+            'start_time': race.start_time.strftime('%H:%M') if race.start_time else 'N/A',
+            'venue': VENUE_NAMES.get(str(race.venue), 'N/A'),
             'distance': race.distance,
             'track_type': race.track_type or 'N/A',
             'weather': race.weather or 'N/A',
@@ -327,24 +340,18 @@ def race(race_id):
         
         # エントリーを整理
         processed_entries = []
-        
-        for entry in entries:
-            try:
-                # 安全にフィールドにアクセス
-                entry_data = {
-                    'number': getattr(entry, 'number', None),
-                    'horse_name': entry.horse.name if entry.horse else 'Unknown',
-                    'sex': entry.horse.sex if entry.horse else '-',
-                    'weight': getattr(entry, 'weight', None),
-                    'jockey': getattr(entry, 'jockey', '-'),
-                    'odds': str(getattr(entry, 'odds', '')) if getattr(entry, 'odds', None) is not None else None,
-                    'popularity': getattr(entry, 'popularity', None),
-                    'result': getattr(entry, 'result', None)
-                }
-                processed_entries.append(entry_data)
-            except Exception as e:
-                print(f"Error processing entry: {str(e)}")
-                continue
+        for entry, horse_name, sex, jockey_name in entries:
+            entry_data = {
+                'number': entry.horse_number,
+                'horse_name': horse_name or 'Unknown',
+                'sex': sex or '-',
+                'weight': entry.weight,
+                'jockey': jockey_name or '-',
+                'odds': f"{entry.odds:.1f}" if entry.odds is not None else None,
+                'popularity': entry.popularity,
+                'result': entry.position
+            }
+            processed_entries.append(entry_data)
         
         # 馬番でソート（番号がない場合は最後に）
         processed_entries.sort(key=lambda x: x['number'] if x['number'] is not None else 999)
@@ -354,11 +361,12 @@ def race(race_id):
                              entries=processed_entries)
                              
     except Exception as e:
-        print(f"Error fetching race details: {str(e)}")
+        current_app.logger.error(f"Error in race route: {str(e)}")
+        flash('レース情報の取得中にエラーが発生しました', 'error')
         return render_template('race.html',
                              race=None,
                              entries=[],
-                             error="レース情報の取得中にエラーが発生しました。")
+                             error="レース情報の取得中にエラーが発生しました")
 
 # is_duplicate関数の定義
 def is_duplicate(entry1, entry2):
@@ -429,16 +437,18 @@ def horses():
         page = request.args.get('page', 1, type=int)
         search = request.args.get('search', '')
         
-        # 検索クエの構
-        query = Horse.query
+        query = db.session.query(Horse).options(
+            load_only('id', 'name', 'trainer', 'sex', 'birth_year')
+        )
+        
         if search:
             query = query.filter(
                 or_(
-                    Horse.name.like(f'%{search}%'),
-                    Horse.trainer.like(f'%{search}%')
+                    Horse.name.ilike(f'%{search}%'),
+                    Horse.trainer.ilike(f'%{search}%')
                 )
             )
-        # ページネ���ション
+            
         pagination = query.order_by(Horse.id.desc()).paginate(
             page=page, 
             per_page=20,
@@ -451,8 +461,9 @@ def horses():
             search=search)
             
     except Exception as e:
-        app.logger.error(f"Error in horses route: {str(e)}")
-        return render_template('500.html'), 500
+        current_app.logger.error(f"Error in horses route: {str(e)}")
+        flash('馬一覧の取得中にエラーが発生しました', 'error')
+        return render_template('horses.html', horses=[], pagination=None, search='')
 
 @app.route('/record_result', methods=['GET', 'POST'])
 def record_result():
@@ -509,93 +520,115 @@ def upcoming_races():
 
 @app.route('/horses/<int:horse_id>')
 def horse_detail(horse_id):
-    """馬の詳細ページ"""
     try:
-        # Horse.queryの部分だけ修正
-        horse = db.session.query(Horse).filter(
-            Horse.id == horse_id
-        ).options(
-            load_only(
-                Horse.id,
-                Horse.name,
-                Horse.sex,
-                Horse.memo
-            )
-        ).first_or_404()
+        horse = db.session.query(Horse).options(
+            load_only('id', 'name', 'sex', 'memo', 'trainer', 'birth_year')
+        ).get_or_404(horse_id)
         
-        # 以下は既存の処理をそのまま維持
-        entries = db.session.query(Entry)\
-            .join(Race)\
-            .filter(
-                Entry.horse_id == horse_id,
-                Race.date.isnot(None)
-            )\
-            .order_by(Race.date.desc())\
-            .all()
+        entries = db.session.query(
+            Entry,
+            Race.date,
+            Race.name.label('race_name'),
+            Jockey.name.label('jockey_name')
+        ).join(
+            Race
+        ).outerjoin(
+            Jockey
+        ).filter(
+            Entry.horse_id == horse_id,
+            Race.date.isnot(None)
+        ).order_by(
+            Race.date.desc()
+        ).all()
 
+        # 重複エントリーの除去と整理
         seen_races = set()
-        unique_entries = []
+        race_results = []
         
-        for entry in entries:
+        for entry, race_date, race_name, jockey_name in entries:
             race_key = (
-                entry.race.date,
-                entry.race.name,
+                race_date,
+                race_name,
                 entry.horse_number,
-                entry.jockey.name if entry.jockey else None,
+                jockey_name,
                 entry.time,
                 entry.weight
             )
             
             if race_key not in seen_races:
                 seen_races.add(race_key)
-                unique_entries.append(entry)
+                race_results.append({
+                    'date': race_date,
+                    'race_name': race_name,
+                    'position': entry.position,
+                    'jockey': jockey_name or '不明',
+                    'time': entry.time,
+                    'weight': entry.weight,
+                    'horse_number': entry.horse_number
+                })
         
-        sorted_entries = sorted(
-            unique_entries,
-            key=lambda x: x.race.date or datetime.min,
-            reverse=True
-        )
-        
-        form = FlaskForm()
+        # 日付でソート
+        race_results.sort(key=lambda x: x['date'] or datetime.min, reverse=True)
         
         return render_template('horse_detail.html', 
                              horse=horse, 
-                             entries=sorted_entries,
-                             form=form)
+                             entries=race_results)
                              
     except Exception as e:
-        print(f"Error in horse_detail: {str(e)}")
-        return render_template('error.html',
-                             error="馬の詳細情報の取得中にエラーが発生しました。")
+        current_app.logger.error(f"Error in horse_detail: {str(e)}")
+        flash('馬の詳細情報の取得中にエラーが発生しました', 'error')
+        return render_template('horse_detail.html', horse=None, entries=[])
 
 @app.route('/horses/<int:horse_id>/memo', methods=['POST'])
 @login_required
 def save_horse_memo(horse_id):
-    """馬のメモを保存"""
     try:
         content = request.form.get('content')
         if not content:
             flash('メモ内容を入力してください', 'error')
             return redirect(url_for('horse_detail', horse_id=horse_id))
             
-        horse = Horse.query.get_or_404(horse_id)
-        horse.add_memo(content)  # 既存のadd_memoメソッドを使用
-        db.session.commit()
+        horse = db.session.query(Horse).get_or_404(horse_id)
         
+        # メモの追加処理
+        current_memos = json.loads(horse.memo) if horse.memo else []
+        new_memo = {
+            'id': len(current_memos) + 1,
+            'content': content,
+            'created_at': datetime.now().isoformat(),
+            'user_id': current_user.id
+        }
+        current_memos.append(new_memo)
+        horse.memo = json.dumps(current_memos)
+        
+        db.session.commit()
         flash('メモを保存しました', 'success')
-        return redirect(url_for('horse_detail', horse_id=horse_id))
         
     except Exception as e:
+        current_app.logger.error(f"Error saving memo: {str(e)}")
         db.session.rollback()
         flash('メモの保存に失敗しました', 'error')
-        return redirect(url_for('horse_detail', horse_id=horse_id))
+        
+    return redirect(url_for('horse_detail', horse_id=horse_id))
 
 @app.route('/horse/<int:horse_id>/memo/<int:memo_id>', methods=['DELETE'])
+@login_required
 def delete_horse_memo(horse_id, memo_id):
-    horse = Horse.query.get_or_404(horse_id)
-    horse.delete_memo(memo_id)
-    db.session.commit()
-    return jsonify({'status': 'success'})
+    try:
+        horse = db.session.query(Horse).get_or_404(horse_id)
+        current_memos = json.loads(horse.memo) if horse.memo else []
+        
+        # メモの削除処理
+        updated_memos = [memo for memo in current_memos if memo['id'] != memo_id]
+        horse.memo = json.dumps(updated_memos)
+        
+        db.session.commit()
+        return jsonify({'status': 'success'})
+        
+    except Exception as e:
+        current_app.logger.error(f"Error deleting memo: {str(e)}")
+        db.session.rollback()
+        return jsonify({'status': 'error', 'message': str(e)}), 500
 
 @app.route('/add_memo/<int:horse_id>', methods=['POST'])
 def add_memo(horse_id):
@@ -635,8 +668,37 @@ def import_horses():
     return render_template('import_horses.html')
 
 @app.route('/memos')
+@login_required
 def memos():
-    horses_with_memos = Horse.query.filter(Horse.memo.isnot(None)).all()
+    try:
+        # メモ付きの馬を取得
+        horses_with_memos = db.session.query(Horse).filter(
+            Horse.memo.isnot(None)
+        ).options(
+            load_only('id', 'name', 'memo')
+        ).all()
+        
+        # レースメモを取得
+        race_memos = db.session.query(RaceMemo).filter(
+            RaceMemo.user_id == current_user.id
+        ).options(
+            joinedload(RaceMemo.race).load_only('id', 'name', 'date')
+        ).order_by(
+            RaceMemo.created_at.desc()
+        ).all()
+        
+        return render_template('mypage/memos.html',
+                             title='メモ一覧',
+                             horses=horses_with_memos,
+                             race_memos=race_memos)
+                             
+    except Exception as e:
+        current_app.logger.error(f"Error in memos route: {str(e)}")
+        flash('メモ一覧の取得中にエラーが発生しました', 'error')
+        return render_template('mypage/memos.html',
+                             title='メモ一覧',
+                             horses=[],
+                             race_memos=[])
 
 @app.route('/edit_memo/<int:horse_id>', methods=['GET', 'POST'])
 def edit_memo(horse_id):
@@ -3507,19 +3569,19 @@ def format_number(value):
 @app.route('/races/<int:race_id>/shutuba')
 def race_shutuba(race_id):
     try:
-        # レースとエントリーを一度に取得
-        race = Race.query.options(
-            joinedload(Race.shutuba_entries)
-            .joinedload(ShutubaEntry.horse),
-            joinedload(Race.shutuba_entries)
-            .joinedload(ShutubaEntry.jockey)
+        # レースと出走馬情報を効率的に取得
+        race = db.session.query(Race).options(
+            joinedload(Race.shutuba_entries).options(
+                joinedload(ShutubaEntry.horse),
+                joinedload(ShutubaEntry.jockey)
+            )
         ).get_or_404(race_id)
 
-        # 全エントリーの馬IDを取得
+        # 出走馬のIDリストを作成
         horse_ids = [entry.horse_id for entry in race.shutuba_entries]
 
-        # 馬場状態別の成績を一括取得
-        track_condition_stats = db.session.query(
+        # 統計データを一括取得
+        track_stats = db.session.query(
             Entry.horse_id,
             Race.track_condition,
             func.count(Entry.id).label('total'),
@@ -3534,7 +3596,7 @@ def race_shutuba(race_id):
             Race.track_condition
         ).all()
 
-        # 騎手別の成績を一括取得
+        # 騎手成績を一括取得
         jockey_stats = db.session.query(
             Entry.horse_id,
             Jockey.name,
@@ -3543,15 +3605,14 @@ def race_shutuba(race_id):
             func.sum(case([(Entry.position <= 3, 1)], else_=0)).label('top3')
         ).join(Race).join(Jockey).filter(
             Entry.horse_id.in_(horse_ids),
-            Entry.position.isnot(None),
-            Entry.jockey_id.isnot(None)
+            Entry.position.isnot(None)
         ).group_by(
             Entry.horse_id,
             Jockey.id,
             Jockey.name
         ).all()
 
-        # 月別の成績を一括取得
+        # 月別成績を一括取得
         month_stats = db.session.query(
             Entry.horse_id,
             func.extract('month', Race.date).label('month'),
@@ -3567,16 +3628,15 @@ def race_shutuba(race_id):
         ).all()
 
         # 統計データを整理
-        stats_by_horse = {}
-        for horse_id in horse_ids:
-            stats_by_horse[horse_id] = {
-                'track_stats': {},
-                'jockey_stats': {},
-                'month_stats': {}
-            }
+        stats_by_horse = {horse_id: {
+            'track_stats': {},
+            'jockey_stats': {},
+            'month_stats': {}
+        } for horse_id in horse_ids}
 
-        # 馬場状態別成績を整理
-        for horse_id, condition, total, wins, top3 in track_condition_stats:
+        # 各統計データを辞書に格納
+        for stat in track_stats:
+            horse_id, condition, total, wins, top3 = stat
             if condition:
                 stats_by_horse[horse_id]['track_stats'][condition] = {
                     'total': total,
@@ -3586,8 +3646,8 @@ def race_shutuba(race_id):
                     'top3_rate': (top3 / total) * 100 if total > 0 else 0
                 }
 
-        # 騎手別成績を整理
-        for horse_id, jockey_name, total, wins, top3 in jockey_stats:
+        for stat in jockey_stats:
+            horse_id, jockey_name, total, wins, top3 = stat
             stats_by_horse[horse_id]['jockey_stats'][jockey_name] = {
                 'total': total,
                 'wins': wins,
@@ -3596,8 +3656,8 @@ def race_shutuba(race_id):
                 'top3_rate': (top3 / total) * 100 if total > 0 else 0
             }
 
-        # 月別成績を整理
-        for horse_id, month, total, wins, top3 in month_stats:
+        for stat in month_stats:
+            horse_id, month, total, wins, top3 = stat
             stats_by_horse[horse_id]['month_stats'][int(month)] = {
                 'total': total,
                 'wins': wins,
@@ -3614,50 +3674,70 @@ def race_shutuba(race_id):
         return render_template('shutuba.html',
                           race=race,
                           entries=entries,
-                          venue_name=VENUE_NAMES.get(str(race.venue_id), '不明'))
+                          venue_name=VENUE_NAMES.get(str(race.venue), '不明'))
 
     except Exception as e:
-        app.logger.error(f"Error in race_shutuba: {str(e)}")
-        return render_template('errors/error.html', 
-                          message="出馬表の取得中にエラーが発生しました")
+        current_app.logger.error(f"Error in race_shutuba: {str(e)}")
+        flash('出馬表の取得中にエラーが発生しました', 'error')
+        return render_template('shutuba.html', 
+                          race=None,
+                          entries=[],
+                          venue_name='不明')
 
 @lru_cache(maxsize=128)
 def get_race_statistics(race_id):
     """レース統計情報を取得（キャッシュ付き）"""
-    return db.session.query(
-        func.count(Entry.id).label('total_entries'),
-        func.avg(Entry.odds).label('avg_odds'),
-        func.min(Entry.odds).label('min_odds'),
-        func.max(Entry.odds).label('max_odds')
-    ).filter(
-        Entry.race_id == race_id
-    ).first()
+    try:
+        return db.session.query(
+            func.count(Entry.id).label('total_entries'),
+            func.avg(Entry.odds).label('avg_odds'),
+            func.min(Entry.odds).label('min_odds'),
+            func.max(Entry.odds).label('max_odds')
+        ).filter(
+            Entry.race_id == race_id
+        ).first()
+    except Exception as e:
+        current_app.logger.error(f"Error getting race statistics: {str(e)}")
+        return None
 
 def create_favorite_horse_entry_notifications(race_id, horse_id):
     """お気に入り馬の出走通知を作成"""
-    # お気に入りに登録しているユーザーを取得
-    favorite_users = User.query.join(Favorite)\
-        .filter(Favorite.horse_id == horse_id)\
-        .all()
-    
-    race = Race.query.get(race_id)
-    horse = Horse.query.get(horse_id)
-    
-    for user in favorite_users:
-        notification = Notification(
-            user_id=user.id,
-            type='favorite_horse_entry',
-            content=f'お気に入りの{horse.name}が{race.name}({race.date.strftime("%Y/%m/%d")})に出走予定です',
-            related_id=race.id,
-            is_read=False
-        )
-        db.session.add(notification)
-    
     try:
-        db.session.commit()
+        # お気に入りユーザーと必要な情報を一括取得
+        favorites = db.session.query(
+            User.id,
+            Horse.name,
+            Race.name,
+            Race.date
+        ).join(
+            Favorite, User.id == Favorite.user_id
+        ).join(
+            Horse, Favorite.horse_id == Horse.id
+        ).join(
+            Race, Race.id == race_id
+        ).filter(
+            Favorite.horse_id == horse_id
+        ).all()
+
+        # 通知を一括作成
+        notifications = [
+            Notification(
+                user_id=user_id,
+                type='favorite_horse_entry',
+                content=f'お気に入りの{horse_name}が{race_name}({race_date.strftime("%Y/%m/%d")})に出走予定です',
+                related_id=race_id,
+                is_read=False
+            )
+            for user_id, horse_name, race_name, race_date in favorites
+        ]
+        
+        if notifications:
+            db.session.bulk_save_objects(notifications)
+            db.session.commit()
+            
     except Exception as e:
         db.session.rollback()
-        app.logger.error(f"Error creating notifications: {str(e)}")
+        current_app.logger.error(f"Error creating notifications: {str(e)}")
 
 @app.route('/races/<int:race_id>/entries', methods=['POST'])
 @login_required
@@ -3666,7 +3746,19 @@ def register_race_entry(race_id):
         data = request.get_json()
         horse_id = data.get('horse_id')
         
-        # 出走登録の処理
+        if not horse_id:
+            return jsonify({'status': 'error', 'message': '馬IDが指定されていません'}), 400
+
+        # 重複チェック
+        existing_entry = db.session.query(ShutubaEntry).filter_by(
+            race_id=race_id,
+            horse_id=horse_id
+        ).first()
+        
+        if existing_entry:
+            return jsonify({'status': 'error', 'message': 'すでに登録されています'}), 400
+        
+        # 出走登録
         entry = ShutubaEntry(
             race_id=race_id,
             horse_id=horse_id
@@ -3677,31 +3769,209 @@ def register_race_entry(race_id):
         # お気に入り馬の通知を作成
         create_favorite_horse_entry_notifications(race_id, horse_id)
         
-        return jsonify({'status': 'success'})
+        return jsonify({'status': 'success', 'message': '出走登録が完了しました'})
+        
     except Exception as e:
-        return jsonify({'status': 'error', 'message': str(e)})
+        db.session.rollback()
+        current_app.logger.error(f"Error in register_race_entry: {str(e)}")
+        return jsonify({'status': 'error', 'message': 'エラーが発生しました'}), 500
 
 @app.route('/api/notifications')
 @login_required
 def get_notifications():
-    notifications = Notification.query\
-        .filter_by(user_id=current_user.id)\
-        .order_by(Notification.created_at.desc())\
-        .limit(10)\
-        .all()
-    
-    unread_count = Notification.query\
-        .filter_by(user_id=current_user.id, is_read=False)\
-        .count()
-    
-    return jsonify({
-        'notifications': [{
-            'id': n.id,
-            'content': n.content,
-            'type': n.type,
-            'is_read': n.is_read,
-            'created_at': n.created_at.isoformat(),
-            'related_id': n.related_id
-        } for n in notifications],
-        'unread_count': unread_count
-    })
+    try:
+        # 通知とユーザー情報を効率的に取得
+        notifications = db.session.query(
+            Notification.id,
+            Notification.content,
+            Notification.type,
+            Notification.is_read,
+            Notification.created_at,
+            Notification.related_id
+        ).filter(
+            Notification.user_id == current_user.id
+        ).order_by(
+            Notification.created_at.desc()
+        ).limit(10).all()
+        
+        # 未読件数を取得
+        unread_count = db.session.query(func.count(Notification.id))\
+            .filter(
+                Notification.user_id == current_user.id,
+                Notification.is_read == False
+            ).scalar()
+        
+        return jsonify({
+            'notifications': [{
+                'id': n.id,
+                'content': n.content,
+                'type': n.type,
+                'is_read': n.is_read,
+                'created_at': n.created_at.isoformat(),
+                'related_id': n.related_id
+            } for n in notifications],
+            'unread_count': unread_count
+        })
+        
+    except Exception as e:
+        current_app.logger.error(f"Error fetching notifications: {str(e)}")
+        return jsonify({'error': '通知の取得中にエラーが発生しました'}), 500
+
+@app.route('/api/notifications/read', methods=['POST'])
+@login_required
+def mark_notifications_read():
+    try:
+        notification_ids = request.json.get('notification_ids', [])
+        
+        if not notification_ids:
+            return jsonify({'error': '通知IDが指定されていません'}), 400
+            
+        # 通知を一括更新
+        db.session.query(Notification)\
+            .filter(
+                Notification.id.in_(notification_ids),
+                Notification.user_id == current_user.id
+            )\
+            .update(
+                {Notification.is_read: True},
+                synchronize_session=False
+            )
+            
+        db.session.commit()
+        return jsonify({'status': 'success'})
+        
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"Error marking notifications as read: {str(e)}")
+        return jsonify({'error': '通知の更新中にエラーが発生しました'}), 500
+
+@app.route('/api/user/settings', methods=['GET', 'POST'])
+@login_required
+def user_settings():
+    try:
+        if request.method == 'POST':
+            data = request.get_json()
+            
+            # 設定を一括更新
+            settings = db.session.query(UserSettings)\
+                .filter_by(user_id=current_user.id)\
+                .first()
+                
+            if not settings:
+                settings = UserSettings(user_id=current_user.id)
+                db.session.add(settings)
+            
+            # 通知設定の更新
+            settings.email_notifications = data.get('email_notifications', False)
+            settings.push_notifications = data.get('push_notifications', False)
+            settings.notification_types = data.get('notification_types', [])
+            
+            # 表示設定の更新
+            settings.theme = data.get('theme', 'light')
+            settings.display_odds = data.get('display_odds', True)
+            settings.language = data.get('language', 'ja')
+            
+            db.session.commit()
+            return jsonify({'status': 'success'})
+            
+        else:
+            # 設定を取得
+            settings = db.session.query(UserSettings)\
+                .filter_by(user_id=current_user.id)\
+                .options(load_only(
+                    'email_notifications',
+                    'push_notifications',
+                    'notification_types',
+                    'theme',
+                    'display_odds',
+                    'language'
+                ))\
+                .first()
+            
+            if not settings:
+                return jsonify({
+                    'email_notifications': False,
+                    'push_notifications': False,
+                    'notification_types': [],
+                    'theme': 'light',
+                    'display_odds': True,
+                    'language': 'ja'
+                })
+            
+            return jsonify({
+                'email_notifications': settings.email_notifications,
+                'push_notifications': settings.push_notifications,
+                'notification_types': settings.notification_types,
+                'theme': settings.theme,
+                'display_odds': settings.display_odds,
+                'language': settings.language
+            })
+            
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"Error in user settings: {str(e)}")
+        return jsonify({'error': '設定の処理中にエラーが発生しました'}), 500
+
+@app.route('/api/user/favorites', methods=['GET', 'POST', 'DELETE'])
+@login_required
+def manage_favorites():
+    try:
+        if request.method == 'GET':
+            # お気に入り馬を一括取得
+            favorites = db.session.query(
+                Horse.id,
+                Horse.name,
+                Horse.sex,
+                Horse.trainer
+            ).join(
+                Favorite,
+                and_(
+                    Favorite.horse_id == Horse.id,
+                    Favorite.user_id == current_user.id
+                )
+            ).all()
+            
+            return jsonify([{
+                'id': f.id,
+                'name': f.name,
+                'sex': f.sex,
+                'trainer': f.trainer
+            } for f in favorites])
+            
+        elif request.method == 'POST':
+            horse_id = request.json.get('horse_id')
+            
+            if not horse_id:
+                return jsonify({'error': '馬IDが指定されていません'}), 400
+                
+            # 重複チェック
+            existing = db.session.query(Favorite)\
+                .filter_by(user_id=current_user.id, horse_id=horse_id)\
+                .first()
+                
+            if existing:
+                return jsonify({'error': 'すでにお気に入りに登録されています'}), 400
+                
+            favorite = Favorite(user_id=current_user.id, horse_id=horse_id)
+            db.session.add(favorite)
+            db.session.commit()
+            
+            return jsonify({'status': 'success'})
+            
+        else:  # DELETE
+            horse_id = request.json.get('horse_id')
+            
+            if not horse_id:
+                return jsonify({'error': '馬IDが指定されていません'}), 400
+                
+            db.session.query(Favorite)\
+                .filter_by(user_id=current_user.id, horse_id=horse_id)\
+                .delete()
+                
+            db.session.commit()
+            return jsonify({'status': 'success'})
+            
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"Error managing favorites: {str(e)}")
+        return jsonify({'error': 'お気に入りの処理中にエラーが発生しました'}), 500
