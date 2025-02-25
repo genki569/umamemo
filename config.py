@@ -8,13 +8,13 @@ class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY', '3110Genki=')  # 変更不要
     
     # データベース設定
-    DB_USER = os.environ.get('DB_USER', '8ya4f_genki')      # 要変更
-    DB_PASSWORD = os.environ.get('DB_PASSWORD', '3110Genki=') # 変更不要
-    DB_HOST = os.environ.get('DB_HOST', 'mysql49.onamae.ne.jp') # 要変更
-    DB_NAME = os.environ.get('DB_NAME', '8ya4f_horced_db')   # 要変更
+    DB_USER = os.environ.get('DB_USER', 'umamemo')      # 変更
+    DB_PASSWORD = os.environ.get('DB_PASSWORD', '3110Genki') # 変更
+    DB_HOST = os.environ.get('DB_HOST', 'localhost') # 変更
+    DB_NAME = os.environ.get('DB_NAME', 'umamemo')   # 変更
     
     # 以下は変更不要
-    SQLALCHEMY_DATABASE_URI = f'mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}?charset=utf8mb4'
+    SQLALCHEMY_DATABASE_URI = f'postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     
     # セッション設定（変更不要）
