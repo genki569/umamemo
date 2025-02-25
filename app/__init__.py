@@ -1,6 +1,4 @@
-import pymysql
-pymysql.install_as_MySQLdb()
-
+# import pymysql  # この行を削除または#でコメントアウト
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
