@@ -3819,30 +3819,19 @@ def get_notifications():
 
 @app.route('/api/notifications/read', methods=['POST'])
 @login_required
-def mark_notifications_as_read():  # 新しい名前
+def mark_notifications_read_v2():  # 名前を変更
+    user_id = session.get('user_id')
+    if not user_id:
+        return jsonify({'error': 'Unauthorized'}), 401
+
     try:
-        notification_ids = request.json.get('notification_ids', [])
-        if not notification_ids:
-            return jsonify({'error': '通知IDが指定されていません'}), 400
-            
-        # 通知を一括更新
-        db.session.query(Notification)\
-            .filter(
-                Notification.id.in_(notification_ids),
-                Notification.user_id == current_user.id
-            )\
-            .update(
-                {Notification.is_read: True},
-                synchronize_session=False
-            )
-            
+        # 通知を既読にする処理
+        Notification.query.filter_by(user_id=user_id, is_read=False).update({'is_read': True})
         db.session.commit()
-        return jsonify({'status': 'success'})
-        
+        return jsonify({'message': 'Notifications marked as read'})
     except Exception as e:
         db.session.rollback()
-        current_app.logger.error(f"Error marking notifications as read: {str(e)}")
-        return jsonify({'error': '通知の更新中にエラーが発生しました'}), 500
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/api/user/settings', methods=['GET', 'POST'])
 @login_required
