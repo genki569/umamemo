@@ -37,19 +37,28 @@ class RaceDataImporter:
         try:
             df = pd.read_csv(f'{self.input_dir}/horses.csv')
             df = df.where(pd.notnull(df), None)
+            print("Columns in horses.csv:", df.columns.tolist())
             
-            with self.engine.begin() as conn:
+            stmt = text("""
+                INSERT INTO horses (id, name, sex, memo, updated_at, created_at)
+                VALUES (:horse_id, :horse_name, :sex, :memo, NOW(), NOW())
+                ON CONFLICT (id) DO UPDATE 
+                SET name = EXCLUDED.name,
+                    sex = EXCLUDED.sex,
+                    memo = EXCLUDED.memo,
+                    updated_at = NOW();
+            """)
+            
+            with self.engine.connect() as conn:
                 for _, row in df.iterrows():
-                    stmt = text("""
-                        INSERT INTO horses (id, name, sex, memo, updated_at, created_at)
-                        VALUES (:id, :name, :sex, :memo, NOW(), NOW())
-                        ON CONFLICT (id) DO UPDATE 
-                        SET name = EXCLUDED.name,
-                            sex = EXCLUDED.sex,
-                            memo = EXCLUDED.memo,
-                            updated_at = NOW();
-                    """)
-                    conn.execute(stmt, {"id": row['id'], "name": row['name'], "sex": row['sex'], "memo": row['memo']})
+                    params = {
+                        "horse_id": row['horse_id'],
+                        "horse_name": row['horse_name'],
+                        "sex": row['sex'],
+                        "memo": row.get('memo', None)
+                    }
+                    conn.execute(stmt, parameters=params)
+                conn.commit()
             
             logging.info(f"馬情報のインポート成功: {len(df)}件")
         except Exception as e:
