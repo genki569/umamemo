@@ -38,7 +38,7 @@ class RaceDataImporter:
             df = pd.read_csv(f'{self.input_dir}/horses.csv')
             df = df.where(pd.notnull(df), None)
             
-            upsert_query = """
+            upsert_query = text("""
                 INSERT INTO horses (id, name, sex, memo, updated_at, created_at)
                 VALUES ($1, $2, $3, $4, NOW(), NOW())
                 ON CONFLICT (id) DO UPDATE 
@@ -46,12 +46,17 @@ class RaceDataImporter:
                     sex = EXCLUDED.sex,
                     memo = EXCLUDED.memo,
                     updated_at = NOW();
-            """
+            """)
             
             with self.engine.connect() as conn:
                 for _, row in df.iterrows():
-                    conn.execute(text(upsert_query), 
-                               [row['id'], row['name'], row['sex'], row['memo']])
+                    params = [
+                        row['id'],
+                        row['name'],
+                        row['sex'],
+                        row['memo']
+                    ]
+                    conn.execute(upsert_query, params)
                 conn.commit()
             
             logging.info(f"馬情報のインポート成功: {len(df)}件")
