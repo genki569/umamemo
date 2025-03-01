@@ -40,26 +40,24 @@ class RaceDataImporter:
             df = pd.read_csv(f'{self.input_dir}/horses.csv')
             df = df.where(pd.notnull(df), None)
             
-            # クエリの修正
-            upsert_query = """
+            upsert_query = text("""
                 INSERT INTO horses (id, name, sex, memo, updated_at, created_at)
-                VALUES ($1, $2, $3, $4, NOW(), NOW())
+                VALUES (:id, :name, :sex, :memo, NOW(), NOW())
                 ON CONFLICT (id) DO UPDATE 
                 SET name = EXCLUDED.name,
                     sex = EXCLUDED.sex,
                     memo = EXCLUDED.memo,
                     updated_at = NOW();
-            """
+            """)
             
             with self.engine.connect() as conn:
                 for _, row in df.iterrows():
-                    params = (
-                        row['id'],
-                        row['name'],
-                        row['sex'],
-                        row['memo']
-                    )
-                    conn.execute(text(upsert_query), params)
+                    conn.execute(upsert_query, {
+                        'id': row['id'],
+                        'name': row['name'],
+                        'sex': row['sex'],
+                        'memo': row['memo']
+                    })
                 conn.commit()
             
             logging.info(f"馬情報のインポート成功: {len(df)}件")
@@ -72,17 +70,19 @@ class RaceDataImporter:
             df = pd.read_csv(f'{self.input_dir}/jockeys.csv')
             df = df.where(pd.notnull(df), None)
             
-            upsert_query = """
+            upsert_query = text("""
                 INSERT INTO jockeys (id, name)
-                VALUES ($1, $2)
+                VALUES (:id, :name)
                 ON CONFLICT (id) DO UPDATE 
                 SET name = EXCLUDED.name;
-            """
+            """)
             
             with self.engine.connect() as conn:
                 for _, row in df.iterrows():
-                    params = (row['id'], row['name'])
-                    conn.execute(text(upsert_query), params)
+                    conn.execute(upsert_query, {
+                        'id': row['id'],
+                        'name': row['name']
+                    })
                 conn.commit()
             
             logging.info(f"騎手情報のインポート成功: {len(df)}件")
