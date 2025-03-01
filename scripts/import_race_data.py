@@ -97,11 +97,9 @@ class RaceDataImporter:
                     weather, track_condition_turf, track_condition_dirt,
                     created_at, race_info
                 ) VALUES (
-                    %(race_id)s, %(race_name)s, %(race_date)s, %(post_time)s,
-                    %(kaisai_info)s, %(course_code)s, %(race_number)s, %(year)s,
-                    %(grade)s, %(distance)s, %(track_type)s, %(track_direction)s,
-                    %(weather)s, %(track_condition_turf)s, %(track_condition_dirt)s,
-                    %(created_at)s, %(race_info)s
+                    $1, $2, $3, $4, $5, $6, $7, $8,
+                    $9, $10, $11, $12, $13, $14, $15,
+                    $16, $17
                 )
                 ON CONFLICT (race_id) DO UPDATE 
                 SET race_name = EXCLUDED.race_name,
@@ -110,7 +108,16 @@ class RaceDataImporter:
             
             with self.engine.connect() as conn:
                 for _, row in df.iterrows():
-                    conn.execute(text(upsert_query), row.to_dict())
+                    params = [
+                        row['race_id'], row['race_name'], row['race_date'], 
+                        row['post_time'], row['kaisai_info'], row['course_code'],
+                        row['race_number'], row['year'], row['grade'],
+                        row['distance'], row['track_type'], row['track_direction'],
+                        row['weather'], row['track_condition_turf'],
+                        row['track_condition_dirt'], row['created_at'],
+                        row['race_info']
+                    ]
+                    conn.execute(text(upsert_query), params)
                 conn.commit()
             
             logging.info(f"レース情報のインポート成功: {len(df)}件")
@@ -130,10 +137,8 @@ class RaceDataImporter:
                     arrival_order, post_position, load_weight, finish_time,
                     margin, corner_position, last_3f
                 ) VALUES (
-                    %(entry_id)s, %(race_id)s, %(horse_id)s, %(jockey_id)s, %(bracket_number)s,
-                    %(odds)s, %(popularity)s, %(weight)s, %(weight_change)s, %(prize)s,
-                    %(arrival_order)s, %(post_position)s, %(load_weight)s, %(finish_time)s,
-                    %(margin)s, %(corner_position)s, %(last_3f)s
+                    $1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
+                    $11, $12, $13, $14, $15, $16, $17
                 )
                 ON CONFLICT (entry_id) DO UPDATE 
                 SET arrival_order = EXCLUDED.arrival_order,
@@ -143,7 +148,15 @@ class RaceDataImporter:
             
             with self.engine.connect() as conn:
                 for _, row in df.iterrows():
-                    conn.execute(text(upsert_query), row.to_dict())
+                    params = [
+                        row['entry_id'], row['race_id'], row['horse_id'],
+                        row['jockey_id'], row['bracket_number'], row['odds'],
+                        row['popularity'], row['weight'], row['weight_change'],
+                        row['prize'], row['arrival_order'], row['post_position'],
+                        row['load_weight'], row['finish_time'], row['margin'],
+                        row['corner_position'], row['last_3f']
+                    ]
+                    conn.execute(text(upsert_query), params)
                 conn.commit()
             
             logging.info(f"出走情報のインポート成功: {len(df)}件")
