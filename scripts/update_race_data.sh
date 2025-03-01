@@ -5,6 +5,9 @@
 BASE_DIR="/var/www/umamemo"
 cd "${BASE_DIR}"
 
+# 仮想環境をアクティベート
+source venv/bin/activate
+
 # スクレイピングの実行
 python3 app/daily_race_scraper.py
 
@@ -20,4 +23,7 @@ if [ $? -eq 0 ]; then
 else
     echo "$(date '+%Y-%m-%d %H:%M:%S') スクレイピング処理でエラーが発生しました"
     exit 1
-fi 
+fi
+
+# 仮想環境を非アクティベート
+deactivate 
