@@ -38,13 +38,12 @@ class RaceDataImporter:
     def import_horses(self):
         try:
             df = pd.read_csv(f'{self.input_dir}/horses.csv')
-            # NULL値の処理
             df = df.where(pd.notnull(df), None)
             
-            # UPSERTクエリの作成
+            # クエリの修正
             upsert_query = """
                 INSERT INTO horses (id, name, sex, memo, updated_at, created_at)
-                VALUES (%(id)s, %(name)s, %(sex)s, %(memo)s, NOW(), NOW())
+                VALUES ($1, $2, $3, $4, NOW(), NOW())
                 ON CONFLICT (id) DO UPDATE 
                 SET name = EXCLUDED.name,
                     sex = EXCLUDED.sex,
@@ -54,7 +53,13 @@ class RaceDataImporter:
             
             with self.engine.connect() as conn:
                 for _, row in df.iterrows():
-                    conn.execute(text(upsert_query), row.to_dict())
+                    params = (
+                        row['id'],
+                        row['name'],
+                        row['sex'],
+                        row['memo']
+                    )
+                    conn.execute(text(upsert_query), params)
                 conn.commit()
             
             logging.info(f"馬情報のインポート成功: {len(df)}件")
@@ -69,14 +74,15 @@ class RaceDataImporter:
             
             upsert_query = """
                 INSERT INTO jockeys (id, name)
-                VALUES (%(id)s, %(name)s)
+                VALUES ($1, $2)
                 ON CONFLICT (id) DO UPDATE 
                 SET name = EXCLUDED.name;
             """
             
             with self.engine.connect() as conn:
                 for _, row in df.iterrows():
-                    conn.execute(text(upsert_query), row.to_dict())
+                    params = (row['id'], row['name'])
+                    conn.execute(text(upsert_query), params)
                 conn.commit()
             
             logging.info(f"騎手情報のインポート成功: {len(df)}件")
