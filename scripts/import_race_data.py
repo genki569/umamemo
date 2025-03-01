@@ -40,7 +40,7 @@ class RaceDataImporter:
             
             upsert_query = text("""
                 INSERT INTO horses (id, name, sex, memo, updated_at, created_at)
-                VALUES ($1, $2, $3, $4, NOW(), NOW())
+                VALUES (:id, :name, :sex, :memo, NOW(), NOW())
                 ON CONFLICT (id) DO UPDATE 
                 SET name = EXCLUDED.name,
                     sex = EXCLUDED.sex,
@@ -50,12 +50,12 @@ class RaceDataImporter:
             
             with self.engine.connect() as conn:
                 for _, row in df.iterrows():
-                    params = [
-                        row['id'],
-                        row['name'],
-                        row['sex'],
-                        row['memo']
-                    ]
+                    params = {
+                        'id': row['id'],
+                        'name': row['name'],
+                        'sex': row['sex'],
+                        'memo': row['memo']
+                    }
                     conn.execute(upsert_query, params)
                 conn.commit()
             
@@ -69,17 +69,20 @@ class RaceDataImporter:
             df = pd.read_csv(f'{self.input_dir}/jockeys.csv')
             df = df.where(pd.notnull(df), None)
             
-            upsert_query = """
+            upsert_query = text("""
                 INSERT INTO jockeys (id, name)
-                VALUES ($1, $2)
+                VALUES (:id, :name)
                 ON CONFLICT (id) DO UPDATE 
                 SET name = EXCLUDED.name;
-            """
+            """)
             
             with self.engine.connect() as conn:
                 for _, row in df.iterrows():
-                    conn.execute(text(upsert_query), 
-                               [row['id'], row['name']])
+                    params = {
+                        'id': row['id'],
+                        'name': row['name']
+                    }
+                    conn.execute(upsert_query, params)
                 conn.commit()
             
             logging.info(f"騎手情報のインポート成功: {len(df)}件")
@@ -92,7 +95,7 @@ class RaceDataImporter:
             df = pd.read_csv(f'{self.input_dir}/races.csv')
             df = df.where(pd.notnull(df), None)
             
-            upsert_query = """
+            upsert_query = text("""
                 INSERT INTO races (
                     race_id, race_name, race_date, post_time, 
                     kaisai_info, course_code, race_number, year,
@@ -100,27 +103,39 @@ class RaceDataImporter:
                     weather, track_condition_turf, track_condition_dirt,
                     created_at, race_info
                 ) VALUES (
-                    $1, $2, $3, $4, $5, $6, $7, $8,
-                    $9, $10, $11, $12, $13, $14, $15,
-                    $16, $17
+                    :race_id, :race_name, :race_date, :post_time,
+                    :kaisai_info, :course_code, :race_number, :year,
+                    :grade, :distance, :track_type, :track_direction,
+                    :weather, :track_condition_turf, :track_condition_dirt,
+                    :created_at, :race_info
                 )
                 ON CONFLICT (race_id) DO UPDATE 
                 SET race_name = EXCLUDED.race_name,
                     updated_at = NOW();
-            """
+            """)
             
             with self.engine.connect() as conn:
                 for _, row in df.iterrows():
-                    params = [
-                        row['race_id'], row['race_name'], row['race_date'], 
-                        row['post_time'], row['kaisai_info'], row['course_code'],
-                        row['race_number'], row['year'], row['grade'],
-                        row['distance'], row['track_type'], row['track_direction'],
-                        row['weather'], row['track_condition_turf'],
-                        row['track_condition_dirt'], row['created_at'],
-                        row['race_info']
-                    ]
-                    conn.execute(text(upsert_query), params)
+                    params = {
+                        'race_id': row['race_id'],
+                        'race_name': row['race_name'],
+                        'race_date': row['race_date'],
+                        'post_time': row['post_time'],
+                        'kaisai_info': row['kaisai_info'],
+                        'course_code': row['course_code'],
+                        'race_number': row['race_number'],
+                        'year': row['year'],
+                        'grade': row['grade'],
+                        'distance': row['distance'],
+                        'track_type': row['track_type'],
+                        'track_direction': row['track_direction'],
+                        'weather': row['weather'],
+                        'track_condition_turf': row['track_condition_turf'],
+                        'track_condition_dirt': row['track_condition_dirt'],
+                        'created_at': row['created_at'],
+                        'race_info': row['race_info']
+                    }
+                    conn.execute(upsert_query, params)
                 conn.commit()
             
             logging.info(f"レース情報のインポート成功: {len(df)}件")
@@ -133,33 +148,46 @@ class RaceDataImporter:
             df = pd.read_csv(f'{self.input_dir}/entries.csv')
             df = df.where(pd.notnull(df), None)
             
-            upsert_query = """
+            upsert_query = text("""
                 INSERT INTO entries (
                     entry_id, race_id, horse_id, jockey_id, bracket_number,
                     odds, popularity, weight, weight_change, prize,
                     arrival_order, post_position, load_weight, finish_time,
                     margin, corner_position, last_3f
                 ) VALUES (
-                    $1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
-                    $11, $12, $13, $14, $15, $16, $17
+                    :entry_id, :race_id, :horse_id, :jockey_id, :bracket_number,
+                    :odds, :popularity, :weight, :weight_change, :prize,
+                    :arrival_order, :post_position, :load_weight, :finish_time,
+                    :margin, :corner_position, :last_3f
                 )
                 ON CONFLICT (entry_id) DO UPDATE 
                 SET arrival_order = EXCLUDED.arrival_order,
                     finish_time = EXCLUDED.finish_time,
                     updated_at = NOW();
-            """
+            """)
             
             with self.engine.connect() as conn:
                 for _, row in df.iterrows():
-                    params = [
-                        row['entry_id'], row['race_id'], row['horse_id'],
-                        row['jockey_id'], row['bracket_number'], row['odds'],
-                        row['popularity'], row['weight'], row['weight_change'],
-                        row['prize'], row['arrival_order'], row['post_position'],
-                        row['load_weight'], row['finish_time'], row['margin'],
-                        row['corner_position'], row['last_3f']
-                    ]
-                    conn.execute(text(upsert_query), params)
+                    params = {
+                        'entry_id': row['entry_id'],
+                        'race_id': row['race_id'],
+                        'horse_id': row['horse_id'],
+                        'jockey_id': row['jockey_id'],
+                        'bracket_number': row['bracket_number'],
+                        'odds': row['odds'],
+                        'popularity': row['popularity'],
+                        'weight': row['weight'],
+                        'weight_change': row['weight_change'],
+                        'prize': row['prize'],
+                        'arrival_order': row['arrival_order'],
+                        'post_position': row['post_position'],
+                        'load_weight': row['load_weight'],
+                        'finish_time': row['finish_time'],
+                        'margin': row['margin'],
+                        'corner_position': row['corner_position'],
+                        'last_3f': row['last_3f']
+                    }
+                    conn.execute(upsert_query, params)
                 conn.commit()
             
             logging.info(f"出走情報のインポート成功: {len(df)}件")
