@@ -22,3 +22,9 @@ race_data_checkpoint*
 venv/
 *.pkl
 aux | grep gunicorn
+logs/
+.DS_Store
+scripts/output/*.csv
+logs/
+.DS_Store
+scripts/output/*.csv
