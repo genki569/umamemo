@@ -1,8 +1,8 @@
 #!/bin/bash
-# /Users/aa/Downloads/umamemo.co/scripts/update_race_data.sh
+# /var/www/umamemo/scripts/update_race_data.sh
 
 # ベースディレクトリの設定
-BASE_DIR="/Users/aa/Downloads/umamemo.co"
+BASE_DIR="/var/www/umamemo"
 cd "${BASE_DIR}"
 
 # スクレイピングの実行
