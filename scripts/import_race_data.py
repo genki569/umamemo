@@ -16,9 +16,7 @@ class RaceDataImporter:
         self.db_uri = f'postgresql://{self.db_user}:{self.db_password}@{self.db_host}/{self.db_name}'
         self.engine = create_engine(self.db_uri)
         
-        # CSV入力パス
         self.input_dir = 'scripts/output'
-        
         self.setup_logging()
 
     def setup_logging(self):
@@ -181,4 +179,4 @@ def main():
     importer.import_all()
 
 if __name__ == "__main__":
-    main() 
+    main()
