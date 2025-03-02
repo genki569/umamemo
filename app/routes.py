@@ -266,30 +266,15 @@ def race_detail(race_id):
                              reviews=[],
                              error="レース情報の取得中にエラーが発生しました")
 
-@app.route('/races/<int:race_id>/result')
-def race_result(race_id):
-    app.logger.info(f'Accessing result page for race {race_id}')
+@app.route('/race/<int:race_id>')
+def race(race_id):
     try:
-        race = db.session.query(Race).get_or_404(race_id)
-        entries = db.session.query(Entry)\
-            .join(Horse)\
-            .outerjoin(Jockey)\
-            .filter(Entry.race_id == race_id)\
-            .options(
-                joinedload(Entry.horse),
-                joinedload(Entry.jockey)
-            )\
-            .order_by(Entry.horse_number.asc())\
-            .all()
-            
-        return render_template('result.html', 
-                             race=race, 
-                             entries=entries)
+        race = Race.query.get_or_404(race_id)
+        entries = Entry.query.filter_by(race_id=race_id).all()
+        return render_template('race.html', race=race, entries=entries)
     except Exception as e:
-        app.logger.error(f"Error in race_result: {str(e)}")
-        return render_template('result.html', 
-                             race=None, 
-                             entries=[])
+        app.logger.error(f"レース情報の取得中にエラー: {str(e)}")
+        return render_template('error.html', error=str(e)), 404
 
 # is_duplicate関数の定義
 def is_duplicate(entry1, entry2):
