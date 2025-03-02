@@ -64,8 +64,7 @@ class RaceDataImporter:
 
     def import_jockeys(self):
         try:
-            # ヘッダーなしでCSVを読み込む
-            df = pd.read_csv(f'{self.input_dir}/jockeys.csv', header=None)
+            df = pd.read_csv(f'{self.input_dir}/jockeys.csv')
             df = df.where(pd.notnull(df), None)
             
             stmt = text("""
@@ -78,8 +77,8 @@ class RaceDataImporter:
             with self.engine.connect() as conn:
                 for _, row in df.iterrows():
                     params = {
-                        "id": row[0],    # 1列目: ID
-                        "name": row[1]    # 2列目: 名前
+                        "id": row.iloc[0],    # 1列目: ID
+                        "name": row.iloc[1]    # 2列目: 名前
                     }
                     conn.execute(stmt, parameters=params)
                 conn.commit()
@@ -91,52 +90,30 @@ class RaceDataImporter:
 
     def import_races(self):
         try:
-            # ヘッダーなしでCSVを読み込む
-            df = pd.read_csv(f'{self.input_dir}/races.csv', header=None)
+            df = pd.read_csv(f'{self.input_dir}/races.csv')
             df = df.where(pd.notnull(df), None)
             
-            stmt = text("""
-                INSERT INTO races (
-                    race_id, race_name, race_date, post_time, 
-                    kaisai_info, course_code, race_number, year,
-                    grade, distance, track_type, track_direction,
-                    weather, track_condition_turf, track_condition_dirt,
-                    created_at, race_info
-                ) VALUES (
-                    :race_id, :race_name, :race_date, :post_time,
-                    :kaisai_info, :course_code, :race_number, :year,
-                    :grade, :distance, :track_type, :track_direction,
-                    :weather, :track_condition_turf, :track_condition_dirt,
-                    :created_at, :race_info
-                )
-                ON CONFLICT (race_id) DO UPDATE 
-                SET race_name = EXCLUDED.race_name,
-                    updated_at = NOW();
-            """)
-            
-            with self.engine.connect() as conn:
+            with self.engine.begin() as conn:
                 for _, row in df.iterrows():
-                    params = {
-                        "race_id": row[0],
-                        "race_name": row[1],
-                        "race_date": row[2],
-                        "post_time": row[3],
-                        "kaisai_info": row[4],
-                        "course_code": row[5],
-                        "race_number": row[6],
-                        "year": row[7],
-                        "grade": row[8],
-                        "distance": row[9],
-                        "track_type": row[10],
-                        "track_direction": row[11],
-                        "weather": row[12],
-                        "track_condition_turf": row[13],
-                        "track_condition_dirt": row[14],
-                        "created_at": row[15],
-                        "race_info": row[16]
-                    }
-                    conn.execute(stmt, parameters=params)
-                conn.commit()
+                    stmt = text("""
+                        INSERT INTO races (
+                            race_id, race_name, race_date, post_time, 
+                            kaisai_info, course_code, race_number, year,
+                            grade, distance, track_type, track_direction,
+                            weather, track_condition_turf, track_condition_dirt,
+                            created_at, race_info
+                        ) VALUES (
+                            :race_id, :race_name, :race_date, :post_time,
+                            :kaisai_info, :course_code, :race_number, :year,
+                            :grade, :distance, :track_type, :track_direction,
+                            :weather, :track_condition_turf, :track_condition_dirt,
+                            :created_at, :race_info
+                        )
+                        ON CONFLICT (race_id) DO UPDATE 
+                        SET race_name = EXCLUDED.race_name,
+                            updated_at = NOW();
+                    """)
+                    conn.execute(stmt, dict(row))
             
             logging.info(f"レース情報のインポート成功: {len(df)}件")
         except Exception as e:
@@ -145,51 +122,29 @@ class RaceDataImporter:
 
     def import_entries(self):
         try:
-            # ヘッダーなしでCSVを読み込む
-            df = pd.read_csv(f'{self.input_dir}/entries.csv', header=None)
+            df = pd.read_csv(f'{self.input_dir}/entries.csv')
             df = df.where(pd.notnull(df), None)
             
-            stmt = text("""
-                INSERT INTO entries (
-                    entry_id, race_id, horse_id, jockey_id, bracket_number,
-                    odds, popularity, weight, weight_change, prize,
-                    arrival_order, post_position, load_weight, finish_time,
-                    margin, corner_position, last_3f
-                ) VALUES (
-                    :entry_id, :race_id, :horse_id, :jockey_id, :bracket_number,
-                    :odds, :popularity, :weight, :weight_change, :prize,
-                    :arrival_order, :post_position, :load_weight, :finish_time,
-                    :margin, :corner_position, :last_3f
-                )
-                ON CONFLICT (entry_id) DO UPDATE 
-                SET arrival_order = EXCLUDED.arrival_order,
-                    finish_time = EXCLUDED.finish_time,
-                    updated_at = NOW();
-            """)
-            
-            with self.engine.connect() as conn:
+            with self.engine.begin() as conn:
                 for _, row in df.iterrows():
-                    params = {
-                        "entry_id": row[0],
-                        "race_id": row[1],
-                        "horse_id": row[2],
-                        "jockey_id": row[3],
-                        "bracket_number": row[4],
-                        "odds": row[5],
-                        "popularity": row[6],
-                        "weight": row[7],
-                        "weight_change": row[8],
-                        "prize": row[9],
-                        "arrival_order": row[10],
-                        "post_position": row[11],
-                        "load_weight": row[12],
-                        "finish_time": row[13],
-                        "margin": row[14],
-                        "corner_position": row[15],
-                        "last_3f": row[16]
-                    }
-                    conn.execute(stmt, parameters=params)
-                conn.commit()
+                    stmt = text("""
+                        INSERT INTO entries (
+                            entry_id, race_id, horse_id, jockey_id, bracket_number,
+                            odds, popularity, weight, weight_change, prize,
+                            arrival_order, post_position, load_weight, finish_time,
+                            margin, corner_position, last_3f
+                        ) VALUES (
+                            :entry_id, :race_id, :horse_id, :jockey_id, :bracket_number,
+                            :odds, :popularity, :weight, :weight_change, :prize,
+                            :arrival_order, :post_position, :load_weight, :finish_time,
+                            :margin, :corner_position, :last_3f
+                        )
+                        ON CONFLICT (entry_id) DO UPDATE 
+                        SET arrival_order = EXCLUDED.arrival_order,
+                            finish_time = EXCLUDED.finish_time,
+                            updated_at = NOW();
+                    """)
+                    conn.execute(stmt, dict(row))
             
             logging.info(f"出走情報のインポート成功: {len(df)}件")
         except Exception as e:
