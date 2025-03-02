@@ -35,11 +35,8 @@ class RaceDataImporter:
 
     def import_horses(self):
         try:
-            df = pd.read_csv(f'{self.input_dir}/horses.csv', header=None)  # ヘッダーなしとして読み込み
+            df = pd.read_csv(f'{self.input_dir}/horses.csv')
             df = df.where(pd.notnull(df), None)
-            
-            # カラムの位置で指定（0から始まるインデックス）
-            df.columns = ['id', 'name', 'null1', 'sex', 'null2', 'created_at', 'null3', 'updated_at']
             
             stmt = text("""
                 INSERT INTO horses (id, name, sex, memo, updated_at, created_at)
@@ -53,9 +50,9 @@ class RaceDataImporter:
             with self.engine.connect() as conn:
                 for _, row in df.iterrows():
                     params = {
-                        "id": row['id'],
-                        "name": row['name'],
-                        "sex": row['sex']
+                        "id": row.iloc[0],    # 1列目: ID
+                        "name": row.iloc[1],   # 2列目: 名前
+                        "sex": row.iloc[3]     # 4列目: 性別
                     }
                     conn.execute(stmt, parameters=params)
                 conn.commit()
@@ -67,11 +64,8 @@ class RaceDataImporter:
 
     def import_jockeys(self):
         try:
-            df = pd.read_csv(f'{self.input_dir}/jockeys.csv', header=None)  # ヘッダーなしとして読み込み
+            df = pd.read_csv(f'{self.input_dir}/jockeys.csv')
             df = df.where(pd.notnull(df), None)
-            
-            # カラムの位置で指定
-            df.columns = ['id', 'name', 'null1', 'null2', 'created_at', 'null3', 'updated_at']
             
             stmt = text("""
                 INSERT INTO jockeys (id, name)
@@ -83,8 +77,8 @@ class RaceDataImporter:
             with self.engine.connect() as conn:
                 for _, row in df.iterrows():
                     params = {
-                        "id": row['id'],
-                        "name": row['name']
+                        "id": row.iloc[0],    # 1列目: ID
+                        "name": row.iloc[1]    # 2列目: 名前
                     }
                     conn.execute(stmt, parameters=params)
                 conn.commit()
