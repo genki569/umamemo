@@ -98,21 +98,25 @@ def races():
                 'value': date.strftime('%Y%m%d'),
                 'month': date.month,
                 'day': date.day,
-                'weekday': date.strftime('%a')
+                'weekday': date.strftime('%a')  # 曜日
             })
 
-        # 選択された日付の取得（デフォルトは今日）
+        # 選択された日付の取得
         selected_date = request.args.get('date')
         if selected_date:
             selected_date = datetime.strptime(selected_date, '%Y%m%d').date()
         else:
-            # データがある最新の日付を選択
-            selected_date = available_dates[-1][0] if available_dates else datetime.now().date()
+            # データがある最新の日付を選択（デフォルト）
+            selected_date = available_dates[0][0] if available_dates else datetime.now().date()
 
-        # レース情報の取得と会場ごとのグループ化
+        app.logger.info(f'Selected date: {selected_date}')
+
+        # 選択された日付のレース情報を取得
         races = Race.query.filter(
             func.date(Race.date) == selected_date
         ).order_by(Race.venue, Race.race_number).all()
+
+        app.logger.info(f'Found {len(races)} races for date {selected_date}')
 
         # 会場ごとにグループ化
         venue_races = {}
@@ -127,20 +131,17 @@ def races():
                 }
             venue_races[venue_id]['races'].append(race)
 
-        app.logger.debug(f'Available dates: {len(dates)}')
-        app.logger.debug(f'Selected date: {selected_date}')
-        app.logger.debug(f'Found races: {len(races)}')
-
         return render_template(
             'races.html',
             dates=dates,
             selected_date=selected_date.strftime('%Y%m%d'),
             venue_races=venue_races,
-            venues={}  # 一時的に空の辞書を渡す
+            venues={}
         )
 
     except Exception as e:
         app.logger.error(f'Error: {str(e)}')
+        app.logger.error(f'Traceback: {traceback.format_exc()}')
         return render_template(
             'races.html',
             dates=[],
