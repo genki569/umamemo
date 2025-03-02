@@ -114,6 +114,7 @@ def get_venue_code(venue_name):
 @app.route('/races')
 def races():
     try:
+        app.logger.info('Starting races route')
         # 利用可能な日付を取得
         available_dates = db.session.query(
             func.date(Race.date).label('race_date')
