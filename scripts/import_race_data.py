@@ -95,39 +95,60 @@ class RaceDataImporter:
             
             stmt = text("""
                 INSERT INTO races (
-                    race_id, race_name, race_date, post_time,
-                    kaisai_info, course_code, race_number, year,
-                    grade, distance, track_type, track_direction,
-                    weather, track_condition, created_at
+                    id, name, date, start_time,
+                    venue, venue_id, race_number, race_year,
+                    kai, nichi, race_class, distance,
+                    track_type, direction, weather,
+                    track_condition, memo, details,
+                    created_at
                 ) VALUES (
-                    :race_id, :race_name, :race_date, :post_time,
-                    :kaisai_info, :course_code, :race_number, :year,
-                    :grade, :distance, :track_type, :track_direction,
-                    :weather, :track_condition, NOW()
+                    :id, :name, :date, :start_time,
+                    :venue, :venue_id, :race_number, :race_year,
+                    :kai, :nichi, :race_class, :distance,
+                    :track_type, :direction, :weather,
+                    :track_condition, :memo, :details,
+                    NOW()
                 )
-                ON CONFLICT (race_id) DO UPDATE 
-                SET race_name = EXCLUDED.race_name,
+                ON CONFLICT (id) DO UPDATE 
+                SET name = EXCLUDED.name,
                     updated_at = NOW();
             """)
+            
+            def safe_int(value):
+                try:
+                    if pd.isna(value) or str(value).lower() == 'nan':
+                        return None
+                    return int(float(value))
+                except (ValueError, TypeError):
+                    return None
+            
+            def safe_str(value):
+                if pd.isna(value) or str(value).lower() == 'nan':
+                    return None
+                return str(value).strip()
             
             with self.engine.connect() as conn:
                 for index, row in df.iterrows():
                     try:
                         params = {
-                            "race_id": str(row[0]),
-                            "race_name": str(row[1]),
-                            "race_date": str(row[2]),
-                            "post_time": str(row[3]),
-                            "kaisai_info": str(row[4]),
-                            "course_code": int(row[5]) if pd.notnull(row[5]) else None,
-                            "race_number": int(row[6]) if pd.notnull(row[6]) else None,
-                            "year": int(row[7]) if pd.notnull(row[7]) else None,
-                            "grade": None,  # gradeは常にNULL
-                            "distance": int(row[11]) if pd.notnull(row[11]) else None,
-                            "track_type": str(row[12]) if pd.notnull(row[12]) else None,
-                            "track_direction": str(row[13]) if pd.notnull(row[13]) else None,
-                            "weather": str(row[14]) if pd.notnull(row[14]) else None,
-                            "track_condition": str(row[16]) if pd.notnull(row[16]) and row[16] != 'nan' else None
+                            "id": safe_str(row[0]),           # レースID
+                            "name": safe_str(row[1]),         # レース名
+                            "date": safe_str(row[2]),         # 開催日
+                            "start_time": safe_str(row[3]),   # 発走時刻
+                            "venue": safe_str(row[4]),        # 開催場所
+                            "venue_id": safe_str(row[5]),     # 開催場所ID
+                            "race_number": safe_int(row[6]),  # レース番号
+                            "race_year": safe_int(row[7]),    # 開催年
+                            "kai": safe_str(row[8]),          # 開催回
+                            "nichi": safe_str(row[9]),        # 開催日目
+                            "race_class": safe_str(row[10]),  # クラス
+                            "distance": safe_int(row[11]),    # 距離
+                            "track_type": safe_str(row[12]),  # トラック種別
+                            "direction": safe_str(row[13]),   # 左右回り
+                            "weather": safe_str(row[14]),     # 天候
+                            "track_condition": safe_str(row[16]), # 馬場状態
+                            "memo": None,                     # メモ（現時点では使用しない）
+                            "details": None                   # 詳細（現時点では使用しない）
                         }
                         conn.execute(stmt, parameters=params)
                     except Exception as e:
