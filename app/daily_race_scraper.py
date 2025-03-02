@@ -152,14 +152,14 @@ def scrape_all_pages(base_url, session):
     page = 1
     consecutive_errors = 0
     
-    while page <= 200:
+    while page <= 100:  # 100ページまでに制限
         if consecutive_errors >= 3:
             print("連続エラーが発生したため、スクレイピングを一時停止します（10分待機）")
             time.sleep(600)
             consecutive_errors = 0
         
         current_url = f"{base_url}&page={page}"
-        print(f"ページ {page}/3 をスクレイピング中...")
+        print(f"ページ {page}/100 をスクレイピング中...")  # 表示も修正
         
         try:
             race_urls = scrape_race_list(current_url, session)
