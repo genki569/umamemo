@@ -83,22 +83,24 @@ VENUE_NAMES = {
 @app.route('/races')
 def races():
     try:
-        # 利用可能な日付を取得（DBから）
+        # 利用可能な日付を取得（DBから） - クエリを修正
         available_dates = db.session.query(
-            distinct(func.date(Race.date))
-        ).order_by(
-            func.date(Race.date)
+            func.date(Race.date).label('race_date')  # ラベルを付ける
+        ).distinct().order_by(
+            func.date(Race.date).desc()  # 降順に変更
         ).all()
+        
+        app.logger.info(f'Available dates: {available_dates}')
         
         # 日付一覧の作成
         dates = []
-        for date_tuple in available_dates:
-            date = date_tuple[0]
+        for date_row in available_dates:
+            date = date_row.race_date  # ラベル付けした列にアクセス
             dates.append({
                 'value': date.strftime('%Y%m%d'),
                 'month': date.month,
                 'day': date.day,
-                'weekday': date.strftime('%a')  # 曜日
+                'weekday': date.strftime('%a')
             })
 
         # 選択された日付の取得
@@ -106,17 +108,13 @@ def races():
         if selected_date:
             selected_date = datetime.strptime(selected_date, '%Y%m%d').date()
         else:
-            # データがある最新の日付を選択（デフォルト）
-            selected_date = available_dates[0][0] if available_dates else datetime.now().date()
+            # データがある最新の日付を選択
+            selected_date = available_dates[0].race_date if available_dates else datetime.now().date()
 
-        app.logger.info(f'Selected date: {selected_date}')
-
-        # 選択された日付のレース情報を取得
+        # レース情報の取得
         races = Race.query.filter(
             func.date(Race.date) == selected_date
         ).order_by(Race.venue, Race.race_number).all()
-
-        app.logger.info(f'Found {len(races)} races for date {selected_date}')
 
         # 会場ごとにグループ化
         venue_races = {}
@@ -141,7 +139,6 @@ def races():
 
     except Exception as e:
         app.logger.error(f'Error: {str(e)}')
-        app.logger.error(f'Traceback: {traceback.format_exc()}')
         return render_template(
             'races.html',
             dates=[],
