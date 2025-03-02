@@ -80,6 +80,29 @@ VENUE_NAMES = {
     '215': '佐賀'
 }
 
+def normalize_venue_name(venue):
+    """会場名を正規化する"""
+    # 例: '11回浦和15日目' → '浦和'
+    # 数字と「回」「日目」を削除
+    import re
+    
+    # 会場名のマッピング
+    venue_mapping = {
+        '浦和': ['浦和', '浦和(4R-6R)', '浦和(9R-12R)', '11回浦和15日目'],
+        '名古屋': ['名古屋', '25回名古屋5日目'],
+        '佐賀': ['佐賀', '佐賀(4R-6R)', '佐賀(9R-12R)'],
+        '帯広': ['帯広', '帯広(4R-6R)', '帯広(9R-12R)']
+    }
+    
+    # 会場名を正規化
+    for normalized_name, variations in venue_mapping.items():
+        if any(variation in venue for variation in variations):
+            return normalized_name
+            
+    # マッピングにない場合は数字と「回」「日目」を削除
+    normalized = re.sub(r'\d+回|\d+日目|\([^\)]+\)', '', venue).strip()
+    return normalized
+
 @app.route('/races')
 def races():
     try:
@@ -119,7 +142,7 @@ def races():
         # 会場ごとにグループ化（正規化した会場名を使用）
         venue_races = {}
         for race in races:
-            venue_name = race.venue.split('(')[0] if '(' in race.venue else race.venue  # 会場名を正規化
+            venue_name = normalize_venue_name(race.venue)  # 会場名を正規化
             if venue_name not in venue_races:
                 venue_races[venue_name] = {
                     'venue_name': venue_name,
@@ -131,7 +154,7 @@ def races():
 
         # レースを各会場内で時間順にソート
         for venue_data in venue_races.values():
-            venue_data['races'].sort(key=lambda x: x.race_number)
+            venue_data['races'].sort(key=lambda x: (x.date, x.race_number))
 
         return render_template(
             'races.html',
