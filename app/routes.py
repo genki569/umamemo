@@ -121,6 +121,8 @@ def races():
             func.date(Race.date).desc()
         ).all()
         
+        app.logger.info(f'Available dates: {available_dates}')
+        
         # 日付一覧の作成
         dates = []
         for date_row in available_dates:
@@ -161,9 +163,6 @@ def races():
         # レースを各会場内でソート
         for venue_data in venue_races.values():
             venue_data['races'].sort(key=lambda x: x.race_number)
-
-        # 会場コード順にソート
-        venue_races = dict(sorted(venue_races.items()))
 
         return render_template(
             'races.html',

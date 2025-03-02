@@ -7,4 +7,4 @@ logger = logging.getLogger(__name__)
 logger.info('Starting application')
 
 if __name__ == '__main__':
-    app.run() 
+    app.run(host='0.0.0.0') 
