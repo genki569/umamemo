@@ -168,36 +168,69 @@ class RaceDataImporter:
             
             stmt = text("""
                 INSERT INTO entries (
-                    id, race_id, horse_id, jockey_id, bracket_number,
-                    odds, popularity, weight, weight_change,
-                    arrival_order, finish_time
+                    id, race_id, horse_id, jockey_id,
+                    horse_number, odds, popularity, horse_weight,
+                    weight_change, prize, position, frame_number,
+                    weight, time, margin, passing, last_3f
                 ) VALUES (
-                    :id, :race_id, :horse_id, :jockey_id, :bracket_number,
-                    :odds, :popularity, :weight, :weight_change,
-                    :arrival_order, :finish_time
+                    :id, :race_id, :horse_id, :jockey_id,
+                    :horse_number, :odds, :popularity, :horse_weight,
+                    :weight_change, :prize, :position, :frame_number,
+                    :weight, :time, :margin, :passing, :last_3f
                 )
                 ON CONFLICT (id) DO UPDATE 
-                SET arrival_order = EXCLUDED.arrival_order,
-                    finish_time = EXCLUDED.finish_time,
-                    updated_at = NOW();
+                SET position = EXCLUDED.position,
+                    time = EXCLUDED.time;
             """)
             
+            def safe_int(value):
+                try:
+                    if pd.isna(value) or str(value).lower() == 'nan':
+                        return None
+                    return int(float(value))
+                except (ValueError, TypeError):
+                    return None
+            
+            def safe_float(value):
+                try:
+                    if pd.isna(value) or str(value).lower() == 'nan':
+                        return None
+                    return float(value)
+                except (ValueError, TypeError):
+                    return None
+            
+            def safe_str(value):
+                if pd.isna(value) or str(value).lower() == 'nan':
+                    return None
+                return str(value).strip()
+            
             with self.engine.connect() as conn:
-                for _, row in df.iterrows():
-                    params = {
-                        "id": row[0],
-                        "race_id": row[1],
-                        "horse_id": row[2],
-                        "jockey_id": row[3],
-                        "bracket_number": row[4],
-                        "odds": row[5],
-                        "popularity": row[6],
-                        "weight": row[7],
-                        "weight_change": row[8],
-                        "arrival_order": row[9],
-                        "finish_time": row[10]
-                    }
-                    conn.execute(stmt, parameters=params)
+                for index, row in df.iterrows():
+                    try:
+                        params = {
+                            "id": safe_int(row[0]),           # ID
+                            "race_id": safe_str(row[1]),      # レースID
+                            "horse_id": safe_int(row[2]),     # 馬ID
+                            "jockey_id": safe_int(row[3]),    # 騎手ID
+                            "horse_number": safe_int(row[4]), # 馬番
+                            "odds": safe_float(row[5]),       # オッズ
+                            "popularity": safe_int(row[6]),   # 人気順
+                            "horse_weight": safe_int(row[7]), # 馬体重
+                            "weight_change": safe_int(row[8]), # 増減
+                            "prize": safe_float(row[9]),      # 賞金
+                            "position": safe_int(row[10]),    # 着順
+                            "frame_number": safe_int(row[11]), # 枠番
+                            "weight": safe_float(row[12]),    # 斤量
+                            "time": safe_str(row[13]),        # タイム
+                            "margin": safe_str(row[14]),      # 着差
+                            "passing": safe_str(row[15]),     # 通過
+                            "last_3f": safe_float(row[16])    # 上り
+                        }
+                        conn.execute(stmt, parameters=params)
+                    except Exception as e:
+                        print(f"Error on row {index}:", row.tolist())
+                        print(f"Params:", params)
+                        raise
                 conn.commit()
             
             logging.info(f"出走情報のインポート成功: {len(df)}件")
