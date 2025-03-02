@@ -119,11 +119,11 @@ def get_venue_code(venue_name):
 @app.route('/races')
 def races():
     try:
-        # 利用可能な日付を取得（DBから） - クエリを修正
+        # 利用可能な日付を取得（DBから）
         available_dates = db.session.query(
-            func.date(Race.date).label('race_date')  # ラベルを付ける
+            func.date(Race.date).label('race_date')
         ).distinct().order_by(
-            func.date(Race.date).desc()  # 降順に変更
+            func.date(Race.date).desc()
         ).all()
         
         app.logger.info(f'Available dates: {available_dates}')
@@ -131,7 +131,7 @@ def races():
         # 日付一覧の作成
         dates = []
         for date_row in available_dates:
-            date = date_row.race_date  # ラベル付けした列にアクセス
+            date = date_row.race_date
             dates.append({
                 'value': date.strftime('%Y%m%d'),
                 'month': date.month,
@@ -144,18 +144,25 @@ def races():
         if selected_date:
             selected_date = datetime.strptime(selected_date, '%Y%m%d').date()
         else:
-            # データがある最新の日付を選択
             selected_date = available_dates[0].race_date if available_dates else datetime.now().date()
 
-        # レース情報の取得
-        races = Race.query.filter(
-            func.date(Race.date) == selected_date
-        ).order_by(Race.venue, Race.race_number).all()
+        app.logger.info(f'Selected date: {selected_date}')
 
-        # 会場ごとにグループ化（会場コードを使用）
+        # レース情報の取得を修正
+        races = db.session.query(Race).filter(
+            func.date(Race.date) == selected_date
+        ).all()
+
+        app.logger.info(f'SQL Query: {str(races)}')  # SQLクエリを出力
+        app.logger.info(f'Found races count: {len(races)}')  # 取得したレース数
+        for race in races:
+            app.logger.info(f'Race: {race.venue} - {race.name} - {race.date}')  # 各レースの情報
+
+        # 会場ごとにグループ化
         venue_races = {}
         for race in races:
             venue_code = get_venue_code(race.venue)
+            app.logger.info(f'Processing race: {race.venue} -> code: {venue_code}')  # デバッグ出力
             if venue_code:
                 if venue_code not in venue_races:
                     venue_races[venue_code] = {
@@ -166,12 +173,11 @@ def races():
                     }
                 venue_races[venue_code]['races'].append(race)
 
-        # レースを各会場内で時間順にソート
+        # レースを各会場内でソート
         for venue_data in venue_races.values():
-            venue_data['races'].sort(key=lambda x: (x.date, x.race_number))
+            venue_data['races'].sort(key=lambda x: x.race_number)
 
-        # 会場コード順にソート
-        venue_races = dict(sorted(venue_races.items()))
+        app.logger.info(f'Venue races: {venue_races.keys()}')  # 会場ごとのグループ化結果
 
         return render_template(
             'races.html',
@@ -182,7 +188,8 @@ def races():
         )
 
     except Exception as e:
-        app.logger.error(f'Error: {str(e)}')
+        app.logger.error(f'Error in races route: {str(e)}')
+        app.logger.error(traceback.format_exc())
         return render_template(
             'races.html',
             dates=[],
