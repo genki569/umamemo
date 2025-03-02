@@ -106,14 +106,27 @@ def races():
         if selected_date:
             selected_date = datetime.strptime(selected_date, '%Y%m%d').date()
         else:
-            selected_date = datetime.now().date()
+            # データがある最新の日付を選択
+            selected_date = available_dates[-1][0] if available_dates else datetime.now().date()
 
-        # レース情報の取得
+        # レース情報の取得と会場ごとのグループ化
         races = Race.query.filter(
             func.date(Race.date) == selected_date
         ).order_by(Race.venue, Race.race_number).all()
 
-        # デバッグ用ログ出力
+        # 会場ごとにグループ化
+        venue_races = {}
+        for race in races:
+            venue_id = race.venue
+            if venue_id not in venue_races:
+                venue_races[venue_id] = {
+                    'venue_name': race.venue,
+                    'weather': getattr(race, 'weather', '不明'),
+                    'track_condition': getattr(race, 'track_condition', '不明'),
+                    'races': []
+                }
+            venue_races[venue_id]['races'].append(race)
+
         app.logger.debug(f'Available dates: {len(dates)}')
         app.logger.debug(f'Selected date: {selected_date}')
         app.logger.debug(f'Found races: {len(races)}')
@@ -122,7 +135,8 @@ def races():
             'races.html',
             dates=dates,
             selected_date=selected_date.strftime('%Y%m%d'),
-            races=races
+            venue_races=venue_races,
+            venues={}  # 一時的に空の辞書を渡す
         )
 
     except Exception as e:
@@ -131,7 +145,8 @@ def races():
             'races.html',
             dates=[],
             selected_date=datetime.now().strftime('%Y%m%d'),
-            races=[],
+            venue_races={},
+            venues={},
             error=str(e)
         )
 
