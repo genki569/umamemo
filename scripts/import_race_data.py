@@ -110,24 +110,37 @@ class RaceDataImporter:
                     updated_at = NOW();
             """)
             
+            def safe_int(value):
+                try:
+                    if pd.isna(value) or str(value).lower() == 'nan':
+                        return None
+                    return int(value)
+                except (ValueError, TypeError):
+                    return None
+            
+            def safe_str(value):
+                if pd.isna(value) or str(value).lower() == 'nan':
+                    return None
+                return str(value)
+            
             with self.engine.connect() as conn:
                 for index, row in df.iterrows():
                     try:
                         params = {
-                            "race_id": str(row[0]),
-                            "race_name": str(row[1]),
-                            "race_date": str(row[2]),
-                            "post_time": str(row[3]),
-                            "kaisai_info": str(row[4]),
-                            "course_code": int(row[5]) if pd.notnull(row[5]) else None,
-                            "race_number": int(row[6]) if pd.notnull(row[6]) else None,
-                            "year": int(row[7]) if pd.notnull(row[7]) else None,
-                            "grade": None,  # gradeは常にNULL
-                            "distance": int(row[11]) if pd.notnull(row[11]) else None,
-                            "track_type": str(row[12]) if pd.notnull(row[12]) else None,
-                            "track_direction": str(row[13]) if pd.notnull(row[13]) else None,
-                            "weather": str(row[14]) if pd.notnull(row[14]) else None,
-                            "track_condition": str(row[16]) if pd.notnull(row[16]) and row[16] != 'nan' else None
+                            "race_id": safe_str(row[0]),
+                            "race_name": safe_str(row[1]),
+                            "race_date": safe_str(row[2]),
+                            "post_time": safe_str(row[3]),
+                            "kaisai_info": safe_str(row[4]),
+                            "course_code": safe_int(row[5]),
+                            "race_number": safe_int(row[6]),
+                            "year": safe_int(row[7]),
+                            "grade": None,
+                            "distance": safe_int(row[11]),
+                            "track_type": safe_str(row[12]),
+                            "track_direction": safe_str(row[13]),
+                            "weather": safe_str(row[14]),
+                            "track_condition": safe_str(row[16])
                         }
                         conn.execute(stmt, parameters=params)
                     except Exception as e:
