@@ -122,16 +122,17 @@ class RaceDataImporter:
                             "course_code": int(row[5]) if pd.notnull(row[5]) else None,
                             "race_number": int(row[6]) if pd.notnull(row[6]) else None,
                             "year": int(row[7]) if pd.notnull(row[7]) else None,
-                            "grade": None,  # gradeは9番目
-                            "distance": int(row[11]) if pd.notnull(row[11]) else None,  # distanceは12番目
-                            "track_type": str(row[12]) if pd.notnull(row[12]) else None,  # track_typeは13番目
-                            "track_direction": str(row[13]) if pd.notnull(row[13]) else None,  # track_directionは14番目
-                            "weather": str(row[14]) if pd.notnull(row[14]) else None,  # weatherは15番目
-                            "track_condition": str(row[16]) if pd.notnull(row[16]) else None  # track_conditionは17番目
+                            "grade": None,  # gradeは常にNULL
+                            "distance": int(row[11]) if pd.notnull(row[11]) else None,
+                            "track_type": str(row[12]) if pd.notnull(row[12]) else None,
+                            "track_direction": str(row[13]) if pd.notnull(row[13]) else None,
+                            "weather": str(row[14]) if pd.notnull(row[14]) else None,
+                            "track_condition": str(row[16]) if pd.notnull(row[16]) and row[16] != 'nan' else None
                         }
                         conn.execute(stmt, parameters=params)
                     except Exception as e:
                         print(f"Error on row {index}:", row.tolist())
+                        print(f"Params:", params)
                         raise
                 conn.commit()
             
