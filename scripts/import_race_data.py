@@ -64,7 +64,8 @@ class RaceDataImporter:
 
     def import_jockeys(self):
         try:
-            df = pd.read_csv(f'{self.input_dir}/jockeys.csv')
+            # ヘッダーなしでCSVを読み込む
+            df = pd.read_csv(f'{self.input_dir}/jockeys.csv', header=None)
             df = df.where(pd.notnull(df), None)
             
             stmt = text("""
@@ -77,8 +78,8 @@ class RaceDataImporter:
             with self.engine.connect() as conn:
                 for _, row in df.iterrows():
                     params = {
-                        "id": row.iloc[0],    # 1列目: ID
-                        "name": row.iloc[1]    # 2列目: 名前
+                        "id": row[0],    # 1列目: ID
+                        "name": row[1]    # 2列目: 名前
                     }
                     conn.execute(stmt, parameters=params)
                 conn.commit()
