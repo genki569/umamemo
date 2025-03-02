@@ -95,7 +95,7 @@ def races():
         return render_template('races.html', races=races)
         
     except Exception as e:
-        current_app.logger.error(f"レース一覧の取得中にエラー: {str(e)}")
+        app.logger.error(f"レース一覧の取得中にエラー: {str(e)}")
         return render_template('races.html', races=None, error=str(e))
 
 @app.route('/races/<int:race_id>')
@@ -170,7 +170,7 @@ def race_detail(race_id):
                              current_user=current_user)
                              
     except Exception as e:
-        current_app.logger.error(f"Error fetching race details: {str(e)}")
+        app.logger.error(f"Error fetching race details: {str(e)}")
         flash('レース情報の取得中にエラーが発生しました', 'error')
         return render_template('race_detail.html',
                              race=None,
@@ -187,7 +187,7 @@ def race(race_id):
         entries = Entry.query.filter_by(race_id=race_id).all()
         return render_template('race.html', race=race, entries=entries)
     except Exception as e:
-        current_app.logger.error(f"レース情報の取得中にエラー: {str(e)}")
+        app.logger.error(f"レース情報の取得中にエラー: {str(e)}")
         return render_template('error.html', error=str(e)), 404
 
 # is_duplicate関数の定義
