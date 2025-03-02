@@ -11,6 +11,7 @@ import datetime
 from flask_caching import Cache
 import logging
 from logging.handlers import RotatingFileHandler
+import sys
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -50,22 +51,38 @@ def create_app():
     
     # デバッグモードを有効化
     app.config['DEBUG'] = True
+    app.config['PROPAGATE_EXCEPTIONS'] = True  # 例外を伝播させる
     
     # データベース設定
     app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://username:password@localhost/dbname'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.config['SQLALCHEMY_ECHO'] = True  # SQLクエリをログに出力
     
     # ログ設定
     if not os.path.exists('logs'):
         os.mkdir('logs')
+    
+    # コンソールハンドラの追加
+    console_handler = logging.StreamHandler(sys.stdout)
+    console_handler.setLevel(logging.DEBUG)
+    console_handler.setFormatter(logging.Formatter(
+        '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    ))
+    
+    # ファイルハンドラの設定
     file_handler = RotatingFileHandler('logs/umamemo.log', maxBytes=10240, backupCount=10)
+    file_handler.setLevel(logging.DEBUG)  # DEBUGレベルに変更
     file_handler.setFormatter(logging.Formatter(
         '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'
     ))
-    file_handler.setLevel(logging.INFO)
+    
+    # ルートロガーの設定
+    app.logger.setLevel(logging.DEBUG)
+    app.logger.addHandler(console_handler)
     app.logger.addHandler(file_handler)
-    app.logger.setLevel(logging.INFO)
-    app.logger.info('UmaMemo startup')
+    
+    # SQLAlchemyのログも有効化
+    logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
     
     db.init_app(app)
     
@@ -73,4 +90,5 @@ def create_app():
     from app import routes
     app.register_blueprint(routes.bp)
     
+    app.logger.info('UmaMemo startup')
     return app
