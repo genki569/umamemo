@@ -84,16 +84,15 @@ VENUE_NAMES = {
 def races():
     try:
         # 日付の取得（デフォルトは今日）
-        today = datetime.now().date()
         selected_date = request.args.get('date')
         if selected_date:
             selected_date = datetime.strptime(selected_date, '%Y%m%d').date()
         else:
-            selected_date = today
+            selected_date = datetime.now().date()
 
         # レース情報の取得
         races = Race.query.filter(
-            db.func.date(Race.date) == selected_date
+            db.func.date(Race.date) == selected_date  # ここが重要
         ).order_by(Race.venue, Race.race_number).all()
 
         # 会場ごとにグループ化
