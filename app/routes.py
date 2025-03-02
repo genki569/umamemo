@@ -103,6 +103,19 @@ def normalize_venue_name(venue):
     normalized = re.sub(r'\d+回|\d+日目|\([^\)]+\)', '', venue).strip()
     return normalized
 
+def get_venue_code(venue_name):
+    """会場名からコードを取得"""
+    # 中央競馬の場合（例：'京都 3歳未勝利 [北]'）
+    base_name = venue_name.split()[0].split('(')[0]
+    
+    # 地方競馬の場合（例：'11回浦和15日目'）
+    if '回' in base_name:
+        base_name = base_name.split('回')[1].split('日目')[0]
+    
+    # 逆引きマッピング
+    venue_code_map = {name: code for code, name in VENUE_NAMES.items()}
+    return venue_code_map.get(base_name)
+
 @app.route('/races')
 def races():
     try:
@@ -144,10 +157,9 @@ def races():
         for race in races:
             venue_code = get_venue_code(race.venue)
             if venue_code:
-                venue_name = VENUE_NAMES[venue_code]
                 if venue_code not in venue_races:
                     venue_races[venue_code] = {
-                        'venue_name': venue_name,
+                        'venue_name': VENUE_NAMES[venue_code],
                         'weather': getattr(race, 'weather', '不明'),
                         'track_condition': getattr(race, 'track_condition', '不明'),
                         'races': []
@@ -157,6 +169,9 @@ def races():
         # レースを各会場内で時間順にソート
         for venue_data in venue_races.values():
             venue_data['races'].sort(key=lambda x: (x.date, x.race_number))
+
+        # 会場コード順にソート
+        venue_races = dict(sorted(venue_races.items()))
 
         return render_template(
             'races.html',
