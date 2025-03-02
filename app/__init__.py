@@ -7,15 +7,11 @@ import logging
 from logging.handlers import RotatingFileHandler
 import os
 
-# アプリケーションの初期化
+# 基本的な初期化のみを行う
 app = Flask(__name__)
 app.config.from_object(Config)
-
-# データベースの初期化
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
-
-# ログイン管理の初期化
 login = LoginManager(app)
 login.login_view = 'login'
 
@@ -29,10 +25,9 @@ file_handler.setFormatter(logging.Formatter(
 file_handler.setLevel(logging.INFO)
 app.logger.addHandler(file_handler)
 app.logger.setLevel(logging.INFO)
-app.logger.info('UmaMemo startup')
 
-# モデルとルートのインポート
-from app import models, routes
+# 最後にインポート
+from app import routes, models
 
 # ルートの登録確認
 app.logger.info('Checking registered routes:')
