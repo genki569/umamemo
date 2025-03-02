@@ -3889,7 +3889,7 @@ def race_result(race_id):
             .all()
             
         app.logger.info(f'Found race: {race}, entries: {len(entries)}')
-        return render_template('result.html', 
+        return render_template('race.html',  # result.htmlからrace.htmlに変更
                              race=race, 
                              entries=entries)
     except Exception as e:
