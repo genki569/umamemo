@@ -56,4 +56,10 @@ app.logger.addHandler(file_handler)
 app.logger.setLevel(logging.INFO)
 app.logger.info('UmaMemo startup')
 
+# ルートをインポート（これが重要）
 from app import routes, models, payments
+
+# ルートの登録を確認するためのデバッグ出力
+app.logger.info('Registered routes:')
+for rule in app.url_map.iter_rules():
+    app.logger.info(f'{rule.endpoint}: {rule.rule}')
