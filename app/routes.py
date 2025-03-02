@@ -114,31 +114,13 @@ def get_venue_code(venue_name):
 @app.route('/races')
 def races():
     try:
-        app.logger.info('Starting races route')  # 処理開始ログ
-        
-        # 利用可能な日付を取得（DBから）
-        available_dates_query = db.session.query(
+        # 利用可能な日付を取得
+        available_dates = db.session.query(
             func.date(Race.date).label('race_date')
         ).distinct().order_by(
             func.date(Race.date).desc()
-        )
+        ).all()
         
-        app.logger.info(f'Date query: {str(available_dates_query)}')  # SQLクエリのログ
-        
-        available_dates = available_dates_query.all()
-        app.logger.info(f'Available dates: {available_dates}')
-        
-        if not available_dates:
-            app.logger.warning('No dates found in database')
-            return render_template(
-                'races.html',
-                dates=[],
-                selected_date=datetime.now().strftime('%Y%m%d'),
-                venue_races={},
-                venues=VENUE_NAMES,
-                error="レース情報が見つかりません"
-            )
-
         # 日付一覧の作成
         dates = []
         for date_row in available_dates:
@@ -152,32 +134,20 @@ def races():
 
         # 選択された日付の取得
         selected_date = request.args.get('date')
-        app.logger.info(f'Requested date: {selected_date}')
-
         if selected_date:
             selected_date = datetime.strptime(selected_date, '%Y%m%d').date()
         else:
             selected_date = available_dates[0].race_date if available_dates else datetime.now().date()
 
-        app.logger.info(f'Selected date: {selected_date}')
-
         # レース情報の取得
-        races_query = db.session.query(Race).filter(
+        races = Race.query.filter(
             func.date(Race.date) == selected_date
-        )
-        
-        app.logger.info(f'Race query: {str(races_query)}')  # SQLクエリのログ
-        
-        races = races_query.all()
-        app.logger.info(f'Found {len(races)} races')
+        ).all()
 
         # 会場ごとにグループ化
         venue_races = {}
         for race in races:
-            app.logger.info(f'Processing race: {race.venue} ({race.date})')  # レース情報のログ
             venue_code = get_venue_code(race.venue)
-            app.logger.info(f'Venue code: {venue_code}')  # 会場コードのログ
-            
             if venue_code:
                 if venue_code not in venue_races:
                     venue_races[venue_code] = {
@@ -194,8 +164,6 @@ def races():
 
         # 会場コード順にソート
         venue_races = dict(sorted(venue_races.items()))
-        
-        app.logger.info(f'Final venue_races: {list(venue_races.keys())}')  # 最終的な会場リストのログ
 
         return render_template(
             'races.html',
@@ -206,8 +174,7 @@ def races():
         )
 
     except Exception as e:
-        app.logger.error(f'Error in races route: {str(e)}')
-        app.logger.error(traceback.format_exc())
+        app.logger.error(f'Error: {str(e)}')
         return render_template(
             'races.html',
             dates=[],
