@@ -51,44 +51,33 @@ def create_app():
     
     # デバッグモードを有効化
     app.config['DEBUG'] = True
-    app.config['PROPAGATE_EXCEPTIONS'] = True  # 例外を伝播させる
+    app.config['PROPAGATE_EXCEPTIONS'] = True
     
     # データベース設定
     app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://username:password@localhost/dbname'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    app.config['SQLALCHEMY_ECHO'] = True  # SQLクエリをログに出力
     
     # ログ設定
     if not os.path.exists('logs'):
         os.mkdir('logs')
-    
-    # コンソールハンドラの追加
-    console_handler = logging.StreamHandler(sys.stdout)
-    console_handler.setLevel(logging.DEBUG)
-    console_handler.setFormatter(logging.Formatter(
-        '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-    ))
-    
-    # ファイルハンドラの設定
     file_handler = RotatingFileHandler('logs/umamemo.log', maxBytes=10240, backupCount=10)
-    file_handler.setLevel(logging.DEBUG)  # DEBUGレベルに変更
     file_handler.setFormatter(logging.Formatter(
         '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'
     ))
-    
-    # ルートロガーの設定
-    app.logger.setLevel(logging.DEBUG)
-    app.logger.addHandler(console_handler)
+    file_handler.setLevel(logging.DEBUG)
     app.logger.addHandler(file_handler)
-    
-    # SQLAlchemyのログも有効化
-    logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
+    app.logger.setLevel(logging.DEBUG)
     
     db.init_app(app)
     
-    # ルートの登録
-    from app import routes
-    app.register_blueprint(routes.bp)
+    # ルートの登録（重要な修正箇所）
+    with app.app_context():
+        from app import routes
+        app.register_blueprint(routes.bp)
+        
+        # インデックスページのルート
+        @app.route('/')
+        def index():
+            return routes.index()
     
-    app.logger.info('UmaMemo startup')
     return app
