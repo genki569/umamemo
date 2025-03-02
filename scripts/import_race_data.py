@@ -110,8 +110,7 @@ class RaceDataImporter:
                     NOW()
                 )
                 ON CONFLICT (id) DO UPDATE 
-                SET name = EXCLUDED.name,
-                    updated_at = NOW();
+                SET name = EXCLUDED.name;
             """)
             
             def safe_int(value):
