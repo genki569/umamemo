@@ -5,7 +5,6 @@ from app.models import (
     RaceReview, RaceMemo, UserSettings, ReviewPurchase, 
     Notification, LoginHistory, SupportTicket, 
     MembershipChangeLog, PaymentLog, ShutubaEntry,
-    Venue
 )
 from datetime import datetime, timedelta
 from flask_wtf import FlaskForm
@@ -85,47 +84,49 @@ VENUE_NAMES = {
 def races():
     try:
         # 日付の取得（デフォルトは今日）
-        selected_date = request.args.get('date', datetime.now().strftime('%Y%m%d'))
-        
-        # 日付一覧の取得（表示用）
-        dates = [
-            {
-                'value': d.strftime('%Y%m%d'),
-                'month': d.month,
-                'day': d.day,
-                'weekday': d.strftime('%a')
-            }
-            for d in Race.query.with_entities(Race.date).distinct().order_by(Race.date).all()
-        ]
-        
-        # 会場ごとのレース情報を取得
+        today = datetime.now().date()
+        selected_date = request.args.get('date')
+        if selected_date:
+            selected_date = datetime.strptime(selected_date, '%Y%m%d').date()
+        else:
+            selected_date = today
+
+        # レース情報の取得
+        races = Race.query.filter(
+            db.func.date(Race.date) == selected_date
+        ).order_by(Race.venue, Race.race_number).all()
+
+        # 会場ごとにグループ化
         venue_races = {}
-        races = Race.query.filter(Race.date == selected_date).all()
-        
         for race in races:
-            if race.venue_id not in venue_races:
-                venue_races[race.venue_id] = {
-                    'venue_name': race.venue.name if race.venue else '不明',
-                    'weather': race.weather,
-                    'track_condition': race.track_condition,
+            venue_id = race.venue
+            if venue_id not in venue_races:
+                venue_races[venue_id] = {
+                    'venue_name': race.venue,
+                    'weather': getattr(race, 'weather', '不明'),
+                    'track_condition': getattr(race, 'track_condition', '不明'),
                     'races': []
                 }
-            venue_races[race.venue_id]['races'].append(race)
-        
-        # 会場情報の取得
-        venues = {venue.id: venue for venue in Venue.query.all()}
-        
+            venue_races[venue_id]['races'].append(race)
+
         return render_template(
             'races.html',
-            dates=dates,
-            selected_date=selected_date,
+            dates=[],  # 一時的に空リストを渡す
+            selected_date=selected_date.strftime('%Y%m%d'),
             venue_races=venue_races,
-            venues=venues
+            venues={}  # 一時的に空の辞書を渡す
         )
-        
+
     except Exception as e:
-        app.logger.error(f'エラーが発生しました: {str(e)}')
-        return render_template('races.html', venue_races={}, error=str(e))
+        app.logger.error(f'Error in races view: {str(e)}')
+        return render_template(
+            'races.html',
+            dates=[],
+            selected_date=datetime.now().strftime('%Y%m%d'),
+            venue_races={},
+            venues={},
+            error='レース情報の取得中にエラーが発生しました'
+        )
 
 @app.route('/races/<int:race_id>')
 def race_detail(race_id):
