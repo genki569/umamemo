@@ -5,6 +5,7 @@ from app.models import (
     RaceReview, RaceMemo, UserSettings, ReviewPurchase, 
     Notification, LoginHistory, SupportTicket, 
     MembershipChangeLog, PaymentLog, ShutubaEntry,
+    Venue
 )
 from datetime import datetime, timedelta
 from flask_wtf import FlaskForm
@@ -83,28 +84,48 @@ VENUE_NAMES = {
 @app.route('/races')
 def races():
     try:
-        page = request.args.get('page', 1, type=int)
-        per_page = 20
+        # 日付の取得（デフォルトは今日）
+        selected_date = request.args.get('date', datetime.now().strftime('%Y%m%d'))
         
-        # レース一覧を取得（最新のものから）
-        races = Race.query.order_by(
-            desc(Race.date),
-            Race.race_number
-        ).paginate(
-            page=page,
-            per_page=per_page,
-            error_out=False
-        )
+        # 日付一覧の取得（表示用）
+        dates = [
+            {
+                'value': d.strftime('%Y%m%d'),
+                'month': d.month,
+                'day': d.day,
+                'weekday': d.strftime('%a')
+            }
+            for d in Race.query.with_entities(Race.date).distinct().order_by(Race.date).all()
+        ]
+        
+        # 会場ごとのレース情報を取得
+        venue_races = {}
+        races = Race.query.filter(Race.date == selected_date).all()
+        
+        for race in races:
+            if race.venue_id not in venue_races:
+                venue_races[race.venue_id] = {
+                    'venue_name': race.venue.name if race.venue else '不明',
+                    'weather': race.weather,
+                    'track_condition': race.track_condition,
+                    'races': []
+                }
+            venue_races[race.venue_id]['races'].append(race)
+        
+        # 会場情報の取得
+        venues = {venue.id: venue for venue in Venue.query.all()}
         
         return render_template(
             'races.html',
-            races=races.items,  # ページネーションされたアイテム
-            pagination=races    # ページネーションオブジェクト
+            dates=dates,
+            selected_date=selected_date,
+            venue_races=venue_races,
+            venues=venues
         )
         
     except Exception as e:
         app.logger.error(f'エラーが発生しました: {str(e)}')
-        return render_template('races.html', races=[], error=str(e))
+        return render_template('races.html', venue_races={}, error=str(e))
 
 @app.route('/races/<int:race_id>')
 def race_detail(race_id):
@@ -789,7 +810,7 @@ def jockey_detail(jockey_id):
 
 def create_entry(race, entry_data):
     try:
-        # デバ��報追加
+        # デバ報追加
         print(f"Creating entry for race:")
         print(f"Race ID: {race.id}")
         print(f"Race Name: {race.name}")
@@ -814,7 +835,7 @@ def create_entry(race, entry_data):
         
         # 着順を値に変換（失格、中止などの場合はNoneを設定）
         try:
-            result = int(entry_data['���順'])
+            result = int(entry_data['順'])
         except (ValueError, TypeError):
             result = None
         
@@ -975,7 +996,7 @@ def add_points():
         return jsonify({
             'success': True,
             'new_balance': current_user.point_balance,
-            'message': f'{points}ポイントを��加しました'
+            'message': f'{points}ポイントを加しました'
         })
         
     except Exception as e:
@@ -1109,7 +1130,7 @@ def mypage_favorites():
         favorite_count = Favorite.query.filter_by(user_id=current_user.id).count()
         app.logger.info(f"Favorite count: {favorite_count}")
         
-        # お気に入り馬を取��（クエリを分解して確認）
+        # お気に入り馬を取（クエリを分解して確認）
         favorites_query = Horse.query\
             .join(Favorite)\
             .filter(Favorite.user_id == current_user.id)\
@@ -1133,7 +1154,7 @@ def mypage_favorites():
     except Exception as e:
         app.logger.error(f"Error in mypage_favorites: {str(e)}")
         app.logger.error(traceback.format_exc())  # スタックトレースを出力
-        flash('おに入り情報���取得中にエラーが発生ました', 'error')
+        flash('おに入り情報取得中にエラーが発生ました', 'error')
         return render_template('mypage/favorites.html',
                              favorites=[])
 
@@ -1172,7 +1193,7 @@ def premium_subscribe():
         data = request.get_json()
         
         # 支払い実際にはStripeなの決済サービスを使用）
-        payment_successful = process_payment(data)  # この関���は実装が必要
+        payment_successful = process_payment(data)  # この関は実装が必要
         
         if payment_successful:
             # ユーザーのプレミアム状態を更新
@@ -1215,7 +1236,7 @@ def premium_subscribe():
         app.logger.error(f"Error in premium subscription: {str(e)}")
         return jsonify({
             'success': False,
-            'message': 'エ��ーが発生しました'
+            'message': 'エーが発生しました'
         }), 500
 
 # デッグ用簡易ログイン
@@ -1367,7 +1388,7 @@ def race_review(race_id):
                 db.session.add(review)
                 db.session.commit()
                 
-                flash('���ビ��ーを作成���し', 'success')
+                flash('ビーを作成し', 'success')
                 return redirect(url_for('review_market'))  # マーケットページにリイレクト
                 
             except Exception as e:
@@ -1520,7 +1541,7 @@ def mypage_review_sales():
             Race.name,
             Race.date
         ).order_by(
-            func.sum(ReviewPurchase.price).desc()  # price_paidをpriceに��
+            func.sum(ReviewPurchase.price).desc()  # price_paidをpriceに
         ).all()
 
         # 上を計算
@@ -1752,7 +1773,7 @@ def purchase_review(review_id):
         if current_balance < review.price:
             return jsonify({
                 'success': False,
-                'message': 'ポイント不足してい��す'
+                'message': 'ポイント不足していす'
             }), 400
             
         # 購入処
@@ -2008,7 +2029,7 @@ def admin_dashboard():
             .limit(5)\
             .all()
             
-        # 最���の売上（最新5件）- payment_dateを使用
+        # 最の売上（最新5件）- payment_dateを使用
         recent_sales = PaymentLog.query\
             .filter_by(status='completed')\
             .order_by(PaymentLog.payment_date.desc())\
@@ -2024,7 +2045,7 @@ def admin_dashboard():
                            
     except Exception as e:
         app.logger.error(f"Error in admin dashboard: {str(e)}")
-        flash('ダッシ��ボードの読み込みに失敗しました', 'danger')
+        flash('ダッシボードの読み込みに失敗しました', 'danger')
         return redirect(url_for('index'))
 
 # 補助関数
@@ -2256,7 +2277,7 @@ def toggle_admin(user_id):
     """ユーザーの管理者権限をり替える"""
     user = User.query.get_or_404(user_id)
     
-    # 自分自身の権限変更できな
+    # 自分自身の権限変更できない
     if user.id == current_user.id:
         return jsonify({'success': False, 'message': '自分自身の権限は変更できません'}), 400
     
@@ -2314,7 +2335,7 @@ def toggle_user_status(user_id):
     """ユーザのアカウントステータスを切り替える"""
     user = User.query.get_or_404(user_id)
     
-    # 自分自身のステータスは変更できな
+    # 自分自身のステータスは変更できない
     if user.id == current_user.id:
         return jsonify({'success': False, 'message': '自分自身のテータスは変更できません'}), 400
     
@@ -2501,7 +2522,7 @@ def admin_review_purchases():
         app.logger.error(f"Error in admin_review_purchases: {str(e)}")
         return render_template('admin/review_purchases.html', 
                              purchases=[],
-                             error="購入履の���得中にエラーが発生しました。")
+                             error="購入履の取得中にエラーが発生しました。")
 
 @app.route('/mypage/point-history')
 @login_required
@@ -2590,7 +2611,7 @@ def api_get_favorites():
         app.logger.error(f"Error in api_get_favorites: {str(e)}")
         return jsonify({
             'status': 'error',
-            'message': 'お気に入り一覧の取得に失敗しまし��'
+            'message': 'お気に入り一覧の取得に失敗しまし'
         }), 500
 
 @app.route('/admin/users/<int:user_id>/add-points', methods=['POST'])
@@ -2598,9 +2619,9 @@ def api_get_favorites():
 @admin_required
 def admin_add_points(user_id):
     """管理者がユーザーのポイントを追加する"""
-    # 管理者チェック��手動で行う
+    # 管理者チェック手動で行う
     if not current_user.is_admin:
-        return jsonify({'success': False, 'message': '権限があ���ません'}), 403
+        return jsonify({'success': False, 'message': '権限があません'}), 403
         
     user = User.query.get_or_404(user_id)
     data = request.get_json()
@@ -2643,7 +2664,7 @@ def review_purchase(race_id, review_id):
     try:
         review = RaceReview.query.get_or_404(review_id)
         
-        # GETリクエストの場合は、購入確認ページを表���
+        # GETリクエストの場合は、購入確認ページを表示
         if request.method == 'GET':
             suggested_amounts = [
                 max(1000, review.price - current_user.point_balance),
@@ -2691,7 +2712,7 @@ def review_purchase(race_id, review_id):
             if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
                 return jsonify({
                     'success': True,
-                    'message': 'レビュー��購入しました',
+                    'message': 'レビュー購入しました',
                     'redirect_url': url_for('view_review', race_id=race_id, review_id=review_id)
                 })
             
@@ -2720,7 +2741,7 @@ def review_purchase(race_id, review_id):
 @app.route('/review/<int:review_id>/edit', methods=['GET', 'POST'])
 @login_required
 def edit_review(review_id):
-    """回顧ノート���編集"""
+    """回顧ノート編集"""
     review = RaceReview.query.get_or_404(review_id)
     
     # 作成者本人かチェック
@@ -2876,7 +2897,7 @@ def timeago_filter(date):
 @login_required
 def start_trial():
     if current_user.is_premium:
-        flash('すにプレミ���ム会員です', 'info')
+        flash('すにプレミアム会員です', 'info')
         return redirect(url_for('premium'))
         
     # トライアル開始のロジックを実装
@@ -3008,7 +3029,7 @@ def privacy():
 def commercial_transactions():
     return render_template('legal/commercial_transactions.html')
 
-# 新しい管理者用���ート
+# 新しい管理者用エントリー
 @app.route('/admin/analytics')
 @login_required
 @admin_required
@@ -3025,7 +3046,7 @@ def admin_analytics():
         return render_template('admin/analytics.html', stats=stats)
     except Exception as e:
         app.logger.error(f"Error in analytics: {str(e)}")
-        flash('統計情の取得中にエラーが発生しました', 'error')
+        flash('統計情報の取得中にエラーが発生しました', 'error')
         return redirect(url_for('admin_dashboard'))
 
 @app.route('/admin/system')
@@ -3262,7 +3283,7 @@ def admin_sales():
             .filter(ReviewPurchase.created_at.between(this_month_start, this_month_end))\
             .scalar() or 0
 
-        # 先��のレビュー��入数
+        # 先月のレビュー購入数
         last_month_reviews = db.session.query(func.count(ReviewPurchase.id))\
             .filter(ReviewPurchase.created_at.between(last_month_start, last_month_end))\
             .scalar() or 0
