@@ -185,6 +185,146 @@ def races():
         )
 
 @app.route('/races/<int:race_id>')
+def race(race_id):
+    try:
+        race = Race.query.get_or_404(race_id)
+        entries = db.session.query(Entry)\
+            .join(Horse)\
+            .outerjoin(Jockey)\
+            .filter(Entry.race_id == race_id)\
+            .options(
+                joinedload(Entry.horse),
+                joinedload(Entry.jockey)
+            )\
+            .order_by(Entry.horse_number.asc())\
+            .all()
+            
+        return render_template('race.html', 
+                             race=race, 
+                             entries=entries)
+    except Exception as e:
+        app.logger.error(f"Error in race: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/races/<int:race_id>/shutuba')
+def race_shutuba(race_id):
+    try:
+        # レースと出走馬情報を効率的に取得
+        race = db.session.query(Race).options(
+            joinedload(Race.shutuba_entries).options(
+                joinedload(ShutubaEntry.horse),
+                joinedload(ShutubaEntry.jockey)
+            )
+        ).get_or_404(race_id)
+
+        # 出走馬のIDリストを作成
+        horse_ids = [entry.horse_id for entry in race.shutuba_entries]
+
+        # 統計データを一括取得
+        track_stats = db.session.query(
+            Entry.horse_id,
+            Race.track_condition,
+            func.count(Entry.id).label('total'),
+            func.sum(case([(Entry.position == 1, 1)], else_=0)).label('wins'),
+            func.sum(case([(Entry.position <= 3, 1)], else_=0)).label('top3')
+        ).join(Race).filter(
+            Entry.horse_id.in_(horse_ids),
+            Entry.position.isnot(None),
+            Race.track_condition.isnot(None)
+        ).group_by(
+            Entry.horse_id,
+            Race.track_condition
+        ).all()
+
+        # 騎手成績を一括取得
+        jockey_stats = db.session.query(
+            Entry.horse_id,
+            Jockey.name,
+            func.count(Entry.id).label('total'),
+            func.sum(case([(Entry.position == 1, 1)], else_=0)).label('wins'),
+            func.sum(case([(Entry.position <= 3, 1)], else_=0)).label('top3')
+        ).join(Race).join(Jockey).filter(
+            Entry.horse_id.in_(horse_ids),
+            Entry.position.isnot(None)
+        ).group_by(
+            Entry.horse_id,
+            Jockey.id,
+            Jockey.name
+        ).all()
+
+        # 月別成績を一括取得
+        month_stats = db.session.query(
+            Entry.horse_id,
+            func.extract('month', Race.date).label('month'),
+            func.count(Entry.id).label('total'),
+            func.sum(case([(Entry.position == 1, 1)], else_=0)).label('wins'),
+            func.sum(case([(Entry.position <= 3, 1)], else_=0)).label('top3')
+        ).join(Race).filter(
+            Entry.horse_id.in_(horse_ids),
+            Entry.position.isnot(None)
+        ).group_by(
+            Entry.horse_id,
+            func.extract('month', Race.date)
+        ).all()
+
+        # 統計データを整理
+        stats_by_horse = {horse_id: {
+            'track_stats': {},
+            'jockey_stats': {},
+            'month_stats': {}
+        } for horse_id in horse_ids}
+
+        # 各統計データを辞書に格納
+        for stat in track_stats:
+            horse_id, condition, total, wins, top3 = stat
+            if condition:
+                stats_by_horse[horse_id]['track_stats'][condition] = {
+                    'total': total,
+                    'wins': wins,
+                    'win_rate': (wins / total) * 100 if total > 0 else 0,
+                    'top3': top3,
+                    'top3_rate': (top3 / total) * 100 if total > 0 else 0
+                }
+
+        for stat in jockey_stats:
+            horse_id, jockey_name, total, wins, top3 = stat
+            stats_by_horse[horse_id]['jockey_stats'][jockey_name] = {
+                'total': total,
+                'wins': wins,
+                'win_rate': (wins / total) * 100 if total > 0 else 0,
+                'top3': top3,
+                'top3_rate': (top3 / total) * 100 if total > 0 else 0
+            }
+
+        for stat in month_stats:
+            horse_id, month, total, wins, top3 = stat
+            stats_by_horse[horse_id]['month_stats'][int(month)] = {
+                'total': total,
+                'wins': wins,
+                'win_rate': (wins / total) * 100 if total > 0 else 0,
+                'top3': top3,
+                'top3_rate': (top3 / total) * 100 if total > 0 else 0
+            }
+
+        # エントリーに統計データを付与
+        entries = race.shutuba_entries
+        for entry in entries:
+            entry.stats = stats_by_horse.get(entry.horse_id, {})
+
+        return render_template('shutuba.html',
+                          race=race,
+                          entries=entries,
+                          venue_name=VENUE_NAMES.get(str(race.venue), '不明'))
+
+    except Exception as e:
+        current_app.logger.error(f"Error in race_shutuba: {str(e)}")
+        flash('出馬表の取得中にエラーが発生しました', 'error')
+        return render_template('shutuba.html', 
+                          race=None,
+                          entries=[],
+                          venue_name='不明')
+
+@app.route('/race/<int:race_id>')
 def race_detail(race_id):
     try:
         # レースと関連データを効率的に取得
@@ -265,55 +405,6 @@ def race_detail(race_id):
                              next_race=None,
                              reviews=[],
                              error="レース情報の取得中にエラーが発生しました")
-
-@app.route('/race/<int:race_id>')
-def race(race_id):
-    try:
-        race = Race.query.get_or_404(race_id)
-        entries = Entry.query.filter_by(race_id=race_id).all()
-        return render_template('race.html', race=race, entries=entries)
-    except Exception as e:
-        app.logger.error(f"レース情報の取得中にエラー: {str(e)}")
-        return render_template('error.html', error=str(e)), 404
-
-# is_duplicate関数の定義
-def is_duplicate(entry1, entry2):
-    """エントリーが重複しているかチェックする"""
-    return (entry1['horse'].name == entry2['horse'].name and
-            entry1['jockey'].name == entry2['jockey'].name and
-            entry1['position'] == entry2['position'] and
-            abs(entry1['odds'] - entry2['odds']) < 0.1)
-
-# スレイピングルートの義
-@app.route('/scrape', methods=['GET', 'POST'])
-def scrape():
-    if request.method == 'POST':
-        url = request.form.get('url')
-        if not url:
-            return jsonify({"error": "URLが提供れいせん。"}), 400
-        try:
-            data = scrape_race_data(url)
-            flash('データの取得に成しまた', 'success')
-            return jsonify({"message": "データの取得と保存に成功しました", "data": data})
-        except ValueError as e:
-            app.logger.error(f"Scraping error: {str(e)}")
-            return jsonify({"error": str(e)}), 400
-        except Exception as e:
-            app.logger.error(f"Unexpected error: {str(e)}")
-            return jsonify({"error": "せぬエラーが発しました。管理者に連絡してください"}), 500
-    return render_template('scrape.html')
-
-@app.route('/predict/<int:race_id>', methods=['GET', 'POST'])
-def predict(race_id):
-    race = Race.query.get_or_404(race_id)
-    if request.method == 'POST':
-        try:
-            prediction = predict_race_outcome(race)
-            return jsonify(prediction)
-        except Exception as e:
-            app.logger.error(f"Prediction error: {str(e)}")
-            return jsonify({"error": "予測中にエラーがしました。しらくしてから再度お試しください。"}), 500
-    return render_template('predict.html', race=race)
 
 @app.route('/add_race', methods=['GET', 'POST'])
 def add_race():
@@ -3871,27 +3962,3 @@ def manage_favorites():
         db.session.rollback()
         current_app.logger.error(f"Error managing favorites: {str(e)}")
         return jsonify({'error': 'お気に入りの処理中にエラーが発生しました'}), 500
-
-@app.route('/races/<int:race_id>/result')
-def race_result(race_id):
-    app.logger.info(f'Accessing result page for race {race_id}')
-    try:
-        race = Race.query.get_or_404(race_id)
-        entries = db.session.query(Entry)\
-            .join(Horse)\
-            .outerjoin(Jockey)\
-            .filter(Entry.race_id == race_id)\
-            .options(
-                joinedload(Entry.horse),
-                joinedload(Entry.jockey)
-            )\
-            .order_by(Entry.horse_number.asc())\
-            .all()
-            
-        app.logger.info(f'Found race: {race}, entries: {len(entries)}')
-        return render_template('race.html',  # result.htmlからrace.htmlに変更
-                             race=race, 
-                             entries=entries)
-    except Exception as e:
-        app.logger.error(f'Error in race_result: {str(e)}')
-        return jsonify({'error': str(e)}), 500
