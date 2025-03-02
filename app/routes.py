@@ -3873,11 +3873,24 @@ def manage_favorites():
         return jsonify({'error': 'お気に入りの処理中にエラーが発生しました'}), 500
 
 @app.route('/races/<int:race_id>/result')
-def record_result(race_id):  # この関数名をrace_resultに変更
+def record_result(race_id):  # このルート名がrecord_resultになっている
     app.logger.info(f'Accessing result page for race {race_id}')
     try:
         race = Race.query.get_or_404(race_id)
-        return render_template('result.html', race=race)
+        entries = db.session.query(Entry)\
+            .join(Horse)\
+            .outerjoin(Jockey)\
+            .filter(Entry.race_id == race_id)\
+            .options(
+                joinedload(Entry.horse),
+                joinedload(Entry.jockey)
+            )\
+            .order_by(Entry.horse_number.asc())\
+            .all()
+            
+        return render_template('result.html', 
+                             race=race, 
+                             entries=entries)
     except Exception as e:
         app.logger.error(f'Error in result route: {str(e)}')
         return jsonify({'error': str(e)}), 500
