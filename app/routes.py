@@ -266,15 +266,30 @@ def race_detail(race_id):
                              reviews=[],
                              error="レース情報の取得中にエラーが発生しました")
 
-@app.route('/race/<int:race_id>')
-def race(race_id):
+@app.route('/races/<int:race_id>/result')
+def race_result(race_id):
+    app.logger.info(f'Accessing result page for race {race_id}')
     try:
-        race = Race.query.get_or_404(race_id)
-        entries = Entry.query.filter_by(race_id=race_id).all()
-        return render_template('race.html', race=race, entries=entries)
+        race = db.session.query(Race).get_or_404(race_id)
+        entries = db.session.query(Entry)\
+            .join(Horse)\
+            .outerjoin(Jockey)\
+            .filter(Entry.race_id == race_id)\
+            .options(
+                joinedload(Entry.horse),
+                joinedload(Entry.jockey)
+            )\
+            .order_by(Entry.horse_number.asc())\
+            .all()
+            
+        return render_template('result.html', 
+                             race=race, 
+                             entries=entries)
     except Exception as e:
-        app.logger.error(f"レース情報の取得中にエラー: {str(e)}")
-        return render_template('error.html', error=str(e)), 404
+        app.logger.error(f"Error in race_result: {str(e)}")
+        return render_template('result.html', 
+                             race=None, 
+                             entries=[])
 
 # is_duplicate関数の定義
 def is_duplicate(entry1, entry2):
@@ -3871,44 +3886,3 @@ def manage_favorites():
         db.session.rollback()
         current_app.logger.error(f"Error managing favorites: {str(e)}")
         return jsonify({'error': 'お気に入りの処理中にエラーが発生しました'}), 500
-
-@app.route('/races/<int:race_id>/result')
-def race_result(race_id):
-    app.logger.info(f'Accessing result page for race {race_id}')
-    try:
-        # レースと関連データを効率的に取得
-        race = db.session.query(Race).get_or_404(race_id)
-        
-        # エントリー情報を最適化されたクエリで取得
-        entries = db.session.query(Entry)\
-            .join(Horse)\
-            .outerjoin(Jockey)\
-            .filter(Entry.race_id == race_id)\
-            .options(
-                joinedload(Entry.horse).load_only(
-                    Horse.id,
-                    Horse.name,
-                    Horse.sex,
-                    Horse.memo
-                ),
-                joinedload(Entry.jockey).load_only(
-                    Jockey.id,
-                    Jockey.name
-                )
-            )\
-            .order_by(
-                case(
-                    [(Entry.position.is_(None), 999999)],
-                    else_=Entry.position
-                ).asc(),
-                Entry.horse_number.asc()
-            )\
-            .all()
-
-        return render_template('result.html', 
-                             race=race, 
-                             entries=entries)
-                             
-    except Exception as e:
-        app.logger.error(f"Error fetching race results: {str(e)}")
-        return jsonify({'error': str(e)}), 500
