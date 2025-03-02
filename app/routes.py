@@ -3871,3 +3871,13 @@ def manage_favorites():
         db.session.rollback()
         current_app.logger.error(f"Error managing favorites: {str(e)}")
         return jsonify({'error': 'お気に入りの処理中にエラーが発生しました'}), 500
+
+@app.route('/races/<int:race_id>/result')
+def race_result(race_id):
+    app.logger.info(f'Accessing result page for race {race_id}')
+    try:
+        race = Race.query.get_or_404(race_id)
+        return render_template('result.html', race=race)
+    except Exception as e:
+        app.logger.error(f'Error in result route: {str(e)}')
+        return jsonify({'error': str(e)}), 500
