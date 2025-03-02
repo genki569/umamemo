@@ -536,7 +536,7 @@ def horse_note(horse_id):
     
     return jsonify({'note': horse.get_memos() if horse.memo else []})
 
-@app.route('/races/<int:race_id>/memo', methods=['POST'])
+@app.route('/race/<int:race_id>/memo', methods=['POST'])
 def save_race_memo(race_id):
     try:
         content = request.form.get('memo')
@@ -1309,7 +1309,7 @@ def debug_db_check():
         })
 
 # 回顧ノート関連のルート
-@app.route('/races/<int:race_id>/review', methods=['GET', 'POST'])
+@app.route('/race/<int:race_id>/review', methods=['GET', 'POST'])
 @login_required
 def race_review(race_id):
     form = FlaskForm()
@@ -1369,7 +1369,7 @@ def all_reviews():
     
     return render_template('all_reviews.html', reviews=reviews, search_query=search_query)
 
-@app.route('/races/<int:race_id>/memo/<int:memo_id>/delete', methods=['POST'])
+@app.route('/race/<int:race_id>/memo/<int:memo_id>/delete', methods=['POST'])
 def delete_race_memo(race_id, memo_id):
     try:
         print(f"Attempting to delete memo {memo_id} from race {race_id}")  # バッグ用
