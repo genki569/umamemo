@@ -6,5 +6,5 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 logger.info('Starting application')
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0') 
+if __name__ == "__main__":
+    app.run() 

@@ -8,15 +8,18 @@ import logging
 from logging.handlers import RotatingFileHandler
 import os
 
-# 基本的な初期化のみを行う
+# アプリケーションの初期化
 app = Flask(__name__)
 app.config.from_object(Config)
 
 # CSRF保護を追加
 csrf = CSRFProtect(app)
 
+# データベースの初期化
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
+
+# ログインマネージャーの初期化
 login = LoginManager(app)
 login.login_view = 'login'
 
@@ -39,14 +42,13 @@ file_handler.setFormatter(logging.Formatter(
 file_handler.setLevel(logging.INFO)
 app.logger.addHandler(file_handler)
 app.logger.setLevel(logging.INFO)
+app.logger.info('Umamemo startup')
 
 # モデルを先にインポート
 from app import models
 
-# ルートをインポートする前にデバッグログを追加
+# その後にルートをインポート
 app.logger.info('About to import routes')
-
-# ルートをインポート
 from app import routes
 
 # ルートが登録されたことを確認
