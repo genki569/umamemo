@@ -108,11 +108,11 @@
                                     {{ race.track_type or '不明' }} {{ race.distance or '不明' }}m
                                 </div>
                                 <div class="race-links">
-                                    <a href="{{ url_for('race_detail', race_id=race.id) }}" class="btn btn-outline-success btn-sm">
-                                        <i class="fas fa-trophy"></i> 結果
+                                    <a href="{{ url_for('race_shutuba', race_id=race.id) }}" class="btn btn-outline-success btn-sm">
+                                        <i class="fas fa-trophy"></i> 出馬表
                                     </a>
-                                    <a href="{{ url_for('race_review', race_id=race.id) }}" class="btn btn-outline-info btn-sm">
-                                        <i class="fas fa-book"></i> 回顧
+                                    <a href="{{ url_for('race_result', race_id=race.id) }}" class="btn btn-outline-info btn-sm">
+                                        <i class="fas fa-book"></i> 結果表
                                     </a>
                                 </div>
                             </div>
