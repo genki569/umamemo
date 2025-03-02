@@ -116,18 +116,22 @@ def races():
             func.date(Race.date) == selected_date
         ).order_by(Race.venue, Race.race_number).all()
 
-        # 会場ごとにグループ化
+        # 会場ごとにグループ化（正規化した会場名を使用）
         venue_races = {}
         for race in races:
-            venue_id = race.venue
-            if venue_id not in venue_races:
-                venue_races[venue_id] = {
-                    'venue_name': race.venue,
+            venue_name = race.venue.split('(')[0] if '(' in race.venue else race.venue  # 会場名を正規化
+            if venue_name not in venue_races:
+                venue_races[venue_name] = {
+                    'venue_name': venue_name,
                     'weather': getattr(race, 'weather', '不明'),
                     'track_condition': getattr(race, 'track_condition', '不明'),
                     'races': []
                 }
-            venue_races[venue_id]['races'].append(race)
+            venue_races[venue_name]['races'].append(race)
+
+        # レースを各会場内で時間順にソート
+        for venue_data in venue_races.values():
+            venue_data['races'].sort(key=lambda x: x.race_number)
 
         return render_template(
             'races.html',
