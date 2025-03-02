@@ -20,10 +20,19 @@ migrate = Migrate(app, db)
 login = LoginManager(app)
 login.login_view = 'login'
 
-# ログ設定
-if not os.path.exists('logs'):
-    os.mkdir('logs')
-file_handler = RotatingFileHandler('logs/umamemo.log', maxBytes=10240, backupCount=10)
+# ベースディレクトリの設定
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+LOG_DIR = os.path.join(os.path.dirname(BASE_DIR), 'logs')
+
+# ログディレクトリの作成（存在しない場合）
+if not os.path.exists(LOG_DIR):
+    os.makedirs(LOG_DIR)
+
+# ログファイルのパス
+log_file = os.path.join(LOG_DIR, 'umamemo.log')
+
+# ログハンドラの設定
+file_handler = RotatingFileHandler(log_file, maxBytes=10240, backupCount=10)
 file_handler.setFormatter(logging.Formatter(
     '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'
 ))
