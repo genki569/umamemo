@@ -86,17 +86,25 @@ def races():
         page = request.args.get('page', 1, type=int)
         per_page = 20
         
-        races = Race.query.order_by(Race.date.desc()).paginate(
+        # レース一覧を取得（最新のものから）
+        races = Race.query.order_by(
+            desc(Race.date),
+            Race.race_number
+        ).paginate(
             page=page,
             per_page=per_page,
             error_out=False
         )
         
-        return render_template('races.html', races=races)
+        return render_template(
+            'races.html',
+            races=races.items,  # ページネーションされたアイテム
+            pagination=races    # ページネーションオブジェクト
+        )
         
     except Exception as e:
-        app.logger.error(f"レース一覧の取得中にエラー: {str(e)}")
-        return render_template('races.html', races=None, error=str(e))
+        app.logger.error(f'エラーが発生しました: {str(e)}')
+        return render_template('races.html', races=[], error=str(e))
 
 @app.route('/races/<int:race_id>')
 def race_detail(race_id):
