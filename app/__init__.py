@@ -7,30 +7,43 @@ import logging
 from logging.handlers import RotatingFileHandler
 import os
 
-# アプリケーションの初期化
-app = Flask(__name__)
-app.config.from_object(Config)
-db = SQLAlchemy(app)
-migrate = Migrate(app, db)
-login = LoginManager(app)
+# データベースとアプリケーションの初期化を分離
+db = SQLAlchemy()
+migrate = Migrate()
+login = LoginManager()
 login.login_view = 'login'
 
-# ログ設定
-if not os.path.exists('logs'):
-    os.mkdir('logs')
-file_handler = RotatingFileHandler('logs/umamemo.log', maxBytes=10240, backupCount=10)
-file_handler.setFormatter(logging.Formatter(
-    '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'
-))
-file_handler.setLevel(logging.INFO)
-app.logger.addHandler(file_handler)
-app.logger.setLevel(logging.INFO)
-app.logger.info('UmaMemo startup')
+def create_app(config_class=Config):
+    app = Flask(__name__)
+    app.config.from_object(config_class)
 
-# 最後にルートをインポート
-from app import routes, models
+    # 拡張機能の初期化
+    db.init_app(app)
+    migrate.init_app(app, db)
+    login.init_app(app)
 
-# デバッグ用：登録されているルートを表示
-print("Registered routes:")
-for rule in app.url_map.iter_rules():
-    print(f"{rule.endpoint}: {rule.rule}")
+    # ログ設定
+    if not os.path.exists('logs'):
+        os.mkdir('logs')
+    file_handler = RotatingFileHandler('logs/umamemo.log', maxBytes=10240, backupCount=10)
+    file_handler.setFormatter(logging.Formatter(
+        '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'
+    ))
+    file_handler.setLevel(logging.INFO)
+    app.logger.addHandler(file_handler)
+    app.logger.setLevel(logging.INFO)
+    app.logger.info('UmaMemo startup')
+
+    with app.app_context():
+        # ルートの登録
+        from app import routes
+        app.logger.info('Routes registered')
+        
+        # 登録されたルートの確認
+        for rule in app.url_map.iter_rules():
+            app.logger.info(f'Route registered: {rule.endpoint} -> {rule.rule}')
+
+    return app
+
+# アプリケーションのインスタンスを作成
+app = create_app()
