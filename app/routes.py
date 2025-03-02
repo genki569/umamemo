@@ -105,16 +105,11 @@ def normalize_venue_name(venue):
 
 def get_venue_code(venue_name):
     """会場名からコードを取得"""
-    # 中央競馬の場合（例：'京都 3歳未勝利 [北]'）
-    base_name = venue_name.split()[0].split('(')[0]
-    
-    # 地方競馬の場合（例：'11回浦和15日目'）
-    if '回' in base_name:
-        base_name = base_name.split('回')[1].split('日目')[0]
-    
-    # 逆引きマッピング
-    venue_code_map = {name: code for code, name in VENUE_NAMES.items()}
-    return venue_code_map.get(base_name)
+    # 各会場名が含まれているかチェックし、最初に見つかった会場のコードを返す
+    for code, name in VENUE_NAMES.items():
+        if name in venue_name:
+            return code
+    return None
 
 @app.route('/races')
 def races():
@@ -148,15 +143,10 @@ def races():
 
         app.logger.info(f'Selected date: {selected_date}')
 
-        # レース情報の取得を修正
+        # レース情報の取得
         races = db.session.query(Race).filter(
             func.date(Race.date) == selected_date
         ).all()
-
-        app.logger.info(f'SQL Query: {str(races)}')  # SQLクエリを出力
-        app.logger.info(f'Found races count: {len(races)}')  # 取得したレース数
-        for race in races:
-            app.logger.info(f'Race: {race.venue} - {race.name} - {race.date}')  # 各レースの情報
 
         # 会場ごとにグループ化
         venue_races = {}
@@ -177,7 +167,8 @@ def races():
         for venue_data in venue_races.values():
             venue_data['races'].sort(key=lambda x: x.race_number)
 
-        app.logger.info(f'Venue races: {venue_races.keys()}')  # 会場ごとのグループ化結果
+        # 会場コード順にソート
+        venue_races = dict(sorted(venue_races.items()))
 
         return render_template(
             'races.html',
