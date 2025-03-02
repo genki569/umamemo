@@ -140,79 +140,20 @@ VENUE_NAMES = {
 @app.route('/races')
 def races():
     try:
-        # デフォルト日付の設定と日付パラメータの処理
-        default_date = datetime.now().date()
-        selected_date = request.args.get('date')
+        page = request.args.get('page', 1, type=int)
+        per_page = 20
         
-        if selected_date:
-            try:
-                selected_date = datetime.strptime(selected_date, '%Y-%m-%d').date()
-            except ValueError:
-                selected_date = default_date
-        else:
-            selected_date = default_date
-
-        # 効率的なクエリ実行
-        races_data = (db.session.query(
-            Race.id,
-            Race.name,
-            Race.date,
-            Race.venue,
-            Race.race_number,
-            Race.weather,
-            Race.track_condition
-        ).filter(
-            func.date(Race.date) == selected_date
-        ).order_by(
-            Race.venue,
-            Race.race_number
-        ).options(
-            load_only('id', 'name', 'date', 'venue', 'race_number', 'weather', 'track_condition')
-        ).all())
-
-        # 会場ごとにデータを整理
-        venue_races = defaultdict(lambda: {
-            'venue_name': None,
-            'weather': None,
-            'track_condition': None,
-            'races': []
-        })
-
-        # 日付リストの生成（前後3日）
-        dates = [{
-            'value': (selected_date + timedelta(days=i)).strftime('%Y-%m-%d'),
-            'month': (selected_date + timedelta(days=i)).month,
-            'day': (selected_date + timedelta(days=i)).day,
-            'weekday': ['月', '火', '水', '木', '金', '土', '日'][(selected_date + timedelta(days=i)).weekday()]
-        } for i in range(-3, 4)]
-
-        # レースデータの整理
-        for race in races_data:
-            venue_id = str(race.venue)
-            venue_data = venue_races[venue_id]
-            
-            if not venue_data['venue_name']:
-                venue_data['venue_name'] = VENUE_NAMES.get(venue_id, '不明')
-                venue_data['weather'] = race.weather
-                venue_data['track_condition'] = race.track_condition
-
-            venue_data['races'].append({
-                'id': race.id,
-                'race_number': race.race_number,
-                'name': race.name
-            })
-
-        return render_template(
-            'races.html',
-            dates=dates,
-            venue_races=dict(venue_races),
-            selected_date=selected_date.strftime('%Y-%m-%d')
+        races = Race.query.order_by(Race.date.desc()).paginate(
+            page=page, 
+            per_page=per_page,
+            error_out=False
         )
-
+        
+        return render_template('races.html', races=races)
+        
     except Exception as e:
-        current_app.logger.error(f"Error in races: {str(e)}")
-        flash('レース一覧の取得中にエラーが発生しました', 'error')
-        return redirect(url_for('index'))
+        current_app.logger.error(f"レース一覧の取得中にエラー: {str(e)}")
+        abort(500)
 
 @app.route('/races/<int:race_id>')
 def race_detail(race_id):
@@ -303,7 +244,8 @@ def race(race_id):
         race = db.session.query(Race).options(
             load_only(
                 'id', 'name', 'date', 'start_time', 'venue',
-                'distance', 'track_type', 'weather',
+                'venue_id', 'race_number', 'race_year', 'kai',
+                'distance', 'track_type', 'direction', 'weather',
                 'track_condition', 'details'
             )
         ).get_or_404(race_id)
@@ -322,7 +264,7 @@ def race(race_id):
             Entry.jockey_id == Jockey.id
         ).filter(
             Entry.race_id == race_id
-        ).all()
+        ).order_by(Entry.horse_number).all()
         
         # レース情報を整形
         race_data = {
@@ -330,43 +272,24 @@ def race(race_id):
             'name': race.name,
             'date': race.date.strftime('%Y-%m-%d') if race.date else 'N/A',
             'start_time': race.start_time.strftime('%H:%M') if race.start_time else 'N/A',
-            'venue': VENUE_NAMES.get(str(race.venue), 'N/A'),
+            'venue': race.venue,
+            'venue_id': race.venue_id,
+            'race_number': race.race_number,
+            'race_year': race.race_year,
+            'kai': race.kai,
             'distance': race.distance,
-            'track_type': race.track_type or 'N/A',
-            'weather': race.weather or 'N/A',
-            'track_condition': race.track_condition or 'N/A',
+            'track_type': race.track_type,
+            'direction': race.direction,
+            'weather': race.weather,
+            'track_condition': race.track_condition,
             'details': race.details
         }
         
-        # エントリーを整理
-        processed_entries = []
-        for entry, horse_name, sex, jockey_name in entries:
-            entry_data = {
-                'number': entry.horse_number,
-                'horse_name': horse_name or 'Unknown',
-                'sex': sex or '-',
-                'weight': entry.weight,
-                'jockey': jockey_name or '-',
-                'odds': f"{entry.odds:.1f}" if entry.odds is not None else None,
-                'popularity': entry.popularity,
-                'result': entry.position
-            }
-            processed_entries.append(entry_data)
+        return render_template('race.html', race=race_data, entries=entries)
         
-        # 馬番でソート（番号がない場合は最後に）
-        processed_entries.sort(key=lambda x: x['number'] if x['number'] is not None else 999)
-        
-        return render_template('race.html',
-                             race=race_data,
-                             entries=processed_entries)
-                             
     except Exception as e:
-        current_app.logger.error(f"Error in race route: {str(e)}")
-        flash('レース情報の取得中にエラーが発生しました', 'error')
-        return render_template('race.html',
-                             race=None,
-                             entries=[],
-                             error="レース情報の取得中にエラーが発生しました")
+        current_app.logger.error(f"レース情報の取得中にエラー: {str(e)}")
+        abort(500)
 
 # is_duplicate関数の定義
 def is_duplicate(entry1, entry2):
