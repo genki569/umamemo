@@ -83,7 +83,25 @@ VENUE_NAMES = {
 @app.route('/races')
 def races():
     try:
-        # 日付の取得（デフォルトは今日）
+        # 利用可能な日付を取得（DBから）
+        available_dates = db.session.query(
+            distinct(func.date(Race.date))
+        ).order_by(
+            func.date(Race.date)
+        ).all()
+        
+        # 日付一覧の作成
+        dates = []
+        for date_tuple in available_dates:
+            date = date_tuple[0]
+            dates.append({
+                'value': date.strftime('%Y%m%d'),
+                'month': date.month,
+                'day': date.day,
+                'weekday': date.strftime('%a')
+            })
+
+        # 選択された日付の取得（デフォルトは今日）
         selected_date = request.args.get('date')
         if selected_date:
             selected_date = datetime.strptime(selected_date, '%Y%m%d').date()
@@ -92,39 +110,29 @@ def races():
 
         # レース情報の取得
         races = Race.query.filter(
-            db.func.date(Race.date) == selected_date  # ここが重要
+            func.date(Race.date) == selected_date
         ).order_by(Race.venue, Race.race_number).all()
 
-        # 会場ごとにグループ化
-        venue_races = {}
-        for race in races:
-            venue_id = race.venue
-            if venue_id not in venue_races:
-                venue_races[venue_id] = {
-                    'venue_name': race.venue,
-                    'weather': getattr(race, 'weather', '不明'),
-                    'track_condition': getattr(race, 'track_condition', '不明'),
-                    'races': []
-                }
-            venue_races[venue_id]['races'].append(race)
+        # デバッグ用ログ出力
+        app.logger.debug(f'Available dates: {len(dates)}')
+        app.logger.debug(f'Selected date: {selected_date}')
+        app.logger.debug(f'Found races: {len(races)}')
 
         return render_template(
             'races.html',
-            dates=[],  # 一時的に空リストを渡す
+            dates=dates,
             selected_date=selected_date.strftime('%Y%m%d'),
-            venue_races=venue_races,
-            venues={}  # 一時的に空の辞書を渡す
+            races=races
         )
 
     except Exception as e:
-        app.logger.error(f'Error in races view: {str(e)}')
+        app.logger.error(f'Error: {str(e)}')
         return render_template(
             'races.html',
             dates=[],
             selected_date=datetime.now().strftime('%Y%m%d'),
-            venue_races={},
-            venues={},
-            error='レース情報の取得中にエラーが発生しました'
+            races=[],
+            error=str(e)
         )
 
 @app.route('/races/<int:race_id>')
