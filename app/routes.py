@@ -39,64 +39,7 @@ def custom_login_required(f):
 @app.route('/')
 @app.route('/index')
 def index():
-    try:
-        today = datetime.now().date()
-        
-        # 次回のレース情報を取得（今日以降で最も近い日付のレース）
-        next_race = db.session.query(Race)\
-            .filter(Race.date >= today)\
-            .order_by(Race.date.asc())\
-            .options(load_only('id', 'date', 'venue'))\
-            .first()
-            
-        if next_race:
-            next_race_date = next_race.date
-            next_races = db.session.query(Race)\
-                .filter(func.date(Race.date) == next_race_date)\
-                .options(load_only('id', 'venue', 'name'))\
-                .all()
-            next_race_venues = list(set([race.venue for race in next_races]))
-        else:
-            next_race_date = None
-            next_race_venues = []
-
-        # 最近のレース結果を取得（クエリを最適化）
-        recent_results = db.session.query(
-            Race.id,
-            Race.date,
-            Race.venue,
-            Race.name,
-            Entry.horse_id,
-            Horse.name.label('horse_name')
-        ).join(
-            Entry, and_(Entry.race_id == Race.id, Entry.position == 1)
-        ).join(
-            Horse, Horse.id == Entry.horse_id
-        ).filter(
-            Race.date < today
-        ).order_by(
-            Race.date.desc()
-        ).limit(5).all()
-
-        results = [{
-            'id': r.id,
-            'date': r.date.strftime('%Y/%m/%d'),
-            'venue': r.venue,
-            'race_name': r.name,
-            'winner': r.horse_name
-        } for r in recent_results]
-
-        return render_template('index.html',
-                            next_race_date=next_race_date,
-                            next_race_venues=next_race_venues,
-                            recent_results=results)
-
-    except Exception as e:
-        app.logger.error(f"Error in index route: {str(e)}")
-        return render_template('index.html', 
-                             next_race_date=None,
-                             next_race_venues=[],
-                             recent_results=[])
+    return render_template('index.html')
 
 class LoginForm(FlaskForm):
     email = StringField('メールアドレス', validators=[DataRequired(), EmailValidator()])
@@ -144,7 +87,7 @@ def races():
         per_page = 20
         
         races = Race.query.order_by(Race.date.desc()).paginate(
-            page=page, 
+            page=page,
             per_page=per_page,
             error_out=False
         )
@@ -153,7 +96,7 @@ def races():
         
     except Exception as e:
         current_app.logger.error(f"レース一覧の取得中にエラー: {str(e)}")
-        abort(500)
+        return render_template('races.html', races=None, error=str(e))
 
 @app.route('/races/<int:race_id>')
 def race_detail(race_id):
@@ -240,56 +183,12 @@ def race_detail(race_id):
 @app.route('/race/<int:race_id>')
 def race(race_id):
     try:
-        # レースと関連データを1回のクエリで効率的に取得
-        race = db.session.query(Race).options(
-            load_only(
-                'id', 'name', 'date', 'start_time', 'venue',
-                'venue_id', 'race_number', 'race_year', 'kai',
-                'distance', 'track_type', 'direction', 'weather',
-                'track_condition', 'details'
-            )
-        ).get_or_404(race_id)
-        
-        # エントリー情報を効率的に取得
-        entries = db.session.query(
-            Entry,
-            Horse.name.label('horse_name'),
-            Horse.sex,
-            Jockey.name.label('jockey_name')
-        ).join(
-            Horse,
-            Entry.horse_id == Horse.id
-        ).outerjoin(
-            Jockey,
-            Entry.jockey_id == Jockey.id
-        ).filter(
-            Entry.race_id == race_id
-        ).order_by(Entry.horse_number).all()
-        
-        # レース情報を整形
-        race_data = {
-            'id': race.id,
-            'name': race.name,
-            'date': race.date.strftime('%Y-%m-%d') if race.date else 'N/A',
-            'start_time': race.start_time.strftime('%H:%M') if race.start_time else 'N/A',
-            'venue': race.venue,
-            'venue_id': race.venue_id,
-            'race_number': race.race_number,
-            'race_year': race.race_year,
-            'kai': race.kai,
-            'distance': race.distance,
-            'track_type': race.track_type,
-            'direction': race.direction,
-            'weather': race.weather,
-            'track_condition': race.track_condition,
-            'details': race.details
-        }
-        
-        return render_template('race.html', race=race_data, entries=entries)
-        
+        race = Race.query.get_or_404(race_id)
+        entries = Entry.query.filter_by(race_id=race_id).all()
+        return render_template('race.html', race=race, entries=entries)
     except Exception as e:
         current_app.logger.error(f"レース情報の取得中にエラー: {str(e)}")
-        abort(500)
+        return render_template('error.html', error=str(e)), 404
 
 # is_duplicate関数の定義
 def is_duplicate(entry1, entry2):

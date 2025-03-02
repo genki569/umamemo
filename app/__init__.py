@@ -70,8 +70,10 @@ def create_app():
     
     db.init_app(app)
     
-    # ルートの登録
+    # ルートの登録（Blueprintではなく直接登録）
     from app import routes
-    app.register_blueprint(routes.bp)
+    app.add_url_rule('/', 'index', routes.index)
+    app.add_url_rule('/races', 'races', routes.races)
+    app.add_url_rule('/race/<int:race_id>', 'race', routes.race)
     
     return app
