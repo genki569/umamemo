@@ -1,8 +1,6 @@
-from app import app, db  # dbをインポート
-from flask_migrate import Migrate  # 追加
+from app import create_app
 
-# Migrateの初期化
-migrate = Migrate(app, db)
+app = create_app()
 
 if __name__ == '__main__':
     app.run() 

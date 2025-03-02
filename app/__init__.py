@@ -51,7 +51,6 @@ def create_app():
     
     # デバッグモードを有効化
     app.config['DEBUG'] = True
-    app.config['PROPAGATE_EXCEPTIONS'] = True
     
     # データベース設定
     app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://username:password@localhost/dbname'
@@ -64,20 +63,15 @@ def create_app():
     file_handler.setFormatter(logging.Formatter(
         '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'
     ))
-    file_handler.setLevel(logging.DEBUG)
+    file_handler.setLevel(logging.INFO)
     app.logger.addHandler(file_handler)
-    app.logger.setLevel(logging.DEBUG)
+    app.logger.setLevel(logging.INFO)
+    app.logger.info('UmaMemo startup')
     
     db.init_app(app)
     
-    # ルートの登録（重要な修正箇所）
-    with app.app_context():
-        from app import routes
-        app.register_blueprint(routes.bp)
-        
-        # インデックスページのルート
-        @app.route('/')
-        def index():
-            return routes.index()
+    # ルートの登録
+    from app import routes
+    app.register_blueprint(routes.bp)
     
     return app
