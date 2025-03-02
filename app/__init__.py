@@ -43,12 +43,13 @@ app.logger.setLevel(logging.INFO)
 # モデルを先にインポート
 from app import models
 
-# その後にルートをインポート
+# ルートをインポートする前にデバッグログを追加
+app.logger.info('About to import routes')
+
+# ルートをインポート
 from app import routes
 
-app.logger.info('All routes loaded')
-
-# ルートの登録確認
-app.logger.info('Checking registered routes:')
+# ルートが登録されたことを確認
+app.logger.info('Routes registered:')
 for rule in app.url_map.iter_rules():
     app.logger.info(f'Route: {rule.endpoint} -> {rule.rule}')
