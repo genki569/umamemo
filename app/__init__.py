@@ -40,8 +40,13 @@ file_handler.setLevel(logging.INFO)
 app.logger.addHandler(file_handler)
 app.logger.setLevel(logging.INFO)
 
-# 最後にインポート
-from app import routes, models
+# モデルを先にインポート
+from app import models
+
+# その後にルートをインポート
+from app import routes
+
+app.logger.info('All routes loaded')
 
 # ルートの登録確認
 app.logger.info('Checking registered routes:')
