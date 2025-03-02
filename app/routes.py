@@ -3876,7 +3876,18 @@ def manage_favorites():
 def race_result(race_id):
     app.logger.info(f'Accessing result page for race {race_id}')
     try:
-        race = Race.query.get_or_404(race_id)
+        # レースIDから日付とレース番号を抽出
+        date_str = race_id[:8]  # YYYYMMDD
+        venue_code = race_id[8:11]  # 会場コード
+        race_number = int(race_id[11:])  # レース番号
+        
+        # データベースからレースを検索
+        race = Race.query.filter_by(
+            date=datetime.strptime(date_str, '%Y%m%d').date(),
+            venue_code=venue_code,
+            race_number=race_number
+        ).first_or_404()
+        
         return render_template('result.html', race=race)
     except Exception as e:
         app.logger.error(f'Error in result route: {str(e)}')
