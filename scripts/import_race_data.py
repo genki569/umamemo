@@ -35,20 +35,18 @@ class RaceDataImporter:
 
     def import_horses(self):
         try:
-            df = pd.read_csv(f'{self.input_dir}/horses.csv')
+            df = pd.read_csv(f'{self.input_dir}/horses.csv', header=None)  # ヘッダーなしとして読み込み
             df = df.where(pd.notnull(df), None)
-            print("Columns in horses.csv:", df.columns.tolist())
             
-            # カラムの位置で指定
+            # カラムの位置で指定（0から始まるインデックス）
             df.columns = ['id', 'name', 'null1', 'sex', 'null2', 'created_at', 'null3', 'updated_at']
             
             stmt = text("""
                 INSERT INTO horses (id, name, sex, memo, updated_at, created_at)
-                VALUES (:id, :name, :sex, :memo, NOW(), NOW())
+                VALUES (:id, :name, :sex, NULL, NOW(), NOW())
                 ON CONFLICT (id) DO UPDATE 
                 SET name = EXCLUDED.name,
                     sex = EXCLUDED.sex,
-                    memo = EXCLUDED.memo,
                     updated_at = NOW();
             """)
             
@@ -57,8 +55,7 @@ class RaceDataImporter:
                     params = {
                         "id": row['id'],
                         "name": row['name'],
-                        "sex": row['sex'],
-                        "memo": None  # memoは現在NULLとして扱う
+                        "sex": row['sex']
                     }
                     conn.execute(stmt, parameters=params)
                 conn.commit()
@@ -70,18 +67,27 @@ class RaceDataImporter:
 
     def import_jockeys(self):
         try:
-            df = pd.read_csv(f'{self.input_dir}/jockeys.csv')
+            df = pd.read_csv(f'{self.input_dir}/jockeys.csv', header=None)  # ヘッダーなしとして読み込み
             df = df.where(pd.notnull(df), None)
             
-            with self.engine.begin() as conn:
+            # カラムの位置で指定
+            df.columns = ['id', 'name', 'null1', 'null2', 'created_at', 'null3', 'updated_at']
+            
+            stmt = text("""
+                INSERT INTO jockeys (id, name)
+                VALUES (:id, :name)
+                ON CONFLICT (id) DO UPDATE 
+                SET name = EXCLUDED.name;
+            """)
+            
+            with self.engine.connect() as conn:
                 for _, row in df.iterrows():
-                    stmt = text("""
-                        INSERT INTO jockeys (id, name)
-                        VALUES (:id, :name)
-                        ON CONFLICT (id) DO UPDATE 
-                        SET name = EXCLUDED.name;
-                    """)
-                    conn.execute(stmt, {"id": row['id'], "name": row['name']})
+                    params = {
+                        "id": row['id'],
+                        "name": row['name']
+                    }
+                    conn.execute(stmt, parameters=params)
+                conn.commit()
             
             logging.info(f"騎手情報のインポート成功: {len(df)}件")
         except Exception as e:
