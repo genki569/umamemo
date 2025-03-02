@@ -100,8 +100,12 @@
                         <tr>
                             <td>{{ race.race_number }}R</td>
                             <td>
-                                <a href="{{ url_for('race_shutuba', race_id=race.id) }}">出馬表</a>
-                                <a href="{{ url_for('race_result', race_id=race.id) }}">結果表</a>
+                                <a href="{{ url_for('race_shutuba', race_id=race.id) }}" class="btn btn-outline-success btn-sm">
+                                    <i class="fas fa-trophy"></i> 出馬表
+                                </a>
+                                <a href="{{ url_for('main.race_detail', race_id=race.id) }}" class="btn btn-outline-info btn-sm">
+                                    <i class="fas fa-book"></i> 結果表
+                                </a>
                             </td>
                             <!-- ... 他のカラム ... -->
                         </tr>
