@@ -39,9 +39,12 @@ class RaceDataImporter:
             df = df.where(pd.notnull(df), None)
             print("Columns in horses.csv:", df.columns.tolist())
             
+            # カラムの位置で指定
+            df.columns = ['id', 'name', 'null1', 'sex', 'null2', 'created_at', 'null3', 'updated_at']
+            
             stmt = text("""
                 INSERT INTO horses (id, name, sex, memo, updated_at, created_at)
-                VALUES (:horse_id, :horse_name, :sex, :memo, NOW(), NOW())
+                VALUES (:id, :name, :sex, :memo, NOW(), NOW())
                 ON CONFLICT (id) DO UPDATE 
                 SET name = EXCLUDED.name,
                     sex = EXCLUDED.sex,
@@ -52,10 +55,10 @@ class RaceDataImporter:
             with self.engine.connect() as conn:
                 for _, row in df.iterrows():
                     params = {
-                        "horse_id": row['horse_id'],
-                        "horse_name": row['horse_name'],
+                        "id": row['id'],
+                        "name": row['name'],
                         "sex": row['sex'],
-                        "memo": row.get('memo', None)
+                        "memo": None  # memoは現在NULLとして扱う
                     }
                     conn.execute(stmt, parameters=params)
                 conn.commit()
