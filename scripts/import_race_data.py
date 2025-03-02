@@ -93,6 +93,9 @@ class RaceDataImporter:
             df = pd.read_csv(f'{self.input_dir}/races.csv', header=None)
             df = df.where(pd.notnull(df), None)
             
+            # デバッグ用にCSVの内容を確認
+            print("First row of races.csv:", df.iloc[0].tolist())
+            
             stmt = text("""
                 INSERT INTO races (
                     race_id, race_name, race_date, post_time, 
@@ -111,24 +114,32 @@ class RaceDataImporter:
             """)
             
             with self.engine.connect() as conn:
-                for _, row in df.iterrows():
-                    params = {
-                        "race_id": row[0],
-                        "race_name": row[1],
-                        "race_date": row[2],
-                        "post_time": row[3],
-                        "kaisai_info": row[4],
-                        "course_code": row[5],
-                        "race_number": row[6],
-                        "year": row[7],
-                        "grade": row[8],
-                        "distance": row[9],
-                        "track_type": row[10],
-                        "track_direction": row[11],
-                        "weather": row[12],
-                        "track_condition": row[13]
-                    }
-                    conn.execute(stmt, parameters=params)
+                for index, row in df.iterrows():
+                    try:
+                        # レース情報文字列からトラック情報を抽出
+                        race_info = str(row[15]) if len(row) > 15 else ""
+                        track_info = race_info.split('/')
+                        
+                        params = {
+                            "race_id": str(row[0]),
+                            "race_name": str(row[1]),
+                            "race_date": str(row[2]),
+                            "post_time": str(row[3]),
+                            "kaisai_info": str(row[4]),
+                            "course_code": int(row[5]) if row[5] is not None else None,
+                            "race_number": int(row[6]) if row[6] is not None else None,
+                            "year": int(row[7]) if row[7] is not None else None,
+                            "grade": str(row[8]) if row[8] is not None else None,
+                            "distance": int(row[9]) if row[9] is not None else None,
+                            "track_type": str(row[10]) if row[10] is not None else None,
+                            "track_direction": str(row[11]) if row[11] is not None else None,
+                            "weather": str(row[12]) if row[12] is not None else None,
+                            "track_condition": str(row[13]) if row[13] is not None else None
+                        }
+                        conn.execute(stmt, parameters=params)
+                    except Exception as e:
+                        print(f"Error on row {index}:", row.tolist())
+                        raise
                 conn.commit()
             
             logging.info(f"レース情報のインポート成功: {len(df)}件")
