@@ -95,15 +95,15 @@ class RaceDataImporter:
             
             stmt = text("""
                 INSERT INTO races (
-                    id, name, race_date, post_time, 
-                    kaisai_info, course_code, race_number, year,
-                    grade, distance, track_type, track_direction,
-                    weather, track_condition, created_at
+                    id, name, date, time,
+                    venue_info, course_id, number, year,
+                    grade, distance, surface, direction,
+                    weather, condition, created_at
                 ) VALUES (
-                    :id, :name, :race_date, :post_time,
-                    :kaisai_info, :course_code, :race_number, :year,
-                    :grade, :distance, :track_type, :track_direction,
-                    :weather, :track_condition, NOW()
+                    :id, :name, :date, :time,
+                    :venue_info, :course_id, :number, :year,
+                    :grade, :distance, :surface, :direction,
+                    :weather, :condition, NOW()
                 )
                 ON CONFLICT (id) DO UPDATE 
                 SET name = EXCLUDED.name,
@@ -129,18 +129,18 @@ class RaceDataImporter:
                         params = {
                             "id": safe_str(row[0]),           # レースID
                             "name": safe_str(row[1]),         # レース名
-                            "race_date": safe_str(row[2]),    # 開催日
-                            "post_time": safe_str(row[3]),    # 発走時刻
-                            "kaisai_info": safe_str(row[4]),  # 開催情報
-                            "course_code": safe_int(row[5]),  # コースコード
-                            "race_number": safe_int(row[6]),  # レース番号
+                            "date": safe_str(row[2]),         # 開催日
+                            "time": safe_str(row[3]),         # 発走時刻
+                            "venue_info": safe_str(row[4]),   # 開催情報
+                            "course_id": safe_int(row[5]),    # コースコード
+                            "number": safe_int(row[6]),       # レース番号
                             "year": safe_int(row[7]),         # 年
                             "grade": safe_str(row[8]),        # グレード
                             "distance": safe_int(row[11]),    # 距離
-                            "track_type": safe_str(row[12]),  # トラック種別
-                            "track_direction": safe_str(row[13]),  # 左右回り
+                            "surface": safe_str(row[12]),     # トラック種別
+                            "direction": safe_str(row[13]),   # 左右回り
                             "weather": safe_str(row[14]),     # 天候
-                            "track_condition": safe_str(row[16])   # 馬場状態
+                            "condition": safe_str(row[16])    # 馬場状態
                         }
                         conn.execute(stmt, parameters=params)
                     except Exception as e:
