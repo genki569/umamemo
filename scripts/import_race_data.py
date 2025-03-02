@@ -114,33 +114,34 @@ class RaceDataImporter:
                 try:
                     if pd.isna(value) or str(value).lower() == 'nan':
                         return None
-                    return int(value)
+                    return int(float(value))  # floatを経由して変換
                 except (ValueError, TypeError):
                     return None
             
             def safe_str(value):
                 if pd.isna(value) or str(value).lower() == 'nan':
                     return None
-                return str(value)
+                return str(value).strip()  # 余分な空白を削除
             
             with self.engine.connect() as conn:
                 for index, row in df.iterrows():
                     try:
+                        # CSVの列の順序に合わせてパラメータを設定
                         params = {
-                            "race_id": safe_str(row[0]),
-                            "race_name": safe_str(row[1]),
-                            "race_date": safe_str(row[2]),
-                            "post_time": safe_str(row[3]),
-                            "kaisai_info": safe_str(row[4]),
-                            "course_code": safe_int(row[5]),
-                            "race_number": safe_int(row[6]),
-                            "year": safe_int(row[7]),
-                            "grade": None,
-                            "distance": safe_int(row[11]),
-                            "track_type": safe_str(row[12]),
-                            "track_direction": safe_str(row[13]),
-                            "weather": safe_str(row[14]),
-                            "track_condition": safe_str(row[16])
+                            "race_id": safe_str(row[0]),      # レースID
+                            "race_name": safe_str(row[1]),    # レース名
+                            "race_date": safe_str(row[2]),    # 開催日
+                            "post_time": safe_str(row[3]),    # 発走時刻
+                            "kaisai_info": safe_str(row[4]),  # 開催情報
+                            "course_code": safe_int(row[5]),  # コースコード
+                            "race_number": safe_int(row[6]),  # レース番号
+                            "year": safe_int(row[7]),         # 年
+                            "grade": safe_str(row[8]),        # グレード
+                            "distance": safe_int(row[9]),     # 距離
+                            "track_type": safe_str(row[10]),  # トラック種別
+                            "track_direction": safe_str(row[11]),  # 左右回り
+                            "weather": safe_str(row[12]),     # 天候
+                            "track_condition": safe_str(row[13])   # 馬場状態
                         }
                         conn.execute(stmt, parameters=params)
                     except Exception as e:
