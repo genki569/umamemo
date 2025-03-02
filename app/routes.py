@@ -1,4 +1,4 @@
-from flask import render_template, request, jsonify, redirect, url_for, flash, current_app, session
+from flask import render_template, request, jsonify, redirect, url_for, flash, current_app, session, abort
 from app import app, db
 from app.models import (
     Horse, Race, Entry, Jockey, User, Favorite, 
@@ -3876,19 +3876,39 @@ def manage_favorites():
 def race_result(race_id):
     app.logger.info(f'Accessing result page for race {race_id}')
     try:
-        # レースIDから日付とレース番号を抽出
-        date_str = race_id[:8]  # YYYYMMDD
-        venue_code = race_id[8:11]  # 会場コード
-        race_number = int(race_id[11:])  # レース番号
+        # レースと関連データを効率的に取得
+        race = db.session.query(Race).get_or_404(race_id)
         
-        # データベースからレースを検索
-        race = Race.query.filter_by(
-            date=datetime.strptime(date_str, '%Y%m%d').date(),
-            venue_code=venue_code,
-            race_number=race_number
-        ).first_or_404()
-        
-        return render_template('result.html', race=race)
+        # エントリー情報を最適化されたクエリで取得
+        entries = db.session.query(Entry)\
+            .join(Horse)\
+            .outerjoin(Jockey)\
+            .filter(Entry.race_id == race_id)\
+            .options(
+                joinedload(Entry.horse).load_only(
+                    Horse.id,
+                    Horse.name,
+                    Horse.sex,
+                    Horse.memo
+                ),
+                joinedload(Entry.jockey).load_only(
+                    Jockey.id,
+                    Jockey.name
+                )
+            )\
+            .order_by(
+                case(
+                    [(Entry.position.is_(None), 999999)],
+                    else_=Entry.position
+                ).asc(),
+                Entry.horse_number.asc()
+            )\
+            .all()
+
+        return render_template('result.html', 
+                             race=race, 
+                             entries=entries)
+                             
     except Exception as e:
-        app.logger.error(f'Error in result route: {str(e)}')
+        app.logger.error(f"Error fetching race results: {str(e)}")
         return jsonify({'error': str(e)}), 500
