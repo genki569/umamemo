@@ -93,9 +93,6 @@ class RaceDataImporter:
             df = pd.read_csv(f'{self.input_dir}/races.csv', header=None)
             df = df.where(pd.notnull(df), None)
             
-            # デバッグ用にCSVの内容を確認
-            print("First row of races.csv:", df.iloc[0].tolist())
-            
             stmt = text("""
                 INSERT INTO races (
                     race_id, race_name, race_date, post_time, 
@@ -116,25 +113,21 @@ class RaceDataImporter:
             with self.engine.connect() as conn:
                 for index, row in df.iterrows():
                     try:
-                        # レース情報文字列からトラック情報を抽出
-                        race_info = str(row[15]) if len(row) > 15 else ""
-                        track_info = race_info.split('/')
-                        
                         params = {
                             "race_id": str(row[0]),
                             "race_name": str(row[1]),
                             "race_date": str(row[2]),
                             "post_time": str(row[3]),
                             "kaisai_info": str(row[4]),
-                            "course_code": int(row[5]) if row[5] is not None else None,
-                            "race_number": int(row[6]) if row[6] is not None else None,
-                            "year": int(row[7]) if row[7] is not None else None,
-                            "grade": str(row[8]) if row[8] is not None else None,
-                            "distance": int(row[9]) if row[9] is not None else None,
-                            "track_type": str(row[10]) if row[10] is not None else None,
-                            "track_direction": str(row[11]) if row[11] is not None else None,
-                            "weather": str(row[12]) if row[12] is not None else None,
-                            "track_condition": str(row[13]) if row[13] is not None else None
+                            "course_code": int(row[5]) if pd.notnull(row[5]) else None,
+                            "race_number": int(row[6]) if pd.notnull(row[6]) else None,
+                            "year": int(row[7]) if pd.notnull(row[7]) else None,
+                            "grade": None,  # gradeは9番目
+                            "distance": int(row[11]) if pd.notnull(row[11]) else None,  # distanceは12番目
+                            "track_type": str(row[12]) if pd.notnull(row[12]) else None,  # track_typeは13番目
+                            "track_direction": str(row[13]) if pd.notnull(row[13]) else None,  # track_directionは14番目
+                            "weather": str(row[14]) if pd.notnull(row[14]) else None,  # weatherは15番目
+                            "track_condition": str(row[16]) if pd.notnull(row[16]) else None  # track_conditionは17番目
                         }
                         conn.execute(stmt, parameters=params)
                     except Exception as e:
