@@ -199,7 +199,7 @@ def race(race_id):
             .order_by(Entry.horse_number.asc())\
             .all()
             
-        return render_template('race.html', 
+        return render_template('race_detail.html', 
                              race=race, 
                              entries=entries)
     except Exception as e:
