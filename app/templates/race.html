@@ -54,11 +54,11 @@
             <tbody>
                 {% for entry in entries %}
                 <tr>
-                    <td>{{ entry.number or '-' }}</td>
-                    <td>{{ entry.horse_name }}</td>
-                    <td>{{ entry.sex or '-' }}</td>
+                    <td>{{ entry.horse_number or '-' }}</td>
+                    <td>{{ entry.horse.name or '-' }}</td>
+                    <td>{{ entry.horse.sex or '-' }}</td>
                     <td>{{ entry.weight or '-' }}</td>
-                    <td>{{ entry.jockey or '-' }}</td>
+                    <td>{{ entry.jockey.name or '-' }}</td>
                     <td>{{ entry.odds or '-' }}</td>
                     <td>{{ entry.popularity or '-' }}</td>
                     <td>{{ entry.result or '-' }}</td>
