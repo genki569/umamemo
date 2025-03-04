@@ -155,7 +155,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for entry in entries %}
+                            {% for entry in entries|sort(attribute='position') %}
                                 <tr>
                                     <td>{{ entry.position or '-' }}</td>
                                     <td>{{ entry.frame_number or '-' }}</td>
