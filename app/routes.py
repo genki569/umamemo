@@ -233,42 +233,36 @@ def add_horse():
 @app.route('/horses')
 def horses():
     try:
+        # デバッグ出力1: 関数開始
+        print("horses route started")
+        
         page = request.args.get('page', 1, type=int)
         search = request.args.get('search', '')
         
-        query = db.session.query(Horse).options(
-            load_only('id', 'name', 'trainer', 'sex', 'birth_year')
-        )
+        # シンプルなクエリに変更（一時的にload_onlyを削除）
+        query = Horse.query
         
-        if search:
-            query = query.filter(
-                or_(
-                    Horse.name.ilike(f'%{search}%'),
-                    Horse.trainer.ilike(f'%{search}%')
-                )
-            )
-            
-        pagination = query.order_by(Horse.id.desc()).paginate(
-            page=page, 
-            per_page=20,
-            error_out=False
-        )
-
-        # デバッグ出力を追加
-        print("取得した馬の数:", len(pagination.items))
-        for horse in pagination.items:
-            print(f"馬名: {horse.name}, 性別: {horse.sex}")
-
+        # デバッグ出力2: クエリ実行前
+        print("Executing query...")
+        
+        # ページネーションを一時的に無効化してテスト
+        horses = query.all()
+        
+        # デバッグ出力3: 結果確認
+        print(f"Found {len(horses)} horses")
+        for horse in horses[:5]:  # 最初の5頭だけ表示
+            print(f"Horse: {horse.name}")
+        
         return render_template('horses.html',
-            horses=pagination.items,
-            pagination=pagination,
+            horses=horses,
+            pagination=None,
             search=search)
             
     except Exception as e:
-        # エラーの詳細も出力
+        # エラーの詳細出力
         print(f"Error in horses route: {str(e)}")
-        current_app.logger.error(f"Error in horses route: {str(e)}")
-        flash('馬一覧の取得中にエラーが発生しました', 'error')
+        import traceback
+        print(traceback.format_exc())
         return render_template('horses.html', horses=[], pagination=None, search='')
 
 @app.route('/record_result', methods=['GET', 'POST'])
