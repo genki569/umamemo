@@ -67,7 +67,7 @@
                             data-winrate="{{ stat.win_rate }}"
                             data-totalrides="{{ stat.total_rides }}">
                             <td>
-                                <a href="{{ url_for('jockey_detail', jockey_id=stat.jockey_id) }}" class="text-decoration-none">
+                                <a href="{{ url_for('jockey_detail', jockey_id=stat.id) }}" class="text-decoration-none">
                                     {{ stat.name }}
                                 </a>
                             </td>
@@ -80,7 +80,7 @@
                             <td>{{ stat.win_rate }}%</td>
                             <td>{{ stat.place_rate }}%</td>
                             <td>
-                                <a href="{{ url_for('jockey_detail', jockey_id=stat.jockey_id) }}" 
+                                <a href="{{ url_for('jockey_detail', jockey_id=stat.id) }}" 
                                    class="btn btn-sm btn-primary">
                                     詳細
                                 </a>

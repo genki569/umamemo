@@ -74,7 +74,7 @@
                         <tr>
                             <td>{{ race.formatted_date }}</td>
                             <td>
-                                <a href="{{ url_for('race_detail', race_id=race.id) }}" class="race-link">
+                                <a href="{{ url_for('race', race_id=race.id) }}" class="race-link">
                                     {{ race.name }}
                                 </a>
                             </td>
