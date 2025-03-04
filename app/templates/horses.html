@@ -42,7 +42,11 @@
                     <div class="horse-icon">
                         <i class="fas fa-horse"></i>
                     </div>
-                    <h5 class="horse-name">{{ horse.name }}</h5>
+                    <h5 class="horse-name">
+                        <a href="{{ url_for('horse_detail', horse_id=horse.id) }}" class="text-decoration-none">
+                            {{ horse.name }}
+                        </a>
+                    </h5>
                     <div class="horse-stats">
                         <span class="stat-item">
                             <i class="fas fa-venus-mars"></i>
