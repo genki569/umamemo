@@ -195,6 +195,9 @@ class RaceDataImporter:
             print(f"デバッグ: 読み込んだ総行数: {len(df)}")
             df = df.where(pd.notnull(df), None)
             
+            # 馬IDの桁数を修正（9桁→10桁）
+            df[2] = df[2].apply(lambda x: int(str(x) + '0') if pd.notnull(x) else None)
+            
             stmt = text("""
                 INSERT INTO entries (
                     id, race_id, horse_id, jockey_id,
