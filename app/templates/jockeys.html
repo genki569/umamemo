@@ -67,7 +67,7 @@
                             data-winrate="{{ stat.win_rate }}"
                             data-totalrides="{{ stat.total_rides }}">
                             <td>
-                                <a href="{{ url_for('jockey_detail', jockey_id=stat.id) }}" class="text-decoration-none">
+                                <a href="{{ url_for('jockey_detail', jockey_id=stat.jockey_id) }}" class="text-decoration-none">
                                     {{ stat.name }}
                                 </a>
                             </td>
@@ -80,9 +80,9 @@
                             <td>{{ stat.win_rate }}%</td>
                             <td>{{ stat.place_rate }}%</td>
                             <td>
-                                <a href="{{ url_for('jockey_detail', jockey_id=stat.id) }}" 
-                                   class="btn btn-sm btn-outline-primary">
-                                    <i class="fas fa-info-circle"></i> 詳細
+                                <a href="{{ url_for('jockey_detail', jockey_id=stat.jockey_id) }}" 
+                                   class="btn btn-sm btn-primary">
+                                    詳細
                                 </a>
                             </td>
                         </tr>
@@ -116,6 +116,7 @@ let currentFilter = 'all';
 let currentSort = 'wins';
 let currentPage = 1;
 const itemsPerPage = 20;
+let allRows = [];  // すべての行を保持する配列
 
 function filterJockeys(filter) {
     currentFilter = filter;
@@ -146,9 +147,10 @@ function sortJockeys(sort) {
 }
 
 function updateTable() {
-    const tableBody = document.getElementById('jockey-table-body');
-    // すべての行を取得（元のデータを保持）
-    const allRows = Array.from(document.querySelectorAll('.jockey-row'));
+    // 初回のみすべての行を取得
+    if (allRows.length === 0) {
+        allRows = Array.from(document.querySelectorAll('.jockey-row'));
+    }
     
     // フィルタリング
     const filteredRows = allRows.filter(row => {
@@ -190,6 +192,7 @@ function updateTable() {
     const visibleRows = filteredRows.slice(startIndex, endIndex);
     
     // テーブルを更新
+    const tableBody = document.getElementById('jockey-table-body');
     tableBody.innerHTML = '';
     visibleRows.forEach(row => {
         tableBody.appendChild(row.cloneNode(true));
@@ -206,17 +209,15 @@ function updateTable() {
 }
 
 function changePage(direction) {
-    const rows = document.getElementsByClassName('jockey-row');
-    const totalRows = rows.length;
-    const totalPages = Math.ceil(totalRows / itemsPerPage);
-    
     if (direction === 'prev' && currentPage > 1) {
         currentPage--;
-        updateTable();
-    } else if (direction === 'next' && currentPage < totalPages) {
-        currentPage++;
-        updateTable();
+    } else if (direction === 'next') {
+        const totalPages = Math.ceil(allRows.length / itemsPerPage);
+        if (currentPage < totalPages) {
+            currentPage++;
+        }
     }
+    updateTable();
 }
 
 // 初期表示時に実行
