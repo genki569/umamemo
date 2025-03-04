@@ -155,9 +155,65 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for entry in entries|sort(attribute='position', reverse=false, default=9999) %}
+                            {% for entry in entries|sort(attribute='position', reverse=false) if entry.position is not none %}
                                 <tr>
                                     <td>{{ entry.position or '-' }}</td>
+                                    <td>{{ entry.frame_number or '-' }}</td>
+                                    <td>{{ entry.horse_number or '-' }}</td>
+                                    <td>
+                                        <a href="{{ url_for('horse_detail', horse_id=entry.horse.id) }}" class="text-decoration-none">
+                                            {{ entry.horse.name }}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        {% if entry.jockey %}
+                                        <a href="{{ url_for('jockey_detail', jockey_id=entry.jockey.id) }}" class="text-decoration-none">
+                                            {{ entry.jockey.name }}
+                                        </a>
+                                        {% else %}
+                                        -
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ entry.time or '-' }}</td>
+                                    <td>{{ entry.margin or '-' }}</td>
+                                    <td>{{ entry.passing or '-' }}</td>
+                                    <td>{{ entry.last_3f or '-' }}</td>
+                                    <td>{{ entry.horse_weight }}{% if entry.weight_change %}({{ entry.weight_change }}){% endif %}</td>
+                                    <td>{{ entry.popularity or '-' }}</td>
+                                    <td>{{ entry.odds if entry.odds else '-' }}</td>
+                                    <td>
+                                        <form method="POST" action="{{ url_for('save_horse_memo', horse_id=entry.horse_id) }}" class="memo-form">
+                                            <div class="input-group">
+                                                <textarea class="form-control form-control-sm" name="content" rows="2" placeholder="メモを入力..."></textarea>
+                                                <button type="submit" class="btn btn-sm btn-outline-primary">
+                                                    <i class="fas fa-save"></i>
+                                                </button>
+                                            </div>
+                                            {% if entry.horse.get_memos() %}
+                                                <div class="mt-2">
+                                                    {% for memo in entry.horse.get_memos()|reverse %}
+                                                        <div class="small text-muted mb-1">
+                                                            {{ memo.content }}
+                                                            <br>
+                                                            <small>{{ memo.created_at }}</small>
+                                                        </div>
+                                                    {% endfor %}
+                                                </div>
+                                            {% endif %}
+                                        </form>
+                                    </td>
+                                    <td>
+                                        <button type="button" 
+                                                class="btn btn-sm {% if entry.horse.is_favorite(1) %}btn-warning{% else %}btn-outline-warning{% endif %}" 
+                                                onclick="toggleFavorite({{ entry.horse.id }})">
+                                            <i class="fas fa-star"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            {% for entry in entries if entry.position is none %}
+                                <tr>
+                                    <td>-</td>
                                     <td>{{ entry.frame_number or '-' }}</td>
                                     <td>{{ entry.horse_number or '-' }}</td>
                                     <td>
