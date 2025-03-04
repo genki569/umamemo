@@ -157,8 +157,8 @@ def scrape_all_pages(base_url, session):
     page = 1
     consecutive_errors = 0
     
-    while page <= 3:  # 100ページまでに制限
-        if consecutive_errors >= 3:
+    while page <= 50:  # 100ページまでに制限
+        if consecutive_errors >= 50:
             print("連続エラーが発生したため、スクレイピングを一時停止します（10分待機）")
             time.sleep(600)
             consecutive_errors = 0
