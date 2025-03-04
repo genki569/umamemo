@@ -163,11 +163,40 @@ class RaceDataImporter:
 
     def import_entries(self):
         try:
+            print("\n=== インポート処理開始 ===")
             print(f"デバッグ: entries.csvの読み込み開始")
             df = pd.read_csv(f'{self.input_dir}/entries.csv', header=None)
             print(f"デバッグ: 読み込んだ総行数: {len(df)}")
+            
+            # CSVの構造確認
+            print("\n=== CSVデータ構造 ===")
+            print(f"カラム数: {len(df.columns)}")
+            print(f"カラム内容: {df.columns.tolist()}")
+            print("\n最初の3行のデータ:")
+            print(df.head(3))
+            
             df = df.where(pd.notnull(df), None)
             
+            # 特定のレースの全データを確認
+            target_race = df[df[1] == 202502242050108]
+            print(f"\n=== 対象レース(202502242050108)のデータ ===")
+            print(f"データ件数: {len(target_race)}")
+            print("全出走馬情報:")
+            for _, row in target_race.iterrows():
+                print(f"馬番{row[4]}: ID={row[0]}, 馬ID={row[2]}, 騎手ID={row[3]}")
+            
+            # データベースの現状確認
+            with self.engine.connect() as conn:
+                print("\n=== 現在のDB状態 ===")
+                existing = conn.execute(
+                    text("SELECT id, horse_number, horse_id, jockey_id, position, time FROM entries WHERE race_id = :race_id"),
+                    {"race_id": "202502242050108"}
+                ).fetchall()
+                print(f"DB内の既存エントリー数: {len(existing)}")
+                for entry in existing:
+                    print(f"ID: {entry.id}, 馬番: {entry.horse_number}, 位置: {entry.position}, タイム: {entry.time}")
+            
+            # UPSERT文の実行と結果確認
             stmt = text("""
                 INSERT INTO entries (
                     id, race_id, horse_id, jockey_id,
@@ -196,88 +225,56 @@ class RaceDataImporter:
                     time = EXCLUDED.time,
                     margin = EXCLUDED.margin,
                     passing = EXCLUDED.passing,
-                    last_3f = EXCLUDED.last_3f;
+                    last_3f = EXCLUDED.last_3f
+                RETURNING id, horse_number, position, time;
             """)
             
-            def safe_int(value):
-                try:
-                    if pd.isna(value) or str(value).lower() == 'nan':
-                        return None
-                    return int(float(value))
-                except (ValueError, TypeError):
-                    return None
-            
-            def safe_float(value):
-                try:
-                    if pd.isna(value) or str(value).lower() == 'nan':
-                        return None
-                    return float(value)
-                except (ValueError, TypeError):
-                    return None
-            
-            def safe_str(value):
-                if pd.isna(value) or str(value).lower() == 'nan':
-                    return None
-                return str(value).strip()
-            
-            with self.engine.connect() as conn:
+            print("\n=== UPSERT実行 ===")
+            with self.engine.begin() as conn:
                 for index, row in df.iterrows():
-                    try:
-                        if row[1] == 202502242050108:  # このレースの処理時
-                            print(f"デバッグ: インポート処理 - 行 {index}")
-                            print(f"  ID: {row[0]}")
-                            print(f"  レースID: {row[1]}")
-                            print(f"  馬番: {row[4]}")
-                            print(f"  オッズ: {row[5]}")
-                            
-                            # 更新前のデータを確認
-                            before_update = conn.execute(
-                                text("SELECT * FROM entries WHERE id = :id"),
-                                {"id": row[0]}
-                            ).fetchone()
-                            print(f"デバッグ: 更新前のデータ: {before_update}")
-                            
-                            # パラメータ準備と実行
-                            params = {
-                                "id": safe_int(row[0]),
-                                "race_id": safe_str(row[1]),
-                                "horse_id": safe_int(row[2]),
-                                "jockey_id": safe_int(row[3]),
-                                "horse_number": safe_int(row[4]),
-                                "odds": safe_float(row[5]),
-                                "popularity": safe_int(row[6]),
-                                "horse_weight": safe_int(row[7]),
-                                "weight_change": safe_int(row[8]),
-                                "prize": safe_float(row[9]),
-                                "position": safe_int(row[10]),
-                                "frame_number": safe_int(row[11]),
-                                "weight": safe_float(row[12]),
-                                "time": safe_str(row[13]),
-                                "margin": safe_str(row[14]),
-                                "passing": safe_str(row[15]),
-                                "last_3f": safe_float(row[16])
-                            }
-                            
-                            conn.execute(stmt, parameters=params)
-                            
-                            # 更新後のデータを確認
-                            after_update = conn.execute(
-                                text("SELECT * FROM entries WHERE id = :id"),
-                                {"id": row[0]}
-                            ).fetchone()
-                            print(f"デバッグ: 更新後のデータ: {after_update}")
-                            print("-------------------")
+                    if row[1] == 202502242050108:
+                        params = {
+                            "id": safe_int(row[0]),
+                            "race_id": safe_str(row[1]),
+                            "horse_id": safe_int(row[2]),
+                            "jockey_id": safe_int(row[3]),
+                            "horse_number": safe_int(row[4]),
+                            "odds": safe_float(row[5]),
+                            "popularity": safe_int(row[6]),
+                            "horse_weight": safe_int(row[7]),
+                            "weight_change": safe_int(row[8]),
+                            "prize": safe_float(row[9]),
+                            "position": safe_int(row[10]),
+                            "frame_number": safe_int(row[11]),
+                            "weight": safe_float(row[12]),
+                            "time": safe_str(row[13]),
+                            "margin": safe_str(row[14]),
+                            "passing": safe_str(row[15]),
+                            "last_3f": safe_float(row[16])
+                        }
                         
-                    except Exception as e:
-                        print(f"Error on row {index}:", row.tolist())
-                        print(f"Params:", params)
-                        raise
-                
-                conn.commit()
+                        print(f"\n処理中: 馬番{params['horse_number']}")
+                        print(f"パラメータ: {params}")
+                        
+                        result = conn.execute(stmt, parameters=params)
+                        updated = result.fetchone()
+                        print(f"実行結果: {updated}")
             
-            logging.info(f"出走情報のインポート成功: {len(df)}件")
+            # 最終確認
+            with self.engine.connect() as conn:
+                print("\n=== 更新後のDB状態 ===")
+                final = conn.execute(
+                    text("SELECT id, horse_number, horse_id, jockey_id, position, time FROM entries WHERE race_id = :race_id"),
+                    {"race_id": "202502242050108"}
+                ).fetchall()
+                print(f"更新後のエントリー数: {len(final)}")
+                for entry in final:
+                    print(f"ID: {entry.id}, 馬番: {entry.horse_number}, 位置: {entry.position}, タイム: {entry.time}")
+            
+            print("\n=== インポート処理完了 ===")
+            
         except Exception as e:
-            logging.error(f"出走情報のインポートエラー: {e}")
+            print(f"エラー発生: {str(e)}")
             raise
 
     def import_all(self):
