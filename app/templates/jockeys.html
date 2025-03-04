@@ -46,10 +46,10 @@
     <div class="table-container fade-in" data-aos="fade-up">
         <div class="table-responsive">
             <table class="table table-striped table-hover">
-                <thead class="thead-dark">
+                <thead class="table-light">
                     <tr>
                         <th>騎手名</th>
-                        <th>所属</th>
+                        <th class="text-center bg-light">所属</th>
                         <th>総騎乗数</th>
                         <th>1着</th>
                         <th>2着</th>
@@ -72,7 +72,7 @@
                                     {{ stat.name }}
                                 </a>
                             </td>
-                            <td>{{ stat.affiliation }}</td>
+                            <td class="text-center bg-light">{{ stat.affiliation }}</td>
                             <td>{{ stat.total_rides }}</td>
                             <td>{{ stat.wins }}</td>
                             <td>{{ stat.seconds }}</td>
@@ -120,8 +120,42 @@ function loadMore() {
 
 function searchJockeys() {
     const searchInput = document.getElementById('jockey-search');
-    searchQuery = searchInput.value.toLowerCase().trim();
-    filterAndSortTable();
+    const searchText = searchInput.value.toLowerCase().trim();
+    const rows = document.getElementsByClassName('jockey-row');
+    let visibleCount = 0;
+    
+    Array.from(rows).forEach(row => {
+        const name = row.querySelector('td:first-child').textContent.toLowerCase();
+        if (name.includes(searchText)) {
+            row.style.display = '';
+            visibleCount++;
+        } else {
+            row.style.display = 'none';
+        }
+    });
+    
+    // 検索結果が0件の場合
+    const tableBody = document.getElementById('jockey-table-body');
+    const noResultRow = document.getElementById('no-result-row');
+    
+    if (visibleCount === 0) {
+        if (!noResultRow) {
+            const newRow = document.createElement('tr');
+            newRow.id = 'no-result-row';
+            newRow.innerHTML = `
+                <td colspan="10" class="text-center py-4">
+                    <i class="fas fa-search me-2"></i>
+                    検索結果が見つかりませんでした
+                </td>
+            `;
+            tableBody.appendChild(newRow);
+        }
+    } else if (noResultRow) {
+        noResultRow.remove();
+    }
+    
+    // 表示件数を更新
+    updateDisplayCount(visibleCount);
 }
 
 function filterJockeys(filter) {
@@ -281,20 +315,42 @@ document.addEventListener('DOMContentLoaded', function() {
 
 /* テーブルのスタイル改善 */
 .table {
-    color: #212529;  /* テーブルの文字色を濃く */
+    color: #212529;
+    background-color: #fff;
 }
 
-.table a {
-    color: #0d6efd;  /* リンクの色を調整 */
+.table th {
+    background-color: #f8f9fa;
+    color: #495057;
 }
 
-.table a:hover {
-    color: #0a58ca;
+.bg-light {
+    background-color: #f8f9fa !important;
 }
 
-/* 検索結果なしのメッセージ */
-.text-muted {
-    color: #6c757d !important;
+/* 詳細ボタンのスタイル */
+.btn-primary {
+    color: #fff !important;
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+.btn-primary:hover {
+    color: #fff !important;
+    background-color: #0b5ed7;
+    border-color: #0a58ca;
+}
+
+/* 検索ボックスのスタイル */
+.search-box .form-control {
+    color: #212529;
+    background-color: #fff;
+}
+
+/* 所属カラムの背景色 */
+td.bg-light {
+    background-color: #f8f9fa !important;
+    color: #212529;
 }
 </style>
 {% endblock %} 
