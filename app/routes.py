@@ -317,13 +317,13 @@ def upcoming_races():
 @app.route('/horses/<int:horse_id>')
 def horse_detail(horse_id):
     try:
-        print(f"Accessing horse_detail with ID: {horse_id}")  # デバッグ出力
+        print(f"Accessing horse_detail with ID: {horse_id}")
         
         horse = db.session.query(Horse).options(
             load_only('id', 'name', 'sex', 'memo', 'trainer', 'birth_year')
         ).get_or_404(horse_id)
         
-        print(f"Found horse: {horse.name}")  # デバッグ出力
+        print(f"Found horse: {horse.name}")
         
         entries = db.session.query(
             Entry,
@@ -341,16 +341,25 @@ def horse_detail(horse_id):
             Race.date.desc()
         ).all()
         
-        print(f"Found {len(entries)} entries")  # デバッグ出力
+        print(f"Found {len(entries)} entries")
+        
+        # お気に入り状態を確認
+        is_favorite = False
+        if current_user.is_authenticated:
+            is_favorite = db.session.query(Favorite).filter_by(
+                user_id=current_user.id,
+                horse_id=horse_id
+            ).first() is not None
         
         return render_template('horse_detail.html', 
                              horse=horse, 
-                             entries=entries)
+                             entries=entries,
+                             is_favorite=is_favorite)
                              
     except Exception as e:
-        print(f"Error in horse_detail: {str(e)}")  # エラー出力
+        print(f"Error in horse_detail: {str(e)}")
         import traceback
-        print(traceback.format_exc())  # スタックトレース出力
+        print(traceback.format_exc())
         return "Error", 500
 
 @app.route('/horses/<int:horse_id>/memo', methods=['POST'])
