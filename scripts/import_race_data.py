@@ -196,14 +196,14 @@ class RaceDataImporter:
             print(f"成功: {success_count}")
             print(f"エラー: {error_count}")
             
-            # データベースの状態確認
+            # データベースの状態確認（updated_atを使用しない）
             with self.engine.connect() as conn:
                 total = conn.execute(text("SELECT COUNT(*) FROM jockeys")).scalar()
                 print(f"\nデータベース内の騎手データ総数: {total}")
                 
-                # 最新の5件を表示
-                latest = conn.execute(text("SELECT id, name FROM jockeys ORDER BY updated_at DESC LIMIT 5")).fetchall()
-                print("\n最新の登録/更新データ:")
+                # 最新の5件を表示（IDの降順でソート）
+                latest = conn.execute(text("SELECT id, name FROM jockeys ORDER BY id DESC LIMIT 5")).fetchall()
+                print("\n最新の登録データ:")
                 for jockey in latest:
                     print(f"ID: {jockey.id}, 名前: {jockey.name}")
             
