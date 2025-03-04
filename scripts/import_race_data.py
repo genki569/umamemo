@@ -166,12 +166,6 @@ class RaceDataImporter:
             print(f"デバッグ: entries.csvの読み込み開始")
             df = pd.read_csv(f'{self.input_dir}/entries.csv', header=None)
             print(f"デバッグ: 読み込んだ総行数: {len(df)}")
-            
-            # 特定のレースIDのデータを確認
-            target_race = df[df[1] == 202502242050108]  # race_idのカラム
-            print(f"デバッグ: レースID 202502242050108 のデータ数: {len(target_race)}")
-            print(f"デバッグ: そのデータ内容:\n{target_race}")
-            
             df = df.where(pd.notnull(df), None)
             
             stmt = text("""
@@ -187,8 +181,22 @@ class RaceDataImporter:
                     :weight, :time, :margin, :passing, :last_3f
                 )
                 ON CONFLICT (id) DO UPDATE 
-                SET position = EXCLUDED.position,
-                    time = EXCLUDED.time;
+                SET 
+                    horse_id = EXCLUDED.horse_id,
+                    jockey_id = EXCLUDED.jockey_id,
+                    horse_number = EXCLUDED.horse_number,
+                    odds = EXCLUDED.odds,
+                    popularity = EXCLUDED.popularity,
+                    horse_weight = EXCLUDED.horse_weight,
+                    weight_change = EXCLUDED.weight_change,
+                    prize = EXCLUDED.prize,
+                    position = EXCLUDED.position,
+                    frame_number = EXCLUDED.frame_number,
+                    weight = EXCLUDED.weight,
+                    time = EXCLUDED.time,
+                    margin = EXCLUDED.margin,
+                    passing = EXCLUDED.passing,
+                    last_3f = EXCLUDED.last_3f;
             """)
             
             def safe_int(value):
@@ -229,7 +237,7 @@ class RaceDataImporter:
                             ).fetchone()
                             print(f"デバッグ: 更新前のデータ: {before_update}")
                             
-                            # パラメータを準備
+                            # パラメータ準備と実行
                             params = {
                                 "id": safe_int(row[0]),
                                 "race_id": safe_str(row[1]),
@@ -250,7 +258,6 @@ class RaceDataImporter:
                                 "last_3f": safe_float(row[16])
                             }
                             
-                            # SQL実行
                             conn.execute(stmt, parameters=params)
                             
                             # 更新後のデータを確認
