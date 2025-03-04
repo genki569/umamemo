@@ -75,7 +75,7 @@
                                 {% for entry in entries %}
                                 <tr>
                                     <td>
-                                        <a href="{{ url_for('race', race_id=entry.race.id) }}" class="text-decoration-none">
+                                        <a href="{{ url_for('races_race_detail', race_id=entry.race.id) }}" class="text-decoration-none">
                                             {{ entry.race.date.strftime('%Y/%m/%d') }} {{ entry.race.name }}
                                         </a>
                                     </td>
