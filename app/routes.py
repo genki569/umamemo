@@ -317,14 +317,16 @@ def upcoming_races():
 @app.route('/horses/<int:horse_id>')
 def horse_detail(horse_id):
     try:
-        print(f"Accessing horse_detail with ID: {horse_id}")
+        # 開始ログ
+        current_app.logger.info(f"Starting horse_detail route with ID: {horse_id}")
         
+        # 馬の取得を試みる
         horse = db.session.query(Horse).options(
             load_only('id', 'name', 'sex', 'memo', 'trainer', 'birth_year')
         ).get_or_404(horse_id)
+        current_app.logger.info(f"Found horse: {horse.name}")
         
-        print(f"Found horse: {horse.name}")
-        
+        # エントリーの取得を試みる
         entries = db.session.query(
             Entry,
             Race.date,
@@ -340,16 +342,22 @@ def horse_detail(horse_id):
         ).order_by(
             Race.date.desc()
         ).all()
+        current_app.logger.info(f"Found {len(entries)} entries")
         
-        print(f"Found {len(entries)} entries")
-        
-        # お気に入り状態を確認
+        # お気に入り状態の確認
         is_favorite = False
         if current_user.is_authenticated:
             is_favorite = db.session.query(Favorite).filter_by(
                 user_id=current_user.id,
                 horse_id=horse_id
             ).first() is not None
+        current_app.logger.info(f"is_favorite: {is_favorite}")
+        
+        # テンプレートに渡す前の変数確認
+        current_app.logger.info("Template variables:")
+        current_app.logger.info(f"horse: {horse.__dict__}")
+        current_app.logger.info(f"entries: {len(entries)}")
+        current_app.logger.info(f"is_favorite: {is_favorite}")
         
         return render_template('horse_detail.html', 
                              horse=horse, 
@@ -357,10 +365,12 @@ def horse_detail(horse_id):
                              is_favorite=is_favorite)
                              
     except Exception as e:
-        print(f"Error in horse_detail: {str(e)}")
-        import traceback
-        print(traceback.format_exc())
-        return "Error", 500
+        current_app.logger.error(f"Error in horse_detail: {str(e)}")
+        current_app.logger.error(traceback.format_exc())
+        # エラー画面を表示
+        return render_template('error.html', 
+                             error_message="馬の詳細情報の取得中にエラーが発生しました。",
+                             debug_info=str(e)), 500
 
 @app.route('/horses/<int:horse_id>/memo', methods=['POST'])
 @login_required
