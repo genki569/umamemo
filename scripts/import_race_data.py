@@ -195,13 +195,6 @@ class RaceDataImporter:
             df = pd.read_csv(f'{self.input_dir}/entries.csv', header=None)
             print(f"デバッグ: 読み込んだ総行数: {len(df)}")
             
-            # CSVの構造確認
-            print("\n=== CSVデータ構造 ===")
-            print(f"カラム数: {len(df.columns)}")
-            print(f"カラム内容: {df.columns.tolist()}")
-            print("\n最初の3行のデータ:")
-            print(df.head(3))
-            
             df = df.where(pd.notnull(df), None)
             
             # UPSERT文の実行と結果確認
@@ -240,12 +233,24 @@ class RaceDataImporter:
             print("\n=== UPSERT実行 ===")
             with self.engine.begin() as conn:
                 for index, row in df.iterrows():
-                    # if文を削除し、全レースを処理
+                    horse_id = self.safe_int(row[2])
+                    
+                    # 馬の存在確認
+                    horse_exists = conn.execute(
+                        text("SELECT 1 FROM horses WHERE id = :id"),
+                        {"id": horse_id}
+                    ).fetchone()
+                    
+                    if not horse_exists:
+                        print(f"警告: 馬ID {horse_id} は存在しません。このエントリーはスキップします。")
+                        continue
+                    
+                    # 馬が存在する場合のみ処理
                     entry_id = self.generate_entry_id(row[1], row[4])
                     params = {
                         "id": entry_id,
                         "race_id": self.safe_str(row[1]),
-                        "horse_id": self.safe_int(row[2]),
+                        "horse_id": horse_id,
                         "jockey_id": self.safe_int(row[3]),
                         "horse_number": self.safe_int(row[4]),
                         "odds": self.safe_float(row[5]),
