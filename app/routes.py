@@ -328,10 +328,7 @@ def horse_detail(horse_id):
         
         # エントリーの取得を試みる
         entries = db.session.query(
-            Entry,
-            Race.date,
-            Race.name.label('race_name'),
-            Jockey.name.label('jockey_name')
+            Entry
         ).join(
             Race
         ).outerjoin(
@@ -355,17 +352,11 @@ def horse_detail(horse_id):
         # メモの取得
         memos = json.loads(horse.memo) if horse.memo else []
         
-        # テンプレートに渡す前の変数確認
-        current_app.logger.info("Template variables:")
-        current_app.logger.info(f"horse: {horse.__dict__}")
-        current_app.logger.info(f"entries: {len(entries)}")
-        current_app.logger.info(f"is_favorite: {is_favorite}")
-        current_app.logger.info(f"memos: {len(memos)}")
-        
         return render_template('horse_detail.html', 
-                             horse=horse, 
+                             horse=horse,
                              entries=entries,
-                             is_favorite=is_favorite)
+                             is_favorite=is_favorite,
+                             memos=memos)
                              
     except Exception as e:
         current_app.logger.error(f"Error in horse_detail: {str(e)}")

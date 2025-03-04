@@ -26,7 +26,7 @@
                 <!-- 新規メモ追加フォーム -->
                 <div class="sticky-note new-note">
                     <form method="POST" action="{{ url_for('save_horse_memo', horse_id=horse.id) }}">
-                        {{ form.csrf_token }}
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                         <textarea class="sticky-note-text" name="content" rows="3" placeholder="新しいメモを追加..."></textarea>
                         <button type="submit" class="btn btn-sm sticky-note-save">
                             <i class="fas fa-plus"></i> 追加
@@ -35,7 +35,7 @@
                 </div>
 
                 <!-- 既存のメモ一覧 -->
-                {% for memo in horse.get_memos()|reverse %}
+                {% for memo in memos|reverse %}
                 <div class="sticky-note" id="memo-{{ memo.id }}">
                     <div class="sticky-note-content">
                         {{ memo.content }}
@@ -73,17 +73,17 @@
                             </thead>
                             <tbody>
                                 {% for entry in entries %}
-                                    <tr>
-                                        <td>
-                                            <a href="{{ url_for('race_detail', race_id=entry.race.id) }}" class="text-decoration-none">
-                                                {{ entry.race.date }} {{ entry.race.name }}
-                                            </a>
-                                        </td>
-                                        <td>{{ entry.horse_number }}</td>
-                                        <td>{{ entry.jockey.name if entry.jockey else entry.jockey }}</td>
-                                        <td>{{ entry.time }}</td>
-                                        <td>{{ entry.weight }}{% if entry.weight_diff %} ({{ entry.weight_diff }}){% endif %}</td>
-                                    </tr>
+                                <tr>
+                                    <td>
+                                        <a href="{{ url_for('race', race_id=entry.race.id) }}" class="text-decoration-none">
+                                            {{ entry.race.date.strftime('%Y/%m/%d') }} {{ entry.race.name }}
+                                        </a>
+                                    </td>
+                                    <td>{{ entry.horse_number }}</td>
+                                    <td>{{ entry.jockey.name if entry.jockey else '不明' }}</td>
+                                    <td>{{ entry.time }}</td>
+                                    <td>{{ entry.weight }}{% if entry.weight_change %}({{ entry.weight_change }}){% endif %}</td>
+                                </tr>
                                 {% endfor %}
                             </tbody>
                         </table>
