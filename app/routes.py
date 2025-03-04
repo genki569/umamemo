@@ -317,18 +317,14 @@ def upcoming_races():
 @app.route('/horses/<int:horse_id>')
 def horse_detail(horse_id):
     try:
-        # 開始ログ
-        current_app.logger.info(f"Starting horse_detail route with ID: {horse_id}")
+        horse = db.session.query(Horse).get_or_404(horse_id)
         
-        # 馬の取得を試みる
-        horse = db.session.query(Horse).options(
-            load_only('id', 'name', 'sex', 'memo', 'trainer', 'birth_year')
-        ).get_or_404(horse_id)
-        current_app.logger.info(f"Found horse: {horse.name}")
-        
-        # エントリーの取得を試みる
+        # クエリを元の形式に戻す
         entries = db.session.query(
-            Entry
+            Entry,
+            Race.date,
+            Race.name.label('race_name'),
+            Jockey.name.label('jockey_name')
         ).join(
             Race
         ).outerjoin(
@@ -339,9 +335,23 @@ def horse_detail(horse_id):
         ).order_by(
             Race.date.desc()
         ).all()
-        current_app.logger.info(f"Found {len(entries)} entries")
         
-        # お気に入り状態の確認
+        # 結果の整形
+        race_results = []
+        for entry, race_date, race_name, jockey_name in entries:
+            race_results.append({
+                'race': {
+                    'id': entry.race_id,
+                    'date': race_date,
+                    'name': race_name
+                },
+                'horse_number': entry.horse_number,
+                'jockey': {'name': jockey_name},
+                'time': entry.time,
+                'weight': entry.weight,
+                'weight_change': entry.weight_change if hasattr(entry, 'weight_change') else None
+            })
+        
         is_favorite = False
         if current_user.is_authenticated:
             is_favorite = db.session.query(Favorite).filter_by(
@@ -349,12 +359,11 @@ def horse_detail(horse_id):
                 horse_id=horse_id
             ).first() is not None
         
-        # メモの取得
         memos = json.loads(horse.memo) if horse.memo else []
         
         return render_template('horse_detail.html', 
                              horse=horse,
-                             entries=entries,
+                             entries=race_results,  # 整形したデータを渡す
                              is_favorite=is_favorite,
                              memos=memos)
                              
