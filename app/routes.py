@@ -233,36 +233,32 @@ def add_horse():
 @app.route('/horses')
 def horses():
     try:
-        # デバッグ出力1: 関数開始
         print("horses route started")
-        
         page = request.args.get('page', 1, type=int)
         search = request.args.get('search', '')
         
-        # シンプルなクエリに変更（一時的にload_onlyを削除）
+        # シンプルなクエリ
         query = Horse.query
         
-        # デバッグ出力2: クエリ実行前
-        print("Executing query...")
+        if search:
+            query = query.filter(Horse.name.ilike(f'%{search}%'))
         
-        # ページネーションを一時的に無効化してテスト
-        horses = query.all()
+        # ページネーション設定
+        pagination = query.order_by(Horse.id.desc()).paginate(
+            page=page,
+            per_page=24,  # 1ページあたり24頭
+            error_out=False
+        )
         
-        # デバッグ出力3: 結果確認
-        print(f"Found {len(horses)} horses")
-        for horse in horses[:5]:  # 最初の5頭だけ表示
-            print(f"Horse: {horse.name}")
+        print(f"Page {page}: Found {len(pagination.items)} horses")
         
         return render_template('horses.html',
-            horses=horses,
-            pagination=None,
+            horses=pagination.items,
+            pagination=pagination,
             search=search)
             
     except Exception as e:
-        # エラーの詳細出力
         print(f"Error in horses route: {str(e)}")
-        import traceback
-        print(traceback.format_exc())
         return render_template('horses.html', horses=[], pagination=None, search='')
 
 @app.route('/record_result', methods=['GET', 'POST'])
