@@ -75,7 +75,7 @@
                                 {% for entry in entries %}
                                 <tr>
                                     <td>
-                                        <a href="{{ url_for('races.race_detail', race_id=entry.race.id) }}" class="text-decoration-none">
+                                        <a href="{{ url_for('race', race_id=entry.race.id) }}" class="text-decoration-none">
                                             {{ entry.race.date.strftime('%Y/%m/%d') }} {{ entry.race.name }}
                                         </a>
                                     </td>
@@ -92,7 +92,7 @@
                     <!-- 戻るボタンは条件付きで表示 -->
                     {% if entries and entries|length > 0 and entries[0].race %}
                         <div class="mt-4 text-end">
-                            <a href="{{ url_for('races.race_detail', race_id=entries[0].race.id) }}" class="btn btn-outline-secondary">
+                            <a href="{{ url_for('race', race_id=entries[0].race.id) }}" class="btn btn-outline-secondary">
                                 <i class="fas fa-arrow-left me-2"></i>レース結果に戻る
                             </a>
                         </div>
