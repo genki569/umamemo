@@ -156,7 +156,7 @@
                         </thead>
                         <tbody>
                             {# まず着順のある馬を着順でソートして表示 #}
-                            {% for entry in (entries|selectattr('position', 'defined')|sort(attribute='position')) %}
+                            {% for entry in (entries|selectattr('position', 'defined')|list|sort(attribute='position')) %}
                                 <tr>
                                     <td>{{ entry.position }}</td>
                                     <td>{{ entry.frame_number or '-' }}</td>
@@ -213,7 +213,7 @@
                                 </tr>
                             {% endfor %}
                             {# 次に着順のない馬を表示 #}
-                            {% for entry in entries if not entry.position %}
+                            {% for entry in entries if entry.position is none %}
                                 <tr>
                                     <td>-</td>
                                     <td>{{ entry.frame_number or '-' }}</td>
