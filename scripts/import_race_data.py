@@ -142,13 +142,12 @@ class RaceDataImporter:
             
             df = df.where(pd.notnull(df), None)
             
-            # SQLステートメントの準備
+            # SQLステートメントの準備（created_atとupdated_atを削除）
             stmt = text("""
-                INSERT INTO jockeys (id, name, created_at, updated_at)
-                VALUES (:id, :name, NOW(), NOW())
+                INSERT INTO jockeys (id, name)
+                VALUES (:id, :name)
                 ON CONFLICT (id) DO UPDATE 
-                SET name = EXCLUDED.name,
-                    updated_at = NOW()
+                SET name = EXCLUDED.name
                 RETURNING id, name;
             """)
             
