@@ -93,14 +93,14 @@
     </div>
 </div>
 
-<div class="pagination-container mt-4 fade-in" data-aos="fade-up" data-aos-delay="200">
+<div class="pagination-container mt-4 mb-5">
     <div class="d-flex justify-content-between align-items-center">
         <div class="entries-info">
             全 <span id="total-entries">0</span> 件中 
             <span id="showing-entries">0-0</span> 件を表示
         </div>
         <div class="pagination-controls">
-            <button class="btn btn-outline-primary" onclick="changePage('prev')" id="prev-btn">
+            <button class="btn btn-outline-primary" onclick="changePage('prev')" id="prev-btn" disabled>
                 <i class="fas fa-chevron-left"></i> 前へ
             </button>
             <span class="mx-3" id="page-info">1 / 1</span>
@@ -147,10 +147,11 @@ function sortJockeys(sort) {
 
 function updateTable() {
     const tableBody = document.getElementById('jockey-table-body');
-    const rows = Array.from(tableBody.getElementsByClassName('jockey-row'));  // 修正: tableBodyから検索
+    // すべての行を取得（元のデータを保持）
+    const allRows = Array.from(document.querySelectorAll('.jockey-row'));
     
     // フィルタリング
-    const filteredRows = rows.filter(row => {
+    const filteredRows = allRows.filter(row => {
         if (currentFilter === 'all') return true;
         if (currentFilter === 'central') return row.dataset.affiliation === '中央';
         if (currentFilter === 'local') return row.dataset.affiliation === '地方';
@@ -160,7 +161,6 @@ function updateTable() {
     // ソート
     filteredRows.sort((a, b) => {
         let aValue, bValue;
-        
         switch(currentSort) {
             case 'wins':
                 aValue = parseInt(a.dataset.wins);
@@ -175,15 +175,12 @@ function updateTable() {
                 bValue = parseInt(b.dataset.totalrides);
                 break;
         }
-        
         return bValue - aValue;
     });
     
     // ページネーション
     const totalItems = filteredRows.length;
     const totalPages = Math.ceil(totalItems / itemsPerPage);
-    
-    // 現在のページが総ページ数を超えないようにする
     currentPage = Math.min(currentPage, totalPages);
     
     const startIndex = (currentPage - 1) * itemsPerPage;
@@ -199,12 +196,8 @@ function updateTable() {
     });
     
     // ページネーション情報を更新
-    updatePaginationInfo(totalItems, startIndex + 1, endIndex, totalPages);
-}
-
-function updatePaginationInfo(total, start, end, totalPages) {
-    document.getElementById('total-entries').textContent = total;
-    document.getElementById('showing-entries').textContent = `${start}-${end}`;
+    document.getElementById('total-entries').textContent = totalItems;
+    document.getElementById('showing-entries').textContent = `${startIndex + 1}-${endIndex}`;
     document.getElementById('page-info').textContent = `${currentPage} / ${totalPages}`;
     
     // ボタンの有効/無効を設定
@@ -228,14 +221,24 @@ function changePage(direction) {
 
 // 初期表示時に実行
 document.addEventListener('DOMContentLoaded', function() {
-    // すべての行を取得して初期表示
-    const allRows = Array.from(document.getElementsByClassName('jockey-row'));
-    const totalItems = allRows.length;
-    const totalPages = Math.ceil(totalItems / itemsPerPage);
-    
-    // 初期ページネーション情報を設定
-    updatePaginationInfo(totalItems, 1, Math.min(itemsPerPage, totalItems), totalPages);
     updateTable();
 });
 </script>
+
+<style>
+.pagination-container {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.entries-info {
+    color: #6c757d;
+}
+
+.pagination-controls .btn {
+    min-width: 100px;
+}
+</style>
 {% endblock %} 
