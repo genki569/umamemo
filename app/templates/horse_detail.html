@@ -6,36 +6,38 @@
         <div class="col">
             <h1 class="mb-4">{{ horse.name }}</h1>
             
-            <!-- お気に入りボタン - ログインユーザーのみ表示 -->
-            {% if current_user.is_authenticated %}
-                <button class="btn {% if is_favorite %}btn-danger{% else %}btn-outline-danger{% endif %} favorite-btn mb-3"
-                        data-horse-id="{{ horse.id }}"
-                        onclick="toggleFavorite(this)">
-                    <i class="fas fa-heart"></i>
+            <!-- お気に入りボタン -->
+            <button class="btn btn-outline-danger favorite-btn mb-3" 
+                    onclick="{% if current_user.is_authenticated %}toggleFavorite(this){% else %}window.location.href='{{ url_for('login') }}'{% endif %}"
+                    data-horse-id="{{ horse.id }}">
+                <i class="fas fa-heart"></i>
+                {% if current_user.is_authenticated %}
                     {% if is_favorite %}お気に入り解除{% else %}お気に入り登録{% endif %}
-                </button>
-            {% else %}
-                <div class="alert alert-info mb-3">
-                    お気に入り機能を使用するには<a href="{{ url_for('login') }}">ログイン</a>してください。
-                </div>
-            {% endif %}
+                {% else %}
+                    お気に入り登録
+                {% endif %}
+            </button>
 
-            <!-- メモ追加フォーム - ログインユーザーのみ表示 -->
-            {% if current_user.is_authenticated %}
-                <form method="POST" action="{{ url_for('save_horse_memo', horse_id=horse.id) }}">
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                    <div class="form-group">
-                        <textarea name="content" class="form-control" rows="3" placeholder="メモを入力..."></textarea>
+            <!-- メモ機能 -->
+            <div class="memo-section mb-4">
+                {% if current_user.is_authenticated %}
+                    <form method="POST" action="{{ url_for('save_horse_memo', horse_id=horse.id) }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <div class="form-group">
+                            <textarea name="content" class="form-control" rows="3" placeholder="メモを入力..."></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary mt-2">
+                            <i class="fas fa-save"></i> 保存
+                        </button>
+                    </form>
+                {% else %}
+                    <div class="memo-input-placeholder" onclick="window.location.href='{{ url_for('login') }}'" style="cursor: pointer">
+                        <div class="form-control text-muted" style="height: 80px; background-color: #f8f9fa;">
+                            クリックしてログイン後、メモを追加できます
+                        </div>
                     </div>
-                    <button type="submit" class="btn btn-primary mt-2">
-                        <i class="fas fa-save"></i> 保存
-                    </button>
-                </form>
-            {% else %}
-                <div class="alert alert-info">
-                    メモを追加するには<a href="{{ url_for('login') }}">ログイン</a>してください。
-                </div>
-            {% endif %}
+                {% endif %}
+            </div>
 
             <!-- レース履歴は常に表示 -->
             <div class="race-history mt-4">
@@ -89,6 +91,20 @@
         </div>
     </div>
 </div>
+
+<style>
+.memo-input-placeholder {
+    border: 1px dashed #ccc;
+    border-radius: 4px;
+    padding: 10px;
+    transition: all 0.3s ease;
+}
+
+.memo-input-placeholder:hover {
+    background-color: #f0f0f0;
+    border-color: #999;
+}
+</style>
 
 <!-- JavaScriptの読み込み -->
 <script src="{{ url_for('static', filename='js/favorite.js') }}"></script>
