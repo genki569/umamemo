@@ -163,13 +163,24 @@ class RaceDataImporter:
 
     def import_entries(self):
         try:
-            print(f"デバッグ: CSVファイルパス: {self.input_dir}/entries.csv")
+            print(f"デバッグ: entries.csvの読み込み開始")
             df = pd.read_csv(f'{self.input_dir}/entries.csv', header=None)
-            print(f"デバッグ: 読み込んだデータ件数: {len(df)}")
+            print(f"デバッグ: 読み込んだ総行数: {len(df)}")
+            
+            # 特定のレースIDのデータを確認
+            target_race = df[df[1] == 202502242050108]  # race_idのカラム
+            print(f"デバッグ: レースID 202502242050108 のデータ数: {len(target_race)}")
+            print(f"デバッグ: そのデータ内容:\n{target_race}")
+            
             df = df.where(pd.notnull(df), None)
             
-            print(f"デバッグ: カラム数: {len(df.columns)}")
-            print(f"デバッグ: 最初の5行:\n{df.head()}")
+            for index, row in df.iterrows():
+                if row[1] == 202502242050108:  # このレースの処理時
+                    print(f"デバッグ: インポート処理 - 行 {index}")
+                    print(f"  ID: {row[0]}")
+                    print(f"  レースID: {row[1]}")
+                    print(f"  馬番: {row[4]}")
+                    print(f"  オッズ: {row[5]}")
             
             stmt = text("""
                 INSERT INTO entries (
