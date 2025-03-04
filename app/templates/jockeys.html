@@ -66,7 +66,11 @@
                             data-wins="{{ stat.wins }}"
                             data-winrate="{{ stat.win_rate }}"
                             data-totalrides="{{ stat.total_rides }}">
-                            <td>{{ stat.name }}</td>
+                            <td>
+                                <a href="{{ url_for('jockey_detail', jockey_id=stat.id) }}" class="text-decoration-none">
+                                    {{ stat.name }}
+                                </a>
+                            </td>
                             <td>{{ stat.affiliation }}</td>
                             <td>{{ stat.total_rides }}</td>
                             <td>{{ stat.wins }}</td>
@@ -77,7 +81,9 @@
                             <td>{{ stat.place_rate }}%</td>
                             <td>
                                 <a href="{{ url_for('jockey_detail', jockey_id=stat.id) }}" 
-                                   class="btn btn-sm btn-primary">詳細</a>
+                                   class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-info-circle"></i> 詳細
+                                </a>
                             </td>
                         </tr>
                     {% endfor %}
@@ -141,7 +147,7 @@ function sortJockeys(sort) {
 
 function updateTable() {
     const tableBody = document.getElementById('jockey-table-body');
-    const rows = Array.from(document.getElementsByClassName('jockey-row'));
+    const rows = Array.from(tableBody.getElementsByClassName('jockey-row'));  // 修正: tableBodyから検索
     
     // フィルタリング
     const filteredRows = rows.filter(row => {
@@ -176,6 +182,10 @@ function updateTable() {
     // ページネーション
     const totalItems = filteredRows.length;
     const totalPages = Math.ceil(totalItems / itemsPerPage);
+    
+    // 現在のページが総ページ数を超えないようにする
+    currentPage = Math.min(currentPage, totalPages);
+    
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
     
@@ -184,18 +194,9 @@ function updateTable() {
     
     // テーブルを更新
     tableBody.innerHTML = '';
-    visibleRows.forEach((row, index) => {
-        const newRow = row.cloneNode(true);
-        newRow.classList.add('fade-in');
-        newRow.setAttribute('data-aos', 'fade-up');
-        newRow.setAttribute('data-aos-delay', (index * 50).toString());  // 段階的なアニメーション
-        tableBody.appendChild(newRow);
+    visibleRows.forEach(row => {
+        tableBody.appendChild(row.cloneNode(true));
     });
-    
-    // AOSを再初期化
-    if (typeof AOS !== 'undefined') {
-        AOS.refresh();
-    }
     
     // ページネーション情報を更新
     updatePaginationInfo(totalItems, startIndex + 1, endIndex, totalPages);
@@ -212,20 +213,28 @@ function updatePaginationInfo(total, start, end, totalPages) {
 }
 
 function changePage(direction) {
-    const totalRows = document.getElementsByClassName('jockey-row').length;
+    const rows = document.getElementsByClassName('jockey-row');
+    const totalRows = rows.length;
     const totalPages = Math.ceil(totalRows / itemsPerPage);
     
     if (direction === 'prev' && currentPage > 1) {
         currentPage--;
+        updateTable();
     } else if (direction === 'next' && currentPage < totalPages) {
         currentPage++;
+        updateTable();
     }
-    
-    updateTable();
 }
 
-// 初期ソート
+// 初期表示時に実行
 document.addEventListener('DOMContentLoaded', function() {
+    // すべての行を取得して初期表示
+    const allRows = Array.from(document.getElementsByClassName('jockey-row'));
+    const totalItems = allRows.length;
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+    
+    // 初期ページネーション情報を設定
+    updatePaginationInfo(totalItems, 1, Math.min(itemsPerPage, totalItems), totalPages);
     updateTable();
 });
 </script>
