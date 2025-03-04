@@ -2,107 +2,88 @@
 
 {% block content %}
 <div class="container py-4">
-    <!-- ヘッダー部分 -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="mb-0">{{ horse.name }}</h1>
-        <div class="favorite-button">
-            <!-- CSRFトークンを含むhiddenフォーム -->
-            <form id="csrf-form" style="display: none;">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-            </form>
-
-            <!-- お気に入りボタン -->
-            <button type="button" class="btn btn-outline-primary favorite-btn" data-horse-id="{{ horse.id }}">
-                <i class="{{ 'fas' if is_favorite else 'far' }} fa-heart"></i>
-                お気に入り
-            </button>
-        </div>
-    </div>
-
     <div class="row">
-        <!-- メモ部分 -->
-        <div class="col-md-4">
-            <div class="sticky-notes-container">
-                <!-- メモ追加フォーム - ログインユーザーのみ表示 -->
-                {% if current_user.is_authenticated %}
-                    <form method="POST" action="{{ url_for('save_horse_memo', horse_id=horse.id) }}">
-                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                        <div class="form-group">
-                            <textarea name="content" class="form-control" rows="3" placeholder="メモを入力..."></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-primary mt-2">
-                            <i class="fas fa-save"></i> 保存
-                        </button>
-                    </form>
-                {% else %}
-                    <div class="alert alert-info">
-                        メモを追加するには<a href="{{ url_for('login') }}">ログイン</a>してください。
-                    </div>
-                {% endif %}
+        <div class="col">
+            <h1 class="mb-4">{{ horse.name }}</h1>
+            
+            <!-- お気に入りボタン - ログインユーザーのみ表示 -->
+            {% if current_user.is_authenticated %}
+                <button class="btn {% if is_favorite %}btn-danger{% else %}btn-outline-danger{% endif %} favorite-btn mb-3"
+                        data-horse-id="{{ horse.id }}"
+                        onclick="toggleFavorite(this)">
+                    <i class="fas fa-heart"></i>
+                    {% if is_favorite %}お気に入り解除{% else %}お気に入り登録{% endif %}
+                </button>
+            {% else %}
+                <div class="alert alert-info mb-3">
+                    お気に入り機能を使用するには<a href="{{ url_for('login') }}">ログイン</a>してください。
+                </div>
+            {% endif %}
 
-                <!-- 既存のメモ一覧 -->
-                {% for memo in memos|reverse %}
-                <div class="sticky-note" id="memo-{{ memo.id }}">
-                    <div class="sticky-note-content">
-                        {{ memo.content }}
+            <!-- メモ追加フォーム - ログインユーザーのみ表示 -->
+            {% if current_user.is_authenticated %}
+                <form method="POST" action="{{ url_for('save_horse_memo', horse_id=horse.id) }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <div class="form-group">
+                        <textarea name="content" class="form-control" rows="3" placeholder="メモを入力..."></textarea>
                     </div>
-                    <div class="sticky-note-footer">
-                        <small class="text-muted">{{ memo.created_at }}</small>
-                    </div>
-                    <button onclick="deleteMemo({{ horse.id }}, {{ memo.id }})" class="btn btn-sm sticky-note-delete">
-                        <i class="fas fa-times"></i>
+                    <button type="submit" class="btn btn-primary mt-2">
+                        <i class="fas fa-save"></i> 保存
                     </button>
+                </form>
+            {% else %}
+                <div class="alert alert-info">
+                    メモを追加するには<a href="{{ url_for('login') }}">ログイン</a>してください。
                 </div>
-                {% endfor %}
-            </div>
-        </div>
+            {% endif %}
 
-        <!-- レース履歴部分 -->
-        <div class="col-md-8">
-            <div class="card shadow-sm">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="card-title mb-0">
-                        <i class="fas fa-history me-2"></i>レース履歴
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>日付/レース名</th>
-                                    <th>馬番</th>
-                                    <th>騎手</th>
-                                    <th>タイム</th>
-                                    <th>体重</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for entry in entries %}
-                                <tr>
-                                    <td>
-                                        <a href="{{ url_for('race', race_id=entry.race.id) }}" class="text-decoration-none">
-                                            {{ entry.race.date.strftime('%Y/%m/%d') }} {{ entry.race.name }}
-                                        </a>
-                                    </td>
-                                    <td>{{ entry.horse_number }}</td>
-                                    <td>{{ entry.jockey.name if entry.jockey else '不明' }}</td>
-                                    <td>{{ entry.time }}</td>
-                                    <td>{{ entry.weight }}{% if entry.weight_change %}({{ entry.weight_change }}){% endif %}</td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+            <!-- レース履歴は常に表示 -->
+            <div class="race-history mt-4">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-history me-2"></i>レース履歴
+                        </h5>
                     </div>
-
-                    <!-- 戻るボタンは条件付きで表示 -->
-                    {% if entries and entries|length > 0 and entries[0].race %}
-                        <div class="mt-4 text-end">
-                            <a href="{{ url_for('race', race_id=entries[0].race.id) }}" class="btn btn-outline-secondary">
-                                <i class="fas fa-arrow-left me-2"></i>レース結果に戻る
-                            </a>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>日付/レース名</th>
+                                        <th>馬番</th>
+                                        <th>騎手</th>
+                                        <th>タイム</th>
+                                        <th>体重</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for entry in entries %}
+                                    <tr>
+                                        <td>
+                                            <a href="{{ url_for('race', race_id=entry.race.id) }}" class="text-decoration-none">
+                                                {{ entry.race.date.strftime('%Y/%m/%d') }} {{ entry.race.name }}
+                                            </a>
+                                        </td>
+                                        <td>{{ entry.horse_number }}</td>
+                                        <td>{{ entry.jockey.name if entry.jockey else '不明' }}</td>
+                                        <td>{{ entry.time }}</td>
+                                        <td>{{ entry.weight }}{% if entry.weight_change %}({{ entry.weight_change }}){% endif %}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
                         </div>
-                    {% endif %}
+
+                        <!-- 戻るボタンは条件付きで表示 -->
+                        {% if entries and entries|length > 0 and entries[0].race %}
+                            <div class="mt-4 text-end">
+                                <a href="{{ url_for('race', race_id=entries[0].race.id) }}" class="btn btn-outline-secondary">
+                                    <i class="fas fa-arrow-left me-2"></i>レース結果に戻る
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
         </div>
