@@ -93,84 +93,35 @@
     </div>
 </div>
 
-<div class="pagination-container mt-4 mb-5">
+<div class="text-center mt-4 mb-5">
     <div class="d-flex justify-content-between align-items-center">
         <div class="entries-info">
             全 <span id="total-entries">0</span> 件中 
             <span id="showing-entries">0-0</span> 件を表示
         </div>
-        <div class="pagination-controls">
-            <button class="btn btn-outline-primary" onclick="changePage('prev')" id="prev-btn" disabled>
-                <i class="fas fa-chevron-left"></i> 前へ
-            </button>
-            <span class="mx-3" id="page-info">1 / 1</span>
-            <button class="btn btn-outline-primary" onclick="changePage('next')" id="next-btn">
-                次へ <i class="fas fa-chevron-right"></i>
-            </button>
-        </div>
+        <button id="load-more" class="btn btn-primary" onclick="loadMore()">
+            <i class="fas fa-plus-circle me-2"></i>もっと見る
+        </button>
     </div>
 </div>
 
 <script>
 let currentFilter = 'all';
 let currentSort = 'wins';
-let currentPage = 1;
-const itemsPerPage = 20;
+let itemsPerPage = 20;
+let currentlyShowing = itemsPerPage;
 
-function filterJockeys(filter) {
-    currentFilter = filter;
+function loadMore() {
+    currentlyShowing += itemsPerPage;
     updateTable();
-    
-    // ボタンのアクティブ状態を更新
-    document.querySelectorAll('.btn-group .btn-outline-primary').forEach(btn => {
-        btn.classList.remove('active');
-        if (btn.textContent.includes(filter === 'all' ? '全て' : 
-                                   filter === 'central' ? '中央所属' : '地方所属')) {
-            btn.classList.add('active');
-        }
-    });
-}
-
-function sortJockeys(sort) {
-    currentSort = sort;
-    updateTable();
-    
-    // ボタンのアクティブ状態を更新
-    document.querySelectorAll('.btn-group .btn-outline-secondary').forEach(btn => {
-        btn.classList.remove('active');
-        if (btn.textContent.includes(sort === 'wins' ? '勝利数順' : 
-                                   sort === 'winrate' ? '勝率順' : '騎乗数順')) {
-            btn.classList.add('active');
-        }
-    });
-}
-
-function changePage(direction) {
-    const totalRows = document.getElementsByClassName('jockey-row').length;
-    const totalPages = Math.ceil(totalRows / itemsPerPage);
-    
-    if (direction === 'prev' && currentPage > 1) {
-        currentPage--;
-        updateTable();
-    } else if (direction === 'next' && currentPage < totalPages) {
-        currentPage++;
-        updateTable();
-    }
-    
-    // ページ情報を更新
-    document.getElementById('page-info').textContent = `${currentPage} / ${totalPages}`;
-    
-    // ボタンの有効/無効を更新
-    document.getElementById('prev-btn').disabled = currentPage === 1;
-    document.getElementById('next-btn').disabled = currentPage === totalPages;
 }
 
 function updateTable() {
     const tableBody = document.getElementById('jockey-table-body');
-    const rows = Array.from(tableBody.getElementsByClassName('jockey-row'));
+    const allRows = Array.from(document.querySelectorAll('.jockey-row'));
     
     // フィルタリング
-    const filteredRows = rows.filter(row => {
+    const filteredRows = allRows.filter(row => {
         if (currentFilter === 'all') return true;
         if (currentFilter === 'central') return row.dataset.affiliation === '中央';
         if (currentFilter === 'local') return row.dataset.affiliation === '地方';
@@ -197,10 +148,8 @@ function updateTable() {
         return bValue - aValue;
     });
     
-    // ページネーション
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = Math.min(startIndex + itemsPerPage, filteredRows.length);
-    const visibleRows = filteredRows.slice(startIndex, endIndex);
+    // 表示件数を制限
+    const visibleRows = filteredRows.slice(0, currentlyShowing);
     
     // テーブルを更新
     tableBody.innerHTML = '';
@@ -208,9 +157,46 @@ function updateTable() {
         tableBody.appendChild(row.cloneNode(true));
     });
     
-    // 表示件数を更新
+    // 表示情報を更新
+    document.getElementById('total-entries').textContent = filteredRows.length;
     document.getElementById('showing-entries').textContent = 
-        `${startIndex + 1}-${endIndex}`;
+        `1-${Math.min(currentlyShowing, filteredRows.length)}`;
+    
+    // もっと見るボタンの表示制御
+    const loadMoreBtn = document.getElementById('load-more');
+    loadMoreBtn.style.display = 
+        currentlyShowing >= filteredRows.length ? 'none' : 'block';
+}
+
+// フィルターとソートの関数を修正
+function filterJockeys(filter) {
+    currentFilter = filter;
+    currentlyShowing = itemsPerPage; // リセット
+    updateTable();
+    
+    // ボタンのアクティブ状態を更新
+    document.querySelectorAll('.btn-group .btn-outline-primary').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.textContent.includes(filter === 'all' ? '全て' : 
+                                   filter === 'central' ? '中央所属' : '地方所属')) {
+            btn.classList.add('active');
+        }
+    });
+}
+
+function sortJockeys(sort) {
+    currentSort = sort;
+    currentlyShowing = itemsPerPage; // リセット
+    updateTable();
+    
+    // ボタンのアクティブ状態を更新
+    document.querySelectorAll('.btn-group .btn-outline-secondary').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.textContent.includes(sort === 'wins' ? '勝利数順' : 
+                                   sort === 'winrate' ? '勝率順' : '騎乗数順')) {
+            btn.classList.add('active');
+        }
+    });
 }
 
 // 初期表示時に実行
@@ -233,6 +219,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
 .pagination-controls .btn {
     min-width: 100px;
+}
+
+#load-more {
+    min-width: 200px;
+    transition: all 0.3s ease;
+}
+
+#load-more:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 </style>
 {% endblock %} 
