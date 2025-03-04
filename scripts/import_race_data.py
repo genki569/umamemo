@@ -161,6 +161,27 @@ class RaceDataImporter:
             logging.error(f"レース情報のインポートエラー: {e}")
             raise
 
+    def safe_int(self, value):
+        try:
+            if pd.isna(value) or str(value).lower() == 'nan':
+                return None
+            return int(float(value))
+        except (ValueError, TypeError):
+            return None
+
+    def safe_float(self, value):
+        try:
+            if pd.isna(value) or str(value).lower() == 'nan':
+                return None
+            return float(value)
+        except (ValueError, TypeError):
+            return None
+
+    def safe_str(self, value):
+        if pd.isna(value) or str(value).lower() == 'nan':
+            return None
+        return str(value)
+
     def import_entries(self):
         try:
             print("\n=== インポート処理開始 ===")
@@ -234,23 +255,23 @@ class RaceDataImporter:
                 for index, row in df.iterrows():
                     if row[1] == 202502242050108:
                         params = {
-                            "id": safe_int(row[0]),
-                            "race_id": safe_str(row[1]),
-                            "horse_id": safe_int(row[2]),
-                            "jockey_id": safe_int(row[3]),
-                            "horse_number": safe_int(row[4]),
-                            "odds": safe_float(row[5]),
-                            "popularity": safe_int(row[6]),
-                            "horse_weight": safe_int(row[7]),
-                            "weight_change": safe_int(row[8]),
-                            "prize": safe_float(row[9]),
-                            "position": safe_int(row[10]),
-                            "frame_number": safe_int(row[11]),
-                            "weight": safe_float(row[12]),
-                            "time": safe_str(row[13]),
-                            "margin": safe_str(row[14]),
-                            "passing": safe_str(row[15]),
-                            "last_3f": safe_float(row[16])
+                            "id": self.safe_int(row[0]),
+                            "race_id": self.safe_str(row[1]),
+                            "horse_id": self.safe_int(row[2]),
+                            "jockey_id": self.safe_int(row[3]),
+                            "horse_number": self.safe_int(row[4]),
+                            "odds": self.safe_float(row[5]),
+                            "popularity": self.safe_int(row[6]),
+                            "horse_weight": self.safe_int(row[7]),
+                            "weight_change": self.safe_int(row[8]),
+                            "prize": self.safe_float(row[9]),
+                            "position": self.safe_int(row[10]),
+                            "frame_number": self.safe_int(row[11]),
+                            "weight": self.safe_float(row[12]),
+                            "time": self.safe_str(row[13]),
+                            "margin": self.safe_str(row[14]),
+                            "passing": self.safe_str(row[15]),
+                            "last_3f": self.safe_float(row[16])
                         }
                         
                         print(f"\n処理中: 馬番{params['horse_number']}")
