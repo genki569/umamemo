@@ -155,7 +155,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for entry in entries|sort(attribute='position') %}
+                            {% for entry in entries|sort(attribute='position', reverse=false, default=9999) %}
                                 <tr>
                                     <td>{{ entry.position or '-' }}</td>
                                     <td>{{ entry.frame_number or '-' }}</td>
