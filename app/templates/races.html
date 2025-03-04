@@ -102,9 +102,7 @@
                             <div class="race-row">
                                 <div class="race-info">
                                     <span class="race-number">{{ race_number }}R</span>
-                                    {% if race.race_name %}
-                                        <span class="race-name">{{ race.race_name }}</span>
-                                    {% endif %}
+                                    <span class="race-name">{{ race.race_name }}</span>
                                 </div>
                                 <div class="race-buttons">
                                     <a href="{{ url_for('race_shutuba', race_id=race.id) }}" class="btn btn-outline-success btn-sm">
