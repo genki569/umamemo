@@ -23,16 +23,22 @@
         <!-- メモ部分 -->
         <div class="col-md-4">
             <div class="sticky-notes-container">
-                <!-- メモ追加フォーム -->
-                <form method="POST" action="{{ url_for('save_horse_memo', horse_id=horse.id) }}">
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                    <div class="form-group">
-                        <textarea name="content" class="form-control" rows="3" placeholder="メモを入力..."></textarea>
+                <!-- メモ追加フォーム - ログインユーザーのみ表示 -->
+                {% if current_user.is_authenticated %}
+                    <form method="POST" action="{{ url_for('save_horse_memo', horse_id=horse.id) }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <div class="form-group">
+                            <textarea name="content" class="form-control" rows="3" placeholder="メモを入力..."></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary mt-2">
+                            <i class="fas fa-save"></i> 保存
+                        </button>
+                    </form>
+                {% else %}
+                    <div class="alert alert-info">
+                        メモを追加するには<a href="{{ url_for('login') }}">ログイン</a>してください。
                     </div>
-                    <button type="submit" class="btn btn-primary mt-2">
-                        <i class="fas fa-save"></i> 保存
-                    </button>
-                </form>
+                {% endif %}
 
                 <!-- 既存のメモ一覧 -->
                 {% for memo in memos|reverse %}

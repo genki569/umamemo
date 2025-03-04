@@ -389,9 +389,10 @@ def horse_detail(horse_id):
                              debug_info=str(e)), 500
 
 @app.route('/horses/<int:horse_id>/memo', methods=['POST'])
-@login_required
+@login_required  # このデコレータでログイン要件を指定
 def save_horse_memo(horse_id):
     try:
+        # ログインユーザーのみ実行可能
         content = request.form.get('content')
         if not content:
             flash('メモ内容を入力してください', 'error')
@@ -405,7 +406,7 @@ def save_horse_memo(horse_id):
             'id': len(current_memos) + 1,
             'content': content,
             'created_at': datetime.now().isoformat(),
-            'user_id': current_user.id
+            'user_id': current_user.id  # ログインユーザーのIDを記録
         }
         current_memos.append(new_memo)
         horse.memo = json.dumps(current_memos)
