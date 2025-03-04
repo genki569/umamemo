@@ -11,6 +11,19 @@
 </div>
 
 <div class="container">
+    <div class="search-box mb-4">
+        <div class="input-group">
+            <span class="input-group-text">
+                <i class="fas fa-search"></i>
+            </span>
+            <input type="text" 
+                   class="form-control" 
+                   id="jockey-search" 
+                   placeholder="騎手名で検索..."
+                   onkeyup="searchJockeys()">
+        </div>
+    </div>
+
     <div class="filter-buttons">
         <div class="row g-3">
             <div class="col-md-6">
@@ -110,9 +123,16 @@ let currentFilter = 'all';
 let currentSort = 'wins';
 let itemsPerPage = 20;
 let currentlyShowing = itemsPerPage;
+let searchQuery = '';
 
 function loadMore() {
     currentlyShowing += itemsPerPage;
+    updateTable();
+}
+
+function searchJockeys() {
+    searchQuery = document.getElementById('jockey-search').value.toLowerCase();
+    currentlyShowing = itemsPerPage; // 検索時は表示件数をリセット
     updateTable();
 }
 
@@ -120,12 +140,17 @@ function updateTable() {
     const tableBody = document.getElementById('jockey-table-body');
     const allRows = Array.from(document.querySelectorAll('.jockey-row'));
     
-    // フィルタリング
+    // 検索とフィルタリング
     const filteredRows = allRows.filter(row => {
-        if (currentFilter === 'all') return true;
-        if (currentFilter === 'central') return row.dataset.affiliation === '中央';
-        if (currentFilter === 'local') return row.dataset.affiliation === '地方';
-        return false;
+        const matchesSearch = row.querySelector('td:first-child').textContent
+            .toLowerCase()
+            .includes(searchQuery);
+        const matchesFilter = 
+            currentFilter === 'all' ? true :
+            currentFilter === 'central' ? row.dataset.affiliation === '中央' :
+            currentFilter === 'local' ? row.dataset.affiliation === '地方' : false;
+        
+        return matchesSearch && matchesFilter;
     });
     
     // ソート
@@ -168,7 +193,6 @@ function updateTable() {
         currentlyShowing >= filteredRows.length ? 'none' : 'block';
 }
 
-// フィルターとソートの関数を修正
 function filterJockeys(filter) {
     currentFilter = filter;
     currentlyShowing = itemsPerPage; // リセット
@@ -229,6 +253,29 @@ document.addEventListener('DOMContentLoaded', function() {
 #load-more:hover {
     transform: translateY(-2px);
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.search-box {
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.search-box .input-group-text {
+    background-color: #fff;
+    border-right: none;
+}
+
+.search-box .form-control {
+    border-left: none;
+}
+
+.search-box .form-control:focus {
+    border-color: #ced4da;
+    box-shadow: none;
+}
+
+.search-box .input-group-text i {
+    color: #6c757d;
 }
 </style>
 {% endblock %} 
