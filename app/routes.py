@@ -254,12 +254,19 @@ def horses():
             error_out=False
         )
 
+        # デバッグ出力を追加
+        print("取得した馬の数:", len(pagination.items))
+        for horse in pagination.items:
+            print(f"馬名: {horse.name}, 性別: {horse.sex}")
+
         return render_template('horses.html',
             horses=pagination.items,
             pagination=pagination,
             search=search)
             
     except Exception as e:
+        # エラーの詳細も出力
+        print(f"Error in horses route: {str(e)}")
         current_app.logger.error(f"Error in horses route: {str(e)}")
         flash('馬一覧の取得中にエラーが発生しました', 'error')
         return render_template('horses.html', horses=[], pagination=None, search='')
