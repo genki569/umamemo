@@ -174,14 +174,6 @@ class RaceDataImporter:
             
             df = df.where(pd.notnull(df), None)
             
-            for index, row in df.iterrows():
-                if row[1] == 202502242050108:  # このレースの処理時
-                    print(f"デバッグ: インポート処理 - 行 {index}")
-                    print(f"  ID: {row[0]}")
-                    print(f"  レースID: {row[1]}")
-                    print(f"  馬番: {row[4]}")
-                    print(f"  オッズ: {row[5]}")
-            
             stmt = text("""
                 INSERT INTO entries (
                     id, race_id, horse_id, jockey_id,
@@ -223,30 +215,57 @@ class RaceDataImporter:
             with self.engine.connect() as conn:
                 for index, row in df.iterrows():
                     try:
-                        params = {
-                            "id": safe_int(row[0]),           # ID
-                            "race_id": safe_str(row[1]),      # レースID
-                            "horse_id": safe_int(row[2]),     # 馬ID
-                            "jockey_id": safe_int(row[3]),    # 騎手ID
-                            "horse_number": safe_int(row[4]), # 馬番
-                            "odds": safe_float(row[5]),       # オッズ
-                            "popularity": safe_int(row[6]),   # 人気順
-                            "horse_weight": safe_int(row[7]), # 馬体重
-                            "weight_change": safe_int(row[8]), # 増減
-                            "prize": safe_float(row[9]),      # 賞金
-                            "position": safe_int(row[10]),    # 着順
-                            "frame_number": safe_int(row[11]), # 枠番
-                            "weight": safe_float(row[12]),    # 斤量
-                            "time": safe_str(row[13]),        # タイム
-                            "margin": safe_str(row[14]),      # 着差
-                            "passing": safe_str(row[15]),     # 通過
-                            "last_3f": safe_float(row[16])    # 上り
-                        }
-                        conn.execute(stmt, parameters=params)
+                        if row[1] == 202502242050108:  # このレースの処理時
+                            print(f"デバッグ: インポート処理 - 行 {index}")
+                            print(f"  ID: {row[0]}")
+                            print(f"  レースID: {row[1]}")
+                            print(f"  馬番: {row[4]}")
+                            print(f"  オッズ: {row[5]}")
+                            
+                            # 更新前のデータを確認
+                            before_update = conn.execute(
+                                text("SELECT * FROM entries WHERE id = :id"),
+                                {"id": row[0]}
+                            ).fetchone()
+                            print(f"デバッグ: 更新前のデータ: {before_update}")
+                            
+                            # パラメータを準備
+                            params = {
+                                "id": safe_int(row[0]),
+                                "race_id": safe_str(row[1]),
+                                "horse_id": safe_int(row[2]),
+                                "jockey_id": safe_int(row[3]),
+                                "horse_number": safe_int(row[4]),
+                                "odds": safe_float(row[5]),
+                                "popularity": safe_int(row[6]),
+                                "horse_weight": safe_int(row[7]),
+                                "weight_change": safe_int(row[8]),
+                                "prize": safe_float(row[9]),
+                                "position": safe_int(row[10]),
+                                "frame_number": safe_int(row[11]),
+                                "weight": safe_float(row[12]),
+                                "time": safe_str(row[13]),
+                                "margin": safe_str(row[14]),
+                                "passing": safe_str(row[15]),
+                                "last_3f": safe_float(row[16])
+                            }
+                            
+                            # SQL実行
+                            conn.execute(stmt, parameters=params)
+                            
+                            # 更新後のデータを確認
+                            after_update = conn.execute(
+                                text("SELECT * FROM entries WHERE id = :id"),
+                                {"id": row[0]}
+                            ).fetchone()
+                            print(f"デバッグ: 更新後のデータ: {after_update}")
+                            print("-------------------")
+                        
                     except Exception as e:
                         print(f"Error on row {index}:", row.tolist())
                         print(f"Params:", params)
                         raise
+                
                 conn.commit()
             
             logging.info(f"出走情報のインポート成功: {len(df)}件")
