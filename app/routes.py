@@ -351,13 +351,16 @@ def horse_detail(horse_id):
                 user_id=current_user.id,
                 horse_id=horse_id
             ).first() is not None
-        current_app.logger.info(f"is_favorite: {is_favorite}")
+        
+        # メモの取得
+        memos = json.loads(horse.memo) if horse.memo else []
         
         # テンプレートに渡す前の変数確認
         current_app.logger.info("Template variables:")
         current_app.logger.info(f"horse: {horse.__dict__}")
         current_app.logger.info(f"entries: {len(entries)}")
         current_app.logger.info(f"is_favorite: {is_favorite}")
+        current_app.logger.info(f"memos: {len(memos)}")
         
         return render_template('horse_detail.html', 
                              horse=horse, 
@@ -367,7 +370,6 @@ def horse_detail(horse_id):
     except Exception as e:
         current_app.logger.error(f"Error in horse_detail: {str(e)}")
         current_app.logger.error(traceback.format_exc())
-        # エラー画面を表示
         return render_template('error.html', 
                              error_message="馬の詳細情報の取得中にエラーが発生しました。",
                              debug_info=str(e)), 500
