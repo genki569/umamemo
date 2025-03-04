@@ -317,9 +317,13 @@ def upcoming_races():
 @app.route('/horses/<int:horse_id>')
 def horse_detail(horse_id):
     try:
+        print(f"Accessing horse_detail with ID: {horse_id}")  # デバッグ出力
+        
         horse = db.session.query(Horse).options(
             load_only('id', 'name', 'sex', 'memo', 'trainer', 'birth_year')
         ).get_or_404(horse_id)
+        
+        print(f"Found horse: {horse.name}")  # デバッグ出力
         
         entries = db.session.query(
             Entry,
@@ -336,44 +340,18 @@ def horse_detail(horse_id):
         ).order_by(
             Race.date.desc()
         ).all()
-
-        # 重複エントリーの除去と整理
-        seen_races = set()
-        race_results = []
         
-        for entry, race_date, race_name, jockey_name in entries:
-            race_key = (
-                race_date,
-                race_name,
-                entry.horse_number,
-                jockey_name,
-                entry.time,
-                entry.weight
-            )
-            
-            if race_key not in seen_races:
-                seen_races.add(race_key)
-                race_results.append({
-                    'date': race_date,
-                    'race_name': race_name,
-                    'position': entry.position,
-                    'jockey': jockey_name or '不明',
-                    'time': entry.time,
-                    'weight': entry.weight,
-                    'horse_number': entry.horse_number
-                })
-        
-        # 日付でソート
-        race_results.sort(key=lambda x: x['date'] or datetime.min, reverse=True)
+        print(f"Found {len(entries)} entries")  # デバッグ出力
         
         return render_template('horse_detail.html', 
                              horse=horse, 
-                             entries=race_results)
+                             entries=entries)
                              
     except Exception as e:
-        current_app.logger.error(f"Error in horse_detail: {str(e)}")
-        flash('馬の詳細情報の取得中にエラーが発生しました', 'error')
-        return render_template('horse_detail.html', horse=None, entries=[])
+        print(f"Error in horse_detail: {str(e)}")  # エラー出力
+        import traceback
+        print(traceback.format_exc())  # スタックトレース出力
+        return "Error", 500
 
 @app.route('/horses/<int:horse_id>/memo', methods=['POST'])
 @login_required
