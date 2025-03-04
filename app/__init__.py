@@ -11,6 +11,7 @@ import os
 # アプリケーションの初期化
 app = Flask(__name__)
 app.config.from_object(Config)
+app.config['DEBUG'] = True
 
 # CSRF保護を追加
 csrf = CSRFProtect(app)
