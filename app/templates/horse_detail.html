@@ -25,7 +25,7 @@
             <div class="sticky-notes-container">
                 <!-- メモ追加フォーム -->
                 <form method="POST" action="{{ url_for('save_horse_memo', horse_id=horse.id) }}">
-                    {{ form.hidden_tag() }}
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <div class="form-group">
                         <textarea name="content" class="form-control" rows="3" placeholder="メモを入力..."></textarea>
                     </div>
