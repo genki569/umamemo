@@ -127,28 +127,103 @@ class RaceDataImporter:
 
     def import_jockeys(self):
         try:
-            df = pd.read_csv(f'{self.input_dir}/jockeys.csv')
+            print("\n=== 騎手データのインポート開始 ===")
+            print(f"CSVファイルパス: {self.input_dir}/jockeys.csv")
+            
+            # CSVファイルの存在確認
+            if not os.path.exists(f'{self.input_dir}/jockeys.csv'):
+                raise FileNotFoundError(f"jockeys.csv が見つかりません: {self.input_dir}/jockeys.csv")
+            
+            # CSVファイルの読み込み
+            df = pd.read_csv(f'{self.input_dir}/jockeys.csv', header=None)
+            print(f"デバッグ: 読み込んだ総行数: {len(df)}")
+            print("\nデバッグ: 最初の5行のデータ:")
+            print(df.head())
+            
             df = df.where(pd.notnull(df), None)
             
+            # SQLステートメントの準備
             stmt = text("""
-                INSERT INTO jockeys (id, name)
-                VALUES (:id, :name)
+                INSERT INTO jockeys (id, name, created_at, updated_at)
+                VALUES (:id, :name, NOW(), NOW())
                 ON CONFLICT (id) DO UPDATE 
-                SET name = EXCLUDED.name;
+                SET name = EXCLUDED.name,
+                    updated_at = NOW()
+                RETURNING id, name;
             """)
             
-            with self.engine.connect() as conn:
-                for _, row in df.iterrows():
-                    params = {
-                        "id": row.iloc[0],    # 1列目: ID
-                        "name": row.iloc[1]    # 2列目: 名前
-                    }
-                    conn.execute(stmt, parameters=params)
-                conn.commit()
+            success_count = 0
+            error_count = 0
             
-            logging.info(f"騎手情報のインポート成功: {len(df)}件")
+            print("\n=== データベースへのインポート開始 ===")
+            with self.engine.begin() as conn:
+                for index, row in df.iterrows():
+                    try:
+                        # データ変換前の値を確認
+                        print(f"\n処理行 {index + 1}/{len(df)}:")
+                        print(f"元データ: {row.tolist()}")
+                        
+                        jockey_id = self.safe_int(row[0])
+                        jockey_name = self.safe_str(row[1])
+                        
+                        print(f"変換後: ID={jockey_id}, 名前={jockey_name}")
+                        
+                        # パラメータの設定
+                        params = {
+                            "id": jockey_id,
+                            "name": jockey_name
+                        }
+                        
+                        # SQLの実行
+                        result = conn.execute(stmt, parameters=params)
+                        inserted = result.fetchone()
+                        print(f"DB登録結果: {inserted}")
+                        
+                        success_count += 1
+                        
+                        # 50行ごとに進捗報告
+                        if success_count % 50 == 0:
+                            print(f"\n--- 進捗: {success_count}/{len(df)} 件処理完了 ---")
+                        
+                    except Exception as e:
+                        error_count += 1
+                        print(f"エラー発生 (行 {index + 1}):")
+                        print(f"データ: {row.tolist()}")
+                        print(f"エラー内容: {str(e)}")
+                        raise
+            
+            print("\n=== インポート完了 ===")
+            print(f"総処理件数: {len(df)}")
+            print(f"成功: {success_count}")
+            print(f"エラー: {error_count}")
+            
+            # データベースの状態確認
+            with self.engine.connect() as conn:
+                total = conn.execute(text("SELECT COUNT(*) FROM jockeys")).scalar()
+                print(f"\nデータベース内の騎手データ総数: {total}")
+                
+                # 最新の5件を表示
+                latest = conn.execute(text("SELECT id, name FROM jockeys ORDER BY updated_at DESC LIMIT 5")).fetchall()
+                print("\n最新の登録/更新データ:")
+                for jockey in latest:
+                    print(f"ID: {jockey.id}, 名前: {jockey.name}")
+            
+            # 問題の騎手IDの確認
+            problem_id = 2402932764
+            with self.engine.connect() as conn:
+                exists = conn.execute(
+                    text("SELECT id, name FROM jockeys WHERE id = :id"),
+                    {"id": problem_id}
+                ).fetchone()
+                print(f"\n問題の騎手ID {problem_id} の確認:")
+                print(f"データベース内に存在: {'はい' if exists else 'いいえ'}")
+                if exists:
+                    print(f"騎手情報: ID={exists.id}, 名前={exists.name}")
+        
         except Exception as e:
-            logging.error(f"騎手情報のインポートエラー: {e}")
+            print(f"\n=== 重大なエラーが発生 ===")
+            print(f"エラー種類: {type(e).__name__}")
+            print(f"エラー内容: {str(e)}")
             raise
 
     def import_races(self):
