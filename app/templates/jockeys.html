@@ -17,7 +17,7 @@
                 <i class="fas fa-search"></i>
             </span>
             <input type="text" 
-                   class="form-control" 
+                   class="form-control search-input" 
                    id="jockey-search" 
                    placeholder="騎手名で検索..."
                    onkeyup="searchJockeys()">
@@ -120,7 +120,7 @@ function loadMore() {
 
 function searchJockeys() {
     const searchInput = document.getElementById('jockey-search');
-    searchQuery = searchInput.value.toLowerCase();
+    searchQuery = searchInput.value.toLowerCase().trim();
     filterAndSortTable();
 }
 
@@ -152,10 +152,10 @@ function filterAndSortTable() {
     
     // 検索とフィルタリング
     const filteredRows = rows.filter(row => {
-        const name = row.cells[0].textContent.toLowerCase();
-        const affiliation = row.cells[1].textContent;
+        const name = row.querySelector('td:first-child a').textContent.trim().toLowerCase();
+        const affiliation = row.querySelector('td:nth-child(2)').textContent.trim();
         
-        const matchesSearch = name.includes(searchQuery);
+        const matchesSearch = searchQuery === '' || name.includes(searchQuery);
         const matchesFilter = 
             currentFilter === 'all' ? true :
             currentFilter === 'central' ? affiliation === '中央' :
@@ -170,16 +170,16 @@ function filterAndSortTable() {
         
         switch(currentSort) {
             case 'wins':
-                aValue = parseInt(a.cells[3].textContent);
-                bValue = parseInt(b.cells[3].textContent);
+                aValue = parseInt(a.querySelector('td:nth-child(4)').textContent);
+                bValue = parseInt(b.querySelector('td:nth-child(4)').textContent);
                 break;
             case 'winrate':
-                aValue = parseFloat(a.cells[7].textContent);
-                bValue = parseFloat(b.cells[7].textContent);
+                aValue = parseFloat(a.querySelector('td:nth-child(8)').textContent);
+                bValue = parseFloat(b.querySelector('td:nth-child(8)').textContent);
                 break;
             case 'totalrides':
-                aValue = parseInt(a.cells[2].textContent);
-                bValue = parseInt(b.cells[2].textContent);
+                aValue = parseInt(a.querySelector('td:nth-child(3)').textContent);
+                bValue = parseInt(b.querySelector('td:nth-child(3)').textContent);
                 break;
         }
         
@@ -194,6 +194,18 @@ function filterAndSortTable() {
     
     // 表示件数を更新
     updateDisplayCount(filteredRows.length);
+    
+    // 検索結果が0件の場合のメッセージ
+    if (filteredRows.length === 0) {
+        const noResultRow = document.createElement('tr');
+        noResultRow.innerHTML = `
+            <td colspan="10" class="text-center py-4 text-muted">
+                <i class="fas fa-search me-2"></i>
+                検索結果が見つかりませんでした
+            </td>
+        `;
+        tableBody.appendChild(noResultRow);
+    }
 }
 
 function updateDisplayCount(count) {
@@ -243,24 +255,46 @@ document.addEventListener('DOMContentLoaded', function() {
 .search-box .input-group-text {
     background-color: #fff;
     border-right: none;
+    color: #6c757d;
 }
 
-.search-box .form-control {
+.search-box .search-input {
     border-left: none;
+    color: #212529;  /* 文字色を濃く */
+    background-color: #fff;
 }
 
-.search-box .form-control:focus {
+.search-box .search-input::placeholder {
+    color: #6c757d;
+}
+
+.search-box .search-input:focus {
     border-color: #ced4da;
     box-shadow: none;
 }
 
-.search-box .input-group-text i {
-    color: #6c757d;
-}
-
 .btn-group .btn.active {
     background-color: #0d6efd;
-    color: white;
+    color: #fff;
+    border-color: #0d6efd;
+}
+
+/* テーブルのスタイル改善 */
+.table {
+    color: #212529;  /* テーブルの文字色を濃く */
+}
+
+.table a {
+    color: #0d6efd;  /* リンクの色を調整 */
+}
+
+.table a:hover {
+    color: #0a58ca;
+}
+
+/* 検索結果なしのメッセージ */
+.text-muted {
+    color: #6c757d !important;
 }
 </style>
 {% endblock %} 
