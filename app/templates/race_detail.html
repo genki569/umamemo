@@ -155,9 +155,10 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for entry in entries|sort(attribute='position', reverse=false) if entry.position is not none %}
+                            {# まず着順のある馬を表示 #}
+                            {% for entry in entries if entry.position %}
                                 <tr>
-                                    <td>{{ entry.position or '-' }}</td>
+                                    <td>{{ entry.position }}</td>
                                     <td>{{ entry.frame_number or '-' }}</td>
                                     <td>{{ entry.horse_number or '-' }}</td>
                                     <td>
@@ -211,7 +212,8 @@
                                     </td>
                                 </tr>
                             {% endfor %}
-                            {% for entry in entries if entry.position is none %}
+                            {# 次に着順のない馬を表示 #}
+                            {% for entry in entries if not entry.position %}
                                 <tr>
                                     <td>-</td>
                                     <td>{{ entry.frame_number or '-' }}</td>
