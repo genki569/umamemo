@@ -96,11 +96,16 @@
                     </div>
                 </div>
                 <div class="race-items">
-                    {% for race_number in range(1, 13) %}  {# 1Rから12Rまで順番に #}
+                    {% for race_number in range(1, 13) %}
                         {% set race = venue_data.races|selectattr('race_number', 'equalto', race_number)|first %}
                         {% if race %}
                             <div class="race-row">
-                                <span class="race-number">{{ race_number }}R</span>
+                                <div class="race-info">
+                                    <span class="race-number">{{ race_number }}R</span>
+                                    {% if race.race_name %}
+                                        <span class="race-name">{{ race.race_name }}</span>
+                                    {% endif %}
+                                </div>
                                 <div class="race-buttons">
                                     <a href="{{ url_for('race_shutuba', race_id=race.id) }}" class="btn btn-outline-success btn-sm">
                                         <i class="fas fa-trophy"></i> 出馬表
