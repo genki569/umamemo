@@ -156,7 +156,7 @@
                         </thead>
                         <tbody>
                             {# まず着順のある馬（数字のみ）を表示 #}
-                            {% for entry in entries if entry.position and entry.position|string|regex_match('^\d+$') %}
+                            {% for entry in entries if entry.position and entry.position|string|int is number %}
                                 <tr>
                                     <td>{{ entry.position }}</td>
                                     <td>{{ entry.frame_number or '-' }}</td>
@@ -213,7 +213,7 @@
                                 </tr>
                             {% endfor %}
                             {# 次に着順のない馬や特殊記号の馬を表示 #}
-                            {% for entry in entries if not entry.position or not entry.position|string|regex_match('^\d+$') %}
+                            {% for entry in entries if not entry.position or not entry.position|string|int is number %}
                                 <tr>
                                     <td>{{ entry.position or '-' }}</td>
                                     <td>{{ entry.frame_number or '-' }}</td>
