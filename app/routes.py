@@ -25,6 +25,7 @@ from functools import lru_cache
 import stripe
 import shutil
 from calendar import monthrange
+import logging
 
 # カスタムコレータの定義（ファイルの先頭付近に配置）
 def custom_login_required(f):
@@ -317,10 +318,17 @@ def upcoming_races():
 @app.route('/horses/<int:horse_id>')
 def horse_detail(horse_id):
     try:
-        horse = db.session.query(Horse).get_or_404(horse_id)
+        # SQLAlchemyのクエリログを有効化
+        logging.basicConfig()
+        logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
         
-        # クエリを元の形式に戻す
-        entries = db.session.query(
+        current_app.logger.info(f"Starting horse_detail route with ID: {horse_id}")
+        
+        # クエリの実行
+        horse = db.session.query(Horse).get_or_404(horse_id)
+        current_app.logger.info(f"Horse query executed: {horse.name if horse else 'Not found'}")
+        
+        entries_query = db.session.query(
             Entry,
             Race.date,
             Race.name.label('race_name'),
@@ -334,7 +342,13 @@ def horse_detail(horse_id):
             Race.date.isnot(None)
         ).order_by(
             Race.date.desc()
-        ).all()
+        )
+        
+        # クエリの内容を出力
+        current_app.logger.info(f"Entries query: {str(entries_query)}")
+        
+        entries = entries_query.all()
+        current_app.logger.info(f"Found {len(entries)} entries")
         
         # 結果の整形
         race_results = []
