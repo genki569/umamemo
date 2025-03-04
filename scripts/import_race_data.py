@@ -163,8 +163,13 @@ class RaceDataImporter:
 
     def import_entries(self):
         try:
+            print(f"デバッグ: CSVファイルパス: {self.input_dir}/entries.csv")
             df = pd.read_csv(f'{self.input_dir}/entries.csv', header=None)
+            print(f"デバッグ: 読み込んだデータ件数: {len(df)}")
             df = df.where(pd.notnull(df), None)
+            
+            print(f"デバッグ: カラム数: {len(df.columns)}")
+            print(f"デバッグ: 最初の5行:\n{df.head()}")
             
             stmt = text("""
                 INSERT INTO entries (
