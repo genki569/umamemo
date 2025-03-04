@@ -191,39 +191,10 @@ class RaceDataImporter:
     def import_entries(self):
         try:
             print("\n=== インポート処理開始 ===")
-            print(f"デバッグ: entries.csvの読み込み開始")
             df = pd.read_csv(f'{self.input_dir}/entries.csv', header=None)
             print(f"デバッグ: 読み込んだ総行数: {len(df)}")
-            
-            # CSVの構造確認
-            print("\n=== CSVデータ構造 ===")
-            print(f"カラム数: {len(df.columns)}")
-            print(f"カラム内容: {df.columns.tolist()}")
-            print("\n最初の3行のデータ:")
-            print(df.head(3))
-            
             df = df.where(pd.notnull(df), None)
             
-            # 特定のレースの全データを確認
-            target_race = df[df[1] == 202502242050108]
-            print(f"\n=== 対象レース(202502242050108)のデータ ===")
-            print(f"データ件数: {len(target_race)}")
-            print("全出走馬情報:")
-            for _, row in target_race.iterrows():
-                print(f"馬番{row[4]}: ID={row[0]}, 馬ID={row[2]}, 騎手ID={row[3]}")
-            
-            # データベースの現状確認
-            with self.engine.connect() as conn:
-                print("\n=== 現在のDB状態 ===")
-                existing = conn.execute(
-                    text("SELECT id, horse_number, horse_id, jockey_id, position, time FROM entries WHERE race_id = :race_id"),
-                    {"race_id": "202502242050108"}
-                ).fetchall()
-                print(f"DB内の既存エントリー数: {len(existing)}")
-                for entry in existing:
-                    print(f"ID: {entry.id}, 馬番: {entry.horse_number}, 位置: {entry.position}, タイム: {entry.time}")
-            
-            # UPSERT文の実行と結果確認
             stmt = text("""
                 INSERT INTO entries (
                     id, race_id, horse_id, jockey_id,
@@ -259,46 +230,29 @@ class RaceDataImporter:
             print("\n=== UPSERT実行 ===")
             with self.engine.begin() as conn:
                 for index, row in df.iterrows():
-                    if row[1] == 202502242050108:
-                        # 正しいIDを生成
-                        entry_id = self.generate_entry_id(row[1], row[4])
-                        params = {
-                            "id": entry_id,  # 生成した一意のID
-                            "race_id": self.safe_str(row[1]),
-                            "horse_id": self.safe_int(row[2]),
-                            "jockey_id": self.safe_int(row[3]),
-                            "horse_number": self.safe_int(row[4]),
-                            "odds": self.safe_float(row[5]),
-                            "popularity": self.safe_int(row[6]),
-                            "horse_weight": self.safe_int(row[7]),
-                            "weight_change": self.safe_int(row[8]),
-                            "prize": self.safe_float(row[9]),
-                            "position": self.safe_int(row[10]),
-                            "frame_number": self.safe_int(row[11]),
-                            "weight": self.safe_float(row[12]),
-                            "time": self.safe_str(row[13]),
-                            "margin": self.safe_str(row[14]),
-                            "passing": self.safe_str(row[15]),
-                            "last_3f": self.safe_float(row[16])
-                        }
-                        
-                        print(f"\n処理中: 馬番{params['horse_number']}")
-                        print(f"パラメータ: {params}")
-                        
-                        result = conn.execute(stmt, parameters=params)
-                        updated = result.fetchone()
-                        print(f"実行結果: {updated}")
-            
-            # 最終確認
-            with self.engine.connect() as conn:
-                print("\n=== 更新後のDB状態 ===")
-                final = conn.execute(
-                    text("SELECT id, horse_number, horse_id, jockey_id, position, time FROM entries WHERE race_id = :race_id"),
-                    {"race_id": "202502242050108"}
-                ).fetchall()
-                print(f"更新後のエントリー数: {len(final)}")
-                for entry in final:
-                    print(f"ID: {entry.id}, 馬番: {entry.horse_number}, 位置: {entry.position}, タイム: {entry.time}")
+                    entry_id = self.generate_entry_id(row[1], row[4])
+                    params = {
+                        "id": entry_id,
+                        "race_id": self.safe_str(row[1]),
+                        "horse_id": self.safe_int(row[2]),
+                        "jockey_id": self.safe_int(row[3]),
+                        "horse_number": self.safe_int(row[4]),
+                        "odds": self.safe_float(row[5]),
+                        "popularity": self.safe_int(row[6]),
+                        "horse_weight": self.safe_int(row[7]),
+                        "weight_change": self.safe_int(row[8]),
+                        "prize": self.safe_float(row[9]),
+                        "position": self.safe_int(row[10]),
+                        "frame_number": self.safe_int(row[11]),
+                        "weight": self.safe_float(row[12]),
+                        "time": self.safe_str(row[13]),
+                        "margin": self.safe_str(row[14]),
+                        "passing": self.safe_str(row[15]),
+                        "last_3f": self.safe_float(row[16])
+                    }
+                    
+                    print(f"\n処理中: レースID {row[1]}, 馬番{row[4]}")
+                    result = conn.execute(stmt, parameters=params)
             
             print("\n=== インポート処理完了 ===")
             
