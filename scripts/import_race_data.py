@@ -191,13 +191,20 @@ class RaceDataImporter:
     def import_entries(self):
         try:
             print("\n=== インポート処理開始 ===")
+            print(f"デバッグ: entries.csvの読み込み開始")
             df = pd.read_csv(f'{self.input_dir}/entries.csv', header=None)
             print(f"デバッグ: 読み込んだ総行数: {len(df)}")
+            
+            # CSVの構造確認
+            print("\n=== CSVデータ構造 ===")
+            print(f"カラム数: {len(df.columns)}")
+            print(f"カラム内容: {df.columns.tolist()}")
+            print("\n最初の3行のデータ:")
+            print(df.head(3))
+            
             df = df.where(pd.notnull(df), None)
             
-            # 馬IDの桁数を修正（9桁→10桁）
-            df[2] = df[2].apply(lambda x: int(str(x) + '0') if pd.notnull(x) else None)
-            
+            # UPSERT文の実行と結果確認
             stmt = text("""
                 INSERT INTO entries (
                     id, race_id, horse_id, jockey_id,
@@ -233,6 +240,7 @@ class RaceDataImporter:
             print("\n=== UPSERT実行 ===")
             with self.engine.begin() as conn:
                 for index, row in df.iterrows():
+                    # if文を削除し、全レースを処理
                     entry_id = self.generate_entry_id(row[1], row[4])
                     params = {
                         "id": entry_id,
@@ -256,6 +264,7 @@ class RaceDataImporter:
                     
                     print(f"\n処理中: レースID {row[1]}, 馬番{row[4]}")
                     result = conn.execute(stmt, parameters=params)
+                    print(f"実行結果: {result.fetchone()}")
             
             print("\n=== インポート処理完了 ===")
             
