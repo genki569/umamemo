@@ -67,7 +67,7 @@
                             data-winrate="{{ stat.win_rate }}"
                             data-totalrides="{{ stat.total_rides }}">
                             <td>
-                                <a href="{{ url_for('jockey_detail', jockey_id=stat.id) }}" class="text-decoration-none">
+                                <a href="{{ url_for('jockey_detail', jockey_id=stat.jockey_id) }}" class="text-decoration-none">
                                     {{ stat.name }}
                                 </a>
                             </td>
@@ -80,9 +80,9 @@
                             <td>{{ stat.win_rate }}%</td>
                             <td>{{ stat.place_rate }}%</td>
                             <td>
-                                <a href="{{ url_for('jockey_detail', jockey_id=stat.id) }}" 
-                                   class="btn btn-sm btn-outline-primary">
-                                    <i class="fas fa-info-circle"></i> 詳細
+                                <a href="{{ url_for('jockey_detail', jockey_id=stat.jockey_id) }}" 
+                                   class="btn btn-sm btn-primary">
+                                    詳細
                                 </a>
                             </td>
                         </tr>
@@ -145,13 +145,32 @@ function sortJockeys(sort) {
     });
 }
 
+function changePage(direction) {
+    const totalRows = document.getElementsByClassName('jockey-row').length;
+    const totalPages = Math.ceil(totalRows / itemsPerPage);
+    
+    if (direction === 'prev' && currentPage > 1) {
+        currentPage--;
+        updateTable();
+    } else if (direction === 'next' && currentPage < totalPages) {
+        currentPage++;
+        updateTable();
+    }
+    
+    // ページ情報を更新
+    document.getElementById('page-info').textContent = `${currentPage} / ${totalPages}`;
+    
+    // ボタンの有効/無効を更新
+    document.getElementById('prev-btn').disabled = currentPage === 1;
+    document.getElementById('next-btn').disabled = currentPage === totalPages;
+}
+
 function updateTable() {
     const tableBody = document.getElementById('jockey-table-body');
-    // すべての行を取得（元のデータを保持）
-    const allRows = Array.from(document.querySelectorAll('.jockey-row'));
+    const rows = Array.from(tableBody.getElementsByClassName('jockey-row'));
     
     // フィルタリング
-    const filteredRows = allRows.filter(row => {
+    const filteredRows = rows.filter(row => {
         if (currentFilter === 'all') return true;
         if (currentFilter === 'central') return row.dataset.affiliation === '中央';
         if (currentFilter === 'local') return row.dataset.affiliation === '地方';
@@ -179,14 +198,8 @@ function updateTable() {
     });
     
     // ページネーション
-    const totalItems = filteredRows.length;
-    const totalPages = Math.ceil(totalItems / itemsPerPage);
-    currentPage = Math.min(currentPage, totalPages);
-    
     const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
-    
-    // 表示するデータを抽出
+    const endIndex = Math.min(startIndex + itemsPerPage, filteredRows.length);
     const visibleRows = filteredRows.slice(startIndex, endIndex);
     
     // テーブルを更新
@@ -195,28 +208,9 @@ function updateTable() {
         tableBody.appendChild(row.cloneNode(true));
     });
     
-    // ページネーション情報を更新
-    document.getElementById('total-entries').textContent = totalItems;
-    document.getElementById('showing-entries').textContent = `${startIndex + 1}-${endIndex}`;
-    document.getElementById('page-info').textContent = `${currentPage} / ${totalPages}`;
-    
-    // ボタンの有効/無効を設定
-    document.getElementById('prev-btn').disabled = currentPage === 1;
-    document.getElementById('next-btn').disabled = currentPage === totalPages;
-}
-
-function changePage(direction) {
-    const rows = document.getElementsByClassName('jockey-row');
-    const totalRows = rows.length;
-    const totalPages = Math.ceil(totalRows / itemsPerPage);
-    
-    if (direction === 'prev' && currentPage > 1) {
-        currentPage--;
-        updateTable();
-    } else if (direction === 'next' && currentPage < totalPages) {
-        currentPage++;
-        updateTable();
-    }
+    // 表示件数を更新
+    document.getElementById('showing-entries').textContent = 
+        `${startIndex + 1}-${endIndex}`;
 }
 
 // 初期表示時に実行
