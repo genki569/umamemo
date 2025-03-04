@@ -182,6 +182,12 @@ class RaceDataImporter:
             return None
         return str(value)
 
+    def generate_entry_id(self, race_id, horse_number):
+        """
+        レースIDと馬番から一意のエントリーIDを生成
+        """
+        return int(f"{race_id}{horse_number:02d}")
+
     def import_entries(self):
         try:
             print("\n=== インポート処理開始 ===")
@@ -254,8 +260,10 @@ class RaceDataImporter:
             with self.engine.begin() as conn:
                 for index, row in df.iterrows():
                     if row[1] == 202502242050108:
+                        # 正しいIDを生成
+                        entry_id = self.generate_entry_id(row[1], row[4])
                         params = {
-                            "id": self.safe_int(row[0]),
+                            "id": entry_id,  # 生成した一意のID
                             "race_id": self.safe_str(row[1]),
                             "horse_id": self.safe_int(row[2]),
                             "jockey_id": self.safe_int(row[3]),
