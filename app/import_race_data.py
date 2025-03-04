@@ -148,8 +148,14 @@ def import_race_data(csv_file_path):
 
 def process_race_results(results, race_id, stats):
     """レース結果の処理（統計情報を更新）"""
+    print(f"処理開始: レースID {race_id}")  # デバッグ追加
+    print(f"取得した結果数: {len(results)}")  # デバッグ追加
+    
     for result in results:
         try:
+            print(f"処理中の馬: {result.get('馬名', 'unknown')}")  # デバッグ追加
+            print(f"データ内容: {result}")  # デバッグ追加
+            
             # 馬の処理
             horse = Horse.query.filter_by(name=result['馬名']).first()
             if not horse:
@@ -176,6 +182,7 @@ def process_race_results(results, race_id, stats):
                 weight=float(result.get('斤量', 0)) if result.get('斤量', '').replace('.', '').isdigit() else None,
                 position=int(result.get('着順', 0)) if result.get('着順', '').isdigit() else None
             )
+            print(f"エントリー作成: {entry.horse_number}")  # デバッグ追加
             db.session.add(entry)
             
         except Exception as e:

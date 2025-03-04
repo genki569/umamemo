@@ -63,6 +63,7 @@ def extract_venue(venue_info):
 
 def scrape_race_details(url, session):
     try:
+        print(f"デバッグ: レース詳細スクレイピング開始 - URL: {url}")  # デバッグ追加
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
         }
@@ -70,16 +71,18 @@ def scrape_race_details(url, session):
         soup = BeautifulSoup(response.content, 'html.parser')
         
         race_data = {}  # 初期化
+        print(f"デバッグ: BeautifulSoupでパース完了")  # デバッグ追加
         
         # レース名の取得
         race_name_elem = soup.select_one('div.data_intro h1, .racedata h1')
         if not race_name_elem:
-            print(f"レース名が見つかりません: {url}")
+            print(f"デバッグ: レース名が見つかりません: {url}")  # デバッグ追加
             return None
         
         race_name = race_name_elem.text.strip()
         race_name = race_name.replace('過去の', '').replace('\n', '')
         race_data['race_name'] = race_name
+        print(f"デバッグ: レース名取得: {race_name}")  # デバッグ追加
 
         # レース情報の取得を改善
         race_data_elem = soup.select_one('.data_intro')
@@ -119,13 +122,13 @@ def scrape_race_details(url, session):
         # レース結果テーブルの取得
         result_table = soup.find('table', class_='race_table_01')
         if not result_table:
-            print(f"結果テーブルが見つかりません: {url}")
+            print(f"デバッグ: 結果テーブルが見つかりません: {url}")  # デバッグ追加
             return None
 
         results = []
         headers = result_table.find_all('th')
         if not headers:
-            print(f"テーブルヘッダーが見つかりません: {url}")
+            print(f"デバッグ: テーブルヘッダーが見つかりません: {url}")  # デバッグ追加
             return None
 
         for row in result_table.find_all('tr')[1:]:  # ヘッダーをスキップ
@@ -137,14 +140,16 @@ def scrape_race_details(url, session):
             for header, cell in zip(HEADERS, cols):
                 result[header] = cell.text.strip()
             results.append(result)
+            print(f"デバッグ: 馬の結果を追加: {result.get('馬名', 'unknown')}")  # デバッグ追加
 
         race_data['results'] = results
+        print(f"デバッグ: 全{len(results)}頭分の結果を取得")  # デバッグ追加
         
         return race_data
 
     except Exception as e:
-        print(f"レース詳細の取得中にエラー発生: {url}")
-        print(f"エラー内容: {str(e)}")
+        print(f"デバッグ: レース詳細の取得中にエラー発生: {url}")  # デバッグ追加
+        print(f"デバッグ: エラー内容: {str(e)}")  # デバッグ追加
         return None
 
 def scrape_all_pages(base_url, session):
