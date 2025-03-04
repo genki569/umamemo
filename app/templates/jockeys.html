@@ -24,32 +24,20 @@
         </div>
     </div>
 
-    <div class="filter-buttons">
+    <div class="filter-buttons mb-4">
         <div class="row g-3">
             <div class="col-md-6">
-                <div class="btn-group w-100 fade-in" data-aos="fade-right">
-                    <button type="button" class="btn btn-outline-primary active" onclick="filterJockeys('all')">
-                        <i class="fas fa-users"></i> 全て
-                    </button>
-                    <button type="button" class="btn btn-outline-primary" onclick="filterJockeys('central')">
-                        <i class="fas fa-horse-head"></i> 中央所属
-                    </button>
-                    <button type="button" class="btn btn-outline-primary" onclick="filterJockeys('local')">
-                        <i class="fas fa-map-marker-alt"></i> 地方所属
-                    </button>
+                <div class="btn-group w-100">
+                    <button type="button" class="btn btn-outline-primary active" onclick="filterJockeys('all')">全て</button>
+                    <button type="button" class="btn btn-outline-primary" onclick="filterJockeys('central')">中央所属</button>
+                    <button type="button" class="btn btn-outline-primary" onclick="filterJockeys('local')">地方所属</button>
                 </div>
             </div>
             <div class="col-md-6">
-                <div class="btn-group w-100 fade-in" data-aos="fade-left">
-                    <button type="button" class="btn btn-outline-secondary active" onclick="sortJockeys('wins')">
-                        <i class="fas fa-trophy"></i> 勝利数順
-                    </button>
-                    <button type="button" class="btn btn-outline-secondary" onclick="sortJockeys('winrate')">
-                        <i class="fas fa-percentage"></i> 勝率順
-                    </button>
-                    <button type="button" class="btn btn-outline-secondary" onclick="sortJockeys('totalrides')">
-                        <i class="fas fa-horse"></i> 騎乗数順
-                    </button>
+                <div class="btn-group w-100">
+                    <button type="button" class="btn btn-outline-secondary active" onclick="sortJockeys('wins')">勝利数順</button>
+                    <button type="button" class="btn btn-outline-secondary" onclick="sortJockeys('winrate')">勝率順</button>
+                    <button type="button" class="btn btn-outline-secondary" onclick="sortJockeys('totalrides')">騎乗数順</button>
                 </div>
             </div>
         </div>
@@ -131,24 +119,47 @@ function loadMore() {
 }
 
 function searchJockeys() {
-    searchQuery = document.getElementById('jockey-search').value.toLowerCase();
-    currentlyShowing = itemsPerPage; // 検索時は表示件数をリセット
-    updateTable();
+    const searchInput = document.getElementById('jockey-search');
+    searchQuery = searchInput.value.toLowerCase();
+    filterAndSortTable();
 }
 
-function updateTable() {
+function filterJockeys(filter) {
+    currentFilter = filter;
+    filterAndSortTable();
+    
+    // ボタンのアクティブ状態を更新
+    document.querySelectorAll('.btn-outline-primary').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    event.target.classList.add('active');
+}
+
+function sortJockeys(sort) {
+    currentSort = sort;
+    filterAndSortTable();
+    
+    // ボタンのアクティブ状態を更新
+    document.querySelectorAll('.btn-outline-secondary').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    event.target.classList.add('active');
+}
+
+function filterAndSortTable() {
     const tableBody = document.getElementById('jockey-table-body');
-    const allRows = Array.from(document.querySelectorAll('.jockey-row'));
+    const rows = Array.from(tableBody.getElementsByTagName('tr'));
     
     // 検索とフィルタリング
-    const filteredRows = allRows.filter(row => {
-        const matchesSearch = row.querySelector('td:first-child').textContent
-            .toLowerCase()
-            .includes(searchQuery);
+    const filteredRows = rows.filter(row => {
+        const name = row.cells[0].textContent.toLowerCase();
+        const affiliation = row.cells[1].textContent;
+        
+        const matchesSearch = name.includes(searchQuery);
         const matchesFilter = 
             currentFilter === 'all' ? true :
-            currentFilter === 'central' ? row.dataset.affiliation === '中央' :
-            currentFilter === 'local' ? row.dataset.affiliation === '地方' : false;
+            currentFilter === 'central' ? affiliation === '中央' :
+            currentFilter === 'local' ? affiliation === '地方' : false;
         
         return matchesSearch && matchesFilter;
     });
@@ -156,76 +167,45 @@ function updateTable() {
     // ソート
     filteredRows.sort((a, b) => {
         let aValue, bValue;
+        
         switch(currentSort) {
             case 'wins':
-                aValue = parseInt(a.dataset.wins);
-                bValue = parseInt(b.dataset.wins);
+                aValue = parseInt(a.cells[3].textContent);
+                bValue = parseInt(b.cells[3].textContent);
                 break;
             case 'winrate':
-                aValue = parseFloat(a.dataset.winrate);
-                bValue = parseFloat(b.dataset.winrate);
+                aValue = parseFloat(a.cells[7].textContent);
+                bValue = parseFloat(b.cells[7].textContent);
                 break;
             case 'totalrides':
-                aValue = parseInt(a.dataset.totalrides);
-                bValue = parseInt(b.dataset.totalrides);
+                aValue = parseInt(a.cells[2].textContent);
+                bValue = parseInt(b.cells[2].textContent);
                 break;
         }
+        
         return bValue - aValue;
     });
     
-    // 表示件数を制限
-    const visibleRows = filteredRows.slice(0, currentlyShowing);
-    
     // テーブルを更新
     tableBody.innerHTML = '';
-    visibleRows.forEach(row => {
+    filteredRows.forEach(row => {
         tableBody.appendChild(row.cloneNode(true));
     });
     
-    // 表示情報を更新
-    document.getElementById('total-entries').textContent = filteredRows.length;
-    document.getElementById('showing-entries').textContent = 
-        `1-${Math.min(currentlyShowing, filteredRows.length)}`;
-    
-    // もっと見るボタンの表示制御
-    const loadMoreBtn = document.getElementById('load-more');
-    loadMoreBtn.style.display = 
-        currentlyShowing >= filteredRows.length ? 'none' : 'block';
+    // 表示件数を更新
+    updateDisplayCount(filteredRows.length);
 }
 
-function filterJockeys(filter) {
-    currentFilter = filter;
-    currentlyShowing = itemsPerPage; // リセット
-    updateTable();
-    
-    // ボタンのアクティブ状態を更新
-    document.querySelectorAll('.btn-group .btn-outline-primary').forEach(btn => {
-        btn.classList.remove('active');
-        if (btn.textContent.includes(filter === 'all' ? '全て' : 
-                                   filter === 'central' ? '中央所属' : '地方所属')) {
-            btn.classList.add('active');
-        }
-    });
-}
-
-function sortJockeys(sort) {
-    currentSort = sort;
-    currentlyShowing = itemsPerPage; // リセット
-    updateTable();
-    
-    // ボタンのアクティブ状態を更新
-    document.querySelectorAll('.btn-group .btn-outline-secondary').forEach(btn => {
-        btn.classList.remove('active');
-        if (btn.textContent.includes(sort === 'wins' ? '勝利数順' : 
-                                   sort === 'winrate' ? '勝率順' : '騎乗数順')) {
-            btn.classList.add('active');
-        }
-    });
+function updateDisplayCount(count) {
+    const countDisplay = document.getElementById('total-entries');
+    if (countDisplay) {
+        countDisplay.textContent = count;
+    }
 }
 
 // 初期表示時に実行
 document.addEventListener('DOMContentLoaded', function() {
-    updateTable();
+    filterAndSortTable();
 });
 </script>
 
@@ -276,6 +256,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
 .search-box .input-group-text i {
     color: #6c757d;
+}
+
+.btn-group .btn.active {
+    background-color: #0d6efd;
+    color: white;
 }
 </style>
 {% endblock %} 
