@@ -138,12 +138,12 @@
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="raceDropdown">
                             <li>
-                                <a class="dropdown-item" href="{{ url_for('race_cards') }}">
+                                <a class="dropdown-item" href="{{ url_for('shutuba_list') }}">
                                     <i class="fas fa-list me-2"></i>出馬表
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="{{ url_for('races', type='results') }}">
+                                <a class="dropdown-item" href="{{ url_for('race_results') }}">
                                     <i class="fas fa-trophy me-2"></i>レース結果
                                 </a>
                             </li>
@@ -151,7 +151,7 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('horses') }}">
-                            <i class="fas fa-horse-head me-2"></i>競走馬
+                            <i class="fas fa-horse me-2"></i>競走馬
                         </a>
                     </li>
                     <li class="nav-item">
