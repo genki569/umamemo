@@ -407,3 +407,44 @@ h1, h2, h3, h4, h5, h6 {
     gap: 1.5rem;
     width: 100%;
 }
+
+/* ベースのモバイル設定 */
+@media screen and (max-width: 768px) {
+    :root {
+        /* フォントサイズ */
+        --font-size-base: 14px;
+        --font-size-lg: 16px;
+        --font-size-xl: 18px;
+        --font-size-2xl: 20px;
+        --font-size-3xl: 24px;
+    }
+
+    body {
+        -webkit-text-size-adjust: 100%;
+        font-size: var(--font-size-base);
+    }
+
+    /* タッチ操作の最適化 */
+    * {
+        touch-action: manipulation;
+    }
+
+    /* スクロール制御 */
+    html, body {
+        overflow-x: hidden;
+        position: relative;
+        height: 100%;
+    }
+
+    /* フォーム要素の最適化 */
+    input, select, textarea {
+        font-size: 16px !important; /* iOSでのズームを防ぐ */
+    }
+}
+
+/* iOSのSafari対応 */
+@supports (-webkit-touch-callout: none) {
+    .vh-100 {
+        height: -webkit-fill-available;
+    }
+}
