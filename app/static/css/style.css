@@ -33,7 +33,7 @@
 /* フッターの基本スタイル */
 .footer {
     background: #f8fafc;
-    padding: var(--space-md) 0;
+    padding: 3rem 0;
     margin-top: auto;
     border-top: 1px solid #e2e8f0;
 }
@@ -1543,11 +1543,11 @@
 /* コンテナの改善 */
 .container {
     width: 100%;
-    max-width: var(--max-width);
+    max-width: var(--container-max-width, 1200px);
     margin: 0 auto;
-    padding: 0 var(--space-sm);
-    box-sizing: border-box;
-    overflow-x: hidden;
+    padding-left: var(--container-padding, var(--space-md));
+    padding-right: var(--container-padding, var(--space-md));
+    position: relative;
 }
 
 /* フォーム要素の改善 */
@@ -1953,139 +1953,5 @@ html, body {
     .date-btn.active {
         background: var(--primary-color);
         color: white;
-    }
-}
-
-/* カラーパレットとベース変数 */
-:root {
-    --color-primary: #2563EB;
-    --color-secondary: #4F46E5;
-    --color-accent: #EC4899;
-    --color-background: #FAFAFA;
-    --color-surface: #FFFFFF;
-    --color-text: #18181B;
-    --color-text-light: #71717A;
-    --color-border: #E4E4E7;
-    --gradient-primary: linear-gradient(135deg, #2563EB 0%, #4F46E5 100%);
-    --gradient-accent: linear-gradient(135deg, #EC4899 0%, #D946EF 100%);
-    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    --max-width: 1200px;
-    --animation-timing: cubic-bezier(0.4, 0, 0.2, 1);
-    --hover-transform: translateY(-5px);
-    --hover-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
-}
-
-/* 横スクロール防止の基本設定 */
-html, body {
-    margin: 0;
-    padding: 0;
-    overflow-x: hidden;
-    width: 100%;
-    min-height: 100vh;
-}
-
-/* セクション共通 */
-section {
-    position: relative;
-    padding: var(--space-xl) 0;
-    overflow: hidden;
-}
-
-/* モバイル対応の強化 */
-@media (max-width: 767.98px) {
-    .container {
-        padding: 0 var(--space-sm);
-    }
-
-    section {
-        padding: var(--space-lg) 0;
-    }
-
-    /* グリッドレイアウトの調整 */
-    .grid-container {
-        grid-template-columns: 1fr;
-        gap: var(--space-md);
-    }
-
-    /* ボタンのタッチ領域 */
-    .btn {
-        min-height: 44px;
-        padding: var(--space-sm) var(--space-md);
-    }
-}
-
-/* アニメーション最適化 */
-@media (prefers-reduced-motion: reduce) {
-    * {
-        animation: none !important;
-        transition: none !important;
-    }
-}
-
-/* パフォーマンス最適化 */
-.hero-wrapper,
-.feature-card,
-.step-item {
-    will-change: transform;
-    backface-visibility: hidden;
-}
-
-/* グリッドレイアウトの修正 */
-.features-grid,
-.features-grid-3,
-.benefits-grid {
-    display: grid;
-    gap: var(--space-md);
-    width: 100%;
-    max-width: 100%;
-    margin: 0;
-    padding: var(--space-sm);
-    box-sizing: border-box;
-}
-
-/* カードのレスポンシブ対応 */
-.feature-card,
-.feature-item,
-.benefit-item {
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-    overflow: hidden;
-}
-
-/* リストのはみ出し防止 */
-.feature-list,
-.feature-details {
-    padding-left: var(--space-md);
-    margin: 0;
-    width: 100%;
-    box-sizing: border-box;
-    word-break: break-word;
-}
-
-/* モバイル対応の強化 */
-@media (max-width: 767.98px) {
-    .features-grid,
-    .features-grid-3,
-    .benefits-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .container {
-        padding: 0 var(--space-sm);
-        overflow: hidden;
-    }
-
-    .feature-card,
-    .feature-item,
-    .benefit-item {
-        padding: var(--space-md);
-    }
-
-    /* テキストの折り返し設定 */
-    h1, h2, h3, p {
-        word-wrap: break-word;
-        overflow-wrap: break-word;
     }
 }
