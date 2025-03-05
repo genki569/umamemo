@@ -2119,3 +2119,78 @@
 .notification-list::-webkit-scrollbar-thumb:hover {
     background: #555;
 }
+
+/* コンテナの改善 */
+.container {
+    width: 100%;
+    padding-right: var(--space-md);
+    padding-left: var(--space-md);
+    margin-right: auto;
+    margin-left: auto;
+}
+
+/* テーブルのレスポンシブ改善 */
+.table-responsive {
+    margin: var(--space-md) 0;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+@media (max-width: 768px) {
+    .table-responsive {
+        margin: var(--space-sm) 0;
+    }
+
+    .table th,
+    .table td {
+        padding: var(--space-xs);
+        font-size: var(--font-sm);
+    }
+}
+
+/* フォーム要素の改善 */
+.form-control {
+    min-height: var(--touch-target-size);
+    padding: var(--space-sm) var(--space-md);
+}
+
+/* ボタンの改善 */
+.btn {
+    min-height: var(--touch-target-size);
+    padding: var(--space-sm) var(--space-lg);
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+/* カードの改善 */
+.card {
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.2s ease;
+}
+
+@media (max-width: 768px) {
+    .card {
+        margin-bottom: var(--space-md);
+    }
+}
+
+/* グリッドレイアウトの改善 */
+.grid {
+    display: grid;
+    gap: var(--space-md);
+}
+
+@media (min-width: 768px) {
+    .grid-2 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .grid-3 {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .grid-4 {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}

@@ -1,0 +1,46 @@
+/* モバイルファースト */
+/* 基本スタイルはモバイル向けに記述 */
+
+/* タブレット */
+@media (min-width: 576px) {
+    .container {
+        max-width: 540px;
+    }
+}
+
+/* 小型デスクトップ */
+@media (min-width: 768px) {
+    .container {
+        max-width: 720px;
+    }
+}
+
+/* 中型デスクトップ */
+@media (min-width: 992px) {
+    .container {
+        max-width: 960px;
+    }
+}
+
+/* 大型デスクトップ */
+@media (min-width: 1200px) {
+    .container {
+        max-width: 1140px;
+    }
+}
+
+/* タッチデバイス対応 */
+@media (hover: none) and (pointer: coarse) {
+    /* タッチ操作向け調整 */
+    .btn, 
+    .nav-link,
+    .form-control {
+        min-height: var(--touch-target-size);
+    }
+    
+    /* タップターゲット間のスペース確保 */
+    .btn + .btn,
+    .nav-item + .nav-item {
+        margin-left: var(--space-xs);
+    }
+} 
