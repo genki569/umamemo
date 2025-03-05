@@ -26,6 +26,9 @@
     /* その他 */
     --border-radius: 12px;
     --touch-target-size: 44px;
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
 }
 
 /* ベースレイアウト */
@@ -75,10 +78,9 @@ html, body {
     top: 0;
     left: 0;
     right: 0;
-    background: white;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     z-index: 1000;
-    height: var(--header-height);
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    padding: var(--space-sm) 0;
 }
 
 .navbar-brand {
@@ -108,11 +110,11 @@ html, body {
 }
 
 /* カードスタイル */
-.card {
+.card, .review-card, .memo-card {
     background: white;
     border-radius: var(--border-radius);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: var(--shadow-md);
+    transition: all 0.3s ease;
 }
 
 .card:hover {
@@ -154,6 +156,7 @@ html, body {
     .race-grid { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
 }
 
+/* モバイルファースト */
 @media (max-width: 767.98px) {
     :root {
         --header-height: var(--header-height-mobile);
@@ -163,48 +166,118 @@ html, body {
         padding-top: var(--header-height);
     }
 
+    /* ヘッダー */
+    .navbar {
+        height: var(--header-height-mobile);
+    }
+
+    .navbar-brand {
+        font-size: 1.1rem;
+    }
+
+    /* ヒーローセクション */
+    .hero-section {
+        padding: var(--space-lg) var(--space-md);
+        text-align: left;
+    }
+
+    .hero-title {
+        font-size: 2rem;
+        line-height: 1.2;
+        margin-bottom: var(--space-md);
+    }
+
+    /* コンテンツ配置 */
     .container {
-        padding: 0 var(--container-padding);
+        padding: 0 var(--space-md);
     }
 
-    /* ナビゲーション */
-    .navbar-collapse {
-        position: fixed;
-        top: var(--header-height);
-        left: 0;
-        right: 0;
-        background: white;
-        padding: var(--space-md);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    }
-
-    /* グリッドレイアウト */
+    /* グリッド */
     .grid,
     .features-grid,
     .features-grid-3,
     .venue-grid {
         grid-template-columns: 1fr;
-        gap: var(--space-md);
+        padding: var(--space-sm);
     }
 
-    /* ヒーロー */
-    .hero-section {
-        padding: var(--space-xl) 0;
-    }
-
-    .hero-title {
-        font-size: 2rem;
-    }
-
-    /* カード */
-    .card {
-        margin-bottom: var(--space-md);
-    }
+    /* タイポグラフィ */
+    h1 { font-size: 1.75rem; line-height: 1.2; }
+    h2 { font-size: 1.5rem; line-height: 1.3; }
+    h3 { font-size: 1.25rem; line-height: 1.4; }
+    p { font-size: 1rem; line-height: 1.6; }
 
     /* ボタン */
     .btn {
         width: 100%;
+        min-height: var(--touch-target-size);
+        padding: var(--space-sm) var(--space-md);
         margin-bottom: var(--space-sm);
+    }
+
+    /* カード */
+    .card,
+    .review-card,
+    .memo-card {
+        margin-bottom: var(--space-md);
+        padding: var(--space-lg);
+    }
+
+    /* ナビゲーション */
+    .navbar-collapse {
+        position: fixed;
+        top: var(--header-height-mobile);
+        left: 0;
+        right: 0;
+        background: white;
+        padding: var(--space-md);
+        box-shadow: var(--shadow-lg);
+        border-radius: var(--border-radius);
+    }
+
+    .navbar-nav .nav-link {
+        padding: var(--space-sm) var(--space-md);
+        border-radius: var(--border-radius);
+    }
+
+    /* ヘッダー要素 */
+    .page-header,
+    .section-header {
+        padding: var(--space-lg) var(--space-md);
+        text-align: center;
+    }
+
+    /* フォーム要素 */
+    input, select, textarea {
+        font-size: 16px; /* iOSでズームを防ぐ */
+        min-height: var(--touch-target-size);
+    }
+
+    /* マーケット固有 */
+    .market-header {
+        padding: var(--space-lg) 0;
+    }
+
+    .filter-section {
+        padding: var(--space-md);
+    }
+
+    /* マイページ固有 */
+    .mypage-header {
+        padding: var(--space-lg);
+    }
+
+    .memo-tabs,
+    .review-tabs {
+        padding: var(--space-xs);
+        gap: var(--space-xs);
+    }
+
+    /* レビュー固有 */
+    .review-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-sm);
     }
 }
 
@@ -229,13 +302,19 @@ html, body {
 /* タッチデバイス対応 */
 @media (hover: none) and (pointer: coarse) {
     .btn,
-    .nav-link {
+    .nav-link,
+    .card {
         min-height: var(--touch-target-size);
+        touch-action: manipulation;
     }
 }
 
 /* iPhoneセーフエリア対応 */
 @supports (padding: max(0px)) {
+    .navbar {
+        padding-top: max(var(--space-sm), env(safe-area-inset-top));
+    }
+    
     .footer {
         padding-bottom: max(var(--space-xl), env(safe-area-inset-bottom));
     }
