@@ -2030,3 +2030,62 @@ section {
     will-change: transform;
     backface-visibility: hidden;
 }
+
+/* グリッドレイアウトの修正 */
+.features-grid,
+.features-grid-3,
+.benefits-grid {
+    display: grid;
+    gap: var(--space-md);
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    padding: var(--space-sm);
+    box-sizing: border-box;
+}
+
+/* カードのレスポンシブ対応 */
+.feature-card,
+.feature-item,
+.benefit-item {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+/* リストのはみ出し防止 */
+.feature-list,
+.feature-details {
+    padding-left: var(--space-md);
+    margin: 0;
+    width: 100%;
+    box-sizing: border-box;
+    word-break: break-word;
+}
+
+/* モバイル対応の強化 */
+@media (max-width: 767.98px) {
+    .features-grid,
+    .features-grid-3,
+    .benefits-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .container {
+        padding: 0 var(--space-sm);
+        overflow: hidden;
+    }
+
+    .feature-card,
+    .feature-item,
+    .benefit-item {
+        padding: var(--space-md);
+    }
+
+    /* テキストの折り返し設定 */
+    h1, h2, h3, p {
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+    }
+}
