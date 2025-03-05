@@ -119,35 +119,32 @@
     </form>
     
     <!-- ナビゲーション部分 -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+    <nav class="navbar navbar-expand-lg">
         <div class="container">
             <a class="navbar-brand" href="{{ url_for('index') }}">
-                <span class="gradient-text">馬メモ</span>
+                <i class="fas fa-horse me-2"></i>馬メモ
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
             
-            <div class="collapse navbar-collapse" id="navbarNav">
+            <!-- ハンバーガーメニューの改善 -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+                <i class="fas fa-bars"></i>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('races') }}">
-                            <i class="fas fa-trophy me-1"></i>レース結果
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('shutuba_list') }}">
-                            <i class="fas fa-horse-head me-1"></i>出馬表
+                            <i class="fas fa-flag-checkered me-2"></i>レース一覧
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('horses') }}">
-                            <i class="fas fa-horse me-1"></i>馬一覧
+                            <i class="fas fa-horse-head me-2"></i>競走馬
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('jockeys') }}">
-                            <i class="fas fa-user-tie me-1"></i>騎手一覧
+                            <i class="fas fa-user-tie me-2"></i>騎手一覧
                         </a>
                     </li>
                     <li class="nav-item dropdown">
@@ -174,111 +171,50 @@
                     {% endif %}
                 </ul>
                 
-                <!-- 右側のメニュー -->
-                <ul class="navbar-nav">
-                    {% if current_user.is_authenticated %}
-                        <!-- ポイント表示とチャージリンク -->
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="pointDropdown" 
-                               role="button" data-bs-toggle="dropdown">
-                                <i class="fas fa-coins me-1"></i>
-                                {{ current_user.point_balance or 0 }}P
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-end">
-                                <li>
-                                    <a class="dropdown-item" href="{{ url_for('charge_points') }}">
-                                        <i class="fas fa-plus-circle me-2"></i>ポイントチャージ
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" href="{{ url_for('mypage_point_history') }}">
-                                        <i class="fas fa-history me-2"></i>ポイント履歴
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
-                        
-                        <!-- 通知ドロップダウン -->
-                        <li class="nav-item dropdown notification-dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="notification-toggle" role="button" 
-                               data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fas fa-bell"></i>
-                                <span id="notification-badge" class="notification-badge" style="display: none;">0</span>
-                            </a>
-                            <div class="dropdown-menu dropdown-menu-end notification-menu" id="notification-dropdown">
-                                <div class="notification-header">
-                                    <h6 class="mb-0">通知</h6>
-                                    <button class="btn btn-link btn-sm p-0" onclick="markAllAsRead()">
-                                        すべて既読にする
-                                    </button>
-                                </div>
-                                <div class="notification-list" id="notification-list">
-                                    <!-- 通知アイテムがJSで動的に追加される -->
-                                </div>
-                                <div class="notification-footer">
-                                    <a href="{{ url_for('view_all_notifications') }}" class="btn btn-link btn-sm w-100">
-                                        すべての通知を見る
-                                    </a>
-                                </div>
-                            </div>
-                        </li>
-                        
-                        <!-- ユーザーメニュードロップダウン -->
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" 
-                               role="button" data-bs-toggle="dropdown">
-                                <i class="fas fa-user-circle me-1"></i>
-                                {{ current_user.username }}
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-end">
-                                <li>
-                                    <a class="dropdown-item" href="{{ url_for('mypage_home') }}">
-                                        <i class="fas fa-home me-2"></i>マイページ
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" href="{{ url_for('favorites') }}">
-                                        <i class="fas fa-star me-2"></i>お気に入り
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" href="{{ url_for('mypage_settings') }}">
-                                        <i class="fas fa-cog me-2"></i>設定
-                                    </a>
-                                </li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li>
-                                    <a class="dropdown-item" href="{{ url_for('logout') }}">
-                                        <i class="fas fa-sign-out-alt me-2"></i>ログアウト
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
-                    {% else %}
-                        <!-- 未ログインのメニュー -->
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('login') }}">
-                                <i class="fas fa-sign-in-alt me-1"></i>ログイン
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('register') }}">
-                                <i class="fas fa-user-plus me-1"></i>新規登録
-                            </a>
-                        </li>
-                    {% endif %}
-                </ul>
+                <!-- ユーザーメニュー -->
+                {% if current_user.is_authenticated %}
+                <div class="nav-user-menu">
+                    <div class="dropdown">
+                        <button class="btn btn-link dropdown-toggle" type="button" id="userMenu" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle me-2"></i>{{ current_user.username }}
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a class="dropdown-item" href="{{ url_for('mypage_home') }}">
+                                    <i class="fas fa-home me-2"></i>マイページ
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{{ url_for('favorites') }}">
+                                    <i class="fas fa-star me-2"></i>お気に入り
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{{ url_for('mypage_settings') }}">
+                                    <i class="fas fa-cog me-2"></i>設定
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item" href="{{ url_for('logout') }}">
+                                    <i class="fas fa-sign-out-alt me-2"></i>ログアウト
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                {% endif %}
             </div>
         </div>
     </nav>
 
-    <!-- ペインコンテンツ -->
-    <div class="content-wrapper">
+    <!-- メインコンテンツをラップ -->
+    <div class="main-content">
         {% block content %}{% endblock %}
     </div>
 
-    <!-- フッター部 -->
-    <footer class="footer mt-auto py-3 bg-light">
+    <!-- フッター -->
+    <footer class="footer">
         <div class="container">
             <div class="row g-4">
                 <!-- フッター部分のロゴセクション -->
@@ -306,9 +242,6 @@
                     <div class="d-flex flex-column gap-2">
                         <a href="{{ url_for('races') }}" class="text-decoration-none text-muted">
                             <i class="fas fa-trophy me-2"></i>レース結果
-                        </a>
-                        <a href="{{ url_for('shutuba_list') }}" class="text-decoration-none text-muted">
-                            <i class="fas fa-horse-head me-2"></i>出馬表
                         </a>
                         <a href="{{ url_for('horses') }}" class="text-decoration-none text-muted">
                             <i class="fas fa-horse me-2"></i>馬一覧

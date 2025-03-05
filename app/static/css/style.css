@@ -1,67 +1,33 @@
 /* ナビゲーションバー */
 .navbar {
-    padding: 1rem 0;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    background: #ffffff !important;
-    border-bottom: 1px solid rgba(229, 231, 235, 0.5);
-    z-index: 1030;
+    padding: var(--space-sm) 0;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
 }
 
-.navbar.scrolled {
-    padding: 0.5rem 0;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-}
-
-/* ブランドロゴ */
 .navbar-brand {
-    position: relative;
-    overflow: hidden;
+    color: white !important;
+    font-size: 1.25rem;
+    font-weight: 600;
+    padding: var(--space-xs) var(--space-sm);
 }
 
-.navbar-brand .gradient-text {
-    font-size: 1.8rem;
-    font-weight: 700;
-    background: linear-gradient(135deg, 
-        #4F46E5 0%,
-        #EC4899 50%,
-        #4F46E5 100%
-    );
-    background-size: 200% auto;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    animation: shine 3s ease-in-out infinite;
+.navbar-toggler {
+    border: none;
+    color: white;
+    padding: var(--space-xs) var(--space-sm);
+    margin-right: var(--space-xs);
 }
 
-@keyframes shine {
-    to {
-        background-position: 200% center;
-    }
-}
-
-/* ナビリンク */
 .nav-link {
-    font-weight: 500;
-    color: #4B5563 !important;
-    padding: 0.5rem 1rem;
-    transition: all 0.3s ease;
+    color: rgba(255, 255, 255, 0.9) !important;
+    padding: var(--space-xs) var(--space-sm) !important;
     border-radius: 8px;
-    position: relative;
+    transition: all 0.2s ease;
 }
 
-.nav-link::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    width: 0;
-    height: 2px;
-    background: linear-gradient(to right, #4F46E5, #EC4899);
-    transition: all 0.3s ease;
-    transform: translateX(-50%);
-}
-
-.nav-link:hover::after {
-    width: 80%;
+.nav-link:hover {
+    color: white !important;
+    background: rgba(255, 255, 255, 0.1);
 }
 
 /* フッターの基本スタイル */
@@ -240,11 +206,29 @@
 
 /* ドロップダウンメニュー */
 .dropdown-menu {
+    min-width: 200px;
+    padding: var(--space-xs);
     border: none;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     border-radius: 12px;
-    padding: 1rem 0;
-    z-index: 1031;
+}
+
+.dropdown-item {
+    padding: var(--space-sm) var(--space-md);
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.dropdown-item:hover {
+    background-color: var(--background-color);
+    color: var(--primary-color);
+}
+
+.dropdown-item i {
+    width: 20px;
+    text-align: center;
+    margin-right: var(--space-sm);
+    color: var(--muted-color);
 }
 
 /* フッターのレイアウト修正 */
@@ -2123,10 +2107,11 @@
 /* コンテナの改善 */
 .container {
     width: 100%;
-    padding-right: var(--space-md);
+    max-width: 1200px;
+    margin: 0 auto;
     padding-left: var(--space-md);
-    margin-right: auto;
-    margin-left: auto;
+    padding-right: var(--space-md);
+    position: relative;
 }
 
 /* テーブルのレスポンシブ改善 */
@@ -2192,5 +2177,64 @@
 
     .grid-4 {
         grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+/* ナビゲーションの改善 */
+.navbar-collapse {
+    background: white;
+    margin-top: var(--space-sm);
+    padding: var(--space-sm);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.nav-user-menu .btn-link {
+    color: white;
+    text-decoration: none;
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: 8px;
+}
+
+/* コンテナの固定と横ずれ防止 */
+html, body {
+    overflow-x: hidden;
+    position: relative;
+    width: 100%;
+}
+
+/* メインコンテンツエリアの固定 */
+.main-content {
+    min-height: calc(100vh - 60px); /* ナビゲーションバーの高さを引く */
+    width: 100%;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* ナビゲーションの固定 */
+.navbar {
+    position: sticky;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+}
+
+/* レスポンシブ対応の改善 */
+@media (max-width: 768px) {
+    .container {
+        padding-left: var(--space-sm);
+        padding-right: var(--space-sm);
+    }
+
+    .navbar-collapse {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: white;
+        margin: var(--space-xs);
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
 }
