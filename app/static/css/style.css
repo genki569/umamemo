@@ -1,3 +1,60 @@
+/* 最初に基本設定を定義 */
+:root {
+    --max-width: 1200px;
+    --header-height: 60px;
+    --header-height-mobile: 56px;
+    --space-xs: 0.5rem;
+    --space-sm: 0.75rem;
+    --space-md: 1rem;
+    --space-lg: 1.5rem;
+    --space-xl: 2rem;
+}
+
+/* ベースレイアウト */
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    overflow-x: hidden;
+    box-sizing: border-box;
+}
+
+*, *:before, *:after {
+    box-sizing: inherit;
+}
+
+/* コンテナ基本設定 */
+.container {
+    width: 100%;
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 0 var(--space-md);
+    box-sizing: border-box;
+    overflow: visible;
+}
+
+/* グリッドシステム統一 */
+.grid,
+.features-grid,
+.features-grid-3,
+.venue-grid,
+.race-grid {
+    display: grid;
+    gap: var(--space-md);
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+@media (min-width: 768px) {
+    .grid-2 { grid-template-columns: repeat(2, 1fr); }
+    .grid-3 { grid-template-columns: repeat(3, 1fr); }
+    .grid-4 { grid-template-columns: repeat(4, 1fr); }
+    .features-grid { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+    .race-grid { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+}
+
 /* ナビゲーションバー */
 .navbar {
     padding: var(--space-sm) 0;
@@ -1538,100 +1595,4 @@
 
 .notification-list::-webkit-scrollbar-thumb:hover {
     background: #555;
-}
-
-/* ベースレイアウト */
-:root {
-    --max-width: 1200px;
-    --header-height: 60px;
-    --header-height-mobile: 56px;
-}
-
-html, body {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    overflow-x: hidden;
-}
-
-.container {
-    width: 100%;
-    max-width: var(--max-width);
-    margin: 0 auto;
-    padding: 0 var(--space-md);
-    box-sizing: border-box;
-}
-
-/* グリッドレイアウト基本設定 */
-.grid,
-.features-grid,
-.features-grid-3,
-.venue-grid {
-    display: grid;
-    gap: var(--space-md);
-    width: 100%;
-    margin: 0;
-    padding: var(--space-sm);
-    box-sizing: border-box;
-}
-
-/* モバイル対応（統合版） */
-@media (max-width: 767.98px) {
-    :root {
-        --space-md: 1rem;
-        --space-sm: 0.75rem;
-    }
-
-    .container {
-        padding: 0 var(--space-sm);
-    }
-
-    /* グリッドレイアウト */
-    .grid,
-    .features-grid,
-    .features-grid-3,
-    .venue-grid {
-        grid-template-columns: 1fr;
-        gap: var(--space-sm);
-    }
-
-    /* カード */
-    .feature-card,
-    .venue-card {
-        width: 100%;
-        margin-bottom: var(--space-sm);
-        padding: var(--space-md);
-    }
-
-    /* ヘッダー */
-    .header-content {
-        padding: var(--space-md);
-        text-align: center;
-    }
-
-    .header-content h1 {
-        font-size: 1.8rem;
-        line-height: 1.4;
-    }
-
-    /* ナビゲーション */
-    .navbar-collapse {
-        position: absolute;
-        top: var(--header-height-mobile);
-        left: 0;
-        right: 0;
-        background: white;
-        margin: 0;
-        padding: var(--space-sm);
-        border-radius: 0;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-}
-
-/* デスクトップグリッド */
-@media (min-width: 768px) {
-    .grid-2 { grid-template-columns: repeat(2, 1fr); }
-    .grid-3 { grid-template-columns: repeat(3, 1fr); }
-    .grid-4 { grid-template-columns: repeat(4, 1fr); }
-    .features-grid { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
 }
