@@ -1543,11 +1543,11 @@
 /* コンテナの改善 */
 .container {
     width: 100%;
-    max-width: var(--container-max-width, 1200px);
+    max-width: var(--max-width, 1200px);
     margin: 0 auto;
-    padding-left: var(--container-padding, var(--space-md));
-    padding-right: var(--container-padding, var(--space-md));
-    position: relative;
+    padding: 0 var(--space-md);
+    box-sizing: border-box;
+    overflow: hidden;
 }
 
 /* フォーム要素の改善 */
@@ -1613,39 +1613,46 @@
     border-radius: 8px;
 }
 
-/* コンテナの固定と横ずれ防止 */
+/* ベースレイアウト */
 html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
     overflow-x: hidden;
-    position: relative;
-    width: 100%;
 }
 
-/* メインコンテンツエリアの固定 */
-.main-content {
-    min-height: calc(100vh - 60px);
-    width: 100%;
-    position: relative;
-    overflow: hidden;
-    padding-bottom: 0;
-    margin-bottom: 0;
-}
-
-/* ナビゲーションの固定 */
-.navbar {
-    position: sticky;
-    top: 0;
-    width: 100%;
-    z-index: 1000;
-    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-}
-
-/* レスポンシブ対応の改善 */
-@media (max-width: 768px) {
-    .container {
-        padding-left: var(--space-sm);
-        padding-right: var(--space-sm);
+/* モバイル対応（シンプルに整理） */
+@media (max-width: 767.98px) {
+    :root {
+        --space-md: 1rem;
+        --space-sm: 0.75rem;
     }
 
+    .container {
+        padding: 0 var(--space-sm);
+    }
+
+    /* グリッドレイアウト */
+    .grid,
+    .features-grid,
+    .features-grid-3,
+    .venue-grid {
+        grid-template-columns: 1fr;
+        gap: var(--space-sm);
+    }
+
+    /* ヘッダー */
+    .header-content {
+        padding: var(--space-md);
+    }
+
+    /* カード */
+    .feature-card,
+    .venue-card {
+        margin-bottom: var(--space-sm);
+    }
+
+    /* ナビゲーション */
     .navbar-collapse {
         position: absolute;
         top: 100%;
@@ -1656,186 +1663,19 @@ html, body {
         border-radius: 12px;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
-}
 
-/* フォーム要素のレスポンシブ対応 */
-.form-group {
-    margin-bottom: var(--space-md);
-}
-
-.form-control {
-    width: 100%;
-    padding: var(--space-sm) var(--space-md);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    transition: all 0.2s ease;
-    min-height: var(--touch-target-size);
-}
-
-.form-control:focus {
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-}
-
-/* フォームグループのレイアウト */
-.form-row {
-    display: grid;
-    gap: var(--space-md);
-}
-
-@media (min-width: 768px) {
-    .form-row-2 {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .form-row-3 {
-        grid-template-columns: repeat(3, 1fr);
-    }
-}
-
-/* モバイル対応 */
-@media (max-width: 767px) {
-    .form-group {
-        margin-bottom: var(--space-sm);
-    }
-
-    .form-control {
-        padding: var(--space-xs) var(--space-sm);
-        font-size: 0.875rem;
-    }
-
-    /* フォームラベル */
-    .form-label {
-        font-size: 0.875rem;
-        margin-bottom: var(--space-xs);
-    }
-
-    /* 入力補助 */
-    .form-text {
-        font-size: 0.75rem;
-        margin-top: var(--space-2xs);
-    }
-}
-
-/* カスタムセレクト */
-.custom-select {
-    appearance: none;
-    background-image: url("data:image/svg+xml,...");
-    background-repeat: no-repeat;
-    background-position: right var(--space-sm) center;
-    background-size: 16px;
-    padding-right: var(--space-xl);
-}
-
-/* チェックボックスとラジオボタン */
-.form-check {
-    display: flex;
-    align-items: center;
-    min-height: var(--touch-target-size);
-    padding: var(--space-xs) 0;
-}
-
-.form-check-input {
-    width: 1.2rem;
-    height: 1.2rem;
-    margin-right: var(--space-xs);
-}
-
-/* 検索フォーム */
-.search-form {
-    position: relative;
-    max-width: 500px;
-    margin: 0 auto;
-}
-
-.search-form .form-control {
-    padding-left: var(--space-xl);
-}
-
-.search-form .search-icon {
-    position: absolute;
-    left: var(--space-sm);
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--muted-color);
-}
-
-/* インデックスページ特有のスタイル */
-.index-container {
-    overflow: hidden;
-    position: relative;
-    width: 100%;
-}
-
-.index-content {
-    max-width: 100%;
-    margin: 0 auto;
-    padding: 0;
-}
-
-/* レスポンシブ対応の改善 */
-@media (max-width: 768px) {
-    :root {
-        --container-padding: var(--space-sm);
-    }
-
-    .container {
-        padding-left: var(--container-padding);
-        padding-right: var(--container-padding);
-    }
-
-    .index-content {
+    /* 日付セレクター */
+    .date-selector {
+        position: sticky;
+        top: 56px;
+        z-index: 100;
         padding: var(--space-sm);
     }
-}
 
-/* コンテナの最後の要素の余白調整 */
-.container:last-child {
-    margin-bottom: 0;
-    padding-bottom: 0;
-}
-
-/* モバイル表示の最適化 */
-@media (max-width: 768px) {
-    :root {
-        --container-padding: var(--space-sm);
-    }
-
-    body {
-        overflow-x: hidden;
-        width: 100%;
-    }
-
-    .container {
-        padding-left: var(--container-padding);
-        padding-right: var(--container-padding);
-        width: 100%;
-        max-width: 100%;
-        margin: 0;
-        overflow-x: hidden;
-    }
-
-    .index-content {
-        padding: var(--space-sm);
-        width: 100%;
-        box-sizing: border-box;
-    }
-
-    /* グリッドレイアウトの調整 */
-    .grid-container {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: var(--space-sm);
-        width: 100%;
-        padding: 0;
-        margin: 0;
-    }
-
-    /* フレックスボックスの調整 */
-    .flex-container {
+    /* レース情報 */
+    .race-info {
         flex-direction: column;
-        width: 100%;
-        padding: 0;
+        gap: var(--space-xs);
     }
 }
 
