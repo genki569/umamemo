@@ -1,13 +1,5 @@
 /* モバイル共通のスタイル */
 @media (max-width: 767.98px) {
-    /* ナビゲーション */
-    .navbar {
-        padding: 0.5rem;
-    }
-
-    .navbar-brand {
-        font-size: 1.2rem;
-    }
 
     /* ヘッダー共通 */
     .horses-header,
