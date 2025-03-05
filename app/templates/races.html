@@ -96,25 +96,41 @@
                     </div>
                 </div>
                 <div class="race-items">
-                    {% for race_number in range(1, 13) %}
-                        {% set race = venue_data.races|selectattr('race_number', 'equalto', race_number)|first %}
-                        {% if race %}
-                            <div class="race-row">
-                                <div class="race-info">
-                                    <span class="race-number">{{ race_number }}R</span>
-                                    <span class="race-title">{{ race.name }}</span>
-                                </div>
-                                <div class="race-buttons">
-                                    <a href="{{ url_for('race_shutuba', race_id=race.id) }}" class="btn btn-outline-success btn-sm">
-                                        <i class="fas fa-trophy"></i> 出馬表
-                                    </a>
-                                    <a href="{{ url_for('race', race_id=race.id) }}" class="btn btn-outline-info btn-sm">
-                                        <i class="fas fa-book"></i> 結果表
-                                    </a>
-                                </div>
-                            </div>
-                        {% endif %}
-                    {% endfor %}
+                    <div class="table-responsive-wrapper">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>開催日</th>
+                                    <th>レース名</th>
+                                    <th>開催場所</th>
+                                    <th>距離</th>
+                                    <th>グレード</th>
+                                    <th>アクション</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for race in venue_data.races %}
+                                <tr>
+                                    <td data-label="開催日">{{ race.date.strftime('%Y/%m/%d') }}</td>
+                                    <td data-label="レース名">{{ race.name }}</td>
+                                    <td data-label="開催場所">{{ race.venue }}</td>
+                                    <td data-label="距離">{{ race.distance }}m</td>
+                                    <td data-label="グレード">
+                                        <span class="status-badge {{ race.grade_class }}">
+                                            {{ race.grade }}
+                                        </span>
+                                    </td>
+                                    <td data-label="アクション">
+                                        <a href="{{ url_for('race_detail', race_id=race.id) }}" 
+                                           class="table-action">
+                                            <i class="fas fa-eye me-2"></i>詳細
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         {% endfor %}

@@ -878,780 +878,143 @@
     color: white;
 }
 
-/* テーブルのスタイル改善 */
-.table-container {
-    background: white;
-    border-radius: 16px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-    overflow: hidden;
-}
-
-.table {
-    margin-bottom: 0;
-}
-
-.table thead {
-    background: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%);
-}
-
-.table th {
-    font-weight: 600;
-    color: #1E293B;
-    padding: 1rem;
-    border-bottom: 2px solid #E2E8F0;
-}
-
-.table td {
-    padding: 1rem;
-    vertical-align: middle;
-    color: #334155;
-}
-
-/* 騎行のホバー効果 */
-.jockey-row {
-    transition: all 0.2s ease;
-}
-
-.jockey-row:hover {
-    background-color: #F8FAFC;
-    transform: translateY(-1px);
-}
-
-/* 詳細ボタン */
-.btn-primary.btn-sm {
-    background: linear-gradient(135deg, #4F46E5 0%, #6366F1 100%);
-    border: none;
-    padding: 0.4rem 1rem;
-    border-radius: 6px;
-    font-weight: 500;
-    transition: all 0.3s ease;
-}
-
-.btn-primary.btn-sm:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
-}
-
-/* 統計数値のスタイル */
-.stat-number {
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
-    color: #1E293B;
-}
-
-.win-rate {
-    color: #4F46E5;
-}
-
-.place-rate {
-    color: #EC4899;
-}
-
-/* 手細ペーのスタイル */
-.jockey-detail-header {
-    background: linear-gradient(135deg, #4F46E5 0%, #EC4899 100%);
-    padding: 3rem 0;
-    color: white;
-    border-radius: 0 0 2rem 2rem;
-    margin-bottom: 3rem;
-}
-
-.jockey-stats-card {
-    background: white;
-    border: none;
-    border-radius: 16px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-    margin-bottom: 3rem;
-}
-
-.stats-item {
-    padding: 1.5rem;
-    text-align: center;
-    border-radius: 12px;
-    background: #F8FAFC;
-    transition: all 0.3s ease;
-}
-
-.stats-item:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-}
-
-.stats-label {
-    color: #64748B;
-    font-size: 0.9rem;
-    font-weight: 500;
-    margin-bottom: 0.5rem;
-}
-
-.stats-value {
-    color: #1E293B;
-    font-size: 2rem;
-    font-weight: 700;
-    font-family: 'Inter', sans-serif;
-    margin-bottom: 0;
-}
-
-/* 最近の騎乗テーブル */
-.recent-rides-container {
-    background: white;
-    border-radius: 16px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-    padding: 2rem;
-    margin-bottom: 3rem;
-}
-
-.recent-rides-table {
-    margin-bottom: 0;
-}
-
-.recent-rides-table th {
-    background: #F8FAFC;
-    color: #1E293B;
-    font-weight: 600;
-    padding: 1rem;
-    border-bottom: 2px solid #E2E8F0;
-}
-
-.recent-rides-table td {
-    padding: 1rem;
-    vertical-align: middle;
-}
-
-.recent-rides-table tr {
-    transition: all 0.2s ease;
-}
-
-.recent-rides-table tr:hover {
-    background-color: #F1F5F9;
-}
-
-/* リンクのスタイ */
-.race-link, .horse-link {
-    color: #4F46E5;
-    text-decoration: none;
-    transition: all 0.2s ease;
-}
-
-.race-link:hover, .horse-link:hover {
-    color: #EC4899;
-}
-
-/* 戻るボタン */
-.back-button {
-    display: inline-flex;
-    align-items: center;
-    padding: 0.8rem 1.5rem;
-    background: linear-gradient(135deg, #64748B 0%, #94A3B8 100%);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    text-decoration: none;
-    margin-bottom: 3rem;
-}
-
-.back-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(100, 116, 139, 0.2);
-    color: white;
-}
-
-/* 出馬表ペーのコンテナ */
-.shutuba-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem 1rem;
-    background: #f8fafc;
-    min-height: 100vh;
-}
-
-/* 出馬表のレースヘッダー */
-.shutuba-race-header {
-    background: linear-gradient(135deg, #4F46E5 0%, #EC4899 100%);
-    padding: 2.5rem;
-    border-radius: 16px;
-    color: white;
-    margin-bottom: 2.5rem;
+/* テーブルのレスポンシブ対応 */
+.table-responsive-wrapper {
     position: relative;
-    overflow: hidden;
-    box-shadow: 0 10px 30px rgba(79, 70, 229, 0.15);
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: var(--space-md) 0;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
 }
 
-.shutuba-race-header::before {
+/* スクロールの影表現 */
+.table-responsive-wrapper::after {
     content: '';
     position: absolute;
     top: 0;
     right: 0;
-    width: 300px;
-    height: 300px;
-    background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%);
-    border-radius: 50%;
-    transform: translate(100px, -100px);
-}
-
-.shutuba-race-header h2 {
-    font-size: 2rem;
-    font-weight: 700;
-    margin-bottom: 1.2rem;
-    letter-spacing: -0.02em;
-}
-
-.shutuba-race-header .race-details {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1.5rem;
-    font-size: 1.1rem;
-    opacity: 0.9;
-}
-
-.shutuba-race-header .race-details span {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-/* タブコントール全体 */
-.tab-controls {
-    background: white;
-    border-radius: 16px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-    padding: 2rem;
-}
-
-/* タブボタンのスタイル */
-.tab-buttons {
-    display: flex;
-    gap: 0.75rem;
-    margin-bottom: 2rem;
-    padding: 0.5rem;
-    background: #f1f5f9;
-    border-radius: 12px;
-}
-
-.tab-button {
-    flex: 1;
-    padding: 1rem 1.5rem;
-    color: #64748b;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    border-radius: 8px;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-}
-
-/* タブの切り替え制御とアクティブ状態 */
-#tab1:checked ~ .tab-buttons label[for="tab1"],
-#tab2:checked ~ .tab-buttons label[for="tab2"],
-#tab3:checked ~ .tab-buttons label[for="tab3"] {
-    background: linear-gradient(135deg, #4F46E5 0%, #EC4899 100%);
-    color: white;
-    box-shadow: 0 4px 15px rgba(79, 70, 229, 0.25);
-}
-
-/* タブコンテンツのアニメーション */
-.tab-content {
-    display: none;
+    bottom: 0;
+    width: 40px;
+    background: linear-gradient(to right, rgba(255,255,255,0), rgba(0,0,0,0.05));
+    pointer-events: none;
     opacity: 0;
-    transform: translateY(10px);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: opacity 0.3s ease;
 }
 
-#tab1:checked ~ .tab-contents #shutuba-content,
-#tab2:checked ~ .tab-contents #results-content,
-#tab3:checked ~ .tab-contents #analysis-content {
-    display: block;
+.table-responsive-wrapper.has-scroll::after {
     opacity: 1;
-    transform: translateY(0);
 }
 
-/* ホバー効果 */
-.tab-button:hover:not(:checked + label) {
-    background: #e2e8f0;
-    color: #1e293b;
-}
-
-/* レスポンシブ対応 */
-@media (max-width: 768px) {
-    .shutuba-race-header {
-        padding: 2rem;
-    }
-    
-    .shutuba-race-header h2 {
-        font-size: 1.5rem;
-    }
-    
-    .shutuba-race-header .race-details {
-        gap: 1rem;
-        font-size: 1rem;
-    }
-    
-    .tab-buttons {
-        overflow-x: auto;
-        padding: 0.5rem;
-        gap: 0.5rem;
-    }
-    
-    .tab-button {
-        padding: 0.75rem 1rem;
-        white-space: nowrap;
-        flex: 0 0 auto;
-    }
-}
-
-/* 出馬表のスタイル */
-.shutuba-table {
-    background: white;
-    border-radius: 16px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-    overflow: hidden;
-    margin-bottom: 2rem;
-}
-
-.shutuba-table table {
+/* テーブル基本スタイル */
+.table {
     width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
     margin-bottom: 0;
+    background: white;
 }
 
-/* テーブルヘッダー */
-.shutuba-table th {
-    background: #f8fafc;
-    padding: 0.75rem;
+.table thead th {
+    position: sticky;
+    top: 0;
+    background: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%);
+    padding: var(--space-md);
     font-weight: 600;
-    text-align: center;
-    border-bottom: 2px solid #e2e8f0;
+    color: var(--text-color);
+    border-bottom: 2px solid var(--border-color);
+    white-space: nowrap;
 }
 
-/* テーブルセルの配置調整 */
-.shutuba-table td {
-    padding: 0.75rem;
-    text-align: center;
+.table tbody td {
+    padding: var(--space-md);
     vertical-align: middle;
-    border-bottom: 1px solid #e2e8f0;
+    border-bottom: 1px solid var(--border-color);
 }
-/* 枠番のバッジスタイル */
-.shutuba-table .badge {
-    width: 2rem;
-    height: 2rem;
-    display: flex;
+
+/* モバイル対応 */
+@media (max-width: 768px) {
+    .table thead th {
+        padding: var(--space-sm);
+        font-size: 0.875rem;
+    }
+
+    .table tbody td {
+        padding: var(--space-sm);
+        font-size: 0.875rem;
+    }
+
+    /* スタック表示が必要なテーブル */
+    .table-stack {
+        display: block;
+    }
+
+    .table-stack thead {
+        display: none;
+    }
+
+    .table-stack tbody {
+        display: block;
+    }
+
+    .table-stack tr {
+        display: block;
+        border-bottom: 2px solid var(--border-color);
+        padding: var(--space-sm) 0;
+    }
+
+    .table-stack td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border: none;
+        padding: var(--space-xs) var(--space-sm);
+    }
+
+    .table-stack td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        margin-right: var(--space-sm);
+    }
+}
+
+/* テーブル内のアクション */
+.table-action {
+    display: inline-flex;
     align-items: center;
-    justify-content: center;
-    font-weight: 600;
-    font-size: 1rem;
+    padding: var(--space-xs) var(--space-sm);
     border-radius: 6px;
+    color: var(--primary-color);
+    transition: all 0.2s ease;
 }
 
-/* 馬番のスタイル */
-.shutuba-table .horse-number {
-    font-weight: 600;
-    color: #1e293b;
+.table-action:hover {
+    background-color: rgba(99, 102, 241, 0.1);
+    color: var(--primary-color);
 }
 
-/* 馬名のリンクスタイル */
-.shutuba-table .horse-name {
-    color: #1e293b;
-    text-decoration: none;
-    font-weight: 500;
-    transition: color 0.2s ease;
-    display: block;
-    padding: 0.5rem 0;
-}
-
-.shutuba-table .horse-name:hover {
-    color: #4F46E5;
-}
-
-/* 性齢のスタイル */
-.shutuba-table .horse-age {
-    color: #64748b;
-    font-weight: 500;
-}
-
-/* 騎手名のリンクスイル */
-.shutuba-table .jockey-name {
-    color: #1e293b;
-    text-decoration: none;
-    transition: color 0.2s ease;
-}
-
-.shutuba-table .jockey-name:hover {
-    color: #4F46E5;
-}
-
-/* オッズと人気のスタイル */
-.shutuba-table .odds,
-.shutuba-table .popularity {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-weight: 600;
-    color: #1e293b;
-}
-
-/* 行のホバー効果 */
-.shutuba-table tbody tr {
-    transition: background-color 0.2s ease;
-}
-
-.shutuba-table tbody tr:hover {
-    background-color: #f8fafc;
-}
-
-/* レスポンシブ対応 */
-@media (max-width: 768px) {
-    .shutuba-table {
-        margin: 0 -1rem;
-        border-radius: 0;
-    }
-    
-    .shutuba-table-wrapper {
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        margin: 0 1rem;
-    }
-    
-    .shutuba-table th,
-    .shutuba-table td {
-        padding: 0.75rem 0.5rem;
-    }
-}
-
-/* レースヘッダー下のテキスト */
-.race-details span {
-    color: rgba(255, 255, 255, 0.9);  /* 白色に更、少し透明度を持たせる */
-}
-
-/* 出馬表のリンクスタイル */
-.shutuba-table td a {
-    color: #4F46E5;  /* リンクカラー */
-    text-decoration: none;
-    transition: color 0.2s ease;
-}
-
-/* 馬名のリンク */
-.shutuba-table td a.horse-name {
-    color: #4F46E5;
-    font-weight: 500;
-}
-
-/* 騎手名のリンク */
-.shutuba-table td a.jockey-name {
-    color: #EC4899;  /* 騎手名は異なる色に */
-    font-weight: 500;
-}
-
-/* ホバー効果 */
-.shutuba-table td a:hover {
-    color: #6366F1;  /* ホバー時の色 */
-    text-decoration: underline;
-}
-
-.shutuba-table td a.jockey-name:hover {
-    color: #F472B6;  /* 騎手名ホバー時の色 */
-}
-
-/* 過去戦績セクション */
-.past-results {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-}
-
-.horse-results {
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-    overflow: hidden;
-}
-
-/* 馬名ヘッダー */
-.horse-results h5 {
-    background: linear-gradient(135deg, #4F46E5 0%, #EC4899 100%);
-    color: white;
-    margin: 0;
-    padding: 1rem 1.5rem;
-    font-size: 1.1rem;
-    font-weight: 600;
-}
-
-.horse-results h5 small {
-    color: rgba(255, 255, 255, 0.8);
-    font-size: 0.9rem;
-    margin-left: 1rem;
-}
-
-/* 戦績ーブル */
-.horse-results table {
-    margin: 0;
-}
-
-.horse-results th {
-    background: #f8fafc;
-    padding: 0.75rem;
-    font-weight: 600;
-    text-align: center;
-    color: #1e293b;
-    font-size: 0.9rem;
-    border-bottom: 2px solid #e2e8f0;
-}
-
-.horse-results td {
-    padding: 0.75rem;
-    text-align: center;
-    border-bottom: 1px solid #e2e8f0;
-    font-size: 0.95rem;
-}
-
-/* 着順によ行の色分け */
-.horse-results tr td:nth-child(4) {
-    font-weight: 600;
-}
-
-.horse-results tr td:nth-child(4)[data-position="1"] {
-    color: #2E7D32;
-}
-
-.horse-results tr td:nth-child(4)[data-position="2"],
-.horse-results tr td:nth-child(4)[data-position="3"] {
-    color: #1976D2;
-}
-
-/* ホバー効果 */
-.horse-results tbody tr {
-    transition: background-color 0.2s ease;
-}
-
-.horse-results tbody tr:hover {
-    background-color: #f8fafc;
-}
-
-/* レスンシブ対応 */
-@media (max-width: 768px) {
-    .horse-results {
-        margin: 0 -1rem;
-        border-radius: 0;
-    }
-    
-    .horse-results table {
-        white-space: nowrap;
-    }
-    
-    .horse-results-wrapper {
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-    }
-}
-
-/* 戦績ヘダー内の最近5走の表示 */
-.horse-results-header {
-    background: linear-gradient(135deg, #4F46E5 0%, #EC4899 100%);
-    color: white;
-    margin: 0;
-    padding: 1rem 1.5rem;
-    font-size: 1.1rem;
-    font-weight: 600;
-    display: flex;
+/* テーブル内のステータス表示 */
+.status-badge {
+    display: inline-flex;
     align-items: center;
-}
-
-.horse-results-header .recent-races {
-    color: rgba(255, 255, 255, 0.9);
-    font-size: 0.9rem;
-    margin-left: 0.5rem;
-    font-weight: normal;
-}
-
-/* 分析データセクション */
-.analysis-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1.5rem;
-    padding: 1rem;
-}
-
-.analysis-card {
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-    overflow: hidden;
-}
-
-.analysis-header {
-    background: linear-gradient(135deg, #4F46E5 0%, #EC4899 100%);
-    color: white;
-    padding: 1rem 1.5rem;
-    font-size: 1.1rem;
-    font-weight: 600;
-}
-
-.stats-section {
-    padding: 1.5rem;
-}
-
-.stats-title {
-    color: #1e293b;
-    font-size: 1rem;
-    font-weight: 600;
-    margin-bottom: 1rem;
-}
-
-.stats-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-}
-
-.stats-item {
-    background: #f8fafc;
-    padding: 1rem;
-    border-radius: 8px;
-    text-align: center;
-}
-
-.stats-label {
-    display: block;
-    color: #64748b;
-    font-size: 0.9rem;
-    margin-bottom: 0.5rem;
-}
-
-.stats-value {
-    display: block;
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: #1e293b;
-}
-
-.stats-value small {
-    font-size: 0.8rem;
-    opacity: 0.8;
-}
-
-.best-time {
-    background: #f8fafc;
-    padding: 1rem;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    flex-wrap: wrap;
-}
-
-.best-time-label {
-    color: #64748b;
-    font-size: 0.9rem;
-}
-
-.best-time-value {
-    font-weight: 600;
-    color: #4F46E5;
-}
-
-.best-time-details {
-    color: #64748b;
-    font-size: 0.9rem;
-}
-
-.no-data {
-    color: #64748b;
-    text-align: center;
-    padding: 2rem;
-    background: #f8fafc;
-    border-radius: 8px;
-}
-
-/* レスポンシブ対応 */
-@media (max-width: 1024px) {
-    .analysis-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-/* 月別成績テーブル */
-.month-stats {
-    font-size: 0.9rem;
-    margin-bottom: 0;
-}
-
-.month-stats th {
-    background: #f1f5f9;
-    font-weight: 600;
-    padding: 0.5rem;
-    text-align: center;
-}
-
-.month-stats td {
-    padding: 0.5rem;
-    text-align: center;
-}
-
-.month-stats tr:hover {
-    background-color: #f8fafc;
-}
-
-/* 勝率と複勝率のセル */
-.month-stats td:nth-child(4),
-.month-stats td:nth-child(5) {
-    color: #4F46E5;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
     font-weight: 500;
 }
 
-/* テーブルのレスポンシブ対 */
-@media (max-width: 768px) {
-    .month-stats {
-        font-size: 0.8rem;
-    }
-    
-    .month-stats th,
-    .month-stats td {
-        padding: 0.4rem;
-    }
+.status-badge.success {
+    background-color: rgba(34, 197, 94, 0.1);
+    color: rgb(34, 197, 94);
 }
 
-/* 最速タイムの表示 */
-.best-time-box {
-    background: linear-gradient(135deg, rgba(79, 70, 229, 0.1) 0%, rgba(236, 72, 153, 0.1) 100%);
-    border-radius: 8px;
-    padding: 1rem;
-    margin-top: 1rem;
+.status-badge.warning {
+    background-color: rgba(234, 179, 8, 0.1);
+    color: rgb(234, 179, 8);
 }
 
-.best-time-header {
-    color: #4F46E5;
-    font-size: 0.9rem;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-}
-
-.best-time-content {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    flex-wrap: wrap;
-}
-
-.best-time-content .time {
-    font-size: 1.2rem;
-    font-weight: 700;
-    color: #1e293b;
-}
-
-.best-time-content .details {
-    color: #64748b;
-    font-size: 0.9rem;
-}
-
-/* レスポンシブ対応 */
-@media (max-width: 768px) {
-    .best-time-content {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.5rem;
-    }
+.status-badge.danger {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: rgb(239, 68, 68);
 }
 
 /* メイン画のレスポンシブ対応 */
@@ -2112,25 +1475,6 @@
     padding-left: var(--space-md);
     padding-right: var(--space-md);
     position: relative;
-}
-
-/* テーブルのレスポンシブ改善 */
-.table-responsive {
-    margin: var(--space-md) 0;
-    border-radius: 8px;
-    overflow: hidden;
-}
-
-@media (max-width: 768px) {
-    .table-responsive {
-        margin: var(--space-sm) 0;
-    }
-
-    .table th,
-    .table td {
-        padding: var(--space-xs);
-        font-size: var(--font-sm);
-    }
 }
 
 /* フォーム要素の改善 */
