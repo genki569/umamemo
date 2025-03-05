@@ -1660,3 +1660,102 @@ html, body {
         padding-bottom: max(1rem, env(safe-area-inset-bottom));
     }
 }
+
+/* 既存のスタイルを維持したまま、モバイル対応を追加 */
+@media (max-width: 768px) {
+    /* 既存のスタイルを上書きしないよう、必要な調整のみを記述 */
+    .hero-wrapper {
+        min-height: 60vh;
+        padding: var(--space-lg) 0;
+    }
+
+    .hero-content {
+        padding: var(--space-lg) var(--space-sm);
+    }
+
+    .hero-title {
+        font-size: 2rem;
+        margin-bottom: var(--space-md);
+    }
+
+    .hero-description {
+        font-size: 1.1rem;
+        margin-bottom: var(--space-lg);
+    }
+
+    /* 機能セクションの調整 */
+    .features-section,
+    .useful-features,
+    .benefits-section {
+        padding: var(--space-lg) 0;
+    }
+
+    .section-title {
+        font-size: 1.8rem;
+        margin-bottom: var(--space-lg);
+    }
+
+    .feature-card {
+        padding: var(--space-md);
+    }
+
+    /* ナビゲーション */
+    .navbar-collapse {
+        position: absolute;
+        top: var(--header-height-mobile);
+        left: 0;
+        right: 0;
+        background: white;
+        padding: var(--space-md);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+    }
+
+    /* グリッドレイアウト */
+    .grid,
+    .features-grid,
+    .features-grid-3,
+    .venue-grid {
+        grid-template-columns: 1fr;
+        gap: var(--space-md);
+        padding: var(--space-sm);
+    }
+
+    /* ボタン */
+    .hero-buttons {
+        flex-direction: column;
+        gap: var(--space-sm);
+    }
+
+    .btn-start,
+    .btn-market {
+        width: 100%;
+        margin: 0;
+        text-align: center;
+    }
+
+    /* カード */
+    .feature-card,
+    .venue-card {
+        margin-bottom: var(--space-sm);
+    }
+
+    /* レース情報 */
+    .race-info {
+        flex-direction: column;
+        gap: var(--space-xs);
+    }
+
+    /* フッター */
+    .footer {
+        padding: var(--space-lg) var(--space-md);
+    }
+}
+
+/* アニメーションの最適化 */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation: none !important;
+        transition: none !important;
+    }
+}
