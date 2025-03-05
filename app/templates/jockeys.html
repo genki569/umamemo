@@ -12,18 +12,16 @@
 
 <div class="container">
     <div class="search-box mb-4">
-        <form class="search-form" onsubmit="return false;">
-            <div class="input-group">
-                <span class="input-group-text">
-                    <i class="fas fa-search"></i>
-                </span>
-                <input type="text" 
-                       class="form-control search-input" 
-                       id="jockey-search" 
-                       placeholder="騎手名で検索..."
-                       autocomplete="off">
-            </div>
-        </form>
+        <div class="input-group">
+            <span class="input-group-text">
+                <i class="fas fa-search"></i>
+            </span>
+            <input type="text" 
+                   class="form-control search-input" 
+                   id="jockey-search" 
+                   placeholder="騎手名で検索..."
+                   onkeyup="searchJockeys()">
+        </div>
     </div>
 
     <div class="filter-buttons mb-4">
@@ -111,60 +109,13 @@
 <script>
 let currentFilter = 'all';
 let currentSort = 'wins';
-let itemsPerPage = 20;
-let currentlyShowing = itemsPerPage;
 let searchQuery = '';
 
-function loadMore() {
-    currentlyShowing += itemsPerPage;
-    updateTable();
+function searchJockeys() {
+    const searchInput = document.getElementById('jockey-search');
+    searchQuery = searchInput.value.toLowerCase().trim();
+    filterAndSortTable();
 }
-
-document.getElementById('jockey-search').addEventListener('input', function(e) {
-    const searchText = e.target.value.toLowerCase().trim();
-    const tableBody = document.getElementById('jockey-table-body');
-    const rows = tableBody.getElementsByTagName('tr');
-    let visibleCount = 0;
-
-    for (let row of rows) {
-        const nameCell = row.querySelector('td:first-child');
-        if (!nameCell) continue; // ヘッダー行をスキップ
-
-        const name = nameCell.textContent.toLowerCase().trim();
-        if (name.includes(searchText)) {
-            row.style.display = '';
-            visibleCount++;
-        } else {
-            row.style.display = 'none';
-        }
-    }
-
-    // 検索結果が0件の場合のメッセージ表示
-    const noResultRow = document.getElementById('no-result-row');
-    if (visibleCount === 0) {
-        if (!noResultRow) {
-            const newRow = document.createElement('tr');
-            newRow.id = 'no-result-row';
-            newRow.innerHTML = `
-                <td colspan="10" class="text-center py-4">
-                    <i class="fas fa-search me-2"></i>
-                    検索結果が見つかりませんでした
-                </td>
-            `;
-            tableBody.appendChild(newRow);
-        }
-    } else if (noResultRow) {
-        noResultRow.remove();
-    }
-
-    // 表示件数の更新
-    const totalEntries = document.getElementById('total-entries');
-    const showingEntries = document.getElementById('showing-entries');
-    if (totalEntries && showingEntries) {
-        totalEntries.textContent = rows.length;
-        showingEntries.textContent = `1-${visibleCount}`;
-    }
-});
 
 function filterJockeys(filter) {
     currentFilter = filter;
@@ -292,7 +243,6 @@ document.addEventListener('DOMContentLoaded', function() {
 .search-box {
     max-width: 500px;
     margin: 0 auto;
-    margin-bottom: 2rem;
 }
 
 .search-box .input-group-text {
@@ -303,18 +253,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
 .search-box .search-input {
     border-left: none;
-    color: #212529;
+    color: #212529;  /* 文字色を濃く */
     background-color: #fff;
-    padding-left: 0.5rem;
-}
-
-.search-box .search-input:focus {
-    box-shadow: none;
-    border-color: #ced4da;
 }
 
 .search-box .search-input::placeholder {
     color: #6c757d;
+}
+
+.search-box .search-input:focus {
+    border-color: #ced4da;
+    box-shadow: none;
 }
 
 .btn-group .btn.active {
@@ -325,8 +274,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 /* テーブルのスタイル改善 */
 .table {
-    color: #212529;
-    background-color: #fff;
+    color: #212529;  /* テーブルの文字色を濃く */
 }
 
 .table th {
@@ -336,6 +284,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
 .table td {
     vertical-align: middle;
+}
+
+.table a {
+    color: #0d6efd;  /* リンクの色を調整 */
+}
+
+.table a:hover {
+    color: #0a58ca;
 }
 
 /* 詳細ボタンのスタイル */
@@ -355,6 +311,11 @@ document.addEventListener('DOMContentLoaded', function() {
 td.bg-light {
     background-color: #f8f9fa !important;
     color: #212529;
+}
+
+/* 検索結果なしのメッセージ */
+.text-muted {
+    color: #6c757d !important;
 }
 </style>
 {% endblock %} 
