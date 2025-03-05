@@ -1540,80 +1540,13 @@
     background: #555;
 }
 
-/* コンテナの改善 */
-.container {
-    width: 100%;
-    max-width: var(--max-width, 1200px);
-    margin: 0 auto;
-    padding: 0 var(--space-md);
-    box-sizing: border-box;
-    overflow: hidden;
-}
-
-/* フォーム要素の改善 */
-.form-control {
-    min-height: var(--touch-target-size);
-    padding: var(--space-sm) var(--space-md);
-}
-
-/* ボタンの改善 */
-.btn {
-    min-height: var(--touch-target-size);
-    padding: var(--space-sm) var(--space-lg);
-    border-radius: 8px;
-    transition: all 0.2s ease;
-}
-
-/* カードの改善 */
-.card {
-    border-radius: 12px;
-    overflow: hidden;
-    transition: transform 0.2s ease;
-}
-
-@media (max-width: 768px) {
-    .card {
-        margin-bottom: var(--space-md);
-    }
-}
-
-/* グリッドレイアウトの改善 */
-.grid {
-    display: grid;
-    gap: var(--space-md);
-}
-
-@media (min-width: 768px) {
-    .grid-2 {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .grid-3 {
-        grid-template-columns: repeat(3, 1fr);
-    }
-
-    .grid-4 {
-        grid-template-columns: repeat(4, 1fr);
-    }
-}
-
-/* ナビゲーションの改善 */
-.navbar-collapse {
-    background: white;
-    margin-top: var(--space-sm);
-    padding: var(--space-sm);
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.nav-user-menu .btn-link {
-    color: white;
-    text-decoration: none;
-    padding: var(--space-xs) var(--space-sm);
-    border-radius: 8px;
-}
-
 /* ベースレイアウト */
+:root {
+    --max-width: 1200px;
+    --header-height: 60px;
+    --header-height-mobile: 56px;
+}
+
 html, body {
     margin: 0;
     padding: 0;
@@ -1621,7 +1554,28 @@ html, body {
     overflow-x: hidden;
 }
 
-/* モバイル対応（シンプルに整理） */
+.container {
+    width: 100%;
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 0 var(--space-md);
+    box-sizing: border-box;
+}
+
+/* グリッドレイアウト基本設定 */
+.grid,
+.features-grid,
+.features-grid-3,
+.venue-grid {
+    display: grid;
+    gap: var(--space-md);
+    width: 100%;
+    margin: 0;
+    padding: var(--space-sm);
+    box-sizing: border-box;
+}
+
+/* モバイル対応（統合版） */
 @media (max-width: 767.98px) {
     :root {
         --space-md: 1rem;
@@ -1641,157 +1595,43 @@ html, body {
         gap: var(--space-sm);
     }
 
-    /* ヘッダー */
-    .header-content {
-        padding: var(--space-md);
-    }
-
     /* カード */
     .feature-card,
     .venue-card {
+        width: 100%;
         margin-bottom: var(--space-sm);
+        padding: var(--space-md);
+    }
+
+    /* ヘッダー */
+    .header-content {
+        padding: var(--space-md);
+        text-align: center;
+    }
+
+    .header-content h1 {
+        font-size: 1.8rem;
+        line-height: 1.4;
     }
 
     /* ナビゲーション */
     .navbar-collapse {
         position: absolute;
-        top: 100%;
+        top: var(--header-height-mobile);
         left: 0;
         right: 0;
         background: white;
-        margin: var(--space-xs);
-        border-radius: 12px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    }
-
-    /* 日付セレクター */
-    .date-selector {
-        position: sticky;
-        top: 56px;
-        z-index: 100;
+        margin: 0;
         padding: var(--space-sm);
-    }
-
-    /* レース情報 */
-    .race-info {
-        flex-direction: column;
-        gap: var(--space-xs);
-    }
-}
-
-/* タッチデバイスの対応 */
-@media (hover: none) {
-    .btn:hover,
-    .card:hover,
-    .nav-link:hover {
-        transform: none;
-    }
-
-    .btn:active,
-    .card:active,
-    .nav-link:active {
-        background-color: var(--background-color);
-    }
-}
-
-/* 日付セレクターのモバイル最適化 */
-@media (max-width: 767.98px) {
-    .date-selector {
-        position: sticky;
-        top: 56px;
-        background: white;
-        z-index: 100;
-        padding: var(--space-sm);
+        border-radius: 0;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
-
-    .date-navigation {
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        padding-bottom: var(--space-xs);
-    }
-
-    .date-buttons {
-        padding: 0 var(--space-xs);
-    }
-
-    .date-btn {
-        min-width: 60px;
-        padding: var(--space-xs);
-        font-size: 0.9rem;
-    }
-
-    /* レース情報の表示改善 */
-    .race-item {
-        padding: var(--space-sm);
-        margin-bottom: var(--space-xs);
-    }
-
-    .race-info {
-        flex-direction: column;
-        gap: var(--space-xs);
-    }
-
-    .race-time {
-        font-size: 0.9rem;
-        color: var(--primary-color);
-    }
-
-    .race-name {
-        font-size: 1rem;
-        font-weight: 600;
-        line-height: 1.3;
-    }
-
-    .race-details {
-        font-size: 0.85rem;
-        color: var(--muted-color);
-    }
-
-    /* 会場カードのスタイル改善 */
-    .venue-card {
-        margin-bottom: var(--space-md);
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    }
-
-    .venue-header {
-        padding: var(--space-sm);
-        border-radius: 12px 12px 0 0;
-    }
-
-    .venue-header h3 {
-        font-size: 1.1rem;
-        margin: 0;
-    }
-
-    /* ボタンのタッチ領域拡大 */
-    .btn {
-        min-height: 44px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .btn-sm {
-        min-height: 36px;
-    }
 }
 
-/* タッチデバイスでのスクロール改善 */
-@media (hover: none) {
-    .date-navigation {
-        scrollbar-width: none;
-        -ms-overflow-style: none;
-    }
-
-    .date-navigation::-webkit-scrollbar {
-        display: none;
-    }
-
-    .date-btn.active {
-        background: var(--primary-color);
-        color: white;
-    }
+/* デスクトップグリッド */
+@media (min-width: 768px) {
+    .grid-2 { grid-template-columns: repeat(2, 1fr); }
+    .grid-3 { grid-template-columns: repeat(3, 1fr); }
+    .grid-4 { grid-template-columns: repeat(4, 1fr); }
+    .features-grid { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
 }
