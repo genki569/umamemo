@@ -2820,8 +2820,7 @@ def mypage_memos():
 def view_all_notifications():  # この関数名を使用します
     """通知一覧"""
     notifications = Notification.query.filter_by(user_id=current_user.id)\
-        .order_by(Notification.created_at.desc())\
-        .all()
+        .order_by(Notification.timestamp.desc()).all()
     return render_template('notifications.html',
                          notifications=notifications,
                          title='通知一覧')
@@ -2967,14 +2966,9 @@ def review_purchase_complete():
 def get_notification_count():
     try:
         count = Notification.query.filter_by(user_id=current_user.id, is_read=False).count()
-        response_data = {'count': count}
-        
-        # デバッグのログ出力
-        app.logger.debug(f"Notification response: {response_data}")
-        
-        return jsonify(response_data)
+        return jsonify({'count': count})
     except Exception as e:
-        app.logger.error(f"Notification error: {str(e)}")
+        app.logger.error(f"Error in notification count: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
 @app.route('/terms')
