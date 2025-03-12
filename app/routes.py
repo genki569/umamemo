@@ -566,10 +566,9 @@ def horse_note(horse_id):
 def save_race_memo(race_id):
     try:
         content = request.form.get('memo')
-        
         if not content:
             flash('メモ内容を入力してください', 'error')
-            return redirect(url_for('races', race_id=race_id))
+            return redirect(f'/races/{race_id}')  # 直接URLを指定
             
         race = Race.query.get_or_404(race_id)
         
@@ -589,7 +588,8 @@ def save_race_memo(race_id):
         app.logger.error(f'Error saving race memo: {str(e)}')
         flash('メモの保存に失敗しました', 'error')
     
-    return redirect(url_for('races', race_id=race_id))
+    # 正しいレース詳細ページにリダイレクト
+    return redirect(f'/races/{race_id}')
 
 def format_date(date_str):
     """文字整形す"""
