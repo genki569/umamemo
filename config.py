@@ -17,9 +17,9 @@ class Config:
     SQLALCHEMY_DATABASE_URI = f'postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     
-    # セッション設定（変更不要）
+    # セッション設定
     PERMANENT_SESSION_LIFETIME = timedelta(minutes=30)
-    SESSION_COOKIE_SECURE = True
+    SESSION_COOKIE_SECURE = False  # 開発環境用にFalseに変更
     SESSION_COOKIE_HTTPONLY = True
     
     # CSRF設定を修正

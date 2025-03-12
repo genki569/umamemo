@@ -13,6 +13,10 @@ app = Flask(__name__)
 app.config.from_object(Config)
 app.config['DEBUG'] = True
 
+# CSRF設定を追加
+app.config['WTF_CSRF_SSL_STRICT'] = False  # SSL制限を無効化
+app.config['WTF_CSRF_ENABLED'] = True
+
 # CSRFProtectを先に初期化
 csrf = CSRFProtect()
 csrf.init_app(app)
