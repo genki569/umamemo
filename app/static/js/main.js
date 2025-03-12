@@ -324,12 +324,19 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 3000);
     }
 
-    // CSRFトークンを全フォームに自動追加
-    const csrfToken = document.querySelector('#csrf-form input[name="csrf_token"]').value;
-    
-    // すべてのフォームを取得して処理
+    // CSRFトークンを取得（複数のソースから試行）
+    const csrfToken = 
+        document.querySelector('meta[name="csrf-token"]')?.content ||
+        document.querySelector('#csrf-form input[name="csrf_token"]')?.value ||
+        document.querySelector('input[name="csrf_token"]')?.value;
+
+    if (!csrfToken) {
+        console.error('CSRF token not found');
+        return;
+    }
+
+    // フォームにCSRFトークンを追加
     document.querySelectorAll('form').forEach(function(form) {
-        // csrf_tokenがまだない場合のみ追加
         if (!form.querySelector('input[name="csrf_token"]')) {
             const input = document.createElement('input');
             input.type = 'hidden';
