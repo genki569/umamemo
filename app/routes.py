@@ -1823,29 +1823,25 @@ def stripe_webhook():
 @login_required
 def get_notifications():
     try:
-        notifications = Notification.query.filter_by(
+        notifications = db.session.query(
+            Notification
+        ).filter_by(
             user_id=current_user.id,
             is_read=False
         ).order_by(Notification.timestamp.desc()).all()
-        
-        notification_data = [{
-            'id': n.id,
-            'content': n.content,
-            'timestamp': n.timestamp.strftime('%Y-%m-%d %H:%M'),
-            'is_read': n.is_read,
-            'notification_type': 'info'
-        } for n in notifications]
-        
+
         return jsonify({
             'status': 'success',
-            'notifications': notification_data
+            'notifications': [{
+                'id': n.id,
+                'content': n.content,
+                'timestamp': n.timestamp.strftime('%Y-%m-%d %H:%M'),
+                'is_read': n.is_read
+            } for n in notifications],
         })
     except Exception as e:
-        app.logger.error(f'Error fetching notifications: {str(e)}')
-        return jsonify({
-            'status': 'error',
-            'message': '通知の取得に失敗しました'
-        }), 500
+        current_app.logger.error(f"Error fetching notifications: {str(e)}")
+        return jsonify({'status': 'error', 'message': str(e)}), 500
 
 @app.route('/notifications/unread-count')
 @login_required
@@ -2829,32 +2825,6 @@ def view_all_notifications():  # この関数名を使用します
     return render_template('notifications.html',
                          notifications=notifications,
                          title='通知一覧')
-
-@app.route('/api/notifications/mark-read', methods=['POST'])
-@login_required
-def mark_notifications_read():
-    """通知を既読にするAPI"""
-    try:
-        notification_ids = request.json.get('notification_ids', [])
-        if notification_ids:
-            # 特定の通知を既読に
-            Notification.query.filter(
-                Notification.id.in_(notification_ids),
-                Notification.user_id == current_user.id
-            ).update({Notification.read: True}, synchronize_session=False)
-        else:
-            # すべての通知を既読に
-            Notification.query.filter_by(
-                user_id=current_user.id,
-                read=False
-            ).update({Notification.read: True}, synchronize_session=False)
-        
-        db.session.commit()
-        return jsonify({'success': True})
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({'success': False, 'error': str(e)}), 500
-
 # カスタムフィルターの定義
 @app.template_filter('timeago')
 def timeago_filter(date):
@@ -3619,19 +3589,26 @@ def register_race_entry(race_id):
 
 @app.route('/api/notifications/read', methods=['POST'])
 @login_required
-def mark_notifications_read_v2():  # 名前を変更
-    user_id = session.get('user_id')
-    if not user_id:
-        return jsonify({'error': 'Unauthorized'}), 401
-
+def mark_notifications_read():
     try:
-        # 通知を既読にする処理
-        Notification.query.filter_by(user_id=user_id, is_read=False).update({'is_read': True})
+        notification_ids = request.json.get('notification_ids', [])
+        if notification_ids:
+            Notification.query.filter(
+                Notification.id.in_(notification_ids),
+                Notification.user_id == current_user.id
+            ).update({Notification.is_read: True}, synchronize_session=False)
+        else:
+            Notification.query.filter_by(
+                user_id=current_user.id,
+                is_read=False
+            ).update({Notification.is_read: True}, synchronize_session=False)
+        
         db.session.commit()
-        return jsonify({'message': 'Notifications marked as read'})
+        return jsonify({'status': 'success'})
     except Exception as e:
         db.session.rollback()
-        return jsonify({'error': str(e)}), 500
+        current_app.logger.error(f"Error marking notifications as read: {str(e)}")
+        return jsonify({'status': 'error', 'message': str(e)}), 500
 
 @app.route('/api/user/settings', methods=['GET', 'POST'])
 @login_required
