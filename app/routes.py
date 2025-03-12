@@ -389,10 +389,10 @@ def horse_detail(horse_id):
                              debug_info=str(e)), 500
 
 @app.route('/horses/<int:horse_id>/memo', methods=['POST'])
-@login_required  # このデコレータでログイン要件を指定
+@login_required
 def save_horse_memo(horse_id):
     try:
-        # ログインユーザーのみ実行可能
+        app.logger.info(f'Saving memo for horse {horse_id} by user {current_user.id}')
         content = request.form.get('content')
         if not content:
             flash('メモ内容を入力してください', 'error')
@@ -400,25 +400,39 @@ def save_horse_memo(horse_id):
             
         horse = db.session.query(Horse).get_or_404(horse_id)
         
-        # メモの追加処理
-        current_memos = json.loads(horse.memo) if horse.memo else []
+        # メモの追加処理を改善
+        try:
+            current_memos = json.loads(horse.memo) if horse.memo else []
+        except (json.JSONDecodeError, TypeError):
+            app.logger.warning(f'Invalid memo format for horse {horse_id}, resetting to empty list')
+            current_memos = []
+        
         new_memo = {
             'id': len(current_memos) + 1,
             'content': content,
-            'created_at': datetime.now().isoformat(),
-            'user_id': current_user.id  # ログインユーザーのIDを記録
+            'created_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            'user_id': current_user.id
         }
+        
         current_memos.append(new_memo)
         horse.memo = json.dumps(current_memos)
         
+        # 最終更新日時も更新
+        horse.updated_at = datetime.now()
+        
         db.session.commit()
+        app.logger.info(f'Memo saved successfully for horse {horse_id}')
         flash('メモを保存しました', 'success')
         
     except Exception as e:
-        current_app.logger.error(f"Error saving memo: {str(e)}")
+        app.logger.error(f'Error saving memo: {str(e)}')
         db.session.rollback()
         flash('メモの保存に失敗しました', 'error')
-        
+    
+    # リファラーに基づいてリダイレクト
+    referer = request.referrer
+    if referer and 'race_detail' in referer:
+        return redirect(referer)
     return redirect(url_for('horse_detail', horse_id=horse_id))
 
 @app.route('/horse/<int:horse_id>/memo/<int:memo_id>', methods=['DELETE'])
