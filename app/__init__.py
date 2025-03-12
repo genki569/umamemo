@@ -13,8 +13,9 @@ app = Flask(__name__)
 app.config.from_object(Config)
 app.config['DEBUG'] = True
 
-# CSRF保護を追加
-csrf = CSRFProtect(app)
+# CSRFProtectを先に初期化
+csrf = CSRFProtect()
+csrf.init_app(app)
 
 # データベースの初期化
 db = SQLAlchemy(app)

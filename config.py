@@ -22,10 +22,11 @@ class Config:
     SESSION_COOKIE_SECURE = True
     SESSION_COOKIE_HTTPONLY = True
     
-    # CSRF設定（変更不要）
+    # CSRF設定を修正
     WTF_CSRF_ENABLED = True
-    WTF_CSRF_SECRET_KEY = os.environ.get('CSRF_SECRET_KEY', 'your-csrf-secret-key-here')
-    WTF_CSRF_TIME_LIMIT = 3600
+    WTF_CSRF_SECRET_KEY = SECRET_KEY  # SECRET_KEYと同じものを使用
+    WTF_CSRF_TIME_LIMIT = None  # トークンの有効期限を無制限に
+    WTF_CSRF_SSL_STRICT = False  # SSL制限を緩和（開発環境用）
     
     # Stripe設定（既存の値を維持）
     STRIPE_PUBLIC_KEY = os.environ.get('STRIPE_PUBLIC_KEY', 'pk_live_51QLJ2oA32E3Y9pFMeVG7Ai1w729edGTgWxhOGXMXQW1Pjo9Nf3i6TtN0sktkUtGCzRRJi6YQRf49LY0FDWkS0NRG00BlyTVySS')
