@@ -611,15 +611,13 @@ class Notification(db.Model):
     __tablename__ = 'notifications'
     
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    message = db.Column(db.Text, nullable=False)
-    type = db.Column(db.String(20), nullable=False)  # 'info', 'warning', 'error' など
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    content = db.Column(db.String(512))  # contentカラムを追加
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
     is_read = db.Column(db.Boolean, default=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    link = db.Column(db.String(255))  # 通知に関連するリンク（オプション）
     
     # リレーションシップ
-    user = db.relationship('User', backref=db.backref('notifications', lazy='dynamic'))
+    user = db.relationship('User', backref=db.backref('notifications', lazy=True))
 
     @staticmethod
     def create_premium_notification(user, is_activated):
@@ -630,8 +628,8 @@ class Notification(db.Model):
         )
         notification = Notification(
             user_id=user.id,
-            message=message,
-            type='premium_status'
+            content=message,
+            is_read=False
         )
         db.session.add(notification)
         db.session.commit()
