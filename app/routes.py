@@ -392,15 +392,24 @@ def horse_detail(horse_id):
 @login_required
 def save_horse_memo(horse_id):
     try:
-        app.logger.info(f'Saving memo for horse {horse_id} by user {current_user.id}')
+        # リクエストの内容をログに記録
+        app.logger.info(f'Request form data: {request.form}')
+        app.logger.info(f'Request headers: {request.headers}')
+        app.logger.info(f'Horse ID: {horse_id}')
+        app.logger.info(f'User ID: {current_user.id}')
+        
         content = request.form.get('content')
+        app.logger.info(f'Content received: {content}')
+        
         if not content:
+            app.logger.warning('Empty content received')
             flash('メモ内容を入力してください', 'error')
             return redirect(url_for('horse_detail', horse_id=horse_id))
             
         horse = db.session.query(Horse).get_or_404(horse_id)
+        app.logger.info(f'Horse found: {horse.name}')
         
-        # メモの追加処理を改善
+        # 以下は既存のコード
         try:
             current_memos = json.loads(horse.memo) if horse.memo else []
         except (json.JSONDecodeError, TypeError):
@@ -416,12 +425,10 @@ def save_horse_memo(horse_id):
         
         current_memos.append(new_memo)
         horse.memo = json.dumps(current_memos)
-        
-        # 最終更新日時も更新
         horse.updated_at = datetime.now()
         
         db.session.commit()
-        app.logger.info(f'Memo saved successfully for horse {horse_id}')
+        app.logger.info('Memo saved successfully')
         flash('メモを保存しました', 'success')
         
     except Exception as e:
@@ -429,10 +436,6 @@ def save_horse_memo(horse_id):
         db.session.rollback()
         flash('メモの保存に失敗しました', 'error')
     
-    # リファラーに基づいてリダイレクト
-    referer = request.referrer
-    if referer and 'race_detail' in referer:
-        return redirect(referer)
     return redirect(url_for('horse_detail', horse_id=horse_id))
 
 @app.route('/horse/<int:horse_id>/memo/<int:memo_id>', methods=['DELETE'])
