@@ -20,7 +20,7 @@
                     {% endwith %}
                     
                     <form method="POST" action="{{ url_for('register') }}">
-                        {{ form.hidden_tag() }}
+                        {{ form.csrf_token }}
                         
                         <div class="mb-3">
                             {{ form.username.label(class="form-label") }}
