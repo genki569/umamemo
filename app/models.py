@@ -426,13 +426,6 @@ class User(UserMixin, db.Model):
                                   backref=db.backref('user_ref', uselist=False),
                                   uselist=False)
 
-    # パスワード関連のメソッドを追加
-    def set_password(self, password):
-        self.password_hash = generate_password_hash(password)
-    
-    def check_password(self, password):
-        return check_password_hash(self.password_hash, password)
-
     # レビュー関連のリレーションシップを追加
     reviews = db.relationship('RaceReview', backref='author', lazy='dynamic')
 
@@ -471,6 +464,17 @@ class User(UserMixin, db.Model):
 
     def get_id(self):
         return str(self.id)
+
+    def set_password(self, password):
+        # scryptではなく、sha256を使用してハッシュ長を制御
+        self.password_hash = generate_password_hash(
+            password,
+            method='pbkdf2:sha256',  # scryptから変更
+            salt_length=8  # ソルトの長さも調整
+        )
+    
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
 
 # お気に入モデルを追加
 class Favorite(db.Model):

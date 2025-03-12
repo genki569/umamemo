@@ -36,8 +36,9 @@ class RegistrationForm(FlaskForm):
             raise ValidationError('このユーザー名は既に使用されています')
 
     def validate_email(self, field):
-        if User.query.filter_by(email=field.data).first():
-            raise ValidationError('このメールアドレスは既に登録されています')
+        user = User.query.filter_by(email=field.data).first()
+        if user:
+            raise ValidationError('このメールアドレスは既に登録されています') 
 
 class LoginForm(FlaskForm):
     email = EmailField('メールアドレス',
