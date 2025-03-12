@@ -16,24 +16,18 @@ class ChargePointForm(FlaskForm):
     submit = SubmitField('チャージする') 
 
 class RegistrationForm(FlaskForm):
-    username = StringField('ユーザー名', 
-                         validators=[
-                             DataRequired(message='ユーザー名を入力してください'),
-                             Length(min=3, max=20, message='ユーザー名は3文字以上20文字以内で入力してください')
-                         ])
-    
-    email = EmailField('メールアドレス',
-                      validators=[
-                          DataRequired(message='メールアドレスを入力してください'),
-                          Email(message='有効なメールアドレスを入力してください')
-                      ])
-    
-    password = PasswordField('パスワード',
-                           validators=[
-                               DataRequired(message='パスワードを入力してください'),
-                               Length(min=8, message='パスワードは8文字以上で入力してください')
-                           ])
-    
+    username = StringField('Username', validators=[
+        DataRequired(),
+        Length(min=3, max=20, message='ユーザー名は3文字以上20文字以内で入力してください')
+    ])
+    email = StringField('Email', validators=[
+        DataRequired(),
+        Email(message='有効なメールアドレスを入力してください')
+    ])
+    password = PasswordField('Password', validators=[
+        DataRequired(),
+        Length(min=8, max=72, message='パスワードは8文字以上72文字以内で入力してください')  # bcryptの制限に合わせる
+    ])
     submit = SubmitField('登録')
 
     def validate_username(self, field):
@@ -42,9 +36,8 @@ class RegistrationForm(FlaskForm):
             raise ValidationError('このユーザー名は既に使用されています')
 
     def validate_email(self, field):
-        user = User.query.filter_by(email=field.data).first()
-        if user:
-            raise ValidationError('このメールアドレスは既に登録されています') 
+        if User.query.filter_by(email=field.data).first():
+            raise ValidationError('このメールアドレスは既に登録されています')
 
 class LoginForm(FlaskForm):
     email = EmailField('メールアドレス',
