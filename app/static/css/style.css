@@ -814,6 +814,75 @@ html, body {
         margin: 1rem;
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
     }
+
+    /* インデックスページのモバイル対応 */
+    .feature-section {
+        padding: 1rem;
+    }
+
+    .feature-card {
+        background: #fff;
+        border-radius: 16px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: flex-start;
+        gap: 1.2rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    /* アイコン */
+    .feature-icon {
+        flex-shrink: 0;
+        width: 48px;
+        height: 48px;
+    }
+
+    .feature-icon img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+
+    /* テキストコンテンツ */
+    .feature-content {
+        flex: 1;
+    }
+
+    .feature-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #1a1a1a;
+        margin: 0 0 0.5rem 0;
+    }
+
+    .feature-description {
+        font-size: 0.95rem;
+        color: #666;
+        margin: 0;
+        line-height: 1.5;
+    }
+
+    /* 機能リスト */
+    .feature-list {
+        margin: 0.8rem 0 0 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    .feature-list li {
+        font-size: 0.9rem;
+        color: #4b5563;
+        padding: 0.4rem 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .feature-list li:before {
+        content: "•";
+        color: #4F46E5;
+    }
 }
 
 /* iPhone特別対応（必要な場合のみ） */
@@ -940,6 +1009,23 @@ html, body {
 
     .feature-item {
         padding: 0.8rem;
+    }
+
+    .feature-card {
+        padding: 1.2rem;
+    }
+
+    .feature-icon {
+        width: 40px;
+        height: 40px;
+    }
+
+    .feature-title {
+        font-size: 1.1rem;
+    }
+
+    .feature-description {
+        font-size: 0.9rem;
     }
 }
 
