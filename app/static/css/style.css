@@ -621,11 +621,40 @@ h1, h2, h3, h4, h5, h6 {
 
 /* インデックスページのモバイル最適化 */
 @media screen and (max-width: 768px) {
-    /* ヒーローセクション改善 */
+    /* ベース設定 */
+    body {
+        font-family: 'Zen Maru Gothic', sans-serif;
+        line-height: 1.6;
+        color: var(--text-color);
+        background-color: #f8fafc;
+    }
+
+    /* ヘッダー/ナビゲーション */
+    .navbar {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        position: fixed;
+        width: 100%;
+        z-index: 1000;
+        height: 60px;
+        padding: 0.5rem 1rem;
+    }
+
+    .navbar-brand {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--primary-color);
+    }
+
+    /* ヒーローセクション */
     .hero-section {
-        position: relative;
-        padding: calc(var(--header-height-mobile) + 2rem) 1rem 3rem;
+        padding-top: calc(60px + 2rem);
+        padding-bottom: 3rem;
+        text-align: center;
         background: linear-gradient(135deg, #4F46E5 0%, #EC4899 100%);
+        position: relative;
         overflow: hidden;
     }
 
@@ -636,23 +665,20 @@ h1, h2, h3, h4, h5, h6 {
         left: 0;
         right: 0;
         bottom: 0;
-        background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='rgba(255,255,255,0.05)' fill-rule='evenodd'/%3E%3C/svg%3E");
-        opacity: 0.4;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        opacity: 0.1;
     }
 
     .hero-content {
         position: relative;
         z-index: 1;
-        text-align: center;
-        padding: 0 1rem;
+        padding: 0 1.5rem;
     }
 
     .hero-title {
         font-size: 2rem;
         font-weight: 800;
-        background: linear-gradient(to right, #fff, #e2e8f0);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
+        color: white;
         margin-bottom: 1rem;
         line-height: 1.2;
         letter-spacing: -0.02em;
@@ -665,10 +691,14 @@ h1, h2, h3, h4, h5, h6 {
         line-height: 1.6;
     }
 
-    /* 特徴セクション改善 */
-    .features-section {
+    /* メインコンテンツ */
+    .main-content {
         padding: 2rem 1rem;
-        background: #fff;
+    }
+
+    /* 特徴セクション */
+    .features-section {
+        padding: 2rem 0;
     }
 
     .features-grid {
@@ -678,12 +708,12 @@ h1, h2, h3, h4, h5, h6 {
     }
 
     .feature-card {
-        background: #fff;
+        background: white;
         border-radius: 20px;
         padding: 1.5rem;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
         border: 1px solid rgba(0, 0, 0, 0.05);
-        transition: transform 0.2s ease;
+        transition: all 0.3s ease;
     }
 
     .feature-card:active {
@@ -709,21 +739,20 @@ h1, h2, h3, h4, h5, h6 {
     .feature-title {
         font-size: 1.25rem;
         font-weight: 700;
-        margin-bottom: 0.5rem;
-        color: #1a1a1a;
+        margin-bottom: 0.75rem;
+        color: var(--text-color);
     }
 
     .feature-description {
         font-size: 0.95rem;
-        color: #666;
+        color: var(--muted-color);
         line-height: 1.6;
     }
 
-    /* CTAセクション改善 */
+    /* CTAセクション */
     .cta-section {
-        padding: 3rem 1.5rem;
         background: linear-gradient(135deg, #4F46E5 0%, #EC4899 100%);
-        color: white;
+        padding: 3rem 1.5rem;
         text-align: center;
         border-radius: 30px 30px 0 0;
         margin-top: 2rem;
@@ -732,31 +761,42 @@ h1, h2, h3, h4, h5, h6 {
     .cta-title {
         font-size: 1.75rem;
         font-weight: 800;
+        color: white;
         margin-bottom: 1rem;
-        line-height: 1.2;
     }
 
     .cta-description {
         font-size: 1.1rem;
-        opacity: 0.9;
+        color: rgba(255, 255, 255, 0.9);
         margin-bottom: 2rem;
         line-height: 1.6;
     }
 
-    .cta-button {
+    /* ボタン */
+    .btn-primary {
         background: white;
-        color: #4F46E5;
+        color: var(--primary-color);
         padding: 1rem 2rem;
         border-radius: 25px;
         font-weight: 600;
-        font-size: 1.1rem;
+        font-size: 1rem;
         display: inline-block;
         text-decoration: none;
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        transition: transform 0.2s ease;
+        transition: all 0.3s ease;
     }
 
-    .cta-button:active {
+    .btn-primary:active {
         transform: scale(0.98);
+    }
+
+    /* アニメーション */
+    .fade-in {
+        animation: fadeIn 0.5s ease-out forwards;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
     }
 }
