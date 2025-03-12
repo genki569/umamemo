@@ -1966,16 +1966,6 @@
 
 /* モバイル時のリスト表示調整 */
 @media (max-width: 768px) {
-    .feature-list li,
-    .feature-details li,
-    .plan-features li {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        padding: 8px 12px;
-        margin: 4px 0;
-        font-size: 0.9rem;
-    }
 
     /* 通常のリストアイテム */
     .feature-list li,
