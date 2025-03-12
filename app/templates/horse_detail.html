@@ -30,6 +30,20 @@
                             <i class="fas fa-save"></i> 保存
                         </button>
                     </form>
+                    
+                    <!-- メモ一覧の表示部分を追加 -->
+                    {% if memos %}
+                        <div class="memos-list mt-3">
+                            {% for memo in memos|reverse %}
+                                <div class="memo-item card mb-2">
+                                    <div class="card-body py-2">
+                                        <p class="mb-1">{{ memo.content }}</p>
+                                        <small class="text-muted">{{ memo.created_at }}</small>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
                 {% else %}
                     <div class="memo-input-placeholder" onclick="window.location.href='{{ url_for('login') }}'" style="cursor: pointer">
                         <div class="form-control text-muted" style="height: 80px; background-color: #f8f9fa;">
