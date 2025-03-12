@@ -327,99 +327,86 @@
 
 /* 日付セレクター */
 .date-selector {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
     margin-bottom: 2rem;
-    padding: 1.5rem;
     background: white;
     border-radius: 16px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    padding: 1.5rem;
+}
+
+.date-navigation {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
 }
 
 .date-buttons {
     display: flex;
     gap: 0.8rem;
-    flex-wrap: wrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 0.5rem;
+    scrollbar-width: none;  /* Firefoxのスクロールバーを非表示 */
 }
 
-.date-item {
-    padding: 1rem 1.5rem;
-    font-size: 1rem;
-    color: #4b5563;
+.date-buttons::-webkit-scrollbar {
+    display: none;  /* Chromeのスクロールバーを非表示 */
+}
+
+.date-btn {
+    padding: 0.8rem 1.2rem;
     background: #f8fafc;
     border: none;
     border-radius: 8px;
+    color: #4b5563;
+    text-decoration: none;
+    text-align: center;
     transition: all 0.3s ease;
-    cursor: pointer;
+    white-space: nowrap;
 }
 
-.date-item:hover {
+.date-btn:hover {
     background: #f1f5f9;
     transform: translateY(-1px);
 }
 
-.date-item.active {
+.date-btn.active {
     background: #4F46E5;
     color: white;
+}
+
+.date-nav-btn {
+    padding: 0.8rem;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    color: #4b5563;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.date-nav-btn:hover {
+    background: #f8fafc;
+    color: #4F46E5;
 }
 
 /* モバイル対応 */
 @media screen and (max-width: 768px) {
     .date-selector {
         padding: 1rem;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        position: relative;
     }
 
-    .date-selector::-webkit-scrollbar {
-        display: none;
+    .date-btn {
+        padding: 0.7rem 1rem;
+        font-size: 0.9rem;
+    }
+
+    .date-nav-btn {
+        padding: 0.6rem;
     }
 
     .date-buttons {
-        flex-wrap: nowrap;
-        padding: 0 0.5rem;
-    }
-
-    .date-item {
-        flex: 0 0 auto;
-        padding: 0.8rem 1.2rem;
-        font-size: 0.95rem;
-        white-space: nowrap;
-    }
-
-    /* スクロールの視覚的フィードバック */
-    .date-selector::before,
-    .date-selector::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        width: 20px;
-        pointer-events: none;
-    }
-
-    .date-selector::before {
-        left: 0;
-        background: linear-gradient(to right, white, transparent);
-    }
-
-    .date-selector::after {
-        right: 0;
-        background: linear-gradient(to left, white, transparent);
-    }
-}
-
-/* iPhone特別対応 */
-@media screen and (max-width: 428px) {
-    .date-selector {
-        padding: 0.8rem;
-    }
-
-    .date-item {
-        padding: 0.7rem 1rem;
-        font-size: 0.9rem;
+        max-width: calc(100vw - 120px);  /* ナビゲーションボタンの幅を考慮 */
     }
 }
 
