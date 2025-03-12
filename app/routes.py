@@ -1805,16 +1805,34 @@ def stripe_webhook():
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 400
 
-@app.route('/notifications')  # パスを変更
+@app.route('/notifications')
 @login_required
-def notifications_all():
-    """通知一覧"""
-    notifications = Notification.query.filter_by(user_id=current_user.id)\
-        .order_by(Notification.created_at.desc())\
-        .all()
-    return render_template('notifications.html',  # ここを正
-                         notifications=notifications,
-                         title='通知一')
+def get_notifications():
+    try:
+        notifications = Notification.query.filter_by(
+            user_id=current_user.id,
+            is_read=False
+        ).order_by(Notification.timestamp.desc()).all()
+        
+        # 通知データを整形（typeを使用せずに対応）
+        notification_data = [{
+            'id': n.id,
+            'content': n.content,
+            'timestamp': n.timestamp.strftime('%Y-%m-%d %H:%M'),
+            'is_read': n.is_read,
+            'notification_type': 'info'  # デフォルトタイプを設定
+        } for n in notifications]
+        
+        return jsonify({
+            'status': 'success',
+            'notifications': notification_data
+        })
+    except Exception as e:
+        app.logger.error(f'Error fetching notifications: {str(e)}')
+        return jsonify({
+            'status': 'error',
+            'message': '通知の取得に失敗しました'
+        }), 500
 
 @app.route('/notifications/unread-count')
 @login_required
