@@ -108,6 +108,7 @@
         <div class="memo-content">
             <!-- 新規メモ入力フォーム -->
             <form method="POST" action="{{ url_for('save_race_memo', race_id=race.id) }}" class="sticky-note">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <textarea name="memo" class="sticky-note-content" placeholder="メモを入力..."></textarea>
                 <button type="submit" class="btn btn-sm btn-primary mt-2">保存</button>
             </form>
