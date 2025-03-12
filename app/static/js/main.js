@@ -323,6 +323,63 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }, 3000);
     }
+
+    // CSRFトークンを全フォームに自動追加
+    const csrfToken = document.querySelector('#csrf-form input[name="csrf_token"]').value;
+    
+    // すべてのフォームを取得して処理
+    document.querySelectorAll('form').forEach(function(form) {
+        // csrf_tokenがまだない場合のみ追加
+        if (!form.querySelector('input[name="csrf_token"]')) {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'csrf_token';
+            input.value = csrfToken;
+            form.appendChild(input);
+        }
+    });
+
+    // 動的に追加されるフォームのための監視
+    const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            mutation.addedNodes.forEach(function(node) {
+                if (node.nodeName === 'FORM' && !node.querySelector('input[name="csrf_token"]')) {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'csrf_token';
+                    input.value = csrfToken;
+                    node.appendChild(input);
+                }
+            });
+        });
+    });
+
+    // body全体を監視
+    observer.observe(document.body, {
+        childList: true,
+        subtree: true
+    });
+
+    // Ajaxリクエスト用のCSRFトークンヘッダー設定
+    const token = document.querySelector('meta[name="csrf-token"]')?.content || csrfToken;
+    if (token) {
+        document.querySelectorAll('form').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                if (this.method.toLowerCase() === 'post') {
+                    const csrfInput = this.querySelector('input[name="csrf_token"]');
+                    if (!csrfInput) {
+                        e.preventDefault();
+                        const input = document.createElement('input');
+                        input.type = 'hidden';
+                        input.name = 'csrf_token';
+                        input.value = token;
+                        this.appendChild(input);
+                        this.submit();
+                    }
+                }
+            });
+        });
+    }
 });
 
 // 日付ナビゲーション関数
@@ -390,7 +447,7 @@ function performPrediction() {
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('予想の実行中���エラーが発生しました。');
+        alert('予想の実行中にエラーが発生しました。');
     });
 }
 
