@@ -562,30 +562,26 @@ def horse_note(horse_id):
     return jsonify({'note': horse.get_memos() if horse.memo else []})
 
 @app.route('/races/<int:race_id>/memo', methods=['POST'])
-@login_required  # ログイン必須
+@login_required
 def save_race_memo(race_id):
     try:
-        app.logger.info(f'Saving race memo for race {race_id} by user {current_user.id}')
         content = request.form.get('memo')
         
         if not content:
             flash('メモ内容を入力してください', 'error')
-            return redirect(url_for('race_detail', race_id=race_id))
+            return redirect(url_for('races', race_id=race_id))
             
         race = Race.query.get_or_404(race_id)
         
-        # 新規メモを作成（user_idを追加）
         memo = RaceMemo(
             race_id=race_id,
-            user_id=current_user.id,  # ログインユーザーのIDを設定
+            user_id=current_user.id,
             content=content,
             created_at=datetime.now()
         )
         
         db.session.add(memo)
         db.session.commit()
-        
-        app.logger.info(f'Race memo saved successfully')
         flash('メモを保存しました', 'success')
         
     except Exception as e:
@@ -593,7 +589,7 @@ def save_race_memo(race_id):
         app.logger.error(f'Error saving race memo: {str(e)}')
         flash('メモの保存に失敗しました', 'error')
     
-    return redirect(url_for('race_detail', race_id=race_id))
+    return redirect(url_for('races', race_id=race_id))
 
 def format_date(date_str):
     """文字整形す"""
