@@ -1030,6 +1030,19 @@
     box-shadow: 0 2px 8px rgba(79, 70, 229, 0.2);
 }
 
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+    .form-control-sm {
+        width: 200px !important;
+    }
+    
+    .card-header .d-flex {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+}
+
 /* カードヘッダーのレイアウト調整 */
 .card-header {
     padding: 1.5rem !important;
@@ -1087,85 +1100,5 @@
 
     .card-header form.d-flex {
         margin-left: 0 !important;
-    }
-}
-
-/* モバイル対応 */
-@media screen and (max-width: 768px) {
-    /* マイページコンテナ */
-    .mypage-container {
-        padding: 1rem;
-    }
-
-    /* メモタブ */
-    .memo-tabs {
-        display: flex;
-        gap: 0.5rem;
-        padding: 0.5rem;
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    }
-
-    .tab-item {
-        flex: 1;
-        padding: 0.8rem 1rem;
-        font-size: 0.95rem;
-        text-align: center;
-        border-radius: 8px;
-        background: transparent;
-        color: #4b5563;
-        transition: all 0.3s ease;
-    }
-
-    .tab-item.active {
-        background: #4F46E5;
-        color: white;
-    }
-
-    /* メモグリッド */
-    .memos-grid {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 1rem;
-        padding: 1rem 0;
-    }
-
-    /* メモカード */
-    .memo-card {
-        display: flex;
-        align-items: flex-start;
-        padding: 1.5rem;
-        background: white;
-        border-radius: 16px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    }
-
-    .memo-icon {
-        flex-shrink: 0;
-        width: 48px;
-        height: 48px;
-        margin-right: 1rem;
-    }
-
-    .memo-content {
-        flex: 1;
-    }
-}
-
-/* iPhone特別対応 */
-@media screen and (max-width: 428px) {
-    .memo-card {
-        padding: 1.2rem;
-    }
-
-    .memo-icon {
-        width: 40px;
-        height: 40px;
-    }
-
-    .tab-item {
-        font-size: 0.9rem;
-        padding: 0.7rem 0.8rem;
     }
 }

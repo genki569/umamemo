@@ -172,3 +172,95 @@
     font-weight: 600;
     color: #4a90e2;
 }
+
+/* モバイル対応 */
+@media (max-width: 768px) {
+    .premium-page .premium-header {
+        padding: 2rem 0;
+        margin-bottom: 2rem;
+    }
+
+    .premium-page .premium-title {
+        font-size: 1.8rem;
+        padding: 0 1rem;
+    }
+
+    .premium-page .premium-description {
+        font-size: 1rem;
+        padding: 0 1rem;
+    }
+
+    .premium-page .plan-comparison {
+        margin: 1rem;
+        border-radius: 15px;
+    }
+
+    .premium-page .plan-comparison th,
+    .premium-page .plan-comparison td {
+        padding: 1rem;
+        font-size: 0.9rem;
+    }
+
+    .premium-page .premium-badge {
+        padding: 0.3rem 0.8rem;
+        font-size: 0.8rem;
+    }
+
+    .premium-page .plan-comparison .fa-check,
+    .premium-page .plan-comparison .fa-times {
+        font-size: 1rem;
+        padding: 6px;
+    }
+
+    .premium-page .feature-card {
+        margin: 0 1rem 1.5rem;
+        padding: 1.5rem;
+    }
+
+    .premium-page .feature-card h5 {
+        font-size: 1.2rem;
+    }
+
+    .premium-page .feature-card p,
+    .premium-page .feature-card li {
+        font-size: 0.9rem;
+    }
+
+    .premium-page .btn-gradient {
+        padding: 0.8rem 1.5rem;
+        font-size: 1rem;
+        margin: 1rem auto;
+    }
+
+    /* テーブルを横スクロール可能に */
+    .premium-page .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+/* 小さいモバイル画面用 */
+@media (max-width: 480px) {
+    .premium-page .premium-title {
+        font-size: 1.5rem;
+    }
+
+    .premium-page .plan-comparison th,
+    .premium-page .plan-comparison td {
+        padding: 0.8rem;
+        font-size: 0.8rem;
+    }
+
+    .premium-page .plan-comparison .fa-check,
+    .premium-page .plan-comparison .fa-times {
+        padding: 4px;
+    }
+
+    .premium-page .feature-card {
+        padding: 1rem;
+    }
+
+    .premium-page .feature-card h5 {
+        font-size: 1.1rem;
+    }
+}
