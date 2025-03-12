@@ -508,9 +508,56 @@ html, body {
     .cta-button:active {
         transform: scale(0.98);
     }
+
+    /* プランセクション全体 */
+    .pricing-section {
+        padding: 1rem;
+    }
+
+    .pricing-title {
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    /* プランカード */
+    .plan-card {
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    /* 価格表示 */
+    .price {
+        font-size: 2rem;
+        margin: 0.5rem 0;
+    }
+
+    /* 機能リスト */
+    .feature-list {
+        margin: 1rem 0;
+    }
+
+    .feature-list li {
+        padding: 0.5rem 0;
+        font-size: 1rem;
+    }
+
+    /* ボタン */
+    .btn {
+        width: 100%;
+        padding: 0.8rem;
+        font-size: 1rem;
+        margin-top: 1rem;
+    }
+
+    /* リンク */
+    .link {
+        font-size: 1rem;
+        padding: 0.5rem 0;
+        display: inline-block;
+    }
 }
 
-/* iPhone特別対応 */
+/* iPhone特別対応（必要な場合のみ） */
 @media screen and (max-width: 428px) {
     :root {
         --font-size-base: 15px;
@@ -557,6 +604,31 @@ html, body {
     .cta-button {
         padding: 0.9rem 1.8rem;
         font-size: 1rem;
+    }
+
+    .pricing-section {
+        padding: 0.8rem;
+    }
+
+    .plan-card {
+        padding: 1.2rem;
+    }
+
+    .plan-name {
+        font-size: 1.3rem;
+    }
+
+    .price-amount {
+        font-size: 2.2rem;
+    }
+
+    .feature-list li {
+        font-size: 0.95rem;
+    }
+
+    .plan-cta {
+        font-size: 1rem;
+        padding: 0.9rem;
     }
 }
 
