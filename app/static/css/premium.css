@@ -174,93 +174,93 @@
 }
 
 /* モバイル対応 */
-@media (max-width: 768px) {
-    .premium-page .premium-header {
-        padding: 2rem 0;
-        margin-bottom: 2rem;
+@media screen and (max-width: 768px) {
+    /* プレミアムヘッダー */
+    .premium-header {
+        padding: 2rem 1rem;
     }
 
-    .premium-page .premium-title {
-        font-size: 1.8rem;
-        padding: 0 1rem;
+    /* プレミアムカード */
+    .feature-card {
+        display: flex;
+        align-items: flex-start;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     }
 
-    .premium-page .premium-description {
-        font-size: 1rem;
-        padding: 0 1rem;
+    .feature-icon {
+        flex-shrink: 0;
+        width: 48px;
+        height: 48px;
+        margin-right: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #4a90e2, #50b45a);
+        border-radius: 12px;
+        color: white;
     }
 
-    .premium-page .plan-comparison {
+    .feature-content {
+        flex: 1;
+    }
+
+    /* プラン比較テーブル */
+    .plan-comparison {
         margin: 1rem;
         border-radius: 15px;
-    }
-
-    .premium-page .plan-comparison th,
-    .premium-page .plan-comparison td {
-        padding: 1rem;
-        font-size: 0.9rem;
-    }
-
-    .premium-page .premium-badge {
-        padding: 0.3rem 0.8rem;
-        font-size: 0.8rem;
-    }
-
-    .premium-page .plan-comparison .fa-check,
-    .premium-page .plan-comparison .fa-times {
-        font-size: 1rem;
-        padding: 6px;
-    }
-
-    .premium-page .feature-card {
-        margin: 0 1rem 1.5rem;
-        padding: 1.5rem;
-    }
-
-    .premium-page .feature-card h5 {
-        font-size: 1.2rem;
-    }
-
-    .premium-page .feature-card p,
-    .premium-page .feature-card li {
-        font-size: 0.9rem;
-    }
-
-    .premium-page .btn-gradient {
-        padding: 0.8rem 1.5rem;
-        font-size: 1rem;
-        margin: 1rem auto;
-    }
-
-    /* テーブルを横スクロール可能に */
-    .premium-page .table-responsive {
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
     }
+
+    /* プレミアムバッジ */
+    .premium-badge {
+        display: inline-block;
+        margin-bottom: 0.5rem;
+    }
+
+    /* ボタン */
+    .btn-gradient {
+        width: 100%;
+        max-width: none;
+        margin: 1rem 0;
+    }
+
+    /* リスト */
+    .feature-list {
+        margin: 0.8rem 0 0 0;
+        padding: 0;
+    }
+
+    .feature-list li {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.4rem 0;
+    }
 }
 
-/* 小さいモバイル画面用 */
-@media (max-width: 480px) {
-    .premium-page .premium-title {
+/* iPhone特別対応 */
+@media screen and (max-width: 428px) {
+    .feature-card {
+        padding: 1.2rem;
+    }
+
+    .feature-icon {
+        width: 40px;
+        height: 40px;
+    }
+
+    .premium-title {
         font-size: 1.5rem;
     }
 
-    .premium-page .plan-comparison th,
-    .premium-page .plan-comparison td {
+    .plan-comparison th,
+    .plan-comparison td {
         padding: 0.8rem;
-        font-size: 0.8rem;
-    }
-
-    .premium-page .plan-comparison .fa-check,
-    .premium-page .plan-comparison .fa-times {
-        padding: 4px;
-    }
-
-    .premium-page .feature-card {
-        padding: 1rem;
-    }
-
-    .premium-page .feature-card h5 {
-        font-size: 1.1rem;
+        font-size: 0.9rem;
     }
 }
