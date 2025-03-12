@@ -1828,13 +1828,12 @@ def get_notifications():
             is_read=False
         ).order_by(Notification.timestamp.desc()).all()
         
-        # 通知データを整形（typeを使用せずに対応）
         notification_data = [{
             'id': n.id,
             'content': n.content,
             'timestamp': n.timestamp.strftime('%Y-%m-%d %H:%M'),
             'is_read': n.is_read,
-            'notification_type': 'info'  # デフォルトタイプを設定
+            'notification_type': 'info'
         } for n in notifications]
         
         return jsonify({
@@ -3617,47 +3616,6 @@ def register_race_entry(race_id):
         db.session.rollback()
         current_app.logger.error(f"Error in register_race_entry: {str(e)}")
         return jsonify({'status': 'error', 'message': 'エラーが発生しました'}), 500
-
-@app.route('/api/notifications')
-@login_required
-def get_notifications():
-    try:
-        # 通知とユーザー情報を効率的に取得
-        notifications = db.session.query(
-            Notification.id,
-            Notification.content,
-            Notification.type,
-            Notification.is_read,
-            Notification.created_at,
-            Notification.related_id
-        ).filter(
-            Notification.user_id == current_user.id
-        ).order_by(
-            Notification.created_at.desc()
-        ).limit(10).all()
-        
-        # 未読件数を取得
-        unread_count = db.session.query(func.count(Notification.id))\
-            .filter(
-                Notification.user_id == current_user.id,
-                Notification.is_read == False
-            ).scalar()
-        
-        return jsonify({
-            'notifications': [{
-                'id': n.id,
-                'content': n.content,
-                'type': n.type,
-                'is_read': n.is_read,
-                'created_at': n.created_at.isoformat(),
-                'related_id': n.related_id
-            } for n in notifications],
-            'unread_count': unread_count
-        })
-        
-    except Exception as e:
-        current_app.logger.error(f"Error fetching notifications: {str(e)}")
-        return jsonify({'error': '通知の取得中にエラーが発生しました'}), 500
 
 @app.route('/api/notifications/read', methods=['POST'])
 @login_required
