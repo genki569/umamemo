@@ -1834,27 +1834,19 @@ def stripe_webhook():
 
 @app.route('/notifications')
 @login_required
-def get_notifications():
-    try:
-        notifications = db.session.query(
-            Notification
-        ).filter_by(
-            user_id=current_user.id,
-            is_read=False
-        ).order_by(Notification.timestamp.desc()).all()
-
-        return jsonify({
-            'status': 'success',
-            'notifications': [{
-                'id': n.id,
-                'content': n.content,
-                'timestamp': n.timestamp.strftime('%Y-%m-%d %H:%M'),
-                'is_read': n.is_read
-            } for n in notifications],
-        })
-    except Exception as e:
-        current_app.logger.error(f"Error fetching notifications: {str(e)}")
-        return jsonify({'status': 'error', 'message': str(e)}), 500
+def view_all_notifications():
+    notifications = Notification.query\
+        .filter_by(user_id=current_user.id)\
+        .order_by(Notification.created_at.desc())\
+        .all()
+    
+    # 未読の通知を既読にマーク
+    for notification in notifications:
+        if not notification.read:  # is_read -> read に変更
+            notification.read = True
+    db.session.commit()
+    
+    return render_template('notifications.html', notifications=notifications)
 
 @app.route('/notifications/unread-count')
 @login_required
