@@ -2795,30 +2795,30 @@ def review_sales_detail(review_id):
 @app.route('/mypage/memos')
 @login_required
 def mypage_memos():
-    """マイページのメモ一覧"""
-    # 馬のメモを取得
-    horses_with_memos = Horse.query\
-        .filter(Horse.memo.isnot(None))\
-        .all()
-    
-    # レースメモを取得
-    race_memos = RaceMemo.query\
-        .filter_by(user_id=current_user.id)\
-        .options(joinedload('race'))\
-        .order_by(RaceMemo.created_at.desc())\
-        .all()
-    
-    # もしrace_memosがJSON文字列の場合は、パースする
-    if isinstance(race_memos, str):
-        try:
-            race_memos = json.loads(race_memos)
-        except json.JSONDecodeError:
-            race_memos = []
-    
-    return render_template('mypage/memos.html',
-                         title='メモ覧',
-                         race_memos=race_memos,
-                         horses=horses_with_memos)
+    try:
+        # レースメモを取得
+        race_memos = RaceMemo.query\
+            .filter_by(user_id=current_user.id)\
+            .options(joinedload(RaceMemo.race))\
+            .order_by(RaceMemo.created_at.desc())\
+            .all()
+            
+        # 馬メモを取得
+        horse_memos = Horse.query\
+            .filter(Horse.memo.isnot(None))\
+            .order_by(Horse.updated_at.desc())\
+            .all()
+            
+        return render_template('mypage/memos.html',
+                             race_memos=race_memos,
+                             horse_memos=horse_memos)
+                             
+    except Exception as e:
+        app.logger.error(f"Error in mypage_memos: {str(e)}")
+        flash('メモの取得中にエラーが発生しました', 'error')
+        return render_template('mypage/memos.html',
+                             race_memos=[],
+                             horse_memos=[])
 
 # 新追
 @app.route('/mypage/notifications')
