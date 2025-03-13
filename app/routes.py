@@ -2797,27 +2797,20 @@ def review_sales_detail(review_id):
 @login_required
 def mypage_memos():
     try:
-        # レースメモを取得
-        race_memos = RaceMemo.query\
-            .filter_by(user_id=current_user.id)\
-            .options(joinedload(RaceMemo.race))\
+        # レースメモを取得（レース情報と一緒に）
+        race_memos = db.session.query(RaceMemo, Race)\
+            .join(Race, RaceMemo.race_id == Race.id)\
+            .filter(RaceMemo.user_id == current_user.id)\
             .order_by(RaceMemo.created_at.desc())\
             .all()
             
-        # 馬メモを取得
-        horse_memos = Horse.query\
+        # 馬メモを取得（馬情報と一緒に）
+        horse_memos = db.session.query(Horse)\
             .filter(Horse.memo.isnot(None))\
             .order_by(Horse.updated_at.desc())\
             .all()
             
-        # Unicode文字列のデコード
-        for memo in race_memos:
-            if memo.content:
-                memo.content = memo.content.encode().decode('unicode-escape')
-        
-        for horse in horse_memos:
-            if horse.memo:
-                horse.memo = horse.memo.encode().decode('unicode-escape')
+        app.logger.info(f"Found {len(race_memos)} race memos and {len(horse_memos)} horse memos")
             
         return render_template('mypage/memos.html',
                              race_memos=race_memos,
