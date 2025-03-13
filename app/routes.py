@@ -1861,7 +1861,9 @@ def view_all_notifications():
     except Exception as e:
         app.logger.error(f"Error in view_all_notifications: {str(e)}")
         flash('通知の取得中にエラーが発生しました', 'error')
-        return render_template('notifications.html', notifications=[])  # horse_memosパラメータを完全に削除
+        # race_memosパラメータも削除
+        return render_template('notifications.html', 
+                            notifications=[])  # 余分なパラメータをすべて削除
 
 @app.route('/notifications/unread-count')
 @login_required
@@ -2866,7 +2868,9 @@ def view_all_notifications():
     except Exception as e:
         app.logger.error(f"Error in view_all_notifications: {str(e)}")
         flash('通知の取得中にエラーが発生しました', 'error')
-        return render_template('notifications.html', notifications=[])  # horse_memosパラメータを完全に削除
+        # race_memosパラメータも削除
+        return render_template('notifications.html', 
+                            notifications=[])  # 余分なパラメータをすべて削除
 # カスタムフィルターの定義
 @app.template_filter('timeago')
 def timeago_filter(date):
