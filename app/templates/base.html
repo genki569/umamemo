@@ -79,6 +79,46 @@
                         </ul>
                     </li>
 
+                    <!-- 競走馬情報ドロップダウン -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="horseDropdown" role="button" 
+                           data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-horse me-2"></i>競走馬情報
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="horseDropdown">
+                            <li>
+                                <a class="dropdown-item" href="{{ url_for('horses') }}">
+                                    <i class="fas fa-list me-2"></i>競走馬一覧
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{{ url_for('horse_search') }}">
+                                    <i class="fas fa-search me-2"></i>競走馬検索
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <!-- 騎手情報ドロップダウン -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="jockeyDropdown" role="button" 
+                           data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-user-tie me-2"></i>騎手情報
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="jockeyDropdown">
+                            <li>
+                                <a class="dropdown-item" href="{{ url_for('jockeys') }}">
+                                    <i class="fas fa-list me-2"></i>騎手一覧
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{{ url_for('jockey_search') }}">
+                                    <i class="fas fa-search me-2"></i>騎手検索
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
                     <!-- 回顧ドロップダウン（ログイン時のみ表示） -->
                     {% if current_user.is_authenticated %}
                     <li class="nav-item dropdown">
@@ -363,5 +403,8 @@
     
     <!-- ページ固有のJavaScript -->
     {% block extra_js %}{% endblock %}
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
