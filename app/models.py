@@ -609,31 +609,15 @@ class UserSettings(db.Model):
 
 class Notification(db.Model):
     __tablename__ = 'notifications'
-    
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    content = db.Column(db.String(512))  # contentカラムを追加
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
-    is_read = db.Column(db.Boolean, default=False)
-    
-    # リレーションシップ
-    user = db.relationship('User', backref=db.backref('notifications', lazy=True))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    message = db.Column(db.String(500))  # contentではなくmessageを使用
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    read = db.Column(db.Boolean, default=False)
+    icon_class = db.Column(db.String(50), default='fa-bell')  # アイコンのクラス
 
-    @staticmethod
-    def create_premium_notification(user, is_activated):
-        """プレミアムステータス変更の通知を作成"""
-        message = (
-            "プレミアム会員に昇格しました！" if is_activated 
-            else "プレミアム会員資格が終了しました。"
-        )
-        notification = Notification(
-            user_id=user.id,
-            content=message,
-            is_read=False
-        )
-        db.session.add(notification)
-        db.session.commit()
-        return notification
+    def __repr__(self):
+        return f'<Notification {self.id}>'
 
 class UserPointLog(db.Model):
     __tablename__ = 'user_point_logs'
