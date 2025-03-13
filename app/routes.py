@@ -1835,6 +1835,7 @@ def stripe_webhook():
 @app.route('/notifications')
 @login_required
 def view_all_notifications():
+    # 通知を取得（timestampをcreated_atに変更）
     notifications = Notification.query\
         .filter_by(user_id=current_user.id)\
         .order_by(Notification.created_at.desc())\
@@ -1842,9 +1843,28 @@ def view_all_notifications():
     
     # 未読の通知を既読にマーク
     for notification in notifications:
-        if not notification.read:  # is_read -> read に変更
+        if not notification.read:
             notification.read = True
     db.session.commit()
+    
+    # timeagoフィルターを使用するためのJinja2テンプレートコンテキスト
+    @app.template_filter('timeago')
+    def timeago_filter(date):
+        """日付を「〜前」の形式に変換するフィルター"""
+        now = datetime.utcnow()
+        diff = now - date
+        
+        if diff.days > 365:
+            return f"{diff.days // 365}年前"
+        if diff.days > 30:
+            return f"{diff.days // 30}ヶ月前"
+        if diff.days > 0:
+            return f"{diff.days}日前"
+        if diff.seconds > 3600:
+            return f"{diff.seconds // 3600}時間前"
+        if diff.seconds > 60:
+            return f"{diff.seconds // 60}分前"
+        return "たった今"
     
     return render_template('notifications.html', notifications=notifications)
 
