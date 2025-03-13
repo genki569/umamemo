@@ -24,38 +24,11 @@
     <div class="memo-section" id="race-memos">
         <div class="memos-grid">
             {% if race_memos %}
-                {% for memo in race_memos %}
-                    <div class="memo-card">
-                        <div class="memo-race-name">
-                            <i class="fas fa-flag"></i>
-                            {{ memo.race.name if memo.race else '不明なレース' }}
-                        </div>
-                        <div class="memo-content">
-                            {% if memo.content %}
-                                {% if memo.content.startswith('[') %}
-                                    {% set memo_data = memo.content|from_json %}
-                                    {% for item in memo_data %}
-                                        {{ item.content|safe|replace('\n', '<br>')|replace('\\n', '<br>') }}
-                                    {% endfor %}
-                                {% else %}
-                                    {{ memo.content|safe|replace('\n', '<br>')|replace('\\n', '<br>') }}
-                                {% endif %}
-                            {% endif %}
-                        </div>
-                        <div class="memo-footer">
-                            <span class="memo-date">
-                                <i class="far fa-clock"></i>
-                                {{ memo.created_at.strftime('%Y年%m月%d日') }}
-                            </span>
-                            <div class="memo-actions">
-                                <button class="memo-action-btn edit-memo" data-memo-id="{{ memo.id }}">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="memo-action-btn delete-memo" data-memo-id="{{ memo.id }}">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </div>
+                {% for memo, race in race_memos %}
+                    <div class="memo-item">
+                        <div class="memo-content">{{ memo.content }}</div>
+                        <div class="memo-race">{{ race.name }}</div>
+                        <div class="memo-date">{{ memo.created_at.strftime('%Y-%m-%d') }}</div>
                     </div>
                 {% endfor %}
             {% else %}
@@ -70,26 +43,12 @@
     <!-- 馬メモセクション -->
     <div class="memo-section" id="horse-memos" style="display: none;">
         <div class="memos-grid">
-            {% if horses %}
-                {% for horse in horses %}
-                    <div class="memo-card">
-                        <div class="memo-horse-name">
-                            <i class="fas fa-horse"></i>
-                            {{ horse.name }}
-                        </div>
-                        <div class="memo-content">
-                            {{ horse.memo|safe|nl2br if horse.memo else '메모가 없습니다' }}
-                        </div>
-                        <div class="memo-footer">
-                            <div class="memo-actions">
-                                <button class="memo-action-btn edit-memo" data-horse-id="{{ horse.id }}">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="memo-action-btn delete-memo" data-horse-id="{{ horse.id }}">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </div>
+            {% if horse_memos %}
+                {% for horse in horse_memos %}
+                    <div class="memo-item">
+                        <div class="memo-horse">{{ horse.name }}</div>
+                        <div class="memo-content">{{ horse.memo }}</div>
+                        <div class="memo-date">{{ horse.updated_at.strftime('%Y-%m-%d') }}</div>
                     </div>
                 {% endfor %}
             {% else %}
