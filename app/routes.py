@@ -1447,16 +1447,25 @@ def mypage_home():
                 except json.JSONDecodeError:
                     horse.memo = ''
 
+        # 通知を取得
+        notifications = Notification.query\
+            .filter_by(user_id=current_user.id)\
+            .order_by(Notification.created_at.desc())\
+            .limit(5)\
+            .all()
+
         app.logger.info(f"Found {len(race_memos)} race memos and {len(horse_memos)} horse memos for user {current_user.id}")
 
-        return render_template('mypage/index.html',  # home.htmlからindex.htmlに変更
+        return render_template('mypage/index.html',
+                            notifications=notifications,
                             race_memos=race_memos,
                             horse_memos=horse_memos)
 
     except Exception as e:
         app.logger.error(f"Error in mypage_home: {str(e)}")
         flash('データの取得中にエラーが発生しました', 'error')
-        return render_template('mypage/index.html',  # こちらも同様に変更
+        return render_template('mypage/index.html',
+                            notifications=[],
                             race_memos=[],
                             horse_memos=[])
 
@@ -2851,15 +2860,28 @@ def mypage_memos():
                              horse_memos=[])
 
 # 新追
-@app.route('/mypage/notifications')
+@app.route('/notifications')
 @login_required
-def view_all_notifications():  # この関数名を使用します
-    """通知一覧"""
-    notifications = Notification.query.filter_by(user_id=current_user.id)\
-        .order_by(Notification.timestamp.desc()).all()
-    return render_template('notifications.html',
-                         notifications=notifications,
-                         title='通知一覧')
+def view_all_notifications():
+    try:
+        # 通知を取得（timestampをcreated_atに変更）
+        notifications = Notification.query\
+            .filter_by(user_id=current_user.id)\
+            .order_by(Notification.created_at.desc())\
+            .all()
+        
+        # 未読の通知を既読にマーク
+        for notification in notifications:
+            if not notification.read:
+                notification.read = True
+        db.session.commit()
+        
+        return render_template('notifications.html', notifications=notifications)
+        
+    except Exception as e:
+        app.logger.error(f"Error in view_all_notifications: {str(e)}")  # エラーメッセージも修正
+        flash('通知の取得中にエラーが発生しました', 'error')
+        return render_template('notifications.html', notifications=[])
 # カスタムフィルターの定義
 @app.template_filter('timeago')
 def timeago_filter(date):
