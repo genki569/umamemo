@@ -1845,7 +1845,6 @@ def stripe_webhook():
 @login_required
 def view_all_notifications():
     try:
-        # 通知を取得
         notifications = Notification.query\
             .filter_by(user_id=current_user.id)\
             .order_by(Notification.created_at.desc())\
@@ -1862,8 +1861,7 @@ def view_all_notifications():
     except Exception as e:
         app.logger.error(f"Error in view_all_notifications: {str(e)}")
         flash('通知の取得中にエラーが発生しました', 'error')
-        # horse_memosパラメータを削除
-        return render_template('notifications.html', notifications=[])
+        return render_template('notifications.html', notifications=[])  # horse_memosパラメータを完全に削除
 
 @app.route('/notifications/unread-count')
 @login_required
@@ -1872,7 +1870,7 @@ def unread_notifications_count():
         count = db.session.query(func.count(Notification.id))\
             .filter(
                 Notification.user_id == current_user.id,
-                Notification.is_read == False
+                Notification.read == False  # is_read -> read に変更
             ).scalar()
         
         return jsonify({'count': count or 0})
@@ -2852,7 +2850,6 @@ def mypage_memos():
 @login_required
 def view_all_notifications():
     try:
-        # 通知を取得
         notifications = Notification.query\
             .filter_by(user_id=current_user.id)\
             .order_by(Notification.created_at.desc())\
@@ -2869,8 +2866,7 @@ def view_all_notifications():
     except Exception as e:
         app.logger.error(f"Error in view_all_notifications: {str(e)}")
         flash('通知の取得中にエラーが発生しました', 'error')
-        # horse_memosパラメータを削除
-        return render_template('notifications.html', notifications=[])
+        return render_template('notifications.html', notifications=[])  # horse_memosパラメータを完全に削除
 # カスタムフィルターの定義
 @app.template_filter('timeago')
 def timeago_filter(date):
