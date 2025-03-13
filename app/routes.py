@@ -1844,38 +1844,25 @@ def stripe_webhook():
 @app.route('/notifications')
 @login_required
 def view_all_notifications():
-    # 通知を取得（timestampをcreated_atに変更）
-    notifications = Notification.query\
-        .filter_by(user_id=current_user.id)\
-        .order_by(Notification.created_at.desc())\
-        .all()
-    
-    # 未読の通知を既読にマーク
-    for notification in notifications:
-        if not notification.read:
-            notification.read = True
-    db.session.commit()
-    
-    # timeagoフィルターを使用するためのJinja2テンプレートコンテキスト
-    @app.template_filter('timeago')
-    def timeago_filter(date):
-        """日付を「〜前」の形式に変換するフィルター"""
-        now = datetime.utcnow()
-        diff = now - date
+    try:
+        # 通知の取得のみを行う（余計な馬メモの処理を削除）
+        notifications = Notification.query\
+            .filter_by(user_id=current_user.id)\
+            .order_by(Notification.created_at.desc())\
+            .all()
         
-        if diff.days > 365:
-            return f"{diff.days // 365}年前"
-        if diff.days > 30:
-            return f"{diff.days // 30}ヶ月前"
-        if diff.days > 0:
-            return f"{diff.days}日前"
-        if diff.seconds > 3600:
-            return f"{diff.seconds // 3600}時間前"
-        if diff.seconds > 60:
-            return f"{diff.seconds // 60}分前"
-        return "たった今"
-    
-    return render_template('notifications.html', notifications=notifications)
+        # 未読の通知を既読にマーク
+        for notification in notifications:
+            if not notification.read:
+                notification.read = True
+        db.session.commit()
+        
+        return render_template('notifications.html', notifications=notifications)
+        
+    except Exception as e:
+        app.logger.error(f"Error in view_all_notifications: {str(e)}")
+        flash('通知の取得中にエラーが発生しました', 'error')
+        return render_template('notifications.html', notifications=[])
 
 @app.route('/notifications/unread-count')
 @login_required
