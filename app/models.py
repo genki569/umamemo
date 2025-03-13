@@ -611,10 +611,11 @@ class Notification(db.Model):
     __tablename__ = 'notifications'
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    message = db.Column(db.String(500))  # contentではなくmessageを使用
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    read = db.Column(db.Boolean, default=False)
-    icon_class = db.Column(db.String(50), default='fa-bell')  # アイコンのクラス
+    message = db.Column(db.Text, nullable=False)  # textタイプに変更
+    type = db.Column(db.String(20), nullable=False)  # typeカラムを追加
+    is_read = db.Column(db.Boolean)  # readをis_readに変更
+    created_at = db.Column(db.DateTime)
+    link = db.Column(db.String(255))  # linkカラムを追加
 
     def __repr__(self):
         return f'<Notification {self.id}>'
