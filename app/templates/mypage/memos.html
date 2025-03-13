@@ -28,7 +28,7 @@
                     <div class="memo-item">
                         <div class="memo-content">{{ memo.content }}</div>
                         <div class="memo-race">
-                            <a href="{{ url_for('races', race_id=race.id) }}" class="text-decoration-none">
+                            <a href="/races/{{ race.id }}" class="text-decoration-none">
                                 {{ race.name }}
                             </a>
                         </div>
