@@ -68,7 +68,7 @@
                         <ul class="dropdown-menu" aria-labelledby="raceDropdown">
                             <li>
                                 <a class="dropdown-item" href="{{ url_for('races') }}">
-                                    <i class="fas fa-list me-2"></i>レース一覧
+                                    <i class="fas fa-trophy me-2"></i>レース結果
                                 </a>
                             </li>
                             <li>
@@ -79,65 +79,33 @@
                         </ul>
                     </li>
 
-                    <!-- 競走馬情報ドロップダウン -->
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="horseDropdown" role="button" 
-                           data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fas fa-horse me-2"></i>競走馬情報
+                    <!-- 競走馬情報 -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('horses') }}">
+                            <i class="fas fa-horse me-2"></i>馬一覧
                         </a>
-                        <ul class="dropdown-menu" aria-labelledby="horseDropdown">
-                            <li>
-                                <a class="dropdown-item" href="{{ url_for('horses') }}">
-                                    <i class="fas fa-list me-2"></i>競走馬一覧
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="{{ url_for('horse_search') }}">
-                                    <i class="fas fa-search me-2"></i>競走馬検索
-                                </a>
-                            </li>
-                        </ul>
                     </li>
 
-                    <!-- 騎手情報ドロップダウン -->
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="jockeyDropdown" role="button" 
-                           data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fas fa-user-tie me-2"></i>騎手情報
+                    <!-- 騎手情報 -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('jockeys') }}">
+                            <i class="fas fa-user-tie me-2"></i>騎手一覧
                         </a>
-                        <ul class="dropdown-menu" aria-labelledby="jockeyDropdown">
-                            <li>
-                                <a class="dropdown-item" href="{{ url_for('jockeys') }}">
-                                    <i class="fas fa-list me-2"></i>騎手一覧
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="{{ url_for('jockey_search') }}">
-                                    <i class="fas fa-search me-2"></i>騎手検索
-                                </a>
-                            </li>
-                        </ul>
                     </li>
 
-                    <!-- 回顧ドロップダウン（ログイン時のみ表示） -->
+                    <!-- 回顧ノート -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('review_market') }}">
+                            <i class="fas fa-book me-2"></i>回顧ノート
+                        </a>
+                    </li>
+
                     {% if current_user.is_authenticated %}
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="reviewDropdown" role="button" 
-                           data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fas fa-book me-2"></i>回顧
+                    <!-- プレミアム機能（ログイン時のみ） -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('premium_features') }}">
+                            <i class="fas fa-crown me-2"></i>プレミアム
                         </a>
-                        <ul class="dropdown-menu" aria-labelledby="reviewDropdown">
-                            <li>
-                                <a class="dropdown-item" href="{{ url_for('mypage_reviews') }}">
-                                    <i class="fas fa-list me-2"></i>回顧一覧
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="{{ url_for('create_review', race_id=0) }}">
-                                    <i class="fas fa-plus me-2"></i>回顧作成
-                                </a>
-                            </li>
-                        </ul>
                     </li>
                     {% endif %}
                 </ul>
