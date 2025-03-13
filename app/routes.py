@@ -1449,14 +1449,14 @@ def mypage_home():
 
         app.logger.info(f"Found {len(race_memos)} race memos and {len(horse_memos)} horse memos for user {current_user.id}")
 
-        return render_template('mypage/home.html',
+        return render_template('mypage/index.html',  # home.htmlからindex.htmlに変更
                             race_memos=race_memos,
                             horse_memos=horse_memos)
 
     except Exception as e:
         app.logger.error(f"Error in mypage_home: {str(e)}")
         flash('データの取得中にエラーが発生しました', 'error')
-        return render_template('mypage/home.html',
+        return render_template('mypage/index.html',  # こちらも同様に変更
                             race_memos=[],
                             horse_memos=[])
 
