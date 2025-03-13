@@ -2809,8 +2809,17 @@ def mypage_memos():
             .filter(Horse.memo.isnot(None))\
             .order_by(Horse.updated_at.desc())\
             .all()
-            
-        app.logger.info(f"Found {len(race_memos)} race memos and {len(horse_memos)} horse memos")
+
+        # 馬メモのJSONをパース
+        for horse in horse_memos:
+            if horse.memo:
+                try:
+                    memos = json.loads(horse.memo)
+                    # 最新のメモ内容を取得
+                    if memos and isinstance(memos, list) and len(memos) > 0:
+                        horse.memo = memos[-1].get('content', '')
+                except json.JSONDecodeError:
+                    horse.memo = ''
             
         return render_template('mypage/memos.html',
                              race_memos=race_memos,
