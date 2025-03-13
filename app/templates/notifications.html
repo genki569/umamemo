@@ -23,8 +23,8 @@
                                 <i class="fas {{ notification.icon_class }}"></i>
                             </div>
                             <div class="notification-content">
-                                <div class="notification-text">{{ notification.message }}</div>
-                                <div class="notification-time">{{ notification.created_at|timeago }}</div>
+                                <p class="notification-text">{{ notification.message }}</p>
+                                <span class="notification-time">{{ notification.created_at|timeago }}</span>
                             </div>
                             {% if not notification.read %}
                                 <button class="notification-close" onclick="markAsRead({{ notification.id }})">
