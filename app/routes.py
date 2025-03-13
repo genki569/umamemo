@@ -5,6 +5,7 @@ from app.models import (
     RaceReview, RaceMemo, UserSettings, ReviewPurchase, 
     Notification, LoginHistory, SupportTicket, 
     MembershipChangeLog, PaymentLog, ShutubaEntry,
+    HorseMemo
 )
 from datetime import datetime, timedelta
 from flask_wtf import FlaskForm
@@ -2803,11 +2804,14 @@ def mypage_memos():
             .order_by(RaceMemo.created_at.desc())\
             .all()
             
-        # 馬メモを取得
-        horse_memos = Horse.query\
-            .filter(Horse.memo.isnot(None))\
-            .order_by(Horse.updated_at.desc())\
+        # 馬メモを取得（ユーザーに紐づくメモのみ）
+        horse_memos = HorseMemo.query\
+            .filter_by(user_id=current_user.id)\
+            .options(joinedload(HorseMemo.horse))\
+            .order_by(HorseMemo.created_at.desc())\
             .all()
+            
+        app.logger.info(f"Found {len(race_memos)} race memos and {len(horse_memos)} horse memos for user {current_user.id}")
             
         return render_template('mypage/memos.html',
                              race_memos=race_memos,
