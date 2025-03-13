@@ -1852,8 +1852,8 @@ def view_all_notifications():
         
         # 未読の通知を既読にマーク
         for notification in notifications:
-            if not notification.read:
-                notification.read = True
+            if not notification.is_read:  # readをis_readに変更
+                notification.is_read = True
         db.session.commit()
         
         return render_template('notifications.html', notifications=notifications)
@@ -1861,9 +1861,7 @@ def view_all_notifications():
     except Exception as e:
         app.logger.error(f"Error in view_all_notifications: {str(e)}")
         flash('通知の取得中にエラーが発生しました', 'error')
-        # race_memosパラメータも削除
-        return render_template('notifications.html', 
-                            notifications=[])  # 余分なパラメータをすべて削除
+        return render_template('notifications.html', notifications=[])
 
 @app.route('/notifications/unread-count')
 @login_required
@@ -2846,31 +2844,6 @@ def mypage_memos():
         return render_template('mypage/memos.html',
                              race_memos=[],
                              horse_memos=[])
-
-# 新追
-@app.route('/notifications')
-@login_required
-def view_all_notifications():
-    try:
-        notifications = Notification.query\
-            .filter_by(user_id=current_user.id)\
-            .order_by(Notification.created_at.desc())\
-            .all()
-        
-        # 未読の通知を既読にマーク
-        for notification in notifications:
-            if not notification.read:
-                notification.read = True
-        db.session.commit()
-        
-        return render_template('notifications.html', notifications=notifications)
-        
-    except Exception as e:
-        app.logger.error(f"Error in view_all_notifications: {str(e)}")
-        flash('通知の取得中にエラーが発生しました', 'error')
-        # race_memosパラメータも削除
-        return render_template('notifications.html', 
-                            notifications=[])  # 余分なパラメータをすべて削除
 # カスタムフィルターの定義
 @app.template_filter('timeago')
 def timeago_filter(date):
