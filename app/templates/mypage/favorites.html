@@ -10,17 +10,6 @@
         </a>
     </div>
 
-    <!-- デバッグ情報（開発時のみ表示） -->
-    {% if config.DEBUG %}
-    <div class="debug-info" style="margin-bottom: 20px; padding: 10px; background: #f8f9fa;">
-        <p>デバッグ情報:</p>
-        <ul>
-            <li>ユーザーID: {{ current_user.id }}</li>
-            <li>お気に入り数: {{ favorites.total if favorites else 0 }}</li>
-        </ul>
-    </div>
-    {% endif %}
-
     <!-- お気に入り馬一覧 -->
     <div class="card border-0 shadow-sm">
         <div class="card-body">
