@@ -1418,41 +1418,47 @@ def delete_race_memo(race_id, memo_id):
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
 @app.route('/mypage')
-@custom_login_required
+@login_required
 def mypage_home():
-    # 統計報の取得
-    stats = {
-        'memo_count': Horse.query.filter(Horse.memo.isnot(None)).count(),
-        'favorite_count': Favorite.query.filter_by(user_id=current_user.id).count(),
-        'reviewed_races': RaceReview.query.filter_by(user_id=current_user.id).count()
-    }
-    
-    # 最近のメモ取得
-    recent_memos = Horse.query\
-        .filter(Horse.memo.isnot(None))\
-        .order_by(Horse.updated_at.desc())\
-        .limit(5)\
-        .all()
-    
-    # お気に入りの馬得
-    favorite_horses = Horse.query\
-        .join(Favorite)\
-        .filter(Favorite.user_id == current_user.id)\
-        .limit(3)\
-        .all()
-    
-    # 最近の回ノートを取得
-    recent_reviews = RaceReview.query\
-        .filter_by(user_id=current_user.id)\
-        .order_by(RaceReview.created_at.desc())\
-        .limit(5)\
-        .all()
-    
-    return render_template('mypage/index.html',
-                         stats=stats,
-                         recent_memos=recent_memos,
-                         favorite_horses=favorite_horses,
-                         recent_reviews=recent_reviews)
+    try:
+        # レースメモを取得（最新5件）
+        race_memos = db.session.query(RaceMemo, Race)\
+            .join(Race, RaceMemo.race_id == Race.id)\
+            .filter(RaceMemo.user_id == current_user.id)\
+            .order_by(RaceMemo.created_at.desc())\
+            .limit(5)\
+            .all()
+
+        # 馬メモを取得（最新5件）
+        horse_memos = db.session.query(Horse)\
+            .filter(Horse.memo.isnot(None))\
+            .order_by(Horse.updated_at.desc())\
+            .limit(5)\
+            .all()
+
+        # 馬メモのJSONをパース
+        for horse in horse_memos:
+            if horse.memo:
+                try:
+                    memos = json.loads(horse.memo)
+                    # 最新のメモ内容を取得
+                    if memos and isinstance(memos, list) and len(memos) > 0:
+                        horse.memo = memos[-1].get('content', '')
+                except json.JSONDecodeError:
+                    horse.memo = ''
+
+        app.logger.info(f"Found {len(race_memos)} race memos and {len(horse_memos)} horse memos for user {current_user.id}")
+
+        return render_template('mypage/home.html',
+                            race_memos=race_memos,
+                            horse_memos=horse_memos)
+
+    except Exception as e:
+        app.logger.error(f"Error in mypage_home: {str(e)}")
+        flash('データの取得中にエラーが発生しました', 'error')
+        return render_template('mypage/home.html',
+                            race_memos=[],
+                            horse_memos=[])
 
 @app.route('/mypage/reviews')
 @login_required
