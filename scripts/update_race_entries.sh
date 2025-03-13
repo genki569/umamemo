@@ -5,6 +5,9 @@
 BASE_DIR="/var/www/umamemo"
 cd "${BASE_DIR}"
 
+# PYTHONPATHを設定
+export PYTHONPATH="${BASE_DIR}:${PYTHONPATH}"
+
 # 仮想環境をアクティベート
 source venv/bin/activate
 
