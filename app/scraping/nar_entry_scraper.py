@@ -411,9 +411,17 @@ def process_race_data(race_entry: Dict[str, any]):
     jockeys_data = {}
     entries_data = []
     
+    # エントリー情報をデバッグ出力
+    print(f"Debug - Race entries: {race_entry.get('entries', [])}")
+    
     for entry in race_entry.get('entries', []):
-        horse_name = entry.get('horse_name', '')
+        # エントリーデータをデバッグ出力
+        print(f"Debug - Processing entry: {entry}")
+        
+        # 馬名が存在するか確認
+        horse_name = entry.get('horse_name')
         if not horse_name:
+            print(f"Warning: Missing horse_name in entry: {entry}")
             continue
         
         # 馬情報
@@ -455,6 +463,7 @@ def process_race_data(race_entry: Dict[str, any]):
                 'horse_number': horse_number
             }
             entries_data.append(entry_data)
+            print(f"Debug - Created entry data: {entry_data}")
         except (ValueError, TypeError) as e:
             print(f"エントリー情報の変換エラー: {str(e)}")
             continue
