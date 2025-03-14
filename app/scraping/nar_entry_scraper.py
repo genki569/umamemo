@@ -128,40 +128,31 @@ def scrape_race_entry(page, race_url: str) -> Dict[str, any]:
         print(f"レース情報取得中にエラー: {str(e)}")
         return None
 
-def save_to_csv(race_entry: Dict[str, any]):
-    """レース情報をCSVに保存する（1レース1行）"""
-    # 保存先ディレクトリの作成
-    os.makedirs('data/race_entries', exist_ok=True)
-    current_date = datetime.now().strftime('%Y%m%d')
-    filename = f'data/race_entries/nar_race_entries_{current_date}.csv'
-    
-    # ファイルが存在しない場合は新規作成
-    file_exists = os.path.isfile(filename)
-    
-    # レース詳細情報から余分なスペースと改行を削除
-    race_details = ' '.join(race_entry['race_details'].split())
-    
-    with open(filename, 'a', newline='', encoding='utf-8') as f:
-        writer = csv.writer(f)
+def save_to_csv(race_entry: Dict[str, any], filename: str):
+    """レース情報をCSVに保存する"""
+    try:
+        os.makedirs('data/race_entries', exist_ok=True)
+        filepath = os.path.join('data/race_entries', filename)
         
-        # ヘッダーを書き込む（ファイルが新規の場合のみ）
-        if not file_exists:
-            writer.writerow([
-                'race_id', 'race_name', 'race_number', 'venue_name', 
-                'start_time', 'course_info', 'race_details', 'entries'
-            ])
+        # ヘッダーの定義
+        headers = ['race_id', 'race_name', 'race_number', 'venue_name', 
+                  'start_time', 'course_info', 'race_details', 'entries']
         
-        # レース情報を1行で書き込む
-        writer.writerow([
-            race_entry['race_id'],
-            race_entry['race_name'],
-            race_entry['race_number'],
-            race_entry['venue_name'],
-            race_entry['start_time'],
-            race_entry['course_info'],
-            race_details,
-            json.dumps(race_entry['entries'], ensure_ascii=False)  # 出走馬情報をJSON形式で保存
-        ])
+        # ファイルが存在しない場合はヘッダーを書き込む
+        file_exists = os.path.isfile(filepath)
+        
+        with open(filepath, 'a', newline='', encoding='utf-8') as f:
+            writer = csv.DictWriter(f, fieldnames=headers)
+            
+            if not file_exists:
+                writer.writeheader()
+            
+            # エントリー情報をJSON文字列に変換
+            race_entry['entries'] = json.dumps(race_entry['entries'], ensure_ascii=False)
+            writer.writerow(race_entry)
+            
+    except Exception as e:
+        print(f"CSV保存エラー: {str(e)}")
 
 def get_race_urls_for_date(page, context, date_str: str) -> List[str]:
     """指定日の全レースの出馬表URLを取得"""
@@ -246,42 +237,33 @@ def get_race_info_for_next_three_days():
             context = browser.new_context()
             page = context.new_page()
             
-            # 処理済みの日付を記録
-            processed_dates = set()
-            
             for i in range(3):
                 target_date = datetime.now() + timedelta(days=i)
                 date_str = target_date.strftime("%Y%m%d")
-                
-                # 既に処理済みの日付はスキップ
-                if date_str in processed_dates:
-                    print(f"{date_str}は既に処理済みです")
-                    continue
-                
                 filename = f"nar_race_entries_{date_str}.csv"
+                
                 print(f"\n{date_str}の処理を開始します...")
                 
                 race_urls = get_race_urls_for_date(page, context, date_str)
                 print(f"{date_str}のレースURL数: {len(race_urls)}")
                 
-                for race_url in race_urls:
-                    race_entry = scrape_race_entry(page, race_url)
-                    if race_entry:
-                        save_to_csv(race_entry, filename)
-                        print(f"保存完了: {race_entry['venue_name']} {race_entry['race_number']}R")
-                
-                # 処理完了した日付を記録
-                processed_dates.add(date_str)
-                print(f"{date_str}の処理が完了しました")
+                if race_urls:  # レースURLが存在する場合のみ処理
+                    for race_url in race_urls:
+                        race_entry = scrape_race_entry(page, race_url)
+                        if race_entry:
+                            save_to_csv(race_entry, filename)  # filenameを渡すように修正
+                            print(f"保存完了: {race_entry['venue_name']} {race_entry['race_number']}R")
+                    print(f"{date_str}の処理が完了しました")
+                else:
+                    print(f"{date_str}のレースはありません")
             
             browser.close()
             print("\n全ての処理が完了しました")
             
     except Exception as e:
         print(f"処理エラー: {str(e)}")
+        raise  # エラーを上位に伝播させる
 
 if __name__ == '__main__':
     print("地方競馬出走表の取得を開始します...")
-    
-    # 3日分のレース情報を取得
     get_race_info_for_next_three_days()

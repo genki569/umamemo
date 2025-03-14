@@ -283,5 +283,10 @@ def process_shutuba_data(input_path: str) -> None:
     print(f"処理完了: レース数={len(races_data)}, 馬={len(horses_data)}, 騎手={len(jockeys_data)}, エントリー={len(entries_data)}")
 
 if __name__ == "__main__":
-    input_path = 'data/race_entries/nar_race_entries_20241119.csv'
+    import sys
+    if len(sys.argv) != 2:
+        print("Usage: python csv_shutuba.py <input_csv_path>")
+        sys.exit(1)
+    
+    input_path = sys.argv[1]
     process_shutuba_data(input_path)
