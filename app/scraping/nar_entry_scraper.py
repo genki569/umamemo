@@ -114,135 +114,156 @@ def generate_jockey_id(jockey_name: str) -> str:
 
     return str(base_id)
 
-def scrape_race_entry(page, race_url):
-    """レース出走表ページをスクレイピング"""
+def scrape_race_entry(page, race_url: str) -> Dict[str, any]:
+    """出走表ページから情報を取得する"""
     try:
-        # ページ読み込み時の待機時間を延長
-        page.goto(race_url, timeout=60000)
+        print(f"レースURL: {race_url} にアクセス中...")
+        page.goto(race_url, wait_until='domcontentloaded', timeout=60000)
+        page.wait_for_timeout(5000)  # 待機時間を増やす
         
-        # 要素が表示されるまで待機
-        page.wait_for_selector('.RaceList_NameBox', timeout=60000)
+        # ページのHTMLを取得してデバッグ
+        html_content = page.content()
+        print(f"ページのHTMLサイズ: {len(html_content)} バイト")
         
-        # レース情報を取得
-        race_id = extract_race_id_from_url(race_url)
-        race_name = page.locator('.RaceName').inner_text().strip()
-        race_number_text = page.locator('.Race_Num').inner_text().strip()
-        race_number = int(re.search(r'\d+', race_number_text).group(0))
-        venue_name = page.locator('.RaceKaisaiWrap .Active a').inner_text().strip()
+        # race_idを取得（URLから）
+        race_id = race_url.split('race_id=')[1].split('&')[0] if 'race_id=' in race_url else 'unknown'
         
-        # レース詳細情報
-        race_data = page.locator('.RaceData01').inner_text().strip()
-        race_details = page.locator('.RaceData02').inner_text().strip()
-        
-        # 発走時間を抽出
-        start_time_match = re.search(r'(\d+:\d+)発走', race_data)
-        start_time = start_time_match.group(1) if start_time_match else "00:00"
-        
-        # コース情報を抽出
-        course_info_match = re.search(r'/(.*?)\(', race_data)
-        course_info = course_info_match.group(1).strip() if course_info_match else ""
-        
-        # 出走馬情報を取得
-        entries = []
-        
-        # 出走表テーブルが存在するか確認
-        if page.locator('.Shutuba_Table').count() > 0:
-            horse_rows = page.locator('.Shutuba_Table tr.HorseList').all()
-            
-            for row in horse_rows:
-                try:
-                    # 馬番
-                    horse_number = row.locator('.Waku').inner_text().strip()
-                    
-                    # 馬名
-                    horse_name = row.locator('.HorseName a').inner_text().strip()
-                    
-                    # 騎手名
-                    jockey_name = row.locator('.Jockey a').inner_text().strip()
-                    
-                    # 調教師名
-                    trainer_name = row.locator('.Trainer a').inner_text().strip()
-                    
-                    # 馬体重
-                    weight_text = row.locator('.Weight').inner_text().strip()
-                    weight = re.search(r'\d+', weight_text).group(0) if weight_text and re.search(r'\d+', weight_text) else None
-                    
-                    # オッズと人気
-                    odds_text = row.locator('.Odds').inner_text().strip()
-                    odds = re.search(r'(\d+\.\d+)', odds_text).group(1) if odds_text and re.search(r'(\d+\.\d+)', odds_text) else None
-                    
-                    popularity_text = row.locator('.Popularity').inner_text().strip()
-                    popularity = re.search(r'\d+', popularity_text).group(0) if popularity_text and re.search(r'\d+', popularity_text) else None
-                    
-                    entry = {
-                        'horse_number': horse_number,
-                        'horse_name': horse_name,
-                        'jockey_name': jockey_name,
-                        'trainer_name': trainer_name,
-                        'weight': weight,
-                        'odds': odds,
-                        'popularity': popularity
-                    }
-                    
-                    entries.append(entry)
-                except Exception as e:
-                    print(f"出走馬情報の取得エラー: {str(e)}")
-                    continue
-        else:
-            # 別の方法でテーブルを探す
-            print("通常の出走表が見つかりません。別の方法で試行します...")
-            
-            # RaceList_Itemクラスを持つ要素を探す
-            horse_items = page.locator('.RaceList_Item').all()
-            
-            for item in horse_items:
-                try:
-                    # 馬番
-                    horse_number = item.locator('.Num').inner_text().strip()
-                    
-                    # 馬名
-                    horse_name = item.locator('.Horse_Name').inner_text().strip()
-                    
-                    # 騎手名
-                    jockey_name = item.locator('.Jockey').inner_text().strip()
-                    
-                    # 調教師名 (存在しない場合は空文字)
-                    trainer_name = item.locator('.Trainer').inner_text().strip() if item.locator('.Trainer').count() > 0 else ""
-                    
-                    entry = {
-                        'horse_number': horse_number,
-                        'horse_name': horse_name,
-                        'jockey_name': jockey_name,
-                        'trainer_name': trainer_name,
-                        'weight': None,
-                        'odds': None,
-                        'popularity': None
-                    }
-                    
-                    entries.append(entry)
-                except Exception as e:
-                    print(f"代替方法での出走馬情報の取得エラー: {str(e)}")
-                    continue
-        
-        # デバッグ情報
-        print(f"取得した出走馬数: {len(entries)}")
-        if len(entries) > 0:
-            print(f"最初の馬: {entries[0]['horse_name']}")
-        
-        race_entry = {
+        entry_info = {
+            'race_name': '',
+            'race_number': '',
             'race_id': race_id,
-            'race_name': race_name,
-            'race_number': race_number,
-            'venue_name': venue_name,
-            'start_time': start_time,
-            'course_info': course_info,
-            'race_details': race_details,
-            'entries': entries
+            'venue_name': '',
+            'start_time': '',
+            'course_info': '',
+            'race_details': '',
+            'entries': []
         }
         
-        return race_entry
+        # レース名と番号を取得（複数のセレクタを試す）
+        race_name_elem = page.query_selector('.RaceList_Item02 .RaceName') or page.query_selector('.RaceName')
+        if race_name_elem:
+            entry_info['race_name'] = race_name_elem.inner_text().strip()
+            print(f"レース名: {entry_info['race_name']}")
+        else:
+            print("レース名が見つかりません")
+        
+        race_number_elem = page.query_selector('.Race_Num')
+        if race_number_elem:
+            race_number_text = race_number_elem.inner_text().strip()
+            entry_info['race_number'] = race_number_text.replace('R', '').strip()
+            print(f"レース番号: {entry_info['race_number']}")
+        else:
+            print("レース番号が見つかりません")
+        
+        # 開催場所（複数のセレクタを試す）
+        venue_elem = page.query_selector('.RaceKaisaiWrap .Active a') or page.query_selector('.RaceData02 span:nth-child(2)')
+        if venue_elem:
+            entry_info['venue_name'] = venue_elem.inner_text().strip()
+            print(f"開催場所: {entry_info['venue_name']}")
+        else:
+            print("開催場所が見つかりません")
+        
+        # 発走時刻
+        time_elem = page.query_selector('.RaceData01')
+        if time_elem:
+            time_text = time_elem.inner_text()
+            time_match = re.search(r'(\d+:\d+)発走', time_text)
+            if time_match:
+                entry_info['start_time'] = time_match.group(1)
+                print(f"発走時刻: {entry_info['start_time']}")
+            else:
+                print("発走時刻のパターンが見つかりません")
+        else:
+            print("発走時刻要素が見つかりません")
+        
+        # コース情報
+        course_elem = page.query_selector('.RaceData01 span')
+        if course_elem:
+            entry_info['course_info'] = course_elem.inner_text().strip()
+            print(f"コース情報: {entry_info['course_info']}")
+        else:
+            print("コース情報が見つかりません")
+        
+        # レース詳細情報
+        race_details_elem = page.query_selector('.RaceData02')
+        if race_details_elem:
+            entry_info['race_details'] = race_details_elem.inner_text().strip()
+            print(f"レース詳細: {entry_info['race_details']}")
+        else:
+            print("レース詳細が見つかりません")
+        
+        # 出走馬情報を取得（複数の方法を試す）
+        horse_rows = page.query_selector_all('tr.HorseList')
+        print(f"出走馬行数: {len(horse_rows)}")
+        
+        if len(horse_rows) == 0:
+            # 代替方法を試す
+            print("代替方法で出走馬情報を取得します")
+            horse_items = page.query_selector_all('.RaceList_Item')
+            print(f"代替方法での出走馬数: {len(horse_items)}")
+            
+            for item in horse_items:
+                horse_data = {}
+                
+                # 馬番
+                horse_number = item.query_selector('.Num')
+                if horse_number:
+                    horse_data['horse_number'] = horse_number.inner_text().strip()
+                
+                # 馬名
+                horse_name = item.query_selector('.Horse_Name')
+                if horse_name:
+                    horse_data['horse_name'] = horse_name.inner_text().strip()
+                
+                # 騎手
+                jockey = item.query_selector('.Jockey')
+                if jockey:
+                    horse_data['jockey_name'] = jockey.inner_text().strip()
+                
+                # 調教師
+                trainer = item.query_selector('.Trainer')
+                if trainer:
+                    horse_data['trainer_name'] = trainer.inner_text().strip()
+                
+                print(f"代替方法 - 馬データ: {horse_data}")
+                if 'horse_name' in horse_data:  # 馬名があるデータのみ追加
+                    entry_info['entries'].append(horse_data)
+        else:
+            for row in horse_rows:
+                horse_data = {}
+                
+                # 馬番
+                horse_number = row.query_selector('td.Umaban')
+                if not horse_number:
+                    horse_number = row.query_selector('td:first-child')
+                if horse_number:
+                    horse_data['horse_number'] = horse_number.inner_text().strip()
+                
+                # 馬名
+                horse_name = row.query_selector('.HorseName a')
+                if horse_name:
+                    horse_data['horse_name'] = horse_name.inner_text().strip()
+                
+                # 騎手
+                jockey = row.query_selector('.Jockey a')
+                if jockey:
+                    horse_data['jockey_name'] = jockey.inner_text().strip()
+                
+                # 調教師
+                trainer = row.query_selector('.Trainer a')
+                if trainer:
+                    horse_data['trainer_name'] = trainer.inner_text().strip()
+                
+                print(f"馬データ: {horse_data}")
+                if 'horse_name' in horse_data:  # 馬名があるデータのみ追加
+                    entry_info['entries'].append(horse_data)
+        
+        print(f"取得した出走馬数: {len(entry_info['entries'])}")
+        return entry_info
+        
     except Exception as e:
-        print(f"レース情報のスクレイピングエラー: {str(e)}")
+        print(f"レース情報取得中にエラー: {str(e)}")
+        import traceback
         traceback.print_exc()
         return None
 
@@ -445,17 +466,9 @@ def process_race_data(race_entry: Dict[str, any]):
     jockeys_data = {}
     entries_data = []
     
-    # エントリー情報をデバッグ出力
-    print(f"Debug - Race entries: {race_entry.get('entries', [])}")
-    
     for entry in race_entry.get('entries', []):
-        # エントリーデータをデバッグ出力
-        print(f"Debug - Processing entry: {entry}")
-        
-        # 馬名が存在するか確認
-        horse_name = entry.get('horse_name')
+        horse_name = entry.get('horse_name', '')
         if not horse_name:
-            print(f"Warning: Missing horse_name in entry: {entry}")
             continue
         
         # 馬情報
@@ -497,7 +510,6 @@ def process_race_data(race_entry: Dict[str, any]):
                 'horse_number': horse_number
             }
             entries_data.append(entry_data)
-            print(f"Debug - Created entry data: {entry_data}")
         except (ValueError, TypeError) as e:
             print(f"エントリー情報の変換エラー: {str(e)}")
             continue
