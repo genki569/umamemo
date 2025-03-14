@@ -280,85 +280,111 @@ def get_race_urls_for_date(page, context, date_str: str) -> List[str]:
         return list(all_race_urls)
 
 def save_to_database(races_data, horses_data, jockeys_data, entries_data):
-    """変換したデータをデータベースに保存"""
+    """スクレイピングしたデータをデータベースに保存"""
     try:
-        with app.app_context():
-            # バッチサイズを設定
-            BATCH_SIZE = 100
-            count = 0
+        count = 0
+        BATCH_SIZE = 100
+        
+        print("データベースへの保存を開始します...")
+        
+        # レース情報の保存（バッチ処理）
+        for race in races_data:
+            count += 1
+            race_id = race['id']
+            existing_race = Race.query.get(race_id)
             
-            # レース情報の保存（バッチ処理）
-            for race in races_data:
-                count += 1
-                race_obj = Race.query.get(race['id'])
-                if not race_obj:
-                    race_obj = Race(**race)
-                    db.session.add(race_obj)
-                else:
-                    for key, value in race.items():
-                        if hasattr(race_obj, key):
-                            setattr(race_obj, key, value)
-                
-                if count % BATCH_SIZE == 0:
-                    db.session.commit()
-                    print(f"Processed {count} items")
+            if not existing_race:
+                # 新規レース
+                race_obj = Race(**race)
+                db.session.add(race_obj)
+                print(f"新規レース追加: {race['venue']} {race['race_number']}R")
+            else:
+                # 既存レース更新
+                for key, value in race.items():
+                    if hasattr(existing_race, key):
+                        setattr(existing_race, key, value)
+                print(f"既存レース更新: {race['venue']} {race['race_number']}R")
             
-            # 馬情報の保存（バッチ処理）
-            for horse in horses_data.values():
-                count += 1
-                horse_obj = Horse.query.get(horse['id'])
-                if not horse_obj:
-                    horse_obj = Horse(**horse)
-                    db.session.add(horse_obj)
-                else:
-                    for key, value in horse.items():
-                        if hasattr(horse_obj, key):
-                            setattr(horse_obj, key, value)
-                
-                if count % BATCH_SIZE == 0:
-                    db.session.commit()
-                    print(f"Processed {count} items")
+            if count % BATCH_SIZE == 0:
+                db.session.commit()
+                print(f"中間保存: {count}件処理済み")
+        
+        # 馬情報の保存（バッチ処理）
+        for horse_id, horse in horses_data.items():
+            count += 1
+            existing_horse = Horse.query.get(horse_id)
             
-            # 騎手情報の保存（バッチ処理）
-            for jockey in jockeys_data.values():
-                count += 1
-                jockey_obj = Jockey.query.get(jockey['id'])
-                if not jockey_obj:
-                    jockey_obj = Jockey(**jockey)
-                    db.session.add(jockey_obj)
-                else:
-                    for key, value in jockey.items():
-                        if hasattr(jockey_obj, key):
-                            setattr(jockey_obj, key, value)
-                
-                if count % BATCH_SIZE == 0:
-                    db.session.commit()
-                    print(f"Processed {count} items")
+            if not existing_horse:
+                # 新規馬
+                horse_obj = Horse(**horse)
+                db.session.add(horse_obj)
+                print(f"新規馬追加: {horse['name']}")
+            else:
+                # 既存馬更新
+                for key, value in horse.items():
+                    if hasattr(existing_horse, key):
+                        setattr(existing_horse, key, value)
             
-            # 出走表エントリー情報の保存（バッチ処理）
-            for entry in entries_data:
-                count += 1
-                entry_obj = ShutubaEntry.query.get(entry['id'])
-                if not entry_obj:
-                    entry_obj = ShutubaEntry(**entry)
-                    db.session.add(entry_obj)
-                else:
-                    for key, value in entry.items():
-                        if hasattr(entry_obj, key):
-                            setattr(entry_obj, key, value)
-                
-                if count % BATCH_SIZE == 0:
-                    db.session.commit()
-                    print(f"Processed {count} items")
+            if count % BATCH_SIZE == 0:
+                db.session.commit()
+                print(f"中間保存: {count}件処理済み")
+        
+        # 騎手情報の保存（バッチ処理）
+        for jockey_id, jockey in jockeys_data.items():
+            count += 1
+            existing_jockey = Jockey.query.get(jockey_id)
             
-            # 残りのデータをコミット
-            db.session.commit()
-            print(f"Total processed: {count} items")
-            print("データベースへの保存が完了しました")
+            if not existing_jockey:
+                # 新規騎手
+                jockey_obj = Jockey(**jockey)
+                db.session.add(jockey_obj)
+                print(f"新規騎手追加: {jockey['name']}")
+            else:
+                # 既存騎手更新
+                for key, value in jockey.items():
+                    if hasattr(existing_jockey, key):
+                        setattr(existing_jockey, key, value)
             
+            if count % BATCH_SIZE == 0:
+                db.session.commit()
+                print(f"中間保存: {count}件処理済み")
+        
+        # 出走表エントリー情報の保存（バッチ処理）
+        for entry in entries_data:
+            count += 1
+            entry_id = entry['id']
+            existing_entry = ShutubaEntry.query.get(entry_id)
+            
+            if not existing_entry:
+                # 新規エントリー
+                entry_obj = ShutubaEntry(**entry)
+                db.session.add(entry_obj)
+            else:
+                # 既存エントリー更新
+                for key, value in entry.items():
+                    if hasattr(existing_entry, key):
+                        setattr(existing_entry, key, value)
+            
+            if count % BATCH_SIZE == 0:
+                db.session.commit()
+                print(f"中間保存: {count}件処理済み")
+        
+        # 残りのデータをコミット
+        db.session.commit()
+        print(f"データベース保存完了: 合計{count}件処理")
+        
+        # 統計情報
+        print("\n===== 保存結果 =====")
+        print(f"レース数: {len(races_data)}")
+        print(f"馬数: {len(horses_data)}")
+        print(f"騎手数: {len(jockeys_data)}")
+        print(f"エントリー数: {len(entries_data)}")
+        
     except Exception as e:
         db.session.rollback()
         print(f"データベース保存エラー: {str(e)}")
+        import traceback
+        traceback.print_exc()
         raise
 
 def extract_date_from_race_id(race_id: str) -> str:
@@ -377,13 +403,16 @@ def process_race_data(race_entry: Dict[str, any]):
     if not race_id:
         return [], {}, {}, []
     
+    venue_name = race_entry.get('venue_name', '')
+    
     # レース情報
     race_data = {
         'id': race_id,
         'name': race_entry.get('race_name', ''),
         'date': extract_date_from_race_id(race_id),
-        'venue_name': race_entry.get('venue_name', ''),
-        'venue_code': generate_venue_code(race_entry.get('venue_name', '')),
+        # venue_nameはモデルに存在しないため削除
+        'venue': venue_name,  # 'venue'フィールドを使用
+        'venue_code': generate_venue_code(venue_name),
         'race_number': int(race_entry.get('race_number', 0)),
         'course_info': race_entry.get('course_info', ''),
         'race_details': race_entry.get('race_details', '')
@@ -430,13 +459,14 @@ def process_race_data(race_entry: Dict[str, any]):
                 'race_id': race_id,
                 'horse_id': horse_id,
                 'jockey_id': jockey_id,
-                'bracket_number': (horse_number - 1) // 2 + 1 if horse_number else None,
+                'bracket_number': int(entry.get('bracket_number', 0)),  # 枠番を直接使用
                 'horse_number': horse_number,
-                'weight_carry': float(entry.get('weight', 0)),
-                'odds': float(entry.get('odds', 0)),
-                'popularity': int(entry.get('popularity', 0))
+                'weight_carry': float(entry.get('weight', 0)) if entry.get('weight') else None,
+                'odds': float(entry.get('odds', 0)) if entry.get('odds') else None,
+                'popularity': int(entry.get('popularity', 0)) if entry.get('popularity') else None
             })
-        except (ValueError, TypeError):
+        except (ValueError, TypeError) as e:
+            print(f"エントリー情報の変換エラー: {str(e)}")
             continue
     
     return [race_data], horses_data, jockeys_data, entries_data
