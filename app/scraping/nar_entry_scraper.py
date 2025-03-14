@@ -11,24 +11,120 @@ import json
 from app import app, db
 from app.models import Race, Horse, Jockey, ShutubaEntry
 
+def generate_race_id(race_url: str) -> str:
+    """レースURLからレースIDを生成（15桁）"""
+    try:
+        # URLからrace_idパラメータを抽出
+        race_id = race_url.split('race_id=')[1].split('&')[0]
+        return race_id
+    except Exception as e:
+        print(f"レースID生成エラー: {str(e)}")
+        return None
+
+def generate_venue_code(venue_name: str) -> str:
+    """開催場所から3桁のコードを生成"""
+    venue_codes = {
+        '札幌': '101',
+        '函館': '102',
+        '福島': '103',
+        '新潟': '104',
+        '東京': '105',
+        '中山': '106',
+        '中京': '107',
+        '京都': '108',
+        '阪神': '109',
+        '小倉': '110',
+        '門別': '201',
+        '帯広': '202',
+        '盛岡': '203',
+        '水沢': '204',
+        '浦和': '205',
+        '船橋': '206',
+        '大井': '207',
+        '川崎': '208',
+        '金沢': '209',
+        '笠松': '210',
+        '名古屋': '211',
+        '園田': '212',
+        '姫路': '213',
+        '高知': '214',
+        '佐賀': '215'
+    }
+    return venue_codes.get(venue_name, '299')  # 不明な場合は299を返す
+
+def generate_entry_id(race_id: str, horse_number: int) -> str:
+    """エントリーIDを生成（17桁）"""
+    return f"{race_id}{horse_number:02d}"
+
+def generate_horse_id(horse_name: str) -> str:
+    """馬IDを生成（10桁）"""
+    if not hasattr(generate_horse_id, 'used_ids'):
+        generate_horse_id.used_ids = set()
+        generate_horse_id.name_to_id = {}
+
+    if horse_name in generate_horse_id.name_to_id:
+        return generate_horse_id.name_to_id[horse_name]
+
+    name_hash = 0
+    for i, char in enumerate(horse_name):
+        position_weight = (i + 1) * 100
+        char_value = ord(char) * position_weight
+        name_hash = (name_hash * 31 + char_value) & 0xFFFFFFFF
+
+    base_id = int(f"1{abs(name_hash) % 999999999:09d}")
+
+    while base_id in generate_horse_id.used_ids:
+        base_id += 1
+        if base_id % 1000000000 == 0:
+            base_id = 1000000000
+
+    generate_horse_id.used_ids.add(base_id)
+    generate_horse_id.name_to_id[horse_name] = base_id
+
+    return str(base_id)
+
+def generate_jockey_id(jockey_name: str) -> str:
+    """騎手IDを生成（10桁）"""
+    if not hasattr(generate_jockey_id, 'used_ids'):
+        generate_jockey_id.used_ids = set()
+        generate_jockey_id.name_to_id = {}
+
+    if jockey_name in generate_jockey_id.name_to_id:
+        return generate_jockey_id.name_to_id[jockey_name]
+
+    name_hash = sum(ord(c) for c in jockey_name)
+    base_id = int(f"2{abs(name_hash) % 999999999:09d}")
+
+    while base_id in generate_jockey_id.used_ids:
+        base_id += 1
+        if base_id % 1000000000 == 0:
+            base_id = 2000000000
+
+    generate_jockey_id.used_ids.add(base_id)
+    generate_jockey_id.name_to_id[jockey_name] = base_id
+
+    return str(base_id)
+
 def scrape_race_entry(page, race_url: str) -> Dict[str, any]:
     """出走表ページから情報を取得する"""
     try:
         page.goto(race_url, wait_until='domcontentloaded', timeout=30000)
         page.wait_for_timeout(3000)
         
-        # race_idを取得（URLから）
-        race_id = race_url.split('race_id=')[1].split('&')[0]
+        # race_idを生成
+        race_id = generate_race_id(race_url)
+        if not race_id:
+            return None
         
         entry_info = {
+            'race_id': race_id,  # 生成したIDを使用
             'race_name': '',
             'race_number': '',
-            'race_id': race_id,  # dateの代わりにrace_idを使用
             'venue_name': '',
             'start_time': '',
             'course_info': '',
             'race_details': '',
-            'entries': []  # 出走馬情報（results → entries に変更）
+            'entries': []
         }
         
         # レース名と番号を取得
@@ -389,6 +485,16 @@ def get_race_info_for_next_three_days():
     except Exception as e:
         print(f"処理エラー: {str(e)}")
         raise
+
+def extract_date_from_race_id(race_id: str) -> str:
+    """レースIDから日付を抽出する（例: 202543031407 -> 2025-03-14）"""
+    try:
+        year = race_id[:4]
+        month = race_id[6:8]
+        day = race_id[8:10]
+        return f"{year}-{month}-{day}"
+    except Exception:
+        return None
 
 if __name__ == '__main__':
     print("地方競馬出走表の取得を開始します...")
