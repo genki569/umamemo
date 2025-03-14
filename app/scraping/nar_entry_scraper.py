@@ -292,63 +292,56 @@ def save_to_csv(race_entry: Dict[str, any], filename: str = None):
         import traceback
         traceback.print_exc()
 
-def get_race_urls_for_date(page, context, date_str):
-    """指定日の全レースURLを取得"""
-    race_urls = []
-    processed_urls = set()  # 重複チェック用のセット
+def get_race_urls_for_date(page, context, date_str: str) -> List[str]:
+    """指定日の全レースの出馬表URLを取得（重複なし）"""
+    all_race_urls = set()  # セットを使用して重複を防ぐ
     
     try:
+        url = f"https://nar.netkeiba.com/top/race_list.html?kaisai_date={date_str}"
         print(f"\n{date_str}のレース情報を取得中...")
         
-        # トップページにアクセス
+        # タイムアウトを設定
+        page.set_default_timeout(60000)
+        
+        # まずトップページにアクセス
         print("トップページにアクセスしています...")
-        page.goto("https://nar.netkeiba.com/top/", wait_until='domcontentloaded')
-        page.wait_for_timeout(2000)
+        page.goto("https://nar.netkeiba.com/", wait_until='domcontentloaded')
+        page.wait_for_timeout(3000)
         
-        # 日付指定のレース一覧ページにアクセス
-        race_list_url = f"https://nar.netkeiba.com/top/race_list.html?kaisai_date={date_str}"
-        print(f"レース一覧ページにアクセスしています: {race_list_url}")
-        page.goto(race_list_url, wait_until='domcontentloaded')
-        page.wait_for_timeout(2000)
+        # 次に目的のページに遷移
+        print(f"レース一覧ページにアクセスしています: {url}")
+        try:
+            page.goto(url, wait_until='domcontentloaded', timeout=60000)
+        except TimeoutError:
+            print("ページの完全な読み込みはタイムアウトしましたが、処理を継続します")
         
-        # 開催場所のリンクを取得
-        venue_links = page.query_selector_all('.RaceKaisaiWrap a')
-        print(f"開催場所数: {len(venue_links)}")
+        page.wait_for_timeout(5000)
         
-        # 各開催場所のレースURLを取得
-        for venue_link in venue_links:
-            venue_url = venue_link.get_attribute('href')
-            if venue_url and 'kaisai_id' in venue_url:
-                venue_url = "https://nar.netkeiba.com" + venue_url
-                venue_name = venue_link.inner_text().strip()
-                print(f"\n開催場所: {venue_name}")
-                print(f"開催場所URL: {venue_url}")
+        # 日付ページから直接すべてのレースリンクを取得
+        print("すべてのレースリンクを取得しています...")
+        race_links = page.query_selector_all('a[href*="/race/shutuba.html"]')
+        print(f"レースリンク数: {len(race_links)}")
+        
+        for link in race_links:
+            href = link.get_attribute('href')
+            if href:
+                # 相対パスを絶対パスに変換
+                if href.startswith('/'):
+                    race_url = f"https://nar.netkeiba.com{href}"
+                else:
+                    race_url = f"https://nar.netkeiba.com{href.replace('..', '')}"
                 
-                # 開催場所ページにアクセス
-                page.goto(venue_url, wait_until='domcontentloaded')
-                page.wait_for_timeout(2000)
-                
-                # レースへのリンクを取得
-                race_links = page.query_selector_all('a.RaceList_DataItem')
-                
-                for race_link in race_links:
-                    race_url = race_link.get_attribute('href')
-                    if race_url and 'race_id' in race_url:
-                        race_url = "https://nar.netkeiba.com" + race_url.replace('result', 'shutuba')
-                        
-                        # 重複チェック - 同じURLが既に処理されていたらスキップ
-                        if race_url not in processed_urls:
-                            processed_urls.add(race_url)
-                            race_urls.append(race_url)
-                            print(f"レースURL追加: {race_url}")
+                # セットに追加（自動的に重複排除）
+                all_race_urls.add(race_url)
         
-        return race_urls
-        
+        print(f"重複排除後のレースURL数: {len(all_race_urls)}")
+                
     except Exception as e:
-        print(f"レースURL取得エラー: {str(e)}")
+        print(f"レースURL取得中にエラー: {str(e)}")
         import traceback
         traceback.print_exc()
-        return race_urls
+    
+    return list(all_race_urls)  # セットをリストに変換して返す
 
 def get_race_info_for_next_three_days():
     """今日から3日分のレース情報を取得"""
