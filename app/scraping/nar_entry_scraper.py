@@ -156,13 +156,13 @@ def save_to_csv(race_entry: Dict[str, any], filename: str):
 
 def get_race_urls_for_date(page, context, date_str: str) -> List[str]:
     """指定日の全レースの出馬表URLを取得"""
-    all_race_urls = []
+    all_race_urls = set()  # リストからセットに変更して重複を防ぐ
     try:
         url = f"https://nar.netkeiba.com/top/race_list.html?kaisai_date={date_str}"
         print(f"\n{date_str}のレース情報を取得中...")
         
         # タイムアウトを設定
-        page.set_default_timeout(60000)  # 60秒
+        page.set_default_timeout(60000)
         
         # まずトップページにアクセス
         print("トップページにアクセスしています...")
@@ -206,15 +206,15 @@ def get_race_urls_for_date(page, context, date_str: str) -> List[str]:
                         venue_page.goto(venue_url, wait_until='domcontentloaded', timeout=30000)
                         venue_page.wait_for_timeout(3000)
                         
-                        # レース情報を取得
+                        # レース情報を取得（各開催場所固有のレースのみ）
                         races = venue_page.query_selector_all('dl.RaceList_DataList')
                         for race in races:
                             race_links = race.query_selector_all('a[href*="/race/shutuba.html"]')
                             for link in race_links:
                                 href = link.get_attribute('href')
-                                if href:
+                                if href and venue_name in link.inner_text():  # 開催場所名でフィルタリング
                                     race_url = f"https://nar.netkeiba.com{href.replace('..', '')}"
-                                    all_race_urls.append(race_url)
+                                    all_race_urls.add(race_url)  # addを使用して重複を防ぐ
                                     print(f"レースURL追加: {race_url}")
                                     
                     finally:
@@ -227,7 +227,7 @@ def get_race_urls_for_date(page, context, date_str: str) -> List[str]:
     except Exception as e:
         print(f"レースURL取得中にエラー: {str(e)}")
     
-    return all_race_urls
+    return list(all_race_urls)  # セットをリストに変換して返す
 
 def get_race_info_for_next_three_days():
     """今日から3日分のレース情報を取得"""
