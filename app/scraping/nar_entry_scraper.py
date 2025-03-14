@@ -8,8 +8,6 @@ import os
 import csv
 import re
 import json
-from app.models import Race, Horse, Jockey, ShutubaEntry
-from app.extensions import db
 
 def scrape_race_entry(page, race_url: str) -> Dict[str, any]:
     """出走表ページから情報を取得する"""
@@ -240,164 +238,40 @@ def get_race_urls_for_date(page, context, date_str: str) -> List[str]:
     
     return all_race_urls
 
-def get_race_info_for_next_three_days():
+def get_race_info_for_next_three_days() -> List[Dict[str, any]]:
     """今日から3日分のレース情報を取得"""
-    try:
-        all_race_entries = []
-        today = datetime.now()
+    all_race_entries = []
+    today = datetime.now()
+    
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=True)
+        context = browser.new_context(
+            viewport={'width': 1920, 'height': 1080},
+            user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
+        )
         
-        with sync_playwright() as p:
-            browser = p.chromium.launch(headless=True)
-            context = browser.new_context(
-                viewport={'width': 1920, 'height': 1080},
-                user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
-            )
+        try:
+            page = context.new_page()
             
-            try:
-                page = context.new_page()
+            for i in range(3):
+                target_date = today + timedelta(days=i)
+                date_str = target_date.strftime("%Y%m%d")
+                print(f"\n{date_str}のレース情報の取得を開始します...")
                 
-                for i in range(3):
-                    target_date = today + timedelta(days=i)
-                    date_str = target_date.strftime("%Y%m%d")
-                    print(f"\n{date_str}のレース情報の取得を開始します...")
-                    
-                    race_urls = get_race_urls_for_date(page, context, date_str)
-                    print(f"取得したレースURL数: {len(race_urls)}")
-                    
-                    # 各レースの情報を取得してすぐにCSVに保存
-                    for race_url in race_urls:
-                        # レース情報のスクレイピング
-                        race_entry = scrape_race_entry(page, race_url)
-                        if race_entry:
-                            # CSVに生データを保存
-                            save_to_csv(race_entry)
-                            
-                            # データを変換
-                            converted_data = convert_entry_data(race_entry)
-                            if converted_data:
-                                # 変換したデータをDBに保存
-                                save_converted_data(converted_data)
-                                
-            finally:
-                context.close()
-                browser.close()
-        
-        return all_race_entries
-        
-    except Exception as e:
-        print(f"処理エラー: {str(e)}")
-
-def convert_race_id(url: str) -> str:
-    """URLからレースIDを抽出"""
-    match = re.search(r'race_id=(\d+)', url)
-    return match.group(1) if match else None
-
-def get_or_create_horse(name: str) -> Horse:
-    """馬名から馬を取得または作成"""
-    horse = Horse.query.filter_by(name=name).first()
-    if not horse:
-        horse = Horse(name=name)
-        db.session.add(horse)
-        db.session.flush()
-    return horse
-
-def get_or_create_jockey(name: str) -> Jockey:
-    """騎手名から騎手を取得または作成"""
-    jockey = Jockey.query.filter_by(name=name).first()
-    if not jockey:
-        jockey = Jockey(name=name)
-        db.session.add(jockey)
-        db.session.flush()
-    return jockey
-
-def convert_entry_data(race_entry: Dict[str, any]) -> Dict[str, any]:
-    """スクレイピングしたデータを適切な形式に変換"""
-    try:
-        # レース基本情報の変換
-        converted_data = {
-            'race_id': convert_race_id(race_entry['race_id']),
-            'race_name': race_entry['race_name'],
-            'race_number': int(race_entry['race_number']),
-            'venue_name': race_entry['venue_name'],
-            'start_time': datetime.strptime(race_entry['start_time'], '%H:%M').time(),
-            'course_info': race_entry['course_info'],
-            'race_details': race_entry['race_details'],
-            'entries': []
-        }
-
-        # 出走馬情報の変換
-        for entry in race_entry['entries']:
-            # 馬情報の取得/作成
-            horse = get_or_create_horse(entry['horse_name'])
-            
-            # 騎手情報の取得/作成
-            jockey = get_or_create_jockey(entry['jockey_name'])
-            
-            # 調教師情報の取得/作成（必要な場合）
-            trainer = get_or_create_trainer(entry['trainer_name'])
-            
-            converted_entry = {
-                'horse_id': horse.id,
-                'jockey_id': jockey.id,
-                'trainer_id': trainer.id,
-                'horse_number': int(entry['horse_number']),
-                'weight': float(entry['weight']) if entry.get('weight') else None,
-                'odds': float(entry['odds']) if entry.get('odds') else None,
-                'popularity': int(entry['popularity']) if entry.get('popularity') else None
-            }
-            
-            converted_data['entries'].append(converted_entry)
-            
-        return converted_data
-        
-    except Exception as e:
-        print(f"データ変換エラー: {str(e)}")
-        return None
-
-def save_converted_data(converted_data: Dict[str, any]):
-    """変換したデータをデータベースに保存"""
-    try:
-        # レース情報の保存/更新
-        race = Race.query.get(converted_data['race_id'])
-        if not race:
-            race = Race(
-                id=converted_data['race_id'],
-                name=converted_data['race_name'],
-                race_number=converted_data['race_number'],
-                venue_name=converted_data['venue_name'],
-                start_time=converted_data['start_time'],
-                course_info=converted_data['course_info'],
-                race_details=converted_data['race_details']
-            )
-            db.session.add(race)
-        
-        # 出走登録情報の保存
-        for entry_data in converted_data['entries']:
-            entry = ShutubaEntry.query.filter_by(
-                race_id=race.id,
-                horse_id=entry_data['horse_id']
-            ).first()
-            
-            if not entry:
-                entry = ShutubaEntry(
-                    race_id=race.id,
-                    horse_id=entry_data['horse_id'],
-                    jockey_id=entry_data['jockey_id'],
-                    trainer_id=entry_data['trainer_id'],
-                    horse_number=entry_data['horse_number'],
-                    weight=entry_data['weight'],
-                    odds=entry_data['odds'],
-                    popularity=entry_data['popularity']
-                )
-                db.session.add(entry)
-        
-        db.session.commit()
-        print(f"保存完了: {converted_data['venue_name']} {converted_data['race_number']}R")
-        
-    except Exception as e:
-        db.session.rollback()
-        print(f"データベース保存エラー: {str(e)}")
-        raise
+                race_urls = get_race_urls_for_date(page, context, date_str)
+                print(f"取得したレースURL数: {len(race_urls)}")
+                
+                # 各レースの情報を取得してすぐにCSVに保存
+                for race_url in race_urls:
+                    race_entry = scrape_race_entry(page, race_url)
+                    if race_entry:
+                        save_to_csv(race_entry)
+                        print(f"レース情報保存: {race_entry['venue_name']} {race_entry['race_number']}R")
+        finally:
+            context.close()
+            browser.close()
+    
+    return all_race_entries
 
 if __name__ == '__main__':
     print("地方競馬出走表の取得を開始します...")
