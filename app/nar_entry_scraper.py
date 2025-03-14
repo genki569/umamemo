@@ -8,111 +8,6 @@ import os
 import csv
 import re
 import json
-from app import app, db
-from app.models import Race, Horse, Jockey, ShutubaEntry
-import traceback
-
-def generate_race_id(race_url: str) -> str:
-    """レースURLからレースIDを生成（15桁）"""
-    try:
-        # URLからrace_idパラメータを抽出
-        race_id = race_url.split('race_id=')[1].split('&')[0]
-        return race_id
-    except Exception as e:
-        print(f"レースID生成エラー: {str(e)}")
-        return None
-
-def generate_venue_code(venue_name: str) -> str:
-    """開催場所から3桁のコードを生成"""
-    venue_codes = {
-        '札幌': '101',
-        '函館': '102',
-        '福島': '103',
-        '新潟': '104',
-        '東京': '105',
-        '中山': '106',
-        '中京': '107',
-        '京都': '108',
-        '阪神': '109',
-        '小倉': '110',
-        '門別': '201',
-        '帯広': '202',
-        '盛岡': '203',
-        '水沢': '204',
-        '浦和': '205',
-        '船橋': '206',
-        '大井': '207',
-        '川崎': '208',
-        '金沢': '209',
-        '笠松': '210',
-        '名古屋': '211',
-        '園田': '212',
-        '姫路': '213',
-        '高知': '214',
-        '佐賀': '215'
-    }
-    return venue_codes.get(venue_name, '299')  # 不明な場合は299を返す
-
-def generate_entry_id(race_id, horse_number):
-    """
-    エントリーIDの生成（17桁）
-    レースID(15桁) + 馬番(2桁)の形式
-    例: レースID=202401011010112, 馬番=7 の場合
-    → 20240101101011207
-    """
-    try:
-        return int(f"{race_id}{str(int(horse_number)).zfill(2)}")
-    except:
-        return None
-
-def generate_horse_id(horse_name: str) -> str:
-    """馬IDを生成（10桁）"""
-    if not hasattr(generate_horse_id, 'used_ids'):
-        generate_horse_id.used_ids = set()
-        generate_horse_id.name_to_id = {}
-
-    if horse_name in generate_horse_id.name_to_id:
-        return generate_horse_id.name_to_id[horse_name]
-
-    name_hash = 0
-    for i, char in enumerate(horse_name):
-        position_weight = (i + 1) * 100
-        char_value = ord(char) * position_weight
-        name_hash = (name_hash * 31 + char_value) & 0xFFFFFFFF
-
-    base_id = int(f"1{abs(name_hash) % 999999999:09d}")
-
-    while base_id in generate_horse_id.used_ids:
-        base_id += 1
-        if base_id % 1000000000 == 0:
-            base_id = 1000000000
-
-    generate_horse_id.used_ids.add(base_id)
-    generate_horse_id.name_to_id[horse_name] = base_id
-
-    return str(base_id)
-
-def generate_jockey_id(jockey_name: str) -> str:
-    """騎手IDを生成（10桁）"""
-    if not hasattr(generate_jockey_id, 'used_ids'):
-        generate_jockey_id.used_ids = set()
-        generate_jockey_id.name_to_id = {}
-
-    if jockey_name in generate_jockey_id.name_to_id:
-        return generate_jockey_id.name_to_id[jockey_name]
-
-    name_hash = sum(ord(c) for c in jockey_name)
-    base_id = int(f"2{abs(name_hash) % 999999999:09d}")
-
-    while base_id in generate_jockey_id.used_ids:
-        base_id += 1
-        if base_id % 1000000000 == 0:
-            base_id = 2000000000
-
-    generate_jockey_id.used_ids.add(base_id)
-    generate_jockey_id.name_to_id[jockey_name] = base_id
-
-    return str(base_id)
 
 def scrape_race_entry(page, race_url: str) -> Dict[str, any]:
     """出走表ページから情報を取得する"""
@@ -231,52 +126,42 @@ def scrape_race_entry(page, race_url: str) -> Dict[str, any]:
         
     except Exception as e:
         print(f"レース情報取得中にエラー: {str(e)}")
-        import traceback
-        traceback.print_exc()
         return None
 
-def save_to_csv(race_entry: Dict[str, any], filename: str = None):
-    """レース情報をCSVに保存する"""
-    try:
-        os.makedirs('data/race_entries', exist_ok=True)
+def save_to_csv(race_entry: Dict[str, any]):
+    """レース情報をCSVに保存する（1レース1行）"""
+    # 保存先ディレクトリの作成
+    os.makedirs('data/race_entries', exist_ok=True)
+    current_date = datetime.now().strftime('%Y%m%d')
+    filename = f'data/race_entries/nar_race_entries_{current_date}.csv'
+    
+    # ファイルが存在しない場合は新規作成
+    file_exists = os.path.isfile(filename)
+    
+    # レース詳細情報から余分なスペースと改行を削除
+    race_details = ' '.join(race_entry['race_details'].split())
+    
+    with open(filename, 'a', newline='', encoding='utf-8') as f:
+        writer = csv.writer(f)
         
-        if filename is None:
-            current_date = datetime.now().strftime('%Y%m%d')
-            filename = f'data/race_entries/nar_race_entries_{current_date}.csv'
-        else:
-            filename = f'data/race_entries/{filename}'
-        
-        # ファイルが存在しない場合は新規作成
-        file_exists = os.path.isfile(filename)
-        
-        with open(filename, 'a', newline='', encoding='utf-8') as f:
-            writer = csv.writer(f)
-            
-            # ヘッダーを書き込む（ファイルが新規の場合のみ）
-            if not file_exists:
-                writer.writerow([
-                    'race_id', 'race_name', 'race_number', 'venue_name', 
-                    'start_time', 'course_info', 'race_details', 'entries'
-                ])
-            
-            # レース情報を1行で書き込む
+        # ヘッダーを書き込む（ファイルが新規の場合のみ）
+        if not file_exists:
             writer.writerow([
-                race_entry['race_id'],
-                race_entry['race_name'],
-                race_entry['race_number'],
-                race_entry['venue_name'],
-                race_entry['start_time'],
-                race_entry['course_info'],
-                race_entry['race_details'],
-                json.dumps(race_entry['entries'], ensure_ascii=False)  # 出走馬情報をJSON形式で保存
+                'race_id', 'race_name', 'race_number', 'venue_name', 
+                'start_time', 'course_info', 'race_details', 'entries'
             ])
-            
-        print(f"CSVに保存しました: {filename}")
-            
-    except Exception as e:
-        print(f"CSV保存エラー: {str(e)}")
-        import traceback
-        traceback.print_exc()
+        
+        # レース情報を1行で書き込む
+        writer.writerow([
+            race_entry['race_id'],
+            race_entry['race_name'],
+            race_entry['race_number'],
+            race_entry['venue_name'],
+            race_entry['start_time'],
+            race_entry['course_info'],
+            race_details,
+            json.dumps(race_entry['entries'], ensure_ascii=False)  # 出走馬情報をJSON形式で保存
+        ])
 
 def get_race_urls_for_date(page, context, date_str: str) -> List[str]:
     """指定日の全レースの出馬表URLを取得"""
@@ -350,53 +235,54 @@ def get_race_urls_for_date(page, context, date_str: str) -> List[str]:
                 
     except Exception as e:
         print(f"レースURL取得中にエラー: {str(e)}")
-        import traceback
-        traceback.print_exc()
     
     return all_race_urls
 
-def get_race_info_for_next_three_days():
+def get_race_info_for_next_three_days() -> List[Dict[str, any]]:
     """今日から3日分のレース情報を取得"""
-    try:
-        with sync_playwright() as p:
-            browser = p.chromium.launch(headless=True)
-            context = browser.new_context(
-                viewport={'width': 1920, 'height': 1080},
-                user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
-            )
+    all_race_entries = []
+    today = datetime.now()
+    
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=True)
+        context = browser.new_context(
+            viewport={'width': 1920, 'height': 1080},
+            user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
+        )
+        
+        try:
+            page = context.new_page()
             
-            try:
-                page = context.new_page()
+            for i in range(3):
+                target_date = today + timedelta(days=i)
+                date_str = target_date.strftime("%Y%m%d")
+                print(f"\n{date_str}のレース情報の取得を開始します...")
                 
-                for i in range(3):
-                    target_date = datetime.now() + timedelta(days=i)
-                    date_str = target_date.strftime("%Y%m%d")
-                    filename = f"nar_race_entries_{date_str}.csv"
-                    
-                    print(f"\n{date_str}の処理を開始します...")
-                    
-                    race_urls = get_race_urls_for_date(page, context, date_str)
-                    print(f"{date_str}のレースURL数: {len(race_urls)}")
-                    
-                    if race_urls:  # レースURLが存在する場合のみ処理
-                        for race_url in race_urls:
-                            race_entry = scrape_race_entry(page, race_url)
-                            if race_entry and 'horse_name' in race_entry['entries'][0]:
-                                save_to_csv(race_entry, filename)
-                                print(f"保存完了: {race_entry['venue_name']} {race_entry['race_number']}R")
-                        print(f"{date_str}の処理が完了しました")
-                    else:
-                        print(f"{date_str}のレースはありません")
+                race_urls = get_race_urls_for_date(page, context, date_str)
+                print(f"取得したレースURL数: {len(race_urls)}")
                 
-            finally:
-                context.close()
-                browser.close()
-                
-    except Exception as e:
-        print(f"処理エラー: {str(e)}")
-        import traceback
-        traceback.print_exc()
+                # 各レースの情報を取得してすぐにCSVに保存
+                for race_url in race_urls:
+                    race_entry = scrape_race_entry(page, race_url)
+                    if race_entry:
+                        save_to_csv(race_entry)
+                        print(f"レース情報保存: {race_entry['venue_name']} {race_entry['race_number']}R")
+        finally:
+            context.close()
+            browser.close()
+    
+    return all_race_entries
 
 if __name__ == '__main__':
     print("地方競馬出走表の取得を開始します...")
-    get_race_info_for_next_three_days()
+    
+    # 3日分のレース情報を取得
+    all_race_entries = get_race_info_for_next_three_days()
+    
+    # 全レース情報をCSVに保存
+    if all_race_entries:
+        today = datetime.now().strftime('%Y%m%d')
+        filename = f"nar_race_entries_{today}.csv"
+        for race_entry in all_race_entries:
+            save_to_csv(race_entry, filename)
+        print(f"\n取得したレース数: {len(all_race_entries)}")
