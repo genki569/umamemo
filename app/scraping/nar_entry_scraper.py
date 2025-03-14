@@ -373,55 +373,53 @@ def get_race_info_for_next_three_days():
     """今日から3日分のレース情報を取得"""
     try:
         with sync_playwright() as p:
-            browser = p.chromium.launch(headless=True)
-            context = browser.new_context(
-                viewport={'width': 1920, 'height': 1080},
-                user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36',
-                extra_http_headers={
-                    'Accept-Language': 'ja,en-US;q=0.9,en;q=0.8'
-                }
-            )
+            # 並列処理のために複数のブラウザを起動
+            browser_options = {
+                'headless': True,
+                'args': ['--disable-gpu', '--disable-dev-shm-usage', '--no-sandbox']
+            }
+            browser = p.chromium.launch(**browser_options)
             
-            try:
-                page = context.new_page()
+            # 日付ごとに並列処理
+            contexts = []
+            pages = []
+            
+            # 各日付用のコンテキストとページを作成
+            for i in range(3):
+                context = browser.new_context(
+                    viewport={'width': 1920, 'height': 1080},
+                    user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
+                )
+                contexts.append(context)
+                pages.append(context.new_page())
+            
+            # 各日付の処理を開始
+            for i in range(3):
+                target_date = datetime.now() + timedelta(days=i)
+                date_str = target_date.strftime("%Y%m%d")
+                filename = f"nar_race_entries_{date_str}.csv"
                 
-                for i in range(3):
-                    target_date = datetime.now() + timedelta(days=i)
-                    date_str = target_date.strftime("%Y%m%d")
-                    filename = f"nar_race_entries_{date_str}.csv"
-                    
-                    print(f"\n{date_str}の処理を開始します...")
-                    
-                    race_urls = get_race_urls_for_date(page, context, date_str)
-                    print(f"{date_str}のレースURL数: {len(race_urls)}")
-                    
-                    if race_urls:  # レースURLが存在する場合のみ処理
-                        for idx, race_url in enumerate(race_urls):
-                            try:
-                                race_entry = scrape_race_entry(page, race_url)
-                                if race_entry and race_entry['entries'] and len(race_entry['entries']) > 0:
-                                    save_to_csv(race_entry, filename)
-                                    print(f"保存完了: {race_entry['venue_name']} {race_entry['race_number']}R")
-                                
-                                if (idx + 1) % 10 == 0:
-                                    print(f"{idx + 1}レース処理完了。サーバー負荷軽減のため30秒休憩します...")
-                                    page.wait_for_timeout(30000)
-                                else:
-                                    page.wait_for_timeout(5000)
-                                    
-                            except Exception as e:
-                                print(f"レース {race_url} の処理中にエラー: {str(e)}")
-                                import traceback
-                                traceback.print_exc()
-                                continue
-                                
-                        print(f"{date_str}の処理が完了しました")
-                    else:
-                        print(f"{date_str}のレースはありません")
+                print(f"\n{date_str}の処理を開始します...")
                 
-            finally:
+                # 待機時間を短縮
+                pages[i].set_default_timeout(30000)
+                race_urls = get_race_urls_for_date(pages[i], contexts[i], date_str)
+                print(f"{date_str}のレースURL数: {len(race_urls)}")
+                
+                # 各レースの処理
+                if race_urls:
+                    for race_url in race_urls:
+                        race_entry = scrape_race_entry(pages[i], race_url)
+                        if race_entry:
+                            save_to_csv(race_entry, filename)
+                            print(f"保存完了: {race_entry['venue_name']} {race_entry['race_number']}R")
+                        # 待機時間を短縮
+                        pages[i].wait_for_timeout(1000)
+            
+            # クリーンアップ
+            for context in contexts:
                 context.close()
-                browser.close()
+            browser.close()
                 
     except Exception as e:
         print(f"処理エラー: {str(e)}")

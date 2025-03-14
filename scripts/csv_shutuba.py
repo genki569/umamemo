@@ -120,8 +120,9 @@ def generate_entry_id(race_id, horse_number):
         return None
 
 def save_to_database(races_data, horses_data, jockeys_data, entries_data):
-    """変換したデータをデータベースに保存"""
+    """データベースに保存する"""
     try:
+        # Flaskアプリケーションコンテキスト内で実行
         with app.app_context():
             # バッチサイズを設定
             BATCH_SIZE = 100
@@ -198,9 +199,12 @@ def save_to_database(races_data, horses_data, jockeys_data, entries_data):
             print("データベースへの保存が完了しました")
             
     except Exception as e:
-        db.session.rollback()
         print(f"データベース保存エラー: {str(e)}")
-        raise
+        import traceback
+        traceback.print_exc()
+        # Flaskアプリケーションコンテキスト内でロールバック
+        with app.app_context():
+            db.session.rollback()
 
 def process_shutuba_data(input_path: str) -> None:
     """出走表CSVを読み込んでデータベースに保存"""
@@ -289,4 +293,5 @@ if __name__ == "__main__":
         sys.exit(1)
     
     input_path = sys.argv[1]
-    process_shutuba_data(input_path)
+    with app.app_context():
+        process_shutuba_data(input_path)
