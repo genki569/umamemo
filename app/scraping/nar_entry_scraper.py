@@ -117,91 +117,125 @@ def generate_jockey_id(jockey_name: str) -> str:
 def scrape_race_entry(page, race_url):
     """レース出走表ページをスクレイピング"""
     try:
-        page.goto(race_url)
-        page.wait_for_selector('.RaceList_Item', timeout=10000)
+        # ページ読み込み時の待機時間を延長
+        page.goto(race_url, timeout=60000)
+        
+        # 要素が表示されるまで待機
+        page.wait_for_selector('.RaceList_NameBox', timeout=60000)
         
         # レース情報を取得
         race_id = extract_race_id_from_url(race_url)
         race_name = page.locator('.RaceName').inner_text().strip()
-        race_number_text = page.locator('.RaceNum').inner_text().strip()
+        race_number_text = page.locator('.Race_Num').inner_text().strip()
         race_number = int(re.search(r'\d+', race_number_text).group(0))
-        venue_name = page.locator('.RaceKaisai').inner_text().strip()
-        race_details = page.locator('.RaceData01').inner_text().strip()
+        venue_name = page.locator('.RaceKaisaiWrap .Active a').inner_text().strip()
+        
+        # レース詳細情報
+        race_data = page.locator('.RaceData01').inner_text().strip()
+        race_details = page.locator('.RaceData02').inner_text().strip()
+        
+        # 発走時間を抽出
+        start_time_match = re.search(r'(\d+:\d+)発走', race_data)
+        start_time = start_time_match.group(1) if start_time_match else "00:00"
+        
+        # コース情報を抽出
+        course_info_match = re.search(r'/(.*?)\(', race_data)
+        course_info = course_info_match.group(1).strip() if course_info_match else ""
         
         # 出走馬情報を取得
         entries = []
-        horse_rows = page.locator('.HorseList').locator('tr').all()
-        print(f"Found {len(horse_rows)} horse rows")
         
-        for row in horse_rows:
-            try:
-                # 馬番
-                horse_number_cell = row.locator('td').nth(1)
-                if not horse_number_cell.is_visible():
+        # 出走表テーブルが存在するか確認
+        if page.locator('.Shutuba_Table').count() > 0:
+            horse_rows = page.locator('.Shutuba_Table tr.HorseList').all()
+            
+            for row in horse_rows:
+                try:
+                    # 馬番
+                    horse_number = row.locator('.Waku').inner_text().strip()
+                    
+                    # 馬名
+                    horse_name = row.locator('.HorseName a').inner_text().strip()
+                    
+                    # 騎手名
+                    jockey_name = row.locator('.Jockey a').inner_text().strip()
+                    
+                    # 調教師名
+                    trainer_name = row.locator('.Trainer a').inner_text().strip()
+                    
+                    # 馬体重
+                    weight_text = row.locator('.Weight').inner_text().strip()
+                    weight = re.search(r'\d+', weight_text).group(0) if weight_text and re.search(r'\d+', weight_text) else None
+                    
+                    # オッズと人気
+                    odds_text = row.locator('.Odds').inner_text().strip()
+                    odds = re.search(r'(\d+\.\d+)', odds_text).group(1) if odds_text and re.search(r'(\d+\.\d+)', odds_text) else None
+                    
+                    popularity_text = row.locator('.Popularity').inner_text().strip()
+                    popularity = re.search(r'\d+', popularity_text).group(0) if popularity_text and re.search(r'\d+', popularity_text) else None
+                    
+                    entry = {
+                        'horse_number': horse_number,
+                        'horse_name': horse_name,
+                        'jockey_name': jockey_name,
+                        'trainer_name': trainer_name,
+                        'weight': weight,
+                        'odds': odds,
+                        'popularity': popularity
+                    }
+                    
+                    entries.append(entry)
+                except Exception as e:
+                    print(f"出走馬情報の取得エラー: {str(e)}")
                     continue
-                
-                horse_number = horse_number_cell.inner_text().strip()
-                
-                # 馬名を取得
-                horse_name_cell = row.locator('td').nth(3).locator('a')
-                horse_name = horse_name_cell.inner_text().strip() if horse_name_cell.count() > 0 else "不明"
-                
-                # 性齢
-                sex_age_cell = row.locator('td').nth(4)
-                sex_age = sex_age_cell.inner_text().strip()
-                
-                # 斤量
-                weight_cell = row.locator('td').nth(5)
-                weight = weight_cell.inner_text().strip()
-                
-                # 騎手名
-                jockey_cell = row.locator('td').nth(6).locator('a')
-                jockey_name = jockey_cell.inner_text().strip() if jockey_cell.count() > 0 else "不明"
-                
-                # 調教師名
-                trainer_cell = row.locator('td').nth(7).locator('a')
-                trainer_name = trainer_cell.inner_text().strip() if trainer_cell.count() > 0 else "不明"
-                
-                # オッズと人気
-                odds_cell = row.locator('td').nth(9)
-                odds = odds_cell.inner_text().strip()
-                
-                popularity_cell = row.locator('td').nth(10)
-                popularity = popularity_cell.inner_text().strip()
-                
-                # 枠番（存在する場合）
-                bracket_number = None
-                bracket_cell = row.locator('td').nth(0)
-                if bracket_cell.is_visible():
-                    bracket_text = bracket_cell.inner_text().strip()
-                    if bracket_text and bracket_text.isdigit():
-                        bracket_number = bracket_text
-                
-                entry = {
-                    'horse_number': horse_number,
-                    'horse_name': horse_name,  # 馬名を追加
-                    'sex_age': sex_age,
-                    'weight': weight,
-                    'jockey_name': jockey_name,
-                    'trainer_name': trainer_name,
-                    'odds': odds,
-                    'popularity': popularity
-                }
-                
-                if bracket_number:
-                    entry['bracket_number'] = bracket_number
-                
-                print(f"Debug - Horse data: {entry}")
-                entries.append(entry)
-            except Exception as e:
-                print(f"馬情報の取得エラー: {str(e)}")
-                continue
+        else:
+            # 別の方法でテーブルを探す
+            print("通常の出走表が見つかりません。別の方法で試行します...")
+            
+            # RaceList_Itemクラスを持つ要素を探す
+            horse_items = page.locator('.RaceList_Item').all()
+            
+            for item in horse_items:
+                try:
+                    # 馬番
+                    horse_number = item.locator('.Num').inner_text().strip()
+                    
+                    # 馬名
+                    horse_name = item.locator('.Horse_Name').inner_text().strip()
+                    
+                    # 騎手名
+                    jockey_name = item.locator('.Jockey').inner_text().strip()
+                    
+                    # 調教師名 (存在しない場合は空文字)
+                    trainer_name = item.locator('.Trainer').inner_text().strip() if item.locator('.Trainer').count() > 0 else ""
+                    
+                    entry = {
+                        'horse_number': horse_number,
+                        'horse_name': horse_name,
+                        'jockey_name': jockey_name,
+                        'trainer_name': trainer_name,
+                        'weight': None,
+                        'odds': None,
+                        'popularity': None
+                    }
+                    
+                    entries.append(entry)
+                except Exception as e:
+                    print(f"代替方法での出走馬情報の取得エラー: {str(e)}")
+                    continue
+        
+        # デバッグ情報
+        print(f"取得した出走馬数: {len(entries)}")
+        if len(entries) > 0:
+            print(f"最初の馬: {entries[0]['horse_name']}")
         
         race_entry = {
             'race_id': race_id,
             'race_name': race_name,
             'race_number': race_number,
             'venue_name': venue_name,
+            'start_time': start_time,
+            'course_info': course_info,
             'race_details': race_details,
             'entries': entries
         }
