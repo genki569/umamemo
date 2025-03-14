@@ -114,125 +114,102 @@ def generate_jockey_id(jockey_name: str) -> str:
 
     return str(base_id)
 
-def scrape_race_entry(page, race_url: str) -> Dict[str, any]:
-    """出走表ページから情報を取得する"""
+def scrape_race_entry(page, race_url):
+    """レース出走表ページをスクレイピング"""
     try:
-        page.goto(race_url, wait_until='domcontentloaded', timeout=30000)
-        page.wait_for_timeout(3000)
+        page.goto(race_url)
+        page.wait_for_selector('.RaceList_Item', timeout=10000)
         
-        # race_idを生成
-        race_id = generate_race_id(race_url)
-        if not race_id:
-            return None
-        
-        entry_info = {
-            'race_id': race_id,  # 生成したIDを使用
-            'race_name': '',
-            'race_number': '',
-            'venue_name': '',
-            'start_time': '',
-            'course_info': '',
-            'race_details': '',
-            'entries': []
-        }
-        
-        # レース名と番号を取得
-        race_name_elem = page.query_selector('.RaceList_Item02 .RaceName')
-        if race_name_elem:
-            entry_info['race_name'] = race_name_elem.inner_text().strip()
-        
-        race_number_elem = page.query_selector('.Race_Num')
-        if race_number_elem:
-            entry_info['race_number'] = race_number_elem.inner_text().replace('R', '').strip()
-        
-        # 開催場所
-        venue_elem = page.query_selector('.RaceData02 span:nth-child(2)')
-        if venue_elem:
-            entry_info['venue_name'] = venue_elem.inner_text().strip()
-        
-        # 発走時刻
-        time_elem = page.query_selector('.RaceData01')
-        if time_elem:
-            time_text = time_elem.inner_text().split('発走')[0].strip()
-            entry_info['start_time'] = time_text
-        
-        # コース情報
-        course_elem = page.query_selector('.RaceData01 span')
-        if course_elem:
-            entry_info['course_info'] = course_elem.inner_text().strip()
-        
-        # レース詳細情報を取得して余分なスペースを削除
-        race_details_elem = page.query_selector('.Race_Data')
-        if race_details_elem:
-            # 改行を削除し、連続する空白を1つの空白に置換
-            race_details = ' '.join([
-                part.strip()
-                for part in race_details_elem.inner_text().strip().split()
-                if part.strip()
-            ])
-            # 全角スペースも半角スペースに統一
-            race_details = race_details.replace('　', ' ')
-            # "C1" と "12頭" の間の余分なスペースを削除
-            race_details = re.sub(r'([A-Z][0-9])\s+(\d+頭)', r'\1 \2', race_details)
-        else:
-            race_details = ''
+        # レース情報を取得
+        race_id = extract_race_id_from_url(race_url)
+        race_name = page.locator('.RaceName').inner_text().strip()
+        race_number_text = page.locator('.RaceNum').inner_text().strip()
+        race_number = int(re.search(r'\d+', race_number_text).group(0))
+        venue_name = page.locator('.RaceKaisai').inner_text().strip()
+        race_details = page.locator('.RaceData01').inner_text().strip()
         
         # 出走馬情報を取得
-        horse_rows = page.query_selector_all('tr.HorseList')
+        entries = []
+        horse_rows = page.locator('.HorseList').locator('tr').all()
         print(f"Found {len(horse_rows)} horse rows")
         
         for row in horse_rows:
-            horse_data = {}
-            
-            # 馬番
-            horse_number = row.query_selector('td.Umaban1, td.Umaban2, td.Umaban3, td.Umaban4, td.Umaban5, td.Umaban6, td.Umaban7, td.Umaban8')
-            if horse_number:
-                horse_data['horse_number'] = horse_number.inner_text().strip()
-            
-            # 馬名
-            horse_name = row.query_selector('.HorseName a')
-            if horse_name:
-                horse_data['horse_name'] = horse_name.inner_text().strip()
-            
-            # 性齢
-            sex_age = row.query_selector('.Age')
-            if sex_age:
-                horse_data['sex_age'] = sex_age.inner_text().strip()
-            
-            # 斤量 - セレクタを修正
-            weight = row.query_selector('td.Txt_C:nth-child(6)')  # 6番目のtd要素を指定
-            if weight:
-                horse_data['weight'] = weight.inner_text().strip()
-            
-            # 騎手
-            jockey = row.query_selector('.Jockey a')
-            if jockey:
-                horse_data['jockey_name'] = jockey.inner_text().strip()
-            
-            # 調教師
-            trainer = row.query_selector('.Trainer a:nth-child(2)')  # 2番目のaタグを選択
-            if trainer:
-                horse_data['trainer_name'] = trainer.inner_text().strip()
-
-            # オッズと人気を取得
-            odds_td = row.query_selector('.Popular.Txt_R')
-            if odds_td:
-                odds_text = odds_td.inner_text().strip()
-                if odds_text:
-                    horse_data['odds'] = odds_text.split('\n')[0]
-
-            # 人気
-            popularity = row.query_selector('.Popular.Txt_C span')
-            if popularity:
-                horse_data['popularity'] = popularity.inner_text().strip()
-
-            print(f"Debug - Horse data: {horse_data}")
-            entry_info['entries'].append(horse_data)
+            try:
+                # 馬番
+                horse_number_cell = row.locator('td').nth(1)
+                if not horse_number_cell.is_visible():
+                    continue
+                
+                horse_number = horse_number_cell.inner_text().strip()
+                
+                # 馬名を取得
+                horse_name_cell = row.locator('td').nth(3).locator('a')
+                horse_name = horse_name_cell.inner_text().strip() if horse_name_cell.count() > 0 else "不明"
+                
+                # 性齢
+                sex_age_cell = row.locator('td').nth(4)
+                sex_age = sex_age_cell.inner_text().strip()
+                
+                # 斤量
+                weight_cell = row.locator('td').nth(5)
+                weight = weight_cell.inner_text().strip()
+                
+                # 騎手名
+                jockey_cell = row.locator('td').nth(6).locator('a')
+                jockey_name = jockey_cell.inner_text().strip() if jockey_cell.count() > 0 else "不明"
+                
+                # 調教師名
+                trainer_cell = row.locator('td').nth(7).locator('a')
+                trainer_name = trainer_cell.inner_text().strip() if trainer_cell.count() > 0 else "不明"
+                
+                # オッズと人気
+                odds_cell = row.locator('td').nth(9)
+                odds = odds_cell.inner_text().strip()
+                
+                popularity_cell = row.locator('td').nth(10)
+                popularity = popularity_cell.inner_text().strip()
+                
+                # 枠番（存在する場合）
+                bracket_number = None
+                bracket_cell = row.locator('td').nth(0)
+                if bracket_cell.is_visible():
+                    bracket_text = bracket_cell.inner_text().strip()
+                    if bracket_text and bracket_text.isdigit():
+                        bracket_number = bracket_text
+                
+                entry = {
+                    'horse_number': horse_number,
+                    'horse_name': horse_name,  # 馬名を追加
+                    'sex_age': sex_age,
+                    'weight': weight,
+                    'jockey_name': jockey_name,
+                    'trainer_name': trainer_name,
+                    'odds': odds,
+                    'popularity': popularity
+                }
+                
+                if bracket_number:
+                    entry['bracket_number'] = bracket_number
+                
+                print(f"Debug - Horse data: {entry}")
+                entries.append(entry)
+            except Exception as e:
+                print(f"馬情報の取得エラー: {str(e)}")
+                continue
         
-        return entry_info
+        race_entry = {
+            'race_id': race_id,
+            'race_name': race_name,
+            'race_number': race_number,
+            'venue_name': venue_name,
+            'race_details': race_details,
+            'entries': entries
+        }
         
+        return race_entry
     except Exception as e:
-        print(f"レース情報取得中にエラー: {str(e)}")
+        print(f"レース情報のスクレイピングエラー: {str(e)}")
+        traceback.print_exc()
         return None
 
 def save_to_csv(race_entry: Dict[str, any], filename: str):
