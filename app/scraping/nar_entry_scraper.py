@@ -238,51 +238,50 @@ def get_race_urls_for_date(page, context, date_str: str) -> List[str]:
     
     return all_race_urls
 
-def get_race_info_for_next_three_days() -> List[Dict[str, any]]:
+def get_race_info_for_next_three_days():
     """今日から3日分のレース情報を取得"""
-    all_race_entries = []
-    today = datetime.now()
-    
-    with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
-        context = browser.new_context(
-            viewport={'width': 1920, 'height': 1080},
-            user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
-        )
-        
-        try:
+    try:
+        with sync_playwright() as p:
+            browser = p.chromium.launch(headless=True)
+            context = browser.new_context()
             page = context.new_page()
             
+            # 処理済みの日付を記録
+            processed_dates = set()
+            
             for i in range(3):
-                target_date = today + timedelta(days=i)
+                target_date = datetime.now() + timedelta(days=i)
                 date_str = target_date.strftime("%Y%m%d")
-                print(f"\n{date_str}のレース情報の取得を開始します...")
+                
+                # 既に処理済みの日付はスキップ
+                if date_str in processed_dates:
+                    print(f"{date_str}は既に処理済みです")
+                    continue
+                
+                filename = f"nar_race_entries_{date_str}.csv"
+                print(f"\n{date_str}の処理を開始します...")
                 
                 race_urls = get_race_urls_for_date(page, context, date_str)
-                print(f"取得したレースURL数: {len(race_urls)}")
+                print(f"{date_str}のレースURL数: {len(race_urls)}")
                 
-                # 各レースの情報を取得してすぐにCSVに保存
                 for race_url in race_urls:
                     race_entry = scrape_race_entry(page, race_url)
                     if race_entry:
-                        save_to_csv(race_entry)
-                        print(f"レース情報保存: {race_entry['venue_name']} {race_entry['race_number']}R")
-        finally:
-            context.close()
+                        save_to_csv(race_entry, filename)
+                        print(f"保存完了: {race_entry['venue_name']} {race_entry['race_number']}R")
+                
+                # 処理完了した日付を記録
+                processed_dates.add(date_str)
+                print(f"{date_str}の処理が完了しました")
+            
             browser.close()
-    
-    return all_race_entries
+            print("\n全ての処理が完了しました")
+            
+    except Exception as e:
+        print(f"処理エラー: {str(e)}")
 
 if __name__ == '__main__':
     print("地方競馬出走表の取得を開始します...")
     
     # 3日分のレース情報を取得
-    all_race_entries = get_race_info_for_next_three_days()
-    
-    # 全レース情報をCSVに保存
-    if all_race_entries:
-        today = datetime.now().strftime('%Y%m%d')
-        filename = f"nar_race_entries_{today}.csv"
-        for race_entry in all_race_entries:
-            save_to_csv(race_entry, filename)
-        print(f"\n取得したレース数: {len(all_race_entries)}")
+    get_race_info_for_next_three_days()

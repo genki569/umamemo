@@ -5,6 +5,8 @@ import re
 import csv
 from datetime import datetime
 from typing import Dict, List
+from app import app, db
+from app.models import Race, Horse, Jockey, ShutubaEntry
 
 def generate_horse_id(horse_name):
     """
@@ -117,11 +119,91 @@ def generate_entry_id(race_id, horse_number):
     except:
         return None
 
-def split_shutuba_csv(input_path: str) -> None:
-    """出走表CSVを分割してデータベース用のCSVを作成"""
-    output_dir = 'data/csv'
-    os.makedirs(output_dir, exist_ok=True)
-    
+def save_to_database(races_data, horses_data, jockeys_data, entries_data):
+    """変換したデータをデータベースに保存"""
+    try:
+        with app.app_context():
+            # バッチサイズを設定
+            BATCH_SIZE = 100
+            count = 0
+            
+            # レース情報の保存（バッチ処理）
+            for race in races_data:
+                count += 1
+                race_obj = Race.query.get(race['id'])
+                if not race_obj:
+                    race_obj = Race(**race)
+                    db.session.add(race_obj)
+                else:
+                    for key, value in race.items():
+                        if hasattr(race_obj, key):
+                            setattr(race_obj, key, value)
+                
+                # バッチサイズごとにコミット
+                if count % BATCH_SIZE == 0:
+                    db.session.commit()
+                    print(f"Processed {count} items")
+            
+            # 馬情報の保存（バッチ処理）
+            for horse in horses_data.values():
+                count += 1
+                horse_obj = Horse.query.get(horse['id'])
+                if not horse_obj:
+                    horse_obj = Horse(**horse)
+                    db.session.add(horse_obj)
+                else:
+                    for key, value in horse.items():
+                        if hasattr(horse_obj, key):
+                            setattr(horse_obj, key, value)
+                
+                if count % BATCH_SIZE == 0:
+                    db.session.commit()
+                    print(f"Processed {count} items")
+            
+            # 騎手情報の保存（バッチ処理）
+            for jockey in jockeys_data.values():
+                count += 1
+                jockey_obj = Jockey.query.get(jockey['id'])
+                if not jockey_obj:
+                    jockey_obj = Jockey(**jockey)
+                    db.session.add(jockey_obj)
+                else:
+                    for key, value in jockey.items():
+                        if hasattr(jockey_obj, key):
+                            setattr(jockey_obj, key, value)
+                
+                if count % BATCH_SIZE == 0:
+                    db.session.commit()
+                    print(f"Processed {count} items")
+            
+            # 出走表エントリー情報の保存（バッチ処理）
+            for entry in entries_data:
+                count += 1
+                entry_obj = ShutubaEntry.query.get(entry['id'])
+                if not entry_obj:
+                    entry_obj = ShutubaEntry(**entry)
+                    db.session.add(entry_obj)
+                else:
+                    for key, value in entry.items():
+                        if hasattr(entry_obj, key):
+                            setattr(entry_obj, key, value)
+                
+                if count % BATCH_SIZE == 0:
+                    db.session.commit()
+                    print(f"Processed {count} items")
+            
+            # 残りのデータをコミット
+            db.session.commit()
+            print(f"Total processed: {count} items")
+            print("データベースへの保存が完了しました")
+            
+    except Exception as e:
+        db.session.rollback()
+        print(f"データベース保存エラー: {str(e)}")
+        raise
+
+def process_shutuba_data(input_path: str) -> None:
+    """出走表CSVを読み込んでデータベースに保存"""
     races_data = []
     horses_data = {}
     jockeys_data = {}
@@ -142,16 +224,8 @@ def split_shutuba_csv(input_path: str) -> None:
                 'venue_id': generate_venue_code(row['venue_name']),
                 'race_number': int(row['race_number']),
                 'race_year': race_id[:4],
-                'kai': None,
-                'nichi': None,
-                'race_class': None,
                 'distance': re.search(r'(\d+)m', row['course_info']).group(1) if re.search(r'(\d+)m', row['course_info']) else None,
                 'track_type': 'ダ' if 'ダ' in row['course_info'] else ('芝' if '芝' in row['course_info'] else None),
-                'direction': None,
-                'weather': None,
-                'memo': None,
-                'track_condition': None,
-                'created_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
                 'details': row['race_details']
             })
             
@@ -175,9 +249,7 @@ def split_shutuba_csv(input_path: str) -> None:
                         'birth_year': birth_year,
                         'sex': sex,
                         'trainer': entry.get('trainer_name'),
-                        'created_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-                        'memo': None,
-                        'updated_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                        'created_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                     }
                 
                 # 騎手情報を保存
@@ -191,68 +263,25 @@ def split_shutuba_csv(input_path: str) -> None:
                 
                 # 出走表エントリー情報を保存
                 try:
-                    weight_carry = float(entry.get('weight_carry', entry.get('weight', 0)))
-                    odds = float(entry.get('odds', 0))
-                    popularity = int(entry.get('popularity', 0))
                     horse_number = int(entry.get('horse_number', 0))
-                    # 枠番は馬番から計算（NAR）
-                    bracket_number = (horse_number - 1) // 2 + 1 if horse_number else None
+                    entries_data.append({
+                        'id': generate_entry_id(race_id, horse_number),
+                        'race_id': race_id,
+                        'horse_id': horse_id,
+                        'jockey_id': jockey_id,
+                        'bracket_number': (horse_number - 1) // 2 + 1 if horse_number else None,
+                        'horse_number': horse_number,
+                        'weight_carry': float(entry.get('weight', 0)),
+                        'odds': float(entry.get('odds', 0)),
+                        'popularity': int(entry.get('popularity', 0))
+                    })
                 except (ValueError, TypeError):
-                    weight_carry = 0
-                    odds = 0
-                    popularity = 0
-                    horse_number = 0
-                    bracket_number = None
-
-                entry_data = {
-                    'id': generate_entry_id(race_id, horse_number),
-                    'race_id': race_id,
-                    'horse_id': horse_id,
-                    'jockey_id': jockey_id,
-                    'bracket_number': bracket_number,
-                    'horse_number': horse_number,
-                    'weight_carry': weight_carry,
-                    'odds': odds,
-                    'popularity': popularity
-                }
-                entries_data.append(entry_data)
+                    continue
     
-    # DataFrameの作成
-    entries_df = pd.DataFrame(entries_data)
-    horses_df = pd.DataFrame(list(horses_data.values()))
-    jockeys_df = pd.DataFrame(list(jockeys_data.values()))
-    races_df = pd.DataFrame(races_data)
-    
-    # CSVとして保存
-    races_df.to_csv(os.path.join(output_dir, 'races.csv'), 
-                   index=False, 
-                   header=False,
-                   encoding='utf-8',
-                   na_rep='NULL')
-    
-    horses_df.to_csv(os.path.join(output_dir, 'horses.csv'), 
-                    index=False, 
-                    header=False,
-                    encoding='utf-8',
-                    na_rep='NULL')
-    
-    jockeys_df.to_csv(os.path.join(output_dir, 'jockeys.csv'), 
-                     index=False, 
-                     header=False,
-                     encoding='utf-8',
-                     na_rep='NULL')
-    
-    entries_df.to_csv(os.path.join(output_dir, 'shutuba_entries.csv'), 
-                     index=False, 
-                     header=False,
-                     encoding='utf-8',
-                     na_rep='NULL')
-    
-    print(f"Saved races.csv with {len(races_df)} rows")
-    print(f"Saved horses.csv with {len(horses_df)} rows")
-    print(f"Saved jockeys.csv with {len(jockeys_df)} rows")
-    print(f"Saved shutuba_entries.csv with {len(entries_df)} rows")
+    # データベースに保存
+    save_to_database(races_data, horses_data, jockeys_data, entries_data)
+    print(f"処理完了: レース数={len(races_data)}, 馬={len(horses_data)}, 騎手={len(jockeys_data)}, エントリー={len(entries_data)}")
 
 if __name__ == "__main__":
     input_path = 'data/race_entries/nar_race_entries_20241119.csv'
-    split_shutuba_csv(input_path)
+    process_shutuba_data(input_path)
