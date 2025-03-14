@@ -410,12 +410,9 @@ def process_race_data(race_entry: Dict[str, any]):
         'id': race_id,
         'name': race_entry.get('race_name', ''),
         'date': extract_date_from_race_id(race_id),
-        # venue_nameはモデルに存在しないため削除
         'venue': venue_name,  # 'venue'フィールドを使用
-        'venue_code': generate_venue_code(venue_name),
         'race_number': int(race_entry.get('race_number', 0)),
-        'course_info': race_entry.get('course_info', ''),
-        'race_details': race_entry.get('race_details', '')
+        'details': race_entry.get('race_details', '')  # 'race_details'を'details'に変更
     }
     
     # 馬、騎手、エントリー情報
@@ -454,16 +451,20 @@ def process_race_data(race_entry: Dict[str, any]):
         # 出走表エントリー情報
         try:
             horse_number = int(entry.get('horse_number', 0))
+            bracket_number = int(entry.get('bracket_number', 0)) if entry.get('bracket_number') else None
+            if not bracket_number and horse_number:
+                # 枠番がない場合は馬番から計算
+                bracket_number = (horse_number - 1) // 2 + 1
+                
             entries_data.append({
                 'id': generate_entry_id(race_id, horse_number),
                 'race_id': race_id,
                 'horse_id': horse_id,
                 'jockey_id': jockey_id,
-                'bracket_number': int(entry.get('bracket_number', 0)),  # 枠番を直接使用
+                'frame_number': bracket_number,  # 'bracket_number'を'frame_number'に変更
                 'horse_number': horse_number,
-                'weight_carry': float(entry.get('weight', 0)) if entry.get('weight') else None,
-                'odds': float(entry.get('odds', 0)) if entry.get('odds') else None,
-                'popularity': int(entry.get('popularity', 0)) if entry.get('popularity') else None
+                'weight': float(entry.get('weight', 0)) if entry.get('weight') else None,  # 'weight_carry'を'weight'に変更
+                'position': None  # 出走表なので着順はまだない
             })
         except (ValueError, TypeError) as e:
             print(f"エントリー情報の変換エラー: {str(e)}")
