@@ -117,8 +117,22 @@ def generate_jockey_id(jockey_name: str) -> str:
 def scrape_race_entry(page, race_url: str) -> Dict[str, any]:
     """出走表ページから情報を取得する"""
     try:
-        page.goto(race_url, wait_until='domcontentloaded', timeout=30000)
-        page.wait_for_timeout(3000)
+        # タイムアウト時間を延長し、リトライを追加
+        retry_count = 0
+        max_retries = 3
+        
+        while retry_count < max_retries:
+            try:
+                print(f"レースURL: {race_url} にアクセス中... (試行 {retry_count + 1}/{max_retries})")
+                page.goto(race_url, wait_until='domcontentloaded', timeout=60000)  # タイムアウトを60秒に延長
+                page.wait_for_timeout(5000)  # 待機時間を増やす
+                break  # 成功したらループを抜ける
+            except Exception as e:
+                retry_count += 1
+                if retry_count >= max_retries:
+                    raise  # 最大リトライ回数に達したら例外を投げる
+                print(f"アクセス失敗、{retry_count}/{max_retries}回目のリトライ: {str(e)}")
+                page.wait_for_timeout(10000)  # リトライ前に10秒待機
         
         # race_idを取得（URLから）
         race_id = race_url.split('race_id=')[1].split('&')[0]
@@ -362,7 +376,10 @@ def get_race_info_for_next_three_days():
             browser = p.chromium.launch(headless=True)
             context = browser.new_context(
                 viewport={'width': 1920, 'height': 1080},
-                user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
+                user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36',
+                extra_http_headers={
+                    'Accept-Language': 'ja,en-US;q=0.9,en;q=0.8'
+                }
             )
             
             try:
@@ -379,11 +396,25 @@ def get_race_info_for_next_three_days():
                     print(f"{date_str}のレースURL数: {len(race_urls)}")
                     
                     if race_urls:  # レースURLが存在する場合のみ処理
-                        for race_url in race_urls:
-                            race_entry = scrape_race_entry(page, race_url)
-                            if race_entry and 'horse_name' in race_entry['entries'][0]:
-                                save_to_csv(race_entry, filename)
-                                print(f"保存完了: {race_entry['venue_name']} {race_entry['race_number']}R")
+                        for idx, race_url in enumerate(race_urls):
+                            try:
+                                race_entry = scrape_race_entry(page, race_url)
+                                if race_entry and race_entry['entries'] and len(race_entry['entries']) > 0:
+                                    save_to_csv(race_entry, filename)
+                                    print(f"保存完了: {race_entry['venue_name']} {race_entry['race_number']}R")
+                                
+                                if (idx + 1) % 10 == 0:
+                                    print(f"{idx + 1}レース処理完了。サーバー負荷軽減のため30秒休憩します...")
+                                    page.wait_for_timeout(30000)
+                                else:
+                                    page.wait_for_timeout(5000)
+                                    
+                            except Exception as e:
+                                print(f"レース {race_url} の処理中にエラー: {str(e)}")
+                                import traceback
+                                traceback.print_exc()
+                                continue
+                                
                         print(f"{date_str}の処理が完了しました")
                     else:
                         print(f"{date_str}のレースはありません")
