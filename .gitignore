@@ -28,3 +28,5 @@ scripts/output/*.csv
 logs/
 .DS_Store
 scripts/output/*.csv
+.DS_Store
+**/.DS_Store
