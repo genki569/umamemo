@@ -361,52 +361,60 @@ def save_to_database(races_data, horses_data, jockeys_data, entries_data):
         print(f"データベース保存エラー: {str(e)}")
         raise
 
-def process_race_data(race_entry: Dict[str, any]) -> tuple:
-    """レース情報を処理してデータベース用に変換"""
-    race_id = race_entry['race_id']
+def extract_date_from_race_id(race_id: str) -> str:
+    """レースIDから日付を抽出する（例: 202543031407 -> 2025-03-14）"""
+    try:
+        year = race_id[:4]
+        month = race_id[6:8]
+        day = race_id[8:10]
+        return f"{year}-{month}-{day}"
+    except Exception:
+        return None
+
+def process_race_data(race_entry: Dict[str, any]):
+    """スクレイピングしたデータをデータベース用に変換"""
+    race_id = race_entry.get('race_id')
+    if not race_id:
+        return [], {}, {}, []
     
-    # レース情報を変換
+    # レース情報
     race_data = {
         'id': race_id,
-        'name': race_entry['race_name'],
+        'name': race_entry.get('race_name', ''),
         'date': extract_date_from_race_id(race_id),
-        'start_time': race_entry['start_time'],
-        'venue': race_entry['venue_name'],
-        'venue_id': generate_venue_code(race_entry['venue_name']),
-        'race_number': int(race_entry['race_number']),
-        'race_year': race_id[:4],
-        'distance': re.search(r'(\d+)m', race_entry['course_info']).group(1) if re.search(r'(\d+)m', race_entry['course_info']) else None,
-        'track_type': 'ダ' if 'ダ' in race_entry['course_info'] else ('芝' if '芝' in race_entry['course_info'] else None),
-        'details': race_entry['race_details']
+        'venue_name': race_entry.get('venue_name', ''),
+        'venue_code': generate_venue_code(race_entry.get('venue_name', '')),
+        'race_number': int(race_entry.get('race_number', 0)),
+        'course_info': race_entry.get('course_info', ''),
+        'race_details': race_entry.get('race_details', '')
     }
     
+    # 馬、騎手、エントリー情報
     horses_data = {}
     jockeys_data = {}
     entries_data = []
     
-    # 出走馬情報を処理
-    for entry in race_entry['entries']:
-        horse_name = entry['horse_name']
-        horse_id = generate_horse_id(horse_name)
-        
-        # 性別と年齢を分離
-        sex_age = entry.get('sex_age', '')
-        sex = sex_age[0] if sex_age else None
-        birth_year = str(int(race_id[:4]) - int(sex_age[1:])) if sex_age and len(sex_age) > 1 else None
+    for entry in race_entry.get('entries', []):
+        horse_name = entry.get('horse_name', '')
+        if not horse_name:
+            continue
         
         # 馬情報
-        if horse_id not in horses_data:
+        horse_id = generate_horse_id(horse_name)
+        if horse_id and horse_id not in horses_data:
+            sex_age = entry.get('sex_age', '')
+            sex = sex_age[0] if sex_age else ''
+            age = sex_age[1:] if sex_age and len(sex_age) > 1 else ''
+            
             horses_data[horse_id] = {
                 'id': horse_id,
                 'name': horse_name,
-                'birth_year': birth_year,
                 'sex': sex,
-                'trainer': entry.get('trainer_name'),
-                'created_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                'age': int(age) if age.isdigit() else None
             }
         
         # 騎手情報
-        jockey_name = entry.get('jockey_name')
+        jockey_name = entry.get('jockey_name', '')
         jockey_id = generate_jockey_id(jockey_name) if jockey_name else None
         if jockey_id and jockey_id not in jockeys_data:
             jockeys_data[jockey_id] = {
@@ -485,16 +493,6 @@ def get_race_info_for_next_three_days():
     except Exception as e:
         print(f"処理エラー: {str(e)}")
         raise
-
-def extract_date_from_race_id(race_id: str) -> str:
-    """レースIDから日付を抽出する（例: 202543031407 -> 2025-03-14）"""
-    try:
-        year = race_id[:4]
-        month = race_id[6:8]
-        day = race_id[8:10]
-        return f"{year}-{month}-{day}"
-    except Exception:
-        return None
 
 if __name__ == '__main__':
     print("地方競馬出走表の取得を開始します...")
