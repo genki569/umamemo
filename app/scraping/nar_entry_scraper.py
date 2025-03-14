@@ -410,9 +410,9 @@ def process_race_data(race_entry: Dict[str, any]):
         'id': race_id,
         'name': race_entry.get('race_name', ''),
         'date': extract_date_from_race_id(race_id),
-        'venue': venue_name,  # 'venue'フィールドを使用
+        'venue': venue_name,
         'race_number': int(race_entry.get('race_number', 0)),
-        'details': race_entry.get('race_details', '')  # 'race_details'を'details'に変更
+        'details': race_entry.get('race_details', '')
     }
     
     # 馬、騎手、エントリー情報
@@ -430,13 +430,12 @@ def process_race_data(race_entry: Dict[str, any]):
         if horse_id and horse_id not in horses_data:
             sex_age = entry.get('sex_age', '')
             sex = sex_age[0] if sex_age else ''
-            age = sex_age[1:] if sex_age and len(sex_age) > 1 else ''
             
             horses_data[horse_id] = {
                 'id': horse_id,
                 'name': horse_name,
-                'sex': sex,
-                'age': int(age) if age.isdigit() else None
+                'sex': sex
+                # 'age'フィールドはHorseモデルに存在しないため削除
             }
         
         # 騎手情報
@@ -461,9 +460,9 @@ def process_race_data(race_entry: Dict[str, any]):
                 'race_id': race_id,
                 'horse_id': horse_id,
                 'jockey_id': jockey_id,
-                'frame_number': bracket_number,  # 'bracket_number'を'frame_number'に変更
+                'frame_number': bracket_number,
                 'horse_number': horse_number,
-                'weight': float(entry.get('weight', 0)) if entry.get('weight') else None,  # 'weight_carry'を'weight'に変更
+                'weight': float(entry.get('weight', 0)) if entry.get('weight') else None,
                 'position': None  # 出走表なので着順はまだない
             })
         except (ValueError, TypeError) as e:
