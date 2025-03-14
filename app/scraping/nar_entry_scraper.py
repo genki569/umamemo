@@ -10,6 +10,7 @@ import re
 import json
 from app import app, db
 from app.models import Race, Horse, Jockey, ShutubaEntry
+import traceback
 
 def generate_race_id(race_url: str) -> str:
     """レースURLからレースIDを生成（15桁）"""
@@ -52,9 +53,17 @@ def generate_venue_code(venue_name: str) -> str:
     }
     return venue_codes.get(venue_name, '299')  # 不明な場合は299を返す
 
-def generate_entry_id(race_id: str, horse_number: int) -> str:
-    """エントリーIDを生成（17桁）"""
-    return f"{race_id}{horse_number:02d}"
+def generate_entry_id(race_id, horse_number):
+    """
+    エントリーIDの生成（17桁）
+    レースID(15桁) + 馬番(2桁)の形式
+    例: レースID=202401011010112, 馬番=7 の場合
+    → 20240101101011207
+    """
+    try:
+        return int(f"{race_id}{str(int(horse_number)).zfill(2)}")
+    except:
+        return None
 
 def generate_horse_id(horse_name: str) -> str:
     """馬IDを生成（10桁）"""
@@ -287,7 +296,7 @@ def save_to_database(races_data, horses_data, jockeys_data, entries_data):
         
         print("データベースへの保存を開始します...")
         
-        # レース情報の保存（バッチ処理）
+        # レース情報の保存
         for race in races_data:
             count += 1
             race_id = race['id']
@@ -309,7 +318,7 @@ def save_to_database(races_data, horses_data, jockeys_data, entries_data):
                 db.session.commit()
                 print(f"中間保存: {count}件処理済み")
         
-        # 馬情報の保存（バッチ処理）
+        # 馬情報の保存
         for horse_id, horse in horses_data.items():
             count += 1
             existing_horse = Horse.query.get(horse_id)
@@ -329,7 +338,7 @@ def save_to_database(races_data, horses_data, jockeys_data, entries_data):
                 db.session.commit()
                 print(f"中間保存: {count}件処理済み")
         
-        # 騎手情報の保存（バッチ処理）
+        # 騎手情報の保存
         for jockey_id, jockey in jockeys_data.items():
             count += 1
             existing_jockey = Jockey.query.get(jockey_id)
@@ -349,21 +358,27 @@ def save_to_database(races_data, horses_data, jockeys_data, entries_data):
                 db.session.commit()
                 print(f"中間保存: {count}件処理済み")
         
-        # 出走表エントリー情報の保存（バッチ処理）
+        # 出走表エントリー情報の保存
         for entry in entries_data:
             count += 1
-            entry_id = entry['id']
-            existing_entry = ShutubaEntry.query.get(entry_id)
+            
+            # 既存エントリーを検索（race_id, horse_idの組み合わせで）
+            existing_entry = ShutubaEntry.query.filter_by(
+                race_id=entry['race_id'],
+                horse_id=entry['horse_id']
+            ).first()
             
             if not existing_entry:
                 # 新規エントリー
                 entry_obj = ShutubaEntry(**entry)
                 db.session.add(entry_obj)
+                print(f"新規出走表エントリー追加: 馬番{entry['horse_number']}")
             else:
                 # 既存エントリー更新
                 for key, value in entry.items():
                     if hasattr(existing_entry, key):
                         setattr(existing_entry, key, value)
+                print(f"既存出走表エントリー更新: 馬番{entry['horse_number']}")
             
             if count % BATCH_SIZE == 0:
                 db.session.commit()
@@ -378,12 +393,11 @@ def save_to_database(races_data, horses_data, jockeys_data, entries_data):
         print(f"レース数: {len(races_data)}")
         print(f"馬数: {len(horses_data)}")
         print(f"騎手数: {len(jockeys_data)}")
-        print(f"エントリー数: {len(entries_data)}")
+        print(f"出走表エントリー数: {len(entries_data)}")
         
     except Exception as e:
         db.session.rollback()
         print(f"データベース保存エラー: {str(e)}")
-        import traceback
         traceback.print_exc()
         raise
 
@@ -435,7 +449,6 @@ def process_race_data(race_entry: Dict[str, any]):
                 'id': horse_id,
                 'name': horse_name,
                 'sex': sex
-                # 'age'フィールドはHorseモデルに存在しないため削除
             }
         
         # 騎手情報
@@ -451,20 +464,21 @@ def process_race_data(race_entry: Dict[str, any]):
         try:
             horse_number = int(entry.get('horse_number', 0))
             bracket_number = int(entry.get('bracket_number', 0)) if entry.get('bracket_number') else None
-            if not bracket_number and horse_number:
-                # 枠番がない場合は馬番から計算
-                bracket_number = (horse_number - 1) // 2 + 1
-                
-            entries_data.append({
-                'id': generate_entry_id(race_id, horse_number),
+            
+            # エントリーIDを生成
+            entry_id = generate_entry_id(race_id, horse_number)
+            
+            # ShutubaEntryモデルのフィールド名に合わせる
+            entry_data = {
+                'id': entry_id,
                 'race_id': race_id,
                 'horse_id': horse_id,
                 'jockey_id': jockey_id,
-                'frame_number': bracket_number,
+                'bracket_number': bracket_number,
                 'horse_number': horse_number,
-                'weight': float(entry.get('weight', 0)) if entry.get('weight') else None,
-                'position': None  # 出走表なので着順はまだない
-            })
+                'weight': float(entry.get('weight', 0)) if entry.get('weight') else None
+            }
+            entries_data.append(entry_data)
         except (ValueError, TypeError) as e:
             print(f"エントリー情報の変換エラー: {str(e)}")
             continue
@@ -531,7 +545,6 @@ def get_race_info_for_next_day():
             
     except Exception as e:
         print(f"処理エラー: {str(e)}")
-        import traceback
         traceback.print_exc()
         raise
 
