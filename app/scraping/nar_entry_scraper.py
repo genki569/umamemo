@@ -8,6 +8,8 @@ import os
 import csv
 import re
 import json
+from app import app, db
+from app.models import Race, Horse, Jockey, ShutubaEntry
 
 def scrape_race_entry(page, race_url: str) -> Dict[str, any]:
     """出走表ページから情報を取得する"""
@@ -156,78 +158,184 @@ def save_to_csv(race_entry: Dict[str, any], filename: str):
 
 def get_race_urls_for_date(page, context, date_str: str) -> List[str]:
     """指定日の全レースの出馬表URLを取得"""
-    all_race_urls = set()  # リストからセットに変更して重複を防ぐ
+    all_race_urls = set()
     try:
         url = f"https://nar.netkeiba.com/top/race_list.html?kaisai_date={date_str}"
         print(f"\n{date_str}のレース情報を取得中...")
         
-        # タイムアウトを設定
-        page.set_default_timeout(60000)
-        
-        # まずトップページにアクセス
-        print("トップページにアクセスしています...")
-        page.goto("https://nar.netkeiba.com/", wait_until='domcontentloaded')
-        page.wait_for_timeout(3000)
-        
-        # 次に目的のページに遷移
-        print(f"レース一覧ページにアクセスしています: {url}")
-        try:
-            page.goto(url, wait_until='domcontentloaded', timeout=60000)
-        except TimeoutError:
-            print("ページの完全な読み込みはタイムアウトしましたが、処理を継続します")
-        
+        page.goto(url, wait_until='domcontentloaded', timeout=60000)
         page.wait_for_timeout(5000)
         
-        # JavaScriptを実行してページの準備ができているか確認
-        is_ready = page.evaluate('''() => {
-            return document.querySelector('.RaceList_ProvinceSelect') !== null;
-        }''')
+        # 各開催場所のレースリンクを取得
+        race_links = page.query_selector_all('a[href*="/race/shutuba.html"]')
+        print(f"Found {len(race_links)} race links")
         
-        if not is_ready:
-            print("ページの準備ができていません。さらに待機します...")
-            page.wait_for_timeout(5000)
+        for link in race_links:
+            href = link.get_attribute('href')
+            if href:
+                race_url = f"https://nar.netkeiba.com{href.replace('..', '')}"
+                all_race_urls.add(race_url)
+                print(f"レースURL追加: {race_url}")
         
-        venues = page.query_selector_all('.RaceList_ProvinceSelect li')
-        print(f"開催場所数: {len(venues)}")
-        
-        for venue in venues:
-            try:
-                venue_name = venue.inner_text().strip()
-                print(f"\n開催場所: {venue_name}")
-                
-                venue_link = venue.query_selector('a')
-                if venue_link:
-                    href = venue_link.get_attribute('href')
-                    venue_url = f"https://nar.netkeiba.com/top/race_list.html{href}"
-                    print(f"開催場所URL: {venue_url}")
-                    
-                    venue_page = context.new_page()
-                    try:
-                        venue_page.goto(venue_url, wait_until='domcontentloaded', timeout=30000)
-                        venue_page.wait_for_timeout(3000)
-                        
-                        # レース情報を取得（各開催場所固有のレースのみ）
-                        races = venue_page.query_selector_all('dl.RaceList_DataList')
-                        for race in races:
-                            race_links = race.query_selector_all('a[href*="/race/shutuba.html"]')
-                            for link in race_links:
-                                href = link.get_attribute('href')
-                                if href and venue_name in link.inner_text():  # 開催場所名でフィルタリング
-                                    race_url = f"https://nar.netkeiba.com{href.replace('..', '')}"
-                                    all_race_urls.add(race_url)  # addを使用して重複を防ぐ
-                                    print(f"レースURL追加: {race_url}")
-                                    
-                    finally:
-                        venue_page.close()
-                        
-            except Exception as e:
-                print(f"開催場所の処理中にエラー: {str(e)}")
-                continue
+        return list(all_race_urls)
                 
     except Exception as e:
         print(f"レースURL取得中にエラー: {str(e)}")
+        return list(all_race_urls)
+
+def save_to_database(races_data, horses_data, jockeys_data, entries_data):
+    """変換したデータをデータベースに保存"""
+    try:
+        with app.app_context():
+            # バッチサイズを設定
+            BATCH_SIZE = 100
+            count = 0
+            
+            # レース情報の保存（バッチ処理）
+            for race in races_data:
+                count += 1
+                race_obj = Race.query.get(race['id'])
+                if not race_obj:
+                    race_obj = Race(**race)
+                    db.session.add(race_obj)
+                else:
+                    for key, value in race.items():
+                        if hasattr(race_obj, key):
+                            setattr(race_obj, key, value)
+                
+                if count % BATCH_SIZE == 0:
+                    db.session.commit()
+                    print(f"Processed {count} items")
+            
+            # 馬情報の保存（バッチ処理）
+            for horse in horses_data.values():
+                count += 1
+                horse_obj = Horse.query.get(horse['id'])
+                if not horse_obj:
+                    horse_obj = Horse(**horse)
+                    db.session.add(horse_obj)
+                else:
+                    for key, value in horse.items():
+                        if hasattr(horse_obj, key):
+                            setattr(horse_obj, key, value)
+                
+                if count % BATCH_SIZE == 0:
+                    db.session.commit()
+                    print(f"Processed {count} items")
+            
+            # 騎手情報の保存（バッチ処理）
+            for jockey in jockeys_data.values():
+                count += 1
+                jockey_obj = Jockey.query.get(jockey['id'])
+                if not jockey_obj:
+                    jockey_obj = Jockey(**jockey)
+                    db.session.add(jockey_obj)
+                else:
+                    for key, value in jockey.items():
+                        if hasattr(jockey_obj, key):
+                            setattr(jockey_obj, key, value)
+                
+                if count % BATCH_SIZE == 0:
+                    db.session.commit()
+                    print(f"Processed {count} items")
+            
+            # 出走表エントリー情報の保存（バッチ処理）
+            for entry in entries_data:
+                count += 1
+                entry_obj = ShutubaEntry.query.get(entry['id'])
+                if not entry_obj:
+                    entry_obj = ShutubaEntry(**entry)
+                    db.session.add(entry_obj)
+                else:
+                    for key, value in entry.items():
+                        if hasattr(entry_obj, key):
+                            setattr(entry_obj, key, value)
+                
+                if count % BATCH_SIZE == 0:
+                    db.session.commit()
+                    print(f"Processed {count} items")
+            
+            # 残りのデータをコミット
+            db.session.commit()
+            print(f"Total processed: {count} items")
+            print("データベースへの保存が完了しました")
+            
+    except Exception as e:
+        db.session.rollback()
+        print(f"データベース保存エラー: {str(e)}")
+        raise
+
+def process_race_data(race_entry: Dict[str, any]) -> tuple:
+    """レース情報を処理してデータベース用に変換"""
+    race_id = race_entry['race_id']
     
-    return list(all_race_urls)  # セットをリストに変換して返す
+    # レース情報を変換
+    race_data = {
+        'id': race_id,
+        'name': race_entry['race_name'],
+        'date': extract_date_from_race_id(race_id),
+        'start_time': race_entry['start_time'],
+        'venue': race_entry['venue_name'],
+        'venue_id': generate_venue_code(race_entry['venue_name']),
+        'race_number': int(race_entry['race_number']),
+        'race_year': race_id[:4],
+        'distance': re.search(r'(\d+)m', race_entry['course_info']).group(1) if re.search(r'(\d+)m', race_entry['course_info']) else None,
+        'track_type': 'ダ' if 'ダ' in race_entry['course_info'] else ('芝' if '芝' in race_entry['course_info'] else None),
+        'details': race_entry['race_details']
+    }
+    
+    horses_data = {}
+    jockeys_data = {}
+    entries_data = []
+    
+    # 出走馬情報を処理
+    for entry in race_entry['entries']:
+        horse_name = entry['horse_name']
+        horse_id = generate_horse_id(horse_name)
+        
+        # 性別と年齢を分離
+        sex_age = entry.get('sex_age', '')
+        sex = sex_age[0] if sex_age else None
+        birth_year = str(int(race_id[:4]) - int(sex_age[1:])) if sex_age and len(sex_age) > 1 else None
+        
+        # 馬情報
+        if horse_id not in horses_data:
+            horses_data[horse_id] = {
+                'id': horse_id,
+                'name': horse_name,
+                'birth_year': birth_year,
+                'sex': sex,
+                'trainer': entry.get('trainer_name'),
+                'created_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            }
+        
+        # 騎手情報
+        jockey_name = entry.get('jockey_name')
+        jockey_id = generate_jockey_id(jockey_name) if jockey_name else None
+        if jockey_id and jockey_id not in jockeys_data:
+            jockeys_data[jockey_id] = {
+                'id': jockey_id,
+                'name': jockey_name
+            }
+        
+        # 出走表エントリー情報
+        try:
+            horse_number = int(entry.get('horse_number', 0))
+            entries_data.append({
+                'id': generate_entry_id(race_id, horse_number),
+                'race_id': race_id,
+                'horse_id': horse_id,
+                'jockey_id': jockey_id,
+                'bracket_number': (horse_number - 1) // 2 + 1 if horse_number else None,
+                'horse_number': horse_number,
+                'weight_carry': float(entry.get('weight', 0)),
+                'odds': float(entry.get('odds', 0)),
+                'popularity': int(entry.get('popularity', 0))
+            })
+        except (ValueError, TypeError):
+            continue
+    
+    return [race_data], horses_data, jockeys_data, entries_data
 
 def get_race_info_for_next_three_days():
     """今日から3日分のレース情報を取得"""
@@ -237,32 +345,50 @@ def get_race_info_for_next_three_days():
             context = browser.new_context()
             page = context.new_page()
             
+            all_races_data = []
+            all_horses_data = {}
+            all_jockeys_data = {}
+            all_entries_data = []
+            
             for i in range(3):
                 target_date = datetime.now() + timedelta(days=i)
                 date_str = target_date.strftime("%Y%m%d")
-                filename = f"nar_race_entries_{date_str}.csv"
-                
                 print(f"\n{date_str}の処理を開始します...")
                 
                 race_urls = get_race_urls_for_date(page, context, date_str)
                 print(f"{date_str}のレースURL数: {len(race_urls)}")
                 
-                if race_urls:  # レースURLが存在する場合のみ処理
+                if race_urls:
                     for race_url in race_urls:
                         race_entry = scrape_race_entry(page, race_url)
                         if race_entry:
-                            save_to_csv(race_entry, filename)  # filenameを渡すように修正
-                            print(f"保存完了: {race_entry['venue_name']} {race_entry['race_number']}R")
+                            # データを変換
+                            races, horses, jockeys, entries = process_race_data(race_entry)
+                            
+                            # 全体のデータに追加
+                            all_races_data.extend(races)
+                            all_horses_data.update(horses)
+                            all_jockeys_data.update(jockeys)
+                            all_entries_data.extend(entries)
+                            
+                            print(f"処理完了: {race_entry['venue_name']} {race_entry['race_number']}R")
+                    
                     print(f"{date_str}の処理が完了しました")
                 else:
                     print(f"{date_str}のレースはありません")
             
             browser.close()
-            print("\n全ての処理が完了しました")
+            
+            # データベースに保存
+            if all_races_data:
+                save_to_database(all_races_data, all_horses_data, all_jockeys_data, all_entries_data)
+                print("\n全ての処理が完了しました")
+            else:
+                print("\n保存するデータがありません")
             
     except Exception as e:
         print(f"処理エラー: {str(e)}")
-        raise  # エラーを上位に伝播させる
+        raise
 
 if __name__ == '__main__':
     print("地方競馬出走表の取得を開始します...")
