@@ -506,8 +506,7 @@ def get_race_info_for_next_day():
         raise
 
 if __name__ == "__main__":
-    from app import create_app
-    app = create_app()
+    from app import app
     with app.app_context():
         print("地方競馬出走表の取得を開始します...")
         get_race_info_for_next_day()  # 1日分のみ処理
