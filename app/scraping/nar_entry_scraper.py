@@ -475,8 +475,7 @@ def process_race_data(race_entry: Dict[str, any]):
                 'horse_id': horse_id,
                 'jockey_id': jockey_id,
                 'bracket_number': bracket_number,
-                'horse_number': horse_number,
-                'weight': float(entry.get('weight', 0)) if entry.get('weight') else None
+                'horse_number': horse_number
             }
             entries_data.append(entry_data)
         except (ValueError, TypeError) as e:
