@@ -441,8 +441,8 @@ def process_race_data(race_entry: Dict[str, any]):
     
     return [race_data], horses_data, jockeys_data, entries_data
 
-def get_race_info_for_next_three_days():
-    """今日から3日分のレース情報を取得"""
+def get_race_info_for_next_day():
+    """今日のレース情報のみを取得（デバッグ用）"""
     try:
         with sync_playwright() as p:
             browser = p.chromium.launch(headless=True)
@@ -454,37 +454,46 @@ def get_race_info_for_next_three_days():
             all_jockeys_data = {}
             all_entries_data = []
             
-            for i in range(3):
-                target_date = datetime.now() + timedelta(days=i)
-                date_str = target_date.strftime("%Y%m%d")
-                print(f"\n{date_str}の処理を開始します...")
+            # 今日の日付のみ処理
+            target_date = datetime.now()
+            date_str = target_date.strftime("%Y%m%d")
+            print(f"\n{date_str}の処理を開始します...")
+            
+            race_urls = get_race_urls_for_date(page, context, date_str)
+            print(f"{date_str}のレースURL数: {len(race_urls)}")
+            
+            if race_urls:
+                # デバッグ用に最初の1レースのみ処理
+                race_url = race_urls[0]
+                print(f"処理するレースURL: {race_url}")
                 
-                race_urls = get_race_urls_for_date(page, context, date_str)
-                print(f"{date_str}のレースURL数: {len(race_urls)}")
-                
-                if race_urls:
-                    for race_url in race_urls:
-                        race_entry = scrape_race_entry(page, race_url)
-                        if race_entry:
-                            # データを変換
-                            races, horses, jockeys, entries = process_race_data(race_entry)
-                            
-                            # 全体のデータに追加
-                            all_races_data.extend(races)
-                            all_horses_data.update(horses)
-                            all_jockeys_data.update(jockeys)
-                            all_entries_data.extend(entries)
-                            
-                            print(f"処理完了: {race_entry['venue_name']} {race_entry['race_number']}R")
+                race_entry = scrape_race_entry(page, race_url)
+                if race_entry:
+                    # データを変換
+                    races, horses, jockeys, entries = process_race_data(race_entry)
                     
-                    print(f"{date_str}の処理が完了しました")
-                else:
-                    print(f"{date_str}のレースはありません")
+                    # 全体のデータに追加
+                    all_races_data.extend(races)
+                    all_horses_data.update(horses)
+                    all_jockeys_data.update(jockeys)
+                    all_entries_data.extend(entries)
+                    
+                    print(f"処理完了: {race_entry['venue_name']} {race_entry['race_number']}R")
+                
+                print(f"{date_str}の処理が完了しました")
+            else:
+                print(f"{date_str}のレースはありません")
             
             browser.close()
             
             # データベースに保存
             if all_races_data:
+                print("データベースに保存します...")
+                print(f"レース数: {len(all_races_data)}")
+                print(f"馬数: {len(all_horses_data)}")
+                print(f"騎手数: {len(all_jockeys_data)}")
+                print(f"エントリー数: {len(all_entries_data)}")
+                
                 save_to_database(all_races_data, all_horses_data, all_jockeys_data, all_entries_data)
                 print("\n全ての処理が完了しました")
             else:
@@ -492,8 +501,13 @@ def get_race_info_for_next_three_days():
             
     except Exception as e:
         print(f"処理エラー: {str(e)}")
+        import traceback
+        traceback.print_exc()
         raise
 
-if __name__ == '__main__':
-    print("地方競馬出走表の取得を開始します...")
-    get_race_info_for_next_three_days()
+if __name__ == "__main__":
+    from app import create_app
+    app = create_app()
+    with app.app_context():
+        print("地方競馬出走表の取得を開始します...")
+        get_race_info_for_next_day()  # 1日分のみ処理
