@@ -27,7 +27,6 @@ import stripe
 import shutil
 from calendar import monthrange
 import logging
-import re
 
 # カスタムコレータの定義（ファイルの先頭付近に配置）
 def custom_login_required(f):
@@ -879,166 +878,68 @@ def create_entry(race, entry_data):
 
 @app.route('/shutuba')
 def shutuba_list():
-    """出走表一覧ページ"""
-    # 日付パラメータを取得（デフォルトは今日）
-    date_param = request.args.get('date')
-    
-    # 日付リストを生成（今日から7日分）
-    today = datetime.now().date()
-    dates = []
-    for i in range(7):
-        date = today + timedelta(days=i)
-        dates.append({
-            'value': date.strftime('%Y%m%d'),
-            'month': date.month,
-            'day': date.day,
-            'weekday': ['月', '火', '水', '木', '金', '土', '日'][date.weekday()]
-        })
-    
-    # 選択された日付（デフォルトは今日）
-    selected_date = date_param or today.strftime('%Y%m%d')
-    
-    # 選択された日付のレース情報を取得
-    # race_idの先頭8桁が日付と一致するレースを検索
-    date_prefix = selected_date
-    races = Race.query.filter(Race.id.like(f'{date_prefix}%')).all()
-    
-    # 会場ごとにレースをグループ化
-    venue_races = {}
-    for race in races:
-        venue_id = race.venue_name  # 会場名をIDとして使用
-        if venue_id not in venue_races:
-            venue_races[venue_id] = {
-                'venue_name': race.venue_name,
-                'races': []
-            }
-        
-        # レース情報を整形
-        race_info = {
-            'id': race.id,
-            'name': race.name,
-            'race_number': race.race_number,
-            'start_time': race.start_time,
-            'track_type': None,
-            'distance': None
-        }
-        
-        # コース情報から距離とコース種別を抽出
-        if race.course_info:
-            match = re.search(r'([芝|ダート|障害])(\d+)m', race.course_info)
-            if match:
-                race_info['track_type'] = match.group(1)
-                race_info['distance'] = match.group(2)
-        
-        venue_races[venue_id]['races'].append(race_info)
-    
-    return render_template('shutuba_list.html', 
-                          dates=dates, 
-                          selected_date=selected_date,
-                          venue_races=venue_races)
+    try:
+        # 日付の取得（races関数と同じロジック）
+        selected_date = request.args.get('date')
+        if selected_date:
+            try:
+                target_date = datetime.strptime(selected_date, '%Y-%m-%d').date()
+            except ValueError:
+                target_date = datetime.now().date()
+        else:
+            target_date = datetime.now().date()
 
-@app.route('/race/<int:race_id>/shutuba')
-def race_shutuba(race_id):
-    """レースの出走表ページ"""
-    # レース情報を取得
-    race = Race.query.get_or_404(race_id)
-    
-    # レース情報を整形
-    race_data = {
-        'id': race.id,
-        'name': race.name,
-        'venue': race.venue_name,
-        'race_number': race.race_number,
-        'start_time': datetime.strptime(race.start_time, '%H:%M') if race.start_time else None,
-        'date': datetime.strptime(str(race.id)[:8], '%Y%m%d'),
-        'distance': None,
-        'course_type': None
-    }
-    
-    # コース情報から距離とコース種別を抽出
-    if race.course_info:
-        match = re.search(r'([芝|ダート|障害])(\d+)m', race.course_info)
-        if match:
-            race_data['course_type'] = match.group(1)
-            race_data['distance'] = int(match.group(2))
-    
-    # 出走表エントリーを取得
-    entries = ShutubaEntry.query.filter_by(race_id=race_id).all()
-    
-    # 各馬の情報を整形
-    formatted_entries = []
-    for entry in entries:
-        # 馬情報を取得
-        horse = Horse.query.get(entry.horse_id)
-        
-        # 騎手情報を取得
-        jockey = None
-        if entry.jockey_id:
-            jockey = Jockey.query.get(entry.jockey_id)
-        
-        # 性齢から性別と年齢を抽出
-        sex = None
-        age = None
-        if entry.sex_age:
-            sex = entry.sex_age[0]  # 最初の文字（牡/牝/セ）
-            age = entry.sex_age[1:] if len(entry.sex_age) > 1 else None
-        
-        # エントリー情報を整形
-        entry_data = {
-            'horse': horse,
-            'jockey': jockey,
-            'horse_number': entry.horse_number,
-            'bracket_number': entry.bracket_number,
-            'weight_carry': entry.weight_carry,
-            'odds': entry.odds,
-            'popularity': entry.popularity,
-            'recent_results': []  # 過去戦績（ダミーデータ）
-        }
-        
-        # ダミーデータ：過去戦績
-        for i in range(5):
-            result = {
-                'date': datetime.now() - timedelta(days=30 * (i + 1)),
-                'venue': ['東京', '中山', '阪神', '京都', '福島'][i % 5],
-                'name': f'サンプルレース{i+1}',
-                'position': i + 1,
-                'popularity': i + 1,
-                'jockey_name': '騎手太郎',
-                'weight_carry': 54.0,
-                'distance': 1200,
-                'track_condition': '良',
-                'time': f'1:{20+i}.{i}',
-                'margin': f'{0.1 * i:.1f}'
-            }
-            entry_data['recent_results'].append(result)
-        
-        # ダミーデータ：距離別成績
-        entry_data['distance_stats'] = {
-            'total': 10,
-            'wins': 2,
-            'win_rate': 20.0,
-            'top3': 5,
-            'top3_rate': 50.0
-        }
-        
-        # ダミーデータ：月別成績
-        entry_data['month_stats'] = {
-            1: {'total': 3, 'wins': 1, 'win_rate': 33.3, 'top3_rate': 66.7},
-            5: {'total': 4, 'wins': 1, 'win_rate': 25.0, 'top3_rate': 50.0},
-            9: {'total': 3, 'wins': 0, 'win_rate': 0.0, 'top3_rate': 33.3}
-        }
-        
-        # ダミーデータ：最速タイム
-        entry_data['best_time'] = {
-            'time': '1:23.4',
-            'date': datetime.now() - timedelta(days=30),
-            'venue': '東京',
-            'track_condition': '良'
-        }
-        
-        formatted_entries.append(entry_data)
-    
-    return render_template('shutuba.html', race=race_data, entries=formatted_entries)
+        # 出馬表があるレースのみを取得
+        races = Race.query\
+            .join(ShutubaEntry)\
+            .filter(func.date(Race.date) == target_date)\
+            .group_by(Race.id)\
+            .order_by(Race.venue_id, Race.race_number)\
+            .all()
+
+        # 利用可能な日付リストを取得（出馬表があるもののみ）
+        available_dates = db.session.query(distinct(Race.date))\
+            .join(ShutubaEntry)\
+            .order_by(Race.date.desc())\
+            .all()
+
+        # 日付リストを整形
+        dates = []
+        for (date,) in available_dates:
+            if isinstance(date, datetime):
+                date = date.date()
+            dates.append({
+                'value': date.strftime('%Y-%m-%d'),
+                'month': date.month,
+                'day': date.day,
+                'weekday': ['月', '火', '水', '木', '金', '土', '日'][date.weekday()]
+            })
+
+        # 会場ごとにレースをグループ化
+        venue_races = {}
+        for race in races:
+            venue_id = str(race.venue_id)
+            if venue_id not in venue_races:
+                venue_races[venue_id] = {
+                    'venue_name': VENUE_NAMES.get(venue_id, '不明'),
+                    'weather': race.weather,
+                    'track_condition': race.track_condition,
+                    'races': []
+                }
+            venue_races[venue_id]['races'].append(race)
+
+        return render_template('shutuba_list.html',
+                            dates=dates,
+                            date=target_date,
+                            selected_date=selected_date,
+                            venue_races=venue_races)
+
+    except Exception as e:
+        app.logger.error(f"Error in shutuba_list: {str(e)}")
+        return render_template('shutuba_list.html',
+                            dates=[],
+                            date=datetime.now().date(),
+                            venue_races={})
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
