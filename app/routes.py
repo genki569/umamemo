@@ -3397,16 +3397,17 @@ def race_shutuba(race_id):
         # デバッグ情報を追加
         current_app.logger.info(f"Accessing shutuba for race_id: {race_id}")
         
-        # レースと出走馬情報を効率的に取得
-        race = db.session.query(Race).options(
-            joinedload(Race.shutuba_entries).options(
-                joinedload(ShutubaEntry.horse),
-                joinedload(ShutubaEntry.jockey)
-            )
-        ).get_or_404(race_id)
+        # レース情報を取得
+        race = Race.query.get_or_404(race_id)
+        
+        # 出走表エントリーを別途取得
+        entries = ShutubaEntry.query.options(
+            joinedload(ShutubaEntry.horse),
+            joinedload(ShutubaEntry.jockey)
+        ).filter(ShutubaEntry.race_id == race_id).all()
 
         # 出走馬のIDリストを作成
-        horse_ids = [entry.horse_id for entry in race.shutuba_entries]
+        horse_ids = [entry.horse_id for entry in entries]
 
         # 統計データを一括取得
         track_stats = db.session.query(
@@ -3495,7 +3496,6 @@ def race_shutuba(race_id):
             }
 
         # エントリーに統計データを付与
-        entries = race.shutuba_entries
         for entry in entries:
             entry.stats = stats_by_horse.get(entry.horse_id, {})
 
