@@ -285,3 +285,56 @@
 </div>
 {% endif %}
 {% endblock %}
+
+{% block extra_js %}
+<script>
+    // 既存のJavaScriptがあればここに
+</script>
+
+<style>
+/* モバイル対応の追加スタイル */
+@media (max-width: 768px) {
+    /* コンテンツの余白調整 */
+    .container {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+    
+    /* テキストサイズの調整 */
+    h1 {
+        font-size: 2rem !important;
+    }
+    
+    h2 {
+        font-size: 1.5rem !important;
+    }
+    
+    p {
+        font-size: 0.95rem !important;
+    }
+    
+    /* ボタンの調整 */
+    .btn {
+        display: block;
+        width: 100%;
+        margin-bottom: 10px;
+    }
+    
+    /* セクション間の余白 */
+    section {
+        padding: 30px 0;
+    }
+    
+    /* カードのスタイル */
+    .card {
+        margin-bottom: 20px;
+    }
+    
+    /* 画像サイズの調整 */
+    img {
+        max-width: 100%;
+        height: auto;
+    }
+}
+</style>
+{% endblock %}

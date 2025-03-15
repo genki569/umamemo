@@ -254,5 +254,57 @@
 .bg-bracket-6 { background-color: #00FF00; color: #000000; }
 .bg-bracket-7 { background-color: #FFA500; color: #000000; }
 .bg-bracket-8 { background-color: #FFC0CB; color: #000000; }
+
+/* モバイル対応のスタイル追加 */
+@media (max-width: 768px) {
+    .shutuba-container {
+        padding: 10px;
+    }
+    
+    .shutuba-table-wrapper {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .shutuba-table table {
+        min-width: 600px;
+    }
+    
+    .tab-buttons {
+        display: flex;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .tab-button {
+        flex: 0 0 auto;
+        white-space: nowrap;
+        padding: 8px 15px;
+    }
+    
+    .horse-stats-card {
+        margin-bottom: 20px;
+    }
+    
+    .stats-section {
+        margin-bottom: 15px;
+    }
+    
+    .month-stats {
+        font-size: 0.8rem;
+    }
+    
+    .month-stats th, .month-stats td {
+        padding: 4px;
+    }
+    
+    .race-details {
+        flex-wrap: wrap;
+    }
+    
+    .race-details span {
+        margin: 2px 5px;
+    }
+}
 </style>
 {% endblock %}
