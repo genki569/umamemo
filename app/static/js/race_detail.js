@@ -56,89 +56,77 @@ function deleteRaceMemo(raceId, memoId) {
 
 // レース詳細ページのカード表示
 document.addEventListener('DOMContentLoaded', function() {
-    // モバイル表示かどうかを確認
-    const isMobile = window.innerWidth < 768;
-    
-    if (isMobile) {
-        // テーブルをカード形式に変換
-        const tableRows = document.querySelectorAll('.entry-table tbody tr');
+    // モバイル表示の場合、テーブルをカード表示に変換
+    if (window.innerWidth < 768) {
+        const table = document.querySelector('.entry-table');
+        if (!table) return;
         
+        // テーブルの行を取得
+        const tableRows = Array.from(table.querySelectorAll('tbody tr'));
+        if (tableRows.length === 0) return;
+        
+        // テーブルを非表示にする
+        table.style.display = 'none';
+        
+        // カードコンテナを作成
+        const cardContainer = document.createElement('div');
+        cardContainer.className = 'mobile-entries';
+        table.parentNode.insertBefore(cardContainer, table.nextSibling);
+        
+        // 各行をカードに変換
         tableRows.forEach(row => {
-            // 着順によってクラスを追加
-            const resultCell = row.querySelector('td:first-child');
-            if (resultCell && resultCell.textContent.trim()) {
-                const result = resultCell.textContent.trim();
-                if (result === '1') {
-                    row.classList.add('first-place');
-                } else if (result === '2') {
-                    row.classList.add('second-place');
-                } else if (result === '3') {
-                    row.classList.add('third-place');
-                }
-            }
+            // カードを作成
+            const card = document.createElement('div');
+            card.className = 'entry-card';
             
-            // カードをタップしたときの処理
-            row.addEventListener('click', function(e) {
-                // ボタンをクリックした場合は何もしない
-                if (e.target.tagName === 'BUTTON' || e.target.tagName === 'A' || e.target.tagName === 'I' || 
-                    e.target.closest('button') || e.target.closest('a')) {
-                    return;
-                }
-                
-                // 馬名のセルを取得
-                const horseNameCell = this.querySelector('td:nth-child(4)');
-                if (horseNameCell) {
-                    const link = horseNameCell.querySelector('a');
-                    if (link) {
-                        // 馬詳細ページに移動
-                        window.location.href = link.href;
-                    }
+            // 必要なデータを抽出
+            const cells = Array.from(row.querySelectorAll('td'));
+            if (cells.length < 4) return;
+            
+            // カードの内容を構築
+            const horseName = cells[3].textContent.trim();
+            const horseLink = cells[3].querySelector('a') ? cells[3].querySelector('a').href : null;
+            const jockey = cells[4].textContent.trim();
+            const weight = cells[5].textContent.trim();
+            const odds = cells[8].textContent.trim();
+            const popularity = cells[9].textContent.trim();
+            
+            // カードのHTMLを構築
+            card.innerHTML = `
+                <div class="card-header">
+                    <span class="gate">${cells[0].textContent.trim()}</span>
+                    <span class="horse-number">${cells[1].textContent.trim()}</span>
+                    <h4 class="horse-name">${horseName}</h4>
+                </div>
+                <div class="card-body">
+                    <div class="info-row">
+                        <span class="label">騎手:</span>
+                        <span class="value">${jockey}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">斤量:</span>
+                        <span class="value">${weight}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">オッズ:</span>
+                        <span class="value">${odds}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">人気:</span>
+                        <span class="value">${popularity}</span>
+                    </div>
+                </div>
+            `;
+            
+            // カードをクリックしたときの処理
+            card.addEventListener('click', function() {
+                if (horseLink) {
+                    window.location.href = horseLink;
                 }
             });
-        });
-        
-        // 各カードに展開/折りたたみ機能を追加
-        tableRows.forEach(row => {
-            // 最初は詳細情報を折りたたむ
-            const detailCells = Array.from(row.querySelectorAll('td')).slice(5, 13);
-            detailCells.forEach(cell => {
-                cell.style.display = 'none';
-            });
             
-            // 馬名セルに展開/折りたたみボタンを追加
-            const horseNameCell = row.querySelector('td:nth-child(4)');
-            if (horseNameCell) {
-                const toggleButton = document.createElement('button');
-                toggleButton.className = 'btn-toggle-details';
-                toggleButton.innerHTML = '<i class="fas fa-chevron-down"></i>';
-                
-                toggleButton.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    
-                    // 詳細情報の表示/非表示を切り替え
-                    const isExpanded = detailCells[0].style.display !== 'none';
-                    
-                    detailCells.forEach(cell => {
-                        cell.style.display = isExpanded ? 'none' : 'block';
-                    });
-                    
-                    // カードの展開状態を切り替え
-                    row.classList.toggle('expanded', !isExpanded);
-                    
-                    // ボタンのアイコンを切り替え
-                    this.innerHTML = isExpanded ? 
-                        '<i class="fas fa-chevron-down"></i>' : 
-                        '<i class="fas fa-chevron-up"></i>';
-                });
-                
-                horseNameCell.appendChild(toggleButton);
-            }
+            // カードをコンテナに追加
+            cardContainer.appendChild(card);
         });
-        
-        // 表示の最適化
-        document.querySelector('.race-entries h3').textContent = '出走馬一覧';
-        
-        // スクロール位置をリセット
-        window.scrollTo(0, 0);
     }
 }); 

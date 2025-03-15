@@ -176,20 +176,19 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // dateButtonsの宣言を条件付きにする
+    // レース一覧ページの日付ナビゲーション
     if (typeof window.dateButtonsInitialized === 'undefined') {
         window.dateButtonsInitialized = true;
         
-        // レース一覧ページの日付ナビゲーション
-        const dateButtons = document.querySelector('.date-buttons');
-        if (dateButtons) {
+        const dateButtonsContainer = document.querySelector('.date-buttons');
+        if (dateButtonsContainer) {
             let touchStartX = 0;
 
-            dateButtons.addEventListener('touchstart', e => {
+            dateButtonsContainer.addEventListener('touchstart', e => {
                 touchStartX = e.touches[0].clientX;
             }, { passive: true });
 
-            dateButtons.addEventListener('touchend', e => {
+            dateButtonsContainer.addEventListener('touchend', e => {
                 const touchEndX = e.changedTouches[0].clientX;
                 const diff = touchStartX - touchEndX;
                 
