@@ -139,115 +139,210 @@
         padding-bottom: 100px;
     }
     
-    /* テーブルのスクロールを改善 */
-    .table-responsive {
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        max-width: 100%;
-        margin-bottom: 1rem;
-    }
-    
-    /* テーブルのフォントサイズを小さく */
+    /* テーブルをカード形式に変換 */
     .entry-table {
-        font-size: 0.75rem;
+        border-collapse: separate;
+        border-spacing: 0 10px;
+        background: transparent;
+        border: none;
     }
     
-    /* セルのパディングを小さく */
-    .entry-table th,
-    .entry-table td {
-        padding: 0.3rem !important;
+    .entry-table thead {
+        display: none; /* ヘッダーを非表示 */
     }
     
-    /* 重要な列を強調 */
-    .entry-table th:nth-child(1),
-    .entry-table th:nth-child(3),
-    .entry-table th:nth-child(4),
-    .entry-table td:nth-child(1),
-    .entry-table td:nth-child(3),
-    .entry-table td:nth-child(4) {
+    .entry-table tbody tr {
+        display: block;
+        margin-bottom: 15px;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        background: white;
+        position: relative;
+        overflow: hidden;
+        border: none;
+    }
+    
+    .entry-table tbody td {
+        display: block;
+        text-align: left;
+        padding: 0 !important;
+        border: none;
+        position: relative;
+    }
+    
+    /* 着順と馬番を目立たせる */
+    .entry-table tbody td:nth-child(1),
+    .entry-table tbody td:nth-child(3) {
+        display: inline-block;
+        width: auto;
+        padding: 5px 10px !important;
         font-weight: bold;
-        background-color: rgba(79, 70, 229, 0.05);
+        font-size: 1rem;
     }
     
-    /* ボタンを小さく */
-    .entry-table .btn {
-        padding: 0.15rem 0.3rem;
-        font-size: 0.7rem;
-    }
-    
-    /* テーブルの横スクロールを示すヒント */
-    .race-entries h3::after {
-        content: " (横にスクロールできます)";
-        font-size: 0.8rem;
-        font-weight: normal;
-        color: #666;
-        font-style: italic;
-    }
-    
-    /* スクロールを促すアニメーション */
-    .table-responsive::after {
-        content: "→";
+    /* 着順 */
+    .entry-table tbody td:nth-child(1) {
         position: absolute;
+        top: 10px;
+        left: 10px;
+        background: #f0f0f0;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 2;
+    }
+    
+    /* 枠番 */
+    .entry-table tbody td:nth-child(2) {
+        display: none; /* 枠番は非表示 */
+    }
+    
+    /* 馬番 */
+    .entry-table tbody td:nth-child(3) {
+        position: absolute;
+        top: 10px;
         right: 10px;
-        top: 50%;
-        transform: translateY(-50%);
-        font-size: 1.5rem;
-        color: rgba(79, 70, 229, 0.5);
-        animation: scroll-hint 1.5s infinite;
-        pointer-events: none;
+        background: #4F46E5;
+        color: white;
+        border-radius: 5px;
+        padding: 2px 8px !important;
+        font-size: 0.9rem;
     }
     
-    @keyframes scroll-hint {
-        0% { opacity: 0.2; right: 10px; }
-        50% { opacity: 1; right: 5px; }
-        100% { opacity: 0.2; right: 10px; }
-    }
-    
-    /* テーブルの最初の数列を固定表示（オプション） */
-    .entry-table th:nth-child(1),
-    .entry-table th:nth-child(3),
-    .entry-table th:nth-child(4),
-    .entry-table td:nth-child(1),
-    .entry-table td:nth-child(3),
-    .entry-table td:nth-child(4) {
-        position: sticky;
-        left: 0;
-        z-index: 1;
-        background-color: #fff;
-    }
-    
-    .entry-table th:nth-child(3),
-    .entry-table td:nth-child(3) {
-        left: 40px;
-    }
-    
-    .entry-table th:nth-child(4),
-    .entry-table td:nth-child(4) {
-        left: 80px;
-    }
-    
-    /* 行の高さを調整 */
-    .entry-table tr {
-        height: 40px;
-    }
-    
-    /* 馬名のセルを強調 */
-    .entry-table td:nth-child(4) a {
+    /* 馬名 */
+    .entry-table tbody td:nth-child(4) {
+        padding: 50px 15px 10px 15px !important;
+        font-size: 1.1rem;
         font-weight: bold;
-        color: #4F46E5;
+        border-bottom: 1px solid #eee;
     }
     
-    /* 着順によって行の色を変える */
-    .entry-table tr:has(td:first-child:contains("1")) {
-        background-color: rgba(16, 185, 129, 0.1) !important;
+    /* 騎手 */
+    .entry-table tbody td:nth-child(5) {
+        padding: 8px 15px 8px 15px !important;
+        font-size: 0.9rem;
     }
     
-    .entry-table tr:has(td:first-child:contains("2")) {
-        background-color: rgba(59, 130, 246, 0.1) !important;
+    /* タイム */
+    .entry-table tbody td:nth-child(6) {
+        padding: 0 15px 8px 15px !important;
+        font-size: 0.9rem;
     }
     
-    .entry-table tr:has(td:first-child:contains("3")) {
-        background-color: rgba(245, 158, 11, 0.1) !important;
+    /* 着差 */
+    .entry-table tbody td:nth-child(7) {
+        padding: 0 15px 8px 15px !important;
+        font-size: 0.9rem;
+    }
+    
+    /* 通過 */
+    .entry-table tbody td:nth-child(8) {
+        padding: 0 15px 8px 15px !important;
+        font-size: 0.9rem;
+    }
+    
+    /* 上り */
+    .entry-table tbody td:nth-child(9) {
+        padding: 0 15px 8px 15px !important;
+        font-size: 0.9rem;
+    }
+    
+    /* 体重 */
+    .entry-table tbody td:nth-child(10) {
+        padding: 0 15px 8px 15px !important;
+        font-size: 0.9rem;
+    }
+    
+    /* 人気 */
+    .entry-table tbody td:nth-child(11) {
+        padding: 0 15px 8px 15px !important;
+        font-size: 0.9rem;
+    }
+    
+    /* オッズ */
+    .entry-table tbody td:nth-child(12) {
+        padding: 0 15px 8px 15px !important;
+        font-size: 0.9rem;
+    }
+    
+    /* メモとお気に入りボタン */
+    .entry-table tbody td:nth-child(13),
+    .entry-table tbody td:nth-child(14) {
+        display: inline-block;
+        width: 50%;
+        padding: 10px 15px !important;
+        text-align: center;
+        background: #f9f9f9;
+    }
+    
+    /* ラベルを追加 */
+    .entry-table tbody td:nth-child(5)::before,
+    .entry-table tbody td:nth-child(6)::before,
+    .entry-table tbody td:nth-child(7)::before,
+    .entry-table tbody td:nth-child(8)::before,
+    .entry-table tbody td:nth-child(9)::before,
+    .entry-table tbody td:nth-child(10)::before,
+    .entry-table tbody td:nth-child(11)::before,
+    .entry-table tbody td:nth-child(12)::before {
+        display: inline-block;
+        width: 60px;
+        font-weight: bold;
+        color: #666;
+    }
+    
+    .entry-table tbody td:nth-child(5)::before { content: "騎手: "; }
+    .entry-table tbody td:nth-child(6)::before { content: "タイム: "; }
+    .entry-table tbody td:nth-child(7)::before { content: "着差: "; }
+    .entry-table tbody td:nth-child(8)::before { content: "通過: "; }
+    .entry-table tbody td:nth-child(9)::before { content: "上り: "; }
+    .entry-table tbody td:nth-child(10)::before { content: "体重: "; }
+    .entry-table tbody td:nth-child(11)::before { content: "人気: "; }
+    .entry-table tbody td:nth-child(12)::before { content: "オッズ: "; }
+    
+    /* 着順によって色分け */
+    .entry-table tbody tr.first-place td:nth-child(1) {
+        background-color: #10B981;
+        color: white;
+    }
+    
+    .entry-table tbody tr.second-place td:nth-child(1) {
+        background-color: #3B82F6;
+        color: white;
+    }
+    
+    .entry-table tbody tr.third-place td:nth-child(1) {
+        background-color: #F59E0B;
+        color: white;
+    }
+    
+    /* ボタンのスタイル調整 */
+    .entry-table .btn {
+        width: 100%;
+        padding: 8px !important;
+        font-size: 0.9rem;
+        height: auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    /* テーブルの横スクロールヒントを非表示 */
+    .race-entries h3::after {
+        content: "";
+    }
+    
+    /* スクロールヒントを非表示 */
+    .table-responsive::after {
+        display: none;
+    }
+    
+    /* テーブルレスポンシブのスタイル調整 */
+    .table-responsive {
+        overflow-x: visible;
+        box-shadow: none;
     }
 }
 
