@@ -280,7 +280,7 @@ def save_to_csv(race_entry: Dict[str, any], filename: str = None):
 
 def get_race_urls_for_date(page, context, date_str: str) -> List[str]:
     """指定日の全レースの出馬表URLを取得"""
-    all_race_urls = []
+    all_race_urls = set()  # リストからセットに変更して重複を防止
     try:
         url = f"https://nar.netkeiba.com/top/race_list.html?kaisai_date={date_str}"
         print(f"\n{date_str}のレース情報を取得中...")
@@ -311,49 +311,25 @@ def get_race_urls_for_date(page, context, date_str: str) -> List[str]:
             print("ページの準備ができていません。さらに待機します...")
             page.wait_for_timeout(5000)
         
-        venues = page.query_selector_all('.RaceList_ProvinceSelect li')
-        print(f"開催場所数: {len(venues)}")
+        # 直接メインページからすべてのレースURLを取得
+        race_links = page.query_selector_all('a[href*="/race/shutuba.html"]')
+        for link in race_links:
+            href = link.get_attribute('href')
+            if href:
+                race_url = f"https://nar.netkeiba.com{href.replace('..', '')}"
+                all_race_urls.add(race_url)  # addを使用してセットに追加
+                print(f"レースURL追加: {race_url}")
         
-        for venue in venues:
-            try:
-                venue_name = venue.inner_text().strip()
-                print(f"\n開催場所: {venue_name}")
-                
-                venue_link = venue.query_selector('a')
-                if venue_link:
-                    href = venue_link.get_attribute('href')
-                    venue_url = f"https://nar.netkeiba.com/top/race_list.html{href}"
-                    print(f"開催場所URL: {venue_url}")
-                    
-                    venue_page = context.new_page()
-                    try:
-                        venue_page.goto(venue_url, wait_until='domcontentloaded', timeout=30000)
-                        venue_page.wait_for_timeout(3000)
-                        
-                        # レース情報を取得
-                        races = venue_page.query_selector_all('dl.RaceList_DataList')
-                        for race in races:
-                            race_links = race.query_selector_all('a[href*="/race/shutuba.html"]')
-                            for link in race_links:
-                                href = link.get_attribute('href')
-                                if href:
-                                    race_url = f"https://nar.netkeiba.com{href.replace('..', '')}"
-                                    all_race_urls.append(race_url)
-                                    print(f"レースURL追加: {race_url}")
-                                    
-                    finally:
-                        venue_page.close()
-                        
-            except Exception as e:
-                print(f"開催場所の処理中にエラー: {str(e)}")
-                continue
+        print(f"メインページから{len(all_race_urls)}件のレースURLを取得しました")
+        
+        # 会場ごとのページは処理しない（重複を避けるため）
                 
     except Exception as e:
         print(f"レースURL取得中にエラー: {str(e)}")
         import traceback
         traceback.print_exc()
     
-    return all_race_urls
+    return list(all_race_urls)  # セットをリストに変換して返す
 
 def get_race_info_for_next_three_days():
     """今日から3日分のレース情報を取得"""
