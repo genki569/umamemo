@@ -8,7 +8,7 @@
 @media (max-width: 767.98px) {
     .race-memo-section {
         position: fixed;
-        bottom: 20px;
+        bottom: 80px; /* フッターCTAの高さ分だけ上に移動 */
         right: 20px;
         z-index: 1000;
         background: transparent;
@@ -50,7 +50,7 @@
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         padding: 15px;
         margin-bottom: 60px;
-        max-height: calc(80vh - 60px);
+        max-height: calc(80vh - 140px); /* フッターCTAの高さを考慮して調整 */
         overflow-y: auto;
         width: 100%;
     }
@@ -58,6 +58,11 @@
     .sticky-note {
         margin-bottom: 10px;
         position: relative;
+    }
+    
+    /* コンテンツの最後にパディングを追加してフッターCTAに隠れないようにする */
+    .race-detail-container {
+        padding-bottom: 100px;
     }
 }
 </style>
@@ -158,7 +163,7 @@
     </div>
     {% endif %}
 
-    <!-- メモセクション -->
+    <!-- メモセクションを追加 -->
     <div class="race-memo-section minimized">
         <button type="button" class="memo-toggle">
             <i class="fas fa-bookmark"></i>
