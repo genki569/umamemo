@@ -196,22 +196,41 @@ def races():
                 'is_future': is_future
             }
         
-        # 会場名の辞書
-        venue_names = {
-            '101': '札幌', '102': '函館', '103': '福島', '104': '新潟',
-            '105': '東京', '106': '中山', '107': '中京', '108': '京都',
-            '109': '阪神', '110': '小倉', '201': '門別', '202': '帯広',
-            '203': '盛岡', '204': '水沢', '205': '浦和', '206': '船橋',
-            '207': '大井', '208': '川崎', '209': '金沢', '210': '笠松',
-            '211': '名古屋', '212': '園田', '213': '姫路', '214': '高知',
-            '215': '佐賀'
-        }
+        # 会場ごとにレースをグループ化
+        venue_races = {}
+        for race in races:
+            venue_id = race.venue_id or race.venue or 'unknown'
+            
+            if venue_id not in venue_races:
+                venue_races[venue_id] = {
+                    'venue_name': race.venue,
+                    'races': [],
+                    'weather': race.weather,
+                    'track_condition': race.track_condition
+                }
+            
+            venue_races[venue_id]['races'].append(race)
+        
+        # 日付フォーマット用のデータを作成
+        dates = []
+        for date_tuple in available_dates:
+            date_obj = date_tuple[0]
+            if isinstance(date_obj, date):
+                weekday_names = ['月', '火', '水', '木', '金', '土', '日']
+                weekday = weekday_names[date_obj.weekday()]
+                dates.append({
+                    'value': date_obj.strftime('%Y-%m-%d'),
+                    'month': date_obj.month,
+                    'day': date_obj.day,
+                    'weekday': weekday
+                })
         
         return render_template('races.html', 
                               races=races, 
+                              venue_races=venue_races,
                               selected_date=selected_date,
                               available_dates=available_dates,
-                              venue_names=venue_names,
+                              dates=dates,
                               race_type=race_type,
                               venue=venue)
     
@@ -219,7 +238,12 @@ def races():
         current_app.logger.error(f"Error in races route: {str(e)}")
         current_app.logger.error(traceback.format_exc())
         flash('レース情報の取得中にエラーが発生しました', 'error')
-        return render_template('races.html', races=[], selected_date=None, available_dates=[])
+        return render_template('races.html', 
+                              races=[], 
+                              venue_races={},
+                              selected_date=None, 
+                              available_dates=[],
+                              dates=[])
 
 @app.route('/races/<int:race_id>')
 def race(race_id):
