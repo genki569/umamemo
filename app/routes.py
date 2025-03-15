@@ -3436,6 +3436,95 @@ def race_shutuba(race_id):
             
             # エントリーに戦績を付与
             entry.recent_results = formatted_results
+            
+            # 同距離での成績を計算
+            if race.distance:
+                # 同距離のレース結果を取得
+                distance_entries = Entry.query.join(Race).filter(
+                    Entry.horse_id == entry.horse_id,
+                    Entry.position.isnot(None),
+                    Race.distance == race.distance
+                ).all()
+                
+                if distance_entries:
+                    total = len(distance_entries)
+                    wins = sum(1 for e in distance_entries if e.position == 1)
+                    top3 = sum(1 for e in distance_entries if e.position and e.position <= 3)
+                    
+                    entry.distance_stats = {
+                        'total': total,
+                        'wins': wins,
+                        'win_rate': (wins / total) * 100 if total > 0 else 0,
+                        'top3': top3,
+                        'top3_rate': (top3 / total) * 100 if total > 0 else 0
+                    }
+                    
+                    # 同距離での最速タイム
+                    best_time_entry = None
+                    best_time = float('inf')
+                    
+                    for e in distance_entries:
+                        if hasattr(e, 'time') and e.time:
+                            try:
+                                # 時間を秒に変換して比較
+                                time_parts = e.time.split(':')
+                                if len(time_parts) == 2:
+                                    minutes, seconds = time_parts
+                                    total_seconds = float(minutes) * 60 + float(seconds)
+                                    if total_seconds < best_time:
+                                        best_time = total_seconds
+                                        best_time_entry = e
+                            except (ValueError, AttributeError):
+                                pass
+                    
+                    if best_time_entry:
+                        entry.best_time = {
+                            'time': best_time_entry.time,
+                            'date': best_time_entry.race.date,
+                            'venue': best_time_entry.race.venue,
+                            'track_condition': best_time_entry.race.track_condition or '不明'
+                        }
+                else:
+                    entry.distance_stats = None
+            else:
+                entry.distance_stats = None
+            
+            # 月別成績を計算
+            month_stats = {}
+            
+            # 全レース結果を取得
+            all_entries = Entry.query.join(Race).filter(
+                Entry.horse_id == entry.horse_id,
+                Entry.position.isnot(None)
+            ).all()
+            
+            for e in all_entries:
+                race_date = e.race.date
+                if isinstance(race_date, str):
+                    try:
+                        race_date = datetime.strptime(race_date, '%Y-%m-%d').date()
+                    except ValueError:
+                        continue
+                
+                month = race_date.month
+                
+                if month not in month_stats:
+                    month_stats[month] = {'total': 0, 'wins': 0, 'top3': 0}
+                
+                month_stats[month]['total'] += 1
+                
+                if e.position == 1:
+                    month_stats[month]['wins'] += 1
+                
+                if e.position and e.position <= 3:
+                    month_stats[month]['top3'] += 1
+            
+            # 勝率と複勝率を計算
+            for month, stats in month_stats.items():
+                stats['win_rate'] = (stats['wins'] / stats['total']) * 100 if stats['total'] > 0 else 0
+                stats['top3_rate'] = (stats['top3'] / stats['total']) * 100 if stats['total'] > 0 else 0
+            
+            entry.month_stats = month_stats
 
         # 会場名の辞書を定義
         VENUE_NAMES = {
