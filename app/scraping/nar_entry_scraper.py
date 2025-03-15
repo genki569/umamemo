@@ -2,7 +2,7 @@ from playwright.sync_api import sync_playwright, TimeoutError
 import time
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
-from typing import List, Dict, Any
+from typing import List, Dict
 import pandas as pd
 import os
 import csv
@@ -11,7 +11,6 @@ import json
 from app import app, db
 from app.models import Race, Horse, Jockey, ShutubaEntry
 import traceback
-import argparse
 
 def generate_race_id(race_url: str) -> str:
     """レースURLからレースIDを生成（15桁）"""
@@ -250,44 +249,58 @@ def scrape_race_entry(page, race_url: str) -> Dict[str, any]:
         traceback.print_exc()
         return None
 
-def save_to_csv(race_entries: List[Dict[str, Any]], filename: str = None):
+def save_to_csv(race_entry: Dict[str, any], filename: str = None):
     """レース情報をCSVに保存する"""
-    if not race_entries:
-        print("保存するレース情報がありません")
-        return None
-    
-    # ファイル名が指定されていない場合は日付から生成
-    if not filename:
-        date_str = datetime.now().strftime('%Y%m%d')
-        filename = f"race_entries_{date_str}.csv"
-    
     try:
-        # DataFrameに変換
-        df = pd.DataFrame(race_entries)
+        os.makedirs('data/race_entries', exist_ok=True)
         
-        # entriesカラムをJSON文字列に変換
-        df['entries'] = df['entries'].apply(lambda x: json.dumps(x, ensure_ascii=False))
+        if filename is None:
+            current_date = datetime.now().strftime('%Y%m%d')
+            filename = f'data/race_entries/nar_race_entries_{current_date}.csv'
+        else:
+            filename = f'data/race_entries/{filename}'
         
-        # CSVに保存
-        df.to_csv(filename, index=False, encoding='utf-8')
-        print(f"レース情報をCSVに保存しました: {filename}")
-        return filename
+        # ファイルが存在しない場合は新規作成
+        file_exists = os.path.isfile(filename)
+        
+        with open(filename, 'a', newline='', encoding='utf-8') as f:
+            writer = csv.writer(f)
+            
+            # ヘッダーを書き込む（ファイルが新規の場合のみ）
+            if not file_exists:
+                writer.writerow([
+                    'race_id', 'race_name', 'race_number', 'venue_name', 
+                    'start_time', 'course_info', 'race_details', 'entries'
+                ])
+            
+            # レース情報を1行で書き込む
+            writer.writerow([
+                race_entry['race_id'],
+                race_entry['race_name'],
+                race_entry['race_number'],
+                race_entry['venue_name'],
+                race_entry['start_time'],
+                race_entry['course_info'],
+                race_entry['race_details'],
+                json.dumps(race_entry['entries'], ensure_ascii=False)  # 出走馬情報をJSON形式で保存
+            ])
+            
+        print(f"CSVに保存しました: {filename}")
+            
     except Exception as e:
         print(f"CSV保存エラー: {str(e)}")
         import traceback
         traceback.print_exc()
-        return None
 
 def get_race_urls_for_date(page, context, date_str: str) -> List[str]:
-    """指定日の全レースの出馬表URLを取得（重複なし）"""
-    all_race_urls = set()  # セットを使用して重複を防ぐ
-    
+    """指定日の全レースの出馬表URLを取得"""
+    all_race_urls = []
     try:
         url = f"https://nar.netkeiba.com/top/race_list.html?kaisai_date={date_str}"
         print(f"\n{date_str}のレース情報を取得中...")
         
         # タイムアウトを設定
-        page.set_default_timeout(60000)
+        page.set_default_timeout(60000)  # 60秒
         
         # まずトップページにアクセス
         print("トップページにアクセスしています...")
@@ -303,153 +316,101 @@ def get_race_urls_for_date(page, context, date_str: str) -> List[str]:
         
         page.wait_for_timeout(5000)
         
-        # 日付ページから直接すべてのレースリンクを取得
-        print("すべてのレースリンクを取得しています...")
-        race_links = page.query_selector_all('a[href*="/race/shutuba.html"]')
-        print(f"レースリンク数: {len(race_links)}")
+        # JavaScriptを実行してページの準備ができているか確認
+        is_ready = page.evaluate('''() => {
+            return document.querySelector('.RaceList_ProvinceSelect') !== null;
+        }''')
         
-        for link in race_links:
-            href = link.get_attribute('href')
-            if href:
-                # 相対パスを絶対パスに変換
-                if href.startswith('/'):
-                    race_url = f"https://nar.netkeiba.com{href}"
-                else:
-                    race_url = f"https://nar.netkeiba.com{href.replace('..', '')}"
+        if not is_ready:
+            print("ページの準備ができていません。さらに待機します...")
+            page.wait_for_timeout(5000)
+        
+        venues = page.query_selector_all('.RaceList_ProvinceSelect li')
+        print(f"開催場所数: {len(venues)}")
+        
+        for venue in venues:
+            try:
+                venue_name = venue.inner_text().strip()
+                print(f"\n開催場所: {venue_name}")
                 
-                # セットに追加（自動的に重複排除）
-                all_race_urls.add(race_url)
-        
-        print(f"重複排除後のレースURL数: {len(all_race_urls)}")
+                venue_link = venue.query_selector('a')
+                if venue_link:
+                    href = venue_link.get_attribute('href')
+                    venue_url = f"https://nar.netkeiba.com/top/race_list.html{href}"
+                    print(f"開催場所URL: {venue_url}")
+                    
+                    venue_page = context.new_page()
+                    try:
+                        venue_page.goto(venue_url, wait_until='domcontentloaded', timeout=30000)
+                        venue_page.wait_for_timeout(3000)
+                        
+                        # レース情報を取得
+                        races = venue_page.query_selector_all('dl.RaceList_DataList')
+                        for race in races:
+                            race_links = race.query_selector_all('a[href*="/race/shutuba.html"]')
+                            for link in race_links:
+                                href = link.get_attribute('href')
+                                if href:
+                                    race_url = f"https://nar.netkeiba.com{href.replace('..', '')}"
+                                    all_race_urls.append(race_url)
+                                    print(f"レースURL追加: {race_url}")
+                                    
+                    finally:
+                        venue_page.close()
+                        
+            except Exception as e:
+                print(f"開催場所の処理中にエラー: {str(e)}")
+                continue
                 
     except Exception as e:
         print(f"レースURL取得中にエラー: {str(e)}")
         import traceback
         traceback.print_exc()
     
-    return list(all_race_urls)  # セットをリストに変換して返す
+    return all_race_urls
 
 def get_race_info_for_next_three_days():
     """今日から3日分のレース情報を取得"""
     try:
         with sync_playwright() as p:
-            # 並列処理のために複数のブラウザを起動
-            browser_options = {
-                'headless': True,
-                'args': ['--disable-gpu', '--disable-dev-shm-usage', '--no-sandbox']
-            }
-            browser = p.chromium.launch(**browser_options)
+            browser = p.chromium.launch(headless=True)
+            context = browser.new_context(
+                viewport={'width': 1920, 'height': 1080},
+                user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
+            )
             
-            # 日付ごとに並列処理
-            contexts = []
-            pages = []
-            
-            # 各日付用のコンテキストとページを作成
-            for i in range(3):
-                context = browser.new_context(
-                    viewport={'width': 1920, 'height': 1080},
-                    user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
-                )
-                contexts.append(context)
-                pages.append(context.new_page())
-            
-            # 各日付の処理を開始
-            for i in range(3):
-                target_date = datetime.now() + timedelta(days=i)
-                date_str = target_date.strftime("%Y%m%d")
-                filename = f"nar_race_entries_{date_str}.csv"
+            try:
+                page = context.new_page()
                 
-                print(f"\n{date_str}の処理を開始します...")
+                for i in range(3):
+                    target_date = datetime.now() + timedelta(days=i)
+                    date_str = target_date.strftime("%Y%m%d")
+                    filename = f"nar_race_entries_{date_str}.csv"
+                    
+                    print(f"\n{date_str}の処理を開始します...")
+                    
+                    race_urls = get_race_urls_for_date(page, context, date_str)
+                    print(f"{date_str}のレースURL数: {len(race_urls)}")
+                    
+                    if race_urls:  # レースURLが存在する場合のみ処理
+                        for race_url in race_urls:
+                            race_entry = scrape_race_entry(page, race_url)
+                            if race_entry and 'horse_name' in race_entry['entries'][0]:
+                                save_to_csv(race_entry, filename)
+                                print(f"保存完了: {race_entry['venue_name']} {race_entry['race_number']}R")
+                        print(f"{date_str}の処理が完了しました")
+                    else:
+                        print(f"{date_str}のレースはありません")
                 
-                # 待機時間を短縮
-                pages[i].set_default_timeout(30000)
-                race_urls = get_race_urls_for_date(pages[i], contexts[i], date_str)
-                print(f"{date_str}のレースURL数: {len(race_urls)}")
-                
-                # 各レースの処理
-                if race_urls:
-                    for race_url in race_urls:
-                        race_entry = scrape_race_entry(pages[i], race_url)
-                        if race_entry:
-                            save_to_csv([race_entry], filename)
-                            print(f"保存完了: {race_entry['venue_name']} {race_entry['race_number']}R")
-                        # 待機時間を短縮
-                        pages[i].wait_for_timeout(1000)
-            
-            # クリーンアップ
-            for context in contexts:
+            finally:
                 context.close()
-            browser.close()
+                browser.close()
                 
     except Exception as e:
         print(f"処理エラー: {str(e)}")
         import traceback
         traceback.print_exc()
 
-def scrape_race_entries(date_str=None):
-    """指定された日付のレース出走表をスクレイピング"""
-    # 日付が指定されていない場合は今日の日付を使用
-    if not date_str:
-        date_str = datetime.now().strftime('%Y%m%d')
-    
-    # 日付の形式を確認
-    try:
-        target_date = datetime.strptime(date_str, '%Y%m%d')
-        formatted_date = target_date.strftime('%Y年%m月%d日')
-    except ValueError:
-        print(f"エラー: 無効な日付形式です: {date_str}")
-        return []
-    
-    print(f"{formatted_date}のレース出走表をスクレイピングします...")
-    
-    race_entries = []
-    
-    with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
-        page = browser.new_page()
-        
-        # NAR（地方競馬）のトップページにアクセス
-        page.goto("https://www.keiba.go.jp/")
-        
-        # 日付選択
-        # ... (日付選択の処理)
-        
-        # レース一覧を取得
-        # ... (レース一覧の取得処理)
-        
-        # 各レースの出走表を取得
-        for race_url in race_urls:
-            try:
-                entry_info = scrape_race_entry(page, race_url)
-                if entry_info and entry_info['race_id']:
-                    race_entries.append(entry_info)
-                    print(f"レース情報を取得しました: {entry_info['race_name']}")
-            except Exception as e:
-                print(f"レース情報の取得中にエラー: {str(e)}")
-        
-        browser.close()
-    
-    print(f"{len(race_entries)}件のレース情報を取得しました")
-    return race_entries
-
-def main():
-    """メイン関数"""
-    parser = argparse.ArgumentParser(description='地方競馬の出走表をスクレイピングする')
-    parser.add_argument('--date', type=str, help='対象日付（YYYYMMDD形式）')
-    parser.add_argument('--output', type=str, help='出力CSVファイルのパス')
-    args = parser.parse_args()
-    
-    # スクレイピングの実行
-    race_entries = scrape_race_entries(args.date)
-    
-    # CSVに保存
-    if race_entries:
-        save_to_csv(race_entries, args.output)
-    else:
-        print("保存するレース情報がありません")
-        return 1
-    
-    return 0
-
-if __name__ == "__main__":
-    exit(main())
+if __name__ == '__main__':
+    print("地方競馬出走表の取得を開始します...")
+    get_race_info_for_next_three_days()
