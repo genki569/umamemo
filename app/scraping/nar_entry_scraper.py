@@ -397,6 +397,48 @@ def get_race_info_for_next_three_days():
         import traceback
         traceback.print_exc()
 
+def scrape_race_entries(date_str=None):
+    """指定された日付のレース出走表をスクレイピング"""
+    # 日付が指定されていない場合は今日の日付を使用
+    if not date_str:
+        date_str = datetime.now().strftime('%Y%m%d')
+    
+    # 日付の形式を確認
+    try:
+        target_date = datetime.strptime(date_str, '%Y%m%d')
+        formatted_date = target_date.strftime('%Y年%m月%d日')
+    except ValueError:
+        print(f"エラー: 無効な日付形式です: {date_str}")
+        return []
+    
+    print(f"{formatted_date}のレース出走表をスクレイピングします...")
+    
+    race_entries = []
+    
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=True)
+        context = browser.new_context()
+        page = context.new_page()
+        
+        # ここでレースURLを取得する処理を追加
+        race_urls = get_race_urls_for_date(page, context, date_str)
+        print(f"{len(race_urls)}件のレースURLを取得しました")
+        
+        # 各レースの出走表を取得
+        for race_url in race_urls:
+            try:
+                entry_info = scrape_race_entry(page, race_url)
+                if entry_info:
+                    race_entries.append(entry_info)
+                    print(f"レース情報を取得しました: {entry_info.get('race_name', '不明')}")
+            except Exception as e:
+                print(f"レース情報取得エラー: {str(e)}")
+        
+        browser.close()
+    
+    print(f"{len(race_entries)}件のレース情報を取得しました")
+    return race_entries
+
 if __name__ == '__main__':
     print("地方競馬出走表の取得を開始します...")
     get_race_info_for_next_three_days()
