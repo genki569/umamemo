@@ -1,17 +1,29 @@
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('race_memo.js loaded');
+    
     const memoSection = document.querySelector('.race-memo-section');
-    const toggleButton = document.querySelector('.memo-toggle');
-
-    if (toggleButton && memoSection) {
-        toggleButton.addEventListener('click', function(e) {
-            e.preventDefault();
+    const memoToggle = document.querySelector('.memo-toggle');
+    
+    if (memoToggle && memoSection) {
+        console.log('Memo elements found');
+        
+        // 初期状態を設定
+        memoSection.classList.add('minimized');
+        
+        memoToggle.addEventListener('click', function() {
+            console.log('Memo toggle clicked');
             memoSection.classList.toggle('minimized');
+            
+            // アイコンを切り替え
             const icon = this.querySelector('i');
-            if (icon) {
-                icon.classList.toggle('fa-chevron-left');
-                icon.classList.toggle('fa-chevron-right');
+            if (memoSection.classList.contains('minimized')) {
+                icon.className = 'fas fa-bookmark';
+            } else {
+                icon.className = 'fas fa-times';
             }
         });
+    } else {
+        console.log('Memo elements not found');
     }
 
     const memoForm = document.querySelector('form');
@@ -84,32 +96,34 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 500);
         });
     });
-});
 
-function deleteRaceMemo(raceId, memoId) {
-    if (!confirm('このメモを削除してもよろしいですか？')) {
-        return;
-    }
-
-    fetch(`/race/${raceId}/memo/${memoId}/delete`, {
-        method: 'POST'
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.status === 'success') {
-            const memoElement = document.getElementById(`memo-${memoId}`);
-            if (memoElement) {
-                memoElement.remove();
-            }
-        } else {
-            throw new Error(data.message || 'メモの削除に失敗しました');
+    // メモ削除機能
+    window.deleteRaceMemo = function(raceId, memoId) {
+        if (confirm('このメモを削除してもよろしいですか？')) {
+            fetch(`/races/${raceId}/memos/${memoId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    const memoElement = document.getElementById(`memo-${memoId}`);
+                    if (memoElement) {
+                        memoElement.remove();
+                    }
+                } else {
+                    alert('メモの削除に失敗しました');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('メモの削除中にエラーが発生しました');
+            });
         }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('メモの削除に失敗しました');
-    });
-}
+    };
+});
 
 // メモの表示を整形する関数
 function formatMemo(memos) {
