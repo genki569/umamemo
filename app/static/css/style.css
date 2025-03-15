@@ -2019,3 +2019,76 @@
     background: linear-gradient(135deg, #4F46E5 0%, #EC4899 100%);
     color: #ffffff;
 }
+
+/* 以下のスタイルを追加 */
+html, body {
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100%;
+}
+
+body {
+    position: relative;
+}
+
+/* モバイル対応の基本スタイル */
+@media (max-width: 768px) {
+    .container {
+        width: 100%;
+        padding-left: 15px;
+        padding-right: 15px;
+        overflow-x: hidden;
+    }
+    
+    /* 横スクロールを防止 */
+    .row {
+        margin-left: -10px;
+        margin-right: -10px;
+    }
+    
+    /* 画像がはみ出すのを防止 */
+    img {
+        max-width: 100%;
+        height: auto;
+    }
+    
+    /* テーブルのスクロール対応 */
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    /* ナビゲーションの調整 */
+    .navbar-nav {
+        margin: 0;
+    }
+    
+    /* フォントサイズの調整 */
+    body {
+        font-size: 14px;
+    }
+    
+    h1 {
+        font-size: 1.8rem;
+    }
+    
+    h2 {
+        font-size: 1.5rem;
+    }
+    
+    h3 {
+        font-size: 1.2rem;
+    }
+}
+
+/* 小さいモバイル画面用 */
+@media (max-width: 576px) {
+    body {
+        font-size: 13px;
+    }
+    
+    .container {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+}
