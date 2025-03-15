@@ -147,58 +147,26 @@ def races():
         # レース情報の取得
         races = Race.query.filter(
             func.date(Race.date) == selected_date
-        ).order_by(Race.venue, Race.race_number).all()
-        
-        # 現在の日付を取得
-        today = datetime.now().date()
-        
-        # 各レースの状態を確認（結果あり、出馬表のみ、両方）
-        for race in races:
-            # 結果があるかチェック
-            has_results = db.session.query(Entry).filter(
-                Entry.race_id == race.id,
-                Entry.position.isnot(None)
-            ).first() is not None
-            
-            # 出馬表があるかチェック
-            has_shutuba = db.session.query(ShutubaEntry).filter(
-                ShutubaEntry.race_id == race.id
-            ).first() is not None
-            
-            # レースの日付が未来かどうか
-            is_future = False
-            if hasattr(race, 'date') and race.date:
-                if isinstance(race.date, date):
-                    is_future = race.date > today
-                elif isinstance(race.date, str):
-                    try:
-                        race_date = datetime.strptime(race.date, '%Y-%m-%d').date()
-                        is_future = race_date > today
-                    except ValueError:
-                        pass
-            
-            # 状態を設定
-            race.status = {
-                'has_results': has_results,
-                'has_shutuba': has_shutuba,
-                'is_future': is_future
-            }
-        
-        # 会場ごとにレースをグループ化
+        ).all()
+
+        # 会場ごとにグループ化
         venue_races = {}
         for race in races:
-            venue_id = race.venue_id or race.venue or 'unknown'
-            
-            if venue_id not in venue_races:
-                venue_races[venue_id] = {
-                    'venue_name': race.venue,
-                    'races': [],
-                    'weather': race.weather,
-                    'track_condition': race.track_condition
-                }
-            
-            venue_races[venue_id]['races'].append(race)
-        
+            venue_code = get_venue_code(race.venue)
+            if venue_code:
+                if venue_code not in venue_races:
+                    venue_races[venue_code] = {
+                        'venue_name': VENUE_NAMES[venue_code],
+                        'weather': getattr(race, 'weather', '不明'),
+                        'track_condition': getattr(race, 'track_condition', '不明'),
+                        'races': []
+                    }
+                venue_races[venue_code]['races'].append(race)
+
+        # レースを各会場内でソート
+        for venue_data in venue_races.values():
+            venue_data['races'].sort(key=lambda x: x.race_number)
+
         return render_template(
             'races.html',
             dates=dates,
