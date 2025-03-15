@@ -177,21 +177,26 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // レース一覧ページの日付ナビゲーション
-    const dateButtons = document.querySelectorAll('.date-btn');
-    const scrollContainer = document.querySelector('.date-buttons');
-    
-    if (scrollContainer && dateButtons.length > 0) {
-        // アクティブな日付を中央に表示
-        const activeButton = document.querySelector('.date-btn.active');
-        if (activeButton) {
-            setTimeout(() => {
-                activeButton.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'nearest',
-                    inline: 'center'
-                });
-            }, 100);
-        }
+    const dateButtonsElement = document.querySelector('.date-buttons');
+    if (dateButtonsElement) {
+        let touchStartX = 0;
+
+        dateButtonsElement.addEventListener('touchstart', e => {
+            touchStartX = e.touches[0].clientX;
+        }, { passive: true });
+
+        dateButtonsElement.addEventListener('touchend', e => {
+            const touchEndX = e.changedTouches[0].clientX;
+            const diff = touchStartX - touchEndX;
+            
+            if (Math.abs(diff) > 50) {
+                if (diff > 0) {
+                    navigateDate('next');
+                } else {
+                    navigateDate('prev');
+                }
+            }
+        }, { passive: true });
     }
 
     // 新しいアニメーション機能の追加
@@ -383,29 +388,6 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
-
-    // dateButtons変数の重複宣言を修正
-    let dateButtonsElement = document.querySelector('.date-buttons');
-    if (dateButtonsElement) {
-        let touchStartX = 0;
-
-        dateButtonsElement.addEventListener('touchstart', e => {
-            touchStartX = e.touches[0].clientX;
-        }, { passive: true });
-
-        dateButtonsElement.addEventListener('touchend', e => {
-            const touchEndX = e.changedTouches[0].clientX;
-            const diff = touchStartX - touchEndX;
-            
-            if (Math.abs(diff) > 50) {
-                if (diff > 0) {
-                    navigateDate('next');
-                } else {
-                    navigateDate('prev');
-                }
-            }
-        }, { passive: true });
-    }
 });
 
 // 日付ナビゲーション関数
@@ -488,13 +470,4 @@ function animateValue(obj, start, end, duration) {
         }
     };
     window.requestAnimationFrame(step);
-}
-
-// dateButtons変数の重複宣言を修正
-// 既存の宣言を探して、条件付きで宣言するように変更
-if (typeof dateButtons === 'undefined') {
-    const dateButtons = document.querySelector('.date-buttons');
-    if (dateButtons) {
-        // 以下のコードは変更なし
-    }
 }
