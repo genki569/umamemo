@@ -3409,92 +3409,6 @@ def race_shutuba(race_id):
         # 出走馬のIDリストを作成
         horse_ids = [entry.horse_id for entry in entries]
 
-        # 統計データを一括取得 - case構文を修正
-        track_stats = db.session.query(
-            Entry.horse_id,
-            Race.track_condition,
-            func.count(Entry.id).label('total'),
-            func.sum(case((Entry.position == 1, 1), else_=0)).label('wins'),
-            func.sum(case((Entry.position <= 3, 1), else_=0)).label('top3')
-        ).join(Race).filter(
-            Entry.horse_id.in_(horse_ids),
-            Entry.position.isnot(None),
-            Race.track_condition.isnot(None)
-        ).group_by(
-            Entry.horse_id,
-            Race.track_condition
-        ).all()
-
-        # 騎手成績を一括取得 - case構文を修正
-        jockey_stats = db.session.query(
-            Entry.horse_id,
-            Jockey.name,
-            func.count(Entry.id).label('total'),
-            func.sum(case((Entry.position == 1, 1), else_=0)).label('wins'),
-            func.sum(case((Entry.position <= 3, 1), else_=0)).label('top3')
-        ).join(Race).join(Jockey).filter(
-            Entry.horse_id.in_(horse_ids),
-            Entry.position.isnot(None)
-        ).group_by(
-            Entry.horse_id,
-            Jockey.id,
-            Jockey.name
-        ).all()
-
-        # 月別成績を一括取得 - case構文を修正
-        month_stats = db.session.query(
-            Entry.horse_id,
-            func.extract('month', Race.date).label('month'),
-            func.count(Entry.id).label('total'),
-            func.sum(case((Entry.position == 1, 1), else_=0)).label('wins'),
-            func.sum(case((Entry.position <= 3, 1), else_=0)).label('top3')
-        ).join(Race).filter(
-            Entry.horse_id.in_(horse_ids),
-            Entry.position.isnot(None)
-        ).group_by(
-            Entry.horse_id,
-            func.extract('month', Race.date)
-        ).all()
-
-        # 統計データを整理
-        stats_by_horse = {horse_id: {
-            'track_stats': {},
-            'jockey_stats': {},
-            'month_stats': {}
-        } for horse_id in horse_ids}
-
-        # 各統計データを辞書に格納
-        for stat in track_stats:
-            horse_id, condition, total, wins, top3 = stat
-            if condition:
-                stats_by_horse[horse_id]['track_stats'][condition] = {
-                    'total': total,
-                    'wins': wins,
-                    'win_rate': (wins / total) * 100 if total > 0 else 0,
-                    'top3': top3,
-                    'top3_rate': (top3 / total) * 100 if total > 0 else 0
-                }
-
-        for stat in jockey_stats:
-            horse_id, jockey_name, total, wins, top3 = stat
-            stats_by_horse[horse_id]['jockey_stats'][jockey_name] = {
-                'total': total,
-                'wins': wins,
-                'win_rate': (wins / total) * 100 if total > 0 else 0,
-                'top3': top3,
-                'top3_rate': (top3 / total) * 100 if total > 0 else 0
-            }
-
-        for stat in month_stats:
-            horse_id, month, total, wins, top3 = stat
-            stats_by_horse[horse_id]['month_stats'][int(month)] = {
-                'total': total,
-                'wins': wins,
-                'win_rate': (wins / total) * 100 if total > 0 else 0,
-                'top3': top3,
-                'top3_rate': (top3 / total) * 100 if total > 0 else 0
-            }
-
         # 各馬の最近の戦績を取得
         recent_results_by_horse = {}
         for horse_id in horse_ids:
@@ -3522,7 +3436,7 @@ def race_shutuba(race_id):
                     'position': entry.position,
                     'popularity': entry.popularity,
                     'jockey_name': jockey.name if jockey else '不明',
-                    'weight_carry': entry.weight_carry,
+                    'weight_carry': entry.weight,  # weight_carryをweightに変更
                     'distance': race.distance,
                     'track_condition': race.track_condition or '不明',
                     'time': entry.finish_time or '-',
@@ -3531,56 +3445,9 @@ def race_shutuba(race_id):
             
             recent_results_by_horse[horse_id] = formatted_results
 
-        # エントリーに統計データと戦績を付与
+        # エントリーに戦績を付与
         for entry in entries:
-            entry.stats = stats_by_horse.get(entry.horse_id, {})
             entry.recent_results = recent_results_by_horse.get(entry.horse_id, [])
-            
-            # 同距離での成績を計算
-            if race.distance:
-                distance_stats = db.session.query(
-                    func.count(Entry.id).label('total'),
-                    func.sum(case((Entry.position == 1, 1), else_=0)).label('wins'),
-                    func.sum(case((Entry.position <= 3, 1), else_=0)).label('top3')
-                ).join(Race).filter(
-                    Entry.horse_id == entry.horse_id,
-                    Entry.position.isnot(None),
-                    Race.distance == race.distance
-                ).first()
-                
-                if distance_stats and distance_stats.total > 0:
-                    entry.distance_stats = {
-                        'total': distance_stats.total,
-                        'wins': distance_stats.wins,
-                        'win_rate': (distance_stats.wins / distance_stats.total) * 100,
-                        'top3': distance_stats.top3,
-                        'top3_rate': (distance_stats.top3 / distance_stats.total) * 100
-                    }
-                    
-                    # 同距離での最速タイム
-                    best_time_entry = db.session.query(
-                        Entry, Race
-                    ).join(Race).filter(
-                        Entry.horse_id == entry.horse_id,
-                        Entry.position.isnot(None),
-                        Race.distance == race.distance,
-                        Entry.finish_time.isnot(None)
-                    ).order_by(
-                        Entry.finish_time
-                    ).first()
-                    
-                    if best_time_entry:
-                        entry_obj, race_obj = best_time_entry
-                        entry.best_time = {
-                            'time': entry_obj.finish_time,
-                            'date': race_obj.date,
-                            'venue': race_obj.venue,
-                            'track_condition': race_obj.track_condition or '不明'
-                        }
-                else:
-                    entry.distance_stats = None
-            else:
-                entry.distance_stats = None
 
         # 会場名の辞書を定義
         VENUE_NAMES = {
