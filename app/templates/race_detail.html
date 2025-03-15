@@ -165,7 +165,7 @@
 
     <!-- メモセクション - ボタンの修正 -->
     <div class="race-memo-section minimized">
-        <button type="button" class="memo-toggle" onclick="toggleMemo(this)">
+        <button type="button" class="memo-toggle" onclick="document.querySelector('.race-memo-section').classList.toggle('minimized'); this.querySelector('i').className = document.querySelector('.race-memo-section').classList.contains('minimized') ? 'fas fa-bookmark' : 'fas fa-times';">
             <i class="fas fa-bookmark"></i>
         </button>
         <div class="memo-content">
@@ -182,7 +182,7 @@
                 <div class="sticky-note" id="memo-{{ memo.id }}">
                     <div class="sticky-note-content">{{ memo.content }}</div>
                     <button type="button" class="btn btn-sm btn-danger sticky-note-delete" 
-                            onclick="deleteRaceMemo({{ race.id }}, {{ memo.id }})">
+                            onclick="if(confirm('このメモを削除してもよろしいですか？')){fetch('/races/{{ race.id }}/memos/{{ memo.id }}',{method:'DELETE',headers:{'Content-Type':'application/json','X-CSRF-Token':document.querySelector('meta[name=\'csrf-token\']').content}}).then(r=>{if(r.ok)document.getElementById('memo-{{ memo.id }}').remove();else alert('メモの削除に失敗しました');}).catch(e=>{console.error(e);alert('エラーが発生しました');});}">
                         <i class="fas fa-trash"></i>
                     </button>
                 </div>
