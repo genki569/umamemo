@@ -105,12 +105,21 @@
                                     <span class="race-title">{{ race.name }}</span>
                                 </div>
                                 <div class="race-buttons">
-                                    <a href="{{ url_for('race_shutuba', race_id=race.id) }}" class="btn btn-outline-success btn-sm">
-                                        <i class="fas fa-trophy"></i> 出馬表
-                                    </a>
-                                    <a href="{{ url_for('race', race_id=race.id) }}" class="btn btn-outline-info btn-sm">
-                                        <i class="fas fa-book"></i> 結果表
-                                    </a>
+                                    {% if race.status.has_shutuba or race.status.is_future %}
+                                        <a href="{{ url_for('race_shutuba', race_id=race.id) }}" class="btn btn-outline-success btn-sm">
+                                            <i class="fas fa-horse-head"></i> 出馬表
+                                        </a>
+                                    {% endif %}
+                                    
+                                    {% if race.status.has_results %}
+                                        <a href="{{ url_for('race', race_id=race.id) }}" class="btn btn-outline-info btn-sm">
+                                            <i class="fas fa-trophy"></i> 結果表
+                                        </a>
+                                    {% endif %}
+                                    
+                                    {% if not race.status.has_results and not race.status.has_shutuba and not race.status.is_future %}
+                                        <span class="text-muted">データなし</span>
+                                    {% endif %}
                                 </div>
                             </div>
                         {% endif %}
