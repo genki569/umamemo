@@ -176,27 +176,32 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // レース一覧ページの日付ナビゲーション
-    const dateButtonsElement = document.querySelector('.date-buttons');
-    if (dateButtonsElement) {
-        let touchStartX = 0;
+    // dateButtonsの宣言を条件付きにする
+    if (typeof window.dateButtonsInitialized === 'undefined') {
+        window.dateButtonsInitialized = true;
+        
+        // レース一覧ページの日付ナビゲーション
+        const dateButtonsElement = document.querySelector('.date-buttons');
+        if (dateButtonsElement) {
+            let touchStartX = 0;
 
-        dateButtonsElement.addEventListener('touchstart', e => {
-            touchStartX = e.touches[0].clientX;
-        }, { passive: true });
+            dateButtonsElement.addEventListener('touchstart', e => {
+                touchStartX = e.touches[0].clientX;
+            }, { passive: true });
 
-        dateButtonsElement.addEventListener('touchend', e => {
-            const touchEndX = e.changedTouches[0].clientX;
-            const diff = touchStartX - touchEndX;
-            
-            if (Math.abs(diff) > 50) {
-                if (diff > 0) {
-                    navigateDate('next');
-                } else {
-                    navigateDate('prev');
+            dateButtonsElement.addEventListener('touchend', e => {
+                const touchEndX = e.changedTouches[0].clientX;
+                const diff = touchStartX - touchEndX;
+                
+                if (Math.abs(diff) > 50) {
+                    if (diff > 0) {
+                        navigateDate('next');
+                    } else {
+                        navigateDate('prev');
+                    }
                 }
-            }
-        }, { passive: true });
+            }, { passive: true });
+        }
     }
 
     // 新しいアニメーション機能の追加
