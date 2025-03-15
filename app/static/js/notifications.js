@@ -3,13 +3,21 @@ document.addEventListener('DOMContentLoaded', function() {
     const notificationBadge = document.getElementById('notification-badge');
     
     // 通知を取得する関数
-    function fetchNotifications() {
-        fetch('/api/notifications')
-            .then(response => response.json())
-            .then(data => {
-                updateNotificationBadge(data.unread_count);
-                updateNotificationList(data.notifications);
-            });
+    async function fetchNotifications() {
+        try {
+            // APIエンドポイントを修正
+            const response = await fetch('/mypage/api/notifications');
+            if (!response.ok) {
+                throw new Error('通知の取得に失敗しました');
+            }
+            const data = await response.json();
+            updateNotificationBadge(data.unread_count);
+            updateNotificationList(data.notifications);
+            return data;
+        } catch (error) {
+            console.error('通知の取得中にエラーが発生しました:', error);
+            return [];
+        }
     }
     
     // 通知バッジを更新
