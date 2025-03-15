@@ -181,15 +181,15 @@ document.addEventListener('DOMContentLoaded', function() {
         window.dateButtonsInitialized = true;
         
         // レース一覧ページの日付ナビゲーション
-        const dateButtonsElement = document.querySelector('.date-buttons');
-        if (dateButtonsElement) {
+        const dateButtons = document.querySelector('.date-buttons');
+        if (dateButtons) {
             let touchStartX = 0;
 
-            dateButtonsElement.addEventListener('touchstart', e => {
+            dateButtons.addEventListener('touchstart', e => {
                 touchStartX = e.touches[0].clientX;
             }, { passive: true });
 
-            dateButtonsElement.addEventListener('touchend', e => {
+            dateButtons.addEventListener('touchend', e => {
                 const touchEndX = e.changedTouches[0].clientX;
                 const diff = touchStartX - touchEndX;
                 

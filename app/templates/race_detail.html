@@ -428,6 +428,7 @@
 
 {% block scripts %}
 {{ super() }}
+<script src="{{ url_for('static', filename='js/race_detail.js') }}"></script>
 <script>
 // メモトグル機能をグローバル関数として定義
 function toggleMemo(button) {
