@@ -30,7 +30,7 @@
     {% block styles %}{% endblock %}
     
     <!-- AOS -->
-    <link href="https://unpkg.com/aos@next/dist/aos.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     
     <meta name="csrf-token" content="{{ csrf_token() }}">
     
@@ -366,6 +366,7 @@
     <!-- JavaScriptファイルの重複読み込みを修正 -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script src="https://js.stripe.com/v3/"></script>
 
     <!-- アプリケーション固有のJavaScript - 必須のみ読み込む -->
@@ -373,5 +374,22 @@
 
     <!-- ページ固有のJavaScript -->
     {% block extra_js %}{% endblock %}
+
+    <!-- AOSの初期化 -->
+    <script>
+        // モバイルデバイスかどうかを確認
+        const isMobile = window.innerWidth <= 768;
+        
+        // AOSの初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof AOS !== 'undefined') {
+                AOS.init({
+                    duration: isMobile ? 0 : 800,
+                    once: true,
+                    disable: isMobile
+                });
+            }
+        });
+    </script>
 </body>
 </html>

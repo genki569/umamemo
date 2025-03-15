@@ -80,11 +80,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // モバイルデバイスかどうかを確認
     const isMobile = window.innerWidth <= 768;
-    AOS.init({
-        duration: isMobile ? 0 : 800,
-        once: true,
-        disable: isMobile
-    });
 
     // 統計カードのカウントアップアニメーション
     const statsNumbers = document.querySelectorAll('.stats-number');
@@ -388,6 +383,29 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
+
+    // dateButtons変数の重複宣言を修正
+    let dateButtonsElement = document.querySelector('.date-buttons');
+    if (dateButtonsElement) {
+        let touchStartX = 0;
+
+        dateButtonsElement.addEventListener('touchstart', e => {
+            touchStartX = e.touches[0].clientX;
+        }, { passive: true });
+
+        dateButtonsElement.addEventListener('touchend', e => {
+            const touchEndX = e.changedTouches[0].clientX;
+            const diff = touchStartX - touchEndX;
+            
+            if (Math.abs(diff) > 50) {
+                if (diff > 0) {
+                    navigateDate('next');
+                } else {
+                    navigateDate('prev');
+                }
+            }
+        }, { passive: true });
+    }
 });
 
 // 日付ナビゲーション関数
@@ -419,29 +437,6 @@ document.addEventListener('keydown', function(e) {
         navigateDate('next');
     }
 });
-
-// タッチイベント処理
-const dateButtons = document.querySelector('.date-buttons');
-if (dateButtons) {
-    let touchStartX = 0;
-
-    dateButtons.addEventListener('touchstart', e => {
-        touchStartX = e.touches[0].clientX;
-    }, { passive: true });
-
-    dateButtons.addEventListener('touchend', e => {
-        const touchEndX = e.changedTouches[0].clientX;
-        const diff = touchStartX - touchEndX;
-        
-        if (Math.abs(diff) > 50) {
-            if (diff > 0) {
-                navigateDate('next');
-            } else {
-                navigateDate('prev');
-            }
-        }
-    }, { passive: true });
-}
 
 // 予想を実行する関数
 function performPrediction() {
