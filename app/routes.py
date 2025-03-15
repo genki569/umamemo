@@ -147,10 +147,7 @@ def races():
         # レース情報の取得
         races = Race.query.filter(
             func.date(Race.date) == selected_date
-        ).all()
-
-        # レースを取得
-        races = query.order_by(Race.date, Race.venue, Race.race_number).all()
+        ).order_by(Race.venue, Race.race_number).all()
         
         # 現在の日付を取得
         today = datetime.now().date()
