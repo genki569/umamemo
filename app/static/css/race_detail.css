@@ -106,3 +106,20 @@
     padding: 2px 5px;
     font-size: 0.8rem;
 }
+
+/* モバイル向けの調整 */
+@media (max-width: 767.98px) {
+    .race-memo-section {
+        max-width: 90%;
+    }
+    
+    .memo-content {
+        width: 100%;
+        max-height: calc(80vh - 140px);
+    }
+    
+    /* コンテンツの最後にパディングを追加してフッターCTAに隠れないようにする */
+    .race-detail-container {
+        padding-bottom: 100px;
+    }
+}
