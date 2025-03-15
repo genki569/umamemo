@@ -334,9 +334,14 @@
     {% block extra_scripts %}{% endblock %}  <!-- 新しいブロックを追加 -->
     <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
     <script>
+        // モバイルデバイスかどうかを確認
+        const isMobile = window.innerWidth <= 768;
+        
+        // モバイルの場合はアニメーションを無効化または短縮
         AOS.init({
-            duration: 800,
-            once: true
+            duration: isMobile ? 0 : 800,  // モバイルでは0に設定して即時表示
+            once: true,
+            disable: isMobile  // モバイルでは完全に無効化
         });
     </script>
 
