@@ -138,6 +138,117 @@
     .race-detail-container {
         padding-bottom: 100px;
     }
+    
+    /* テーブルのスクロールを改善 */
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        max-width: 100%;
+        margin-bottom: 1rem;
+    }
+    
+    /* テーブルのフォントサイズを小さく */
+    .entry-table {
+        font-size: 0.75rem;
+    }
+    
+    /* セルのパディングを小さく */
+    .entry-table th,
+    .entry-table td {
+        padding: 0.3rem !important;
+    }
+    
+    /* 重要な列を強調 */
+    .entry-table th:nth-child(1),
+    .entry-table th:nth-child(3),
+    .entry-table th:nth-child(4),
+    .entry-table td:nth-child(1),
+    .entry-table td:nth-child(3),
+    .entry-table td:nth-child(4) {
+        font-weight: bold;
+        background-color: rgba(79, 70, 229, 0.05);
+    }
+    
+    /* ボタンを小さく */
+    .entry-table .btn {
+        padding: 0.15rem 0.3rem;
+        font-size: 0.7rem;
+    }
+    
+    /* テーブルの横スクロールを示すヒント */
+    .race-entries h3::after {
+        content: " (横にスクロールできます)";
+        font-size: 0.8rem;
+        font-weight: normal;
+        color: #666;
+        font-style: italic;
+    }
+    
+    /* スクロールを促すアニメーション */
+    .table-responsive::after {
+        content: "→";
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 1.5rem;
+        color: rgba(79, 70, 229, 0.5);
+        animation: scroll-hint 1.5s infinite;
+        pointer-events: none;
+    }
+    
+    @keyframes scroll-hint {
+        0% { opacity: 0.2; right: 10px; }
+        50% { opacity: 1; right: 5px; }
+        100% { opacity: 0.2; right: 10px; }
+    }
+    
+    /* テーブルの最初の数列を固定表示（オプション） */
+    .entry-table th:nth-child(1),
+    .entry-table th:nth-child(3),
+    .entry-table th:nth-child(4),
+    .entry-table td:nth-child(1),
+    .entry-table td:nth-child(3),
+    .entry-table td:nth-child(4) {
+        position: sticky;
+        left: 0;
+        z-index: 1;
+        background-color: #fff;
+    }
+    
+    .entry-table th:nth-child(3),
+    .entry-table td:nth-child(3) {
+        left: 40px;
+    }
+    
+    .entry-table th:nth-child(4),
+    .entry-table td:nth-child(4) {
+        left: 80px;
+    }
+    
+    /* 行の高さを調整 */
+    .entry-table tr {
+        height: 40px;
+    }
+    
+    /* 馬名のセルを強調 */
+    .entry-table td:nth-child(4) a {
+        font-weight: bold;
+        color: #4F46E5;
+    }
+    
+    /* 着順によって行の色を変える */
+    .entry-table tr:has(td:first-child:contains("1")) {
+        background-color: rgba(16, 185, 129, 0.1) !important;
+    }
+    
+    .entry-table tr:has(td:first-child:contains("2")) {
+        background-color: rgba(59, 130, 246, 0.1) !important;
+    }
+    
+    .entry-table tr:has(td:first-child:contains("3")) {
+        background-color: rgba(245, 158, 11, 0.1) !important;
+    }
 }
 
 /* モバイル向けアコーディオンスタイル */
