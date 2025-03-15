@@ -3,7 +3,7 @@
 {% block content %}
 <div class="horses-header">
     <div class="container">
-        <div class="header-content" data-aos="fade-up">
+        <div class="header-content">
             <h1>登録馬一覧</h1>
             <p class="header-description">
                 JRA所属の現役競走馬を一覧で確認できます。
@@ -16,7 +16,7 @@
 
 <div class="container mt-4">
     <!-- 検索フォーム -->
-    <div class="search-container" data-aos="fade-up" data-aos-delay="100">
+    <div class="search-container">
         <form class="search-form" method="get" action="{{ url_for('horses') }}">
             <div class="input-group">
                 <input type="text" class="form-control" name="search" 
@@ -36,7 +36,7 @@
     <!-- 馬一覧 -->
     <div class="row row-cols-1 row-cols-md-3 g-4 mt-3">
         {% for horse in horses %}
-        <div class="col" data-aos="fade-up" data-aos-delay="{{ loop.index * 50 }}">
+        <div class="col">
             <div class="horse-card">
                 <div class="card-body">
                     <div class="horse-icon">

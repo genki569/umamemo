@@ -2108,3 +2108,23 @@ html, body {
         padding-right: 10px;
     }
 }
+
+/* 真っ白問題を解決するための追加スタイル */
+body {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+.container, .container-fluid {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+/* 隠れている可能性のある要素を表示 */
+#content, main, .main-content {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
