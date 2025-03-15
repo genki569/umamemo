@@ -96,25 +96,49 @@
                     </div>
                 </div>
                 <div class="race-items">
-                    {% for race_number in range(1, 13) %}
-                        {% set race = venue_data.races|selectattr('race_number', 'equalto', race_number)|first %}
-                        {% if race %}
-                            <div class="race-row">
-                                <div class="race-info">
-                                    <span class="race-number">{{ race_number }}R</span>
-                                    <span class="race-title">{{ race.name }}</span>
-                                </div>
-                                <div class="race-buttons">
-                                    <a href="{{ url_for('race_shutuba', race_id=race.id) }}" class="btn btn-outline-success btn-sm">
-                                        <i class="fas fa-trophy"></i> 出馬表
-                                    </a>
-                                    <a href="{{ url_for('race', race_id=race.id) }}" class="btn btn-outline-info btn-sm">
-                                        <i class="fas fa-book"></i> 結果表
-                                    </a>
-                                </div>
-                            </div>
-                        {% endif %}
-                    {% endfor %}
+                    <!-- レース一覧のテーブル部分 -->
+                    <div class="race-list">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>レース番号</th>
+                                    <th>レース名</th>
+                                    <th>会場</th>
+                                    <th>発走時刻</th>
+                                    <th>距離</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for race in venue_data.races %}
+                                <tr>
+                                    <td>{{ race.race_number }}</td>
+                                    <td>{{ race.name }}</td>
+                                    <td>{{ race.venue }}</td>
+                                    <td>{{ race.start_time.strftime('%H:%M') if race.start_time else '不明' }}</td>
+                                    <td>{{ race.distance }}m</td>
+                                    <td class="race-actions">
+                                        {% if race.status.has_results %}
+                                            <a href="{{ url_for('race_result', race_id=race.id) }}" class="btn btn-primary btn-sm">
+                                                <i class="fas fa-trophy"></i> 結果
+                                            </a>
+                                        {% endif %}
+                                        
+                                        {% if race.status.has_shutuba or race.status.is_future %}
+                                            <a href="{{ url_for('race_shutuba', race_id=race.id) }}" class="btn btn-outline-primary btn-sm">
+                                                <i class="fas fa-horse-head"></i> 出馬表
+                                            </a>
+                                        {% endif %}
+                                        
+                                        {% if not race.status.has_results and not race.status.has_shutuba %}
+                                            <span class="text-muted">データなし</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         {% endfor %}
