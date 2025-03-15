@@ -3409,13 +3409,13 @@ def race_shutuba(race_id):
         # 出走馬のIDリストを作成
         horse_ids = [entry.horse_id for entry in entries]
 
-        # 統計データを一括取得
+        # 統計データを一括取得 - case構文を修正
         track_stats = db.session.query(
             Entry.horse_id,
             Race.track_condition,
             func.count(Entry.id).label('total'),
-            func.sum(case([(Entry.position == 1, 1)], else_=0)).label('wins'),
-            func.sum(case([(Entry.position <= 3, 1)], else_=0)).label('top3')
+            func.sum(case((Entry.position == 1, 1), else_=0)).label('wins'),
+            func.sum(case((Entry.position <= 3, 1), else_=0)).label('top3')
         ).join(Race).filter(
             Entry.horse_id.in_(horse_ids),
             Entry.position.isnot(None),
@@ -3425,13 +3425,13 @@ def race_shutuba(race_id):
             Race.track_condition
         ).all()
 
-        # 騎手成績を一括取得
+        # 騎手成績を一括取得 - case構文を修正
         jockey_stats = db.session.query(
             Entry.horse_id,
             Jockey.name,
             func.count(Entry.id).label('total'),
-            func.sum(case([(Entry.position == 1, 1)], else_=0)).label('wins'),
-            func.sum(case([(Entry.position <= 3, 1)], else_=0)).label('top3')
+            func.sum(case((Entry.position == 1, 1), else_=0)).label('wins'),
+            func.sum(case((Entry.position <= 3, 1), else_=0)).label('top3')
         ).join(Race).join(Jockey).filter(
             Entry.horse_id.in_(horse_ids),
             Entry.position.isnot(None)
@@ -3441,13 +3441,13 @@ def race_shutuba(race_id):
             Jockey.name
         ).all()
 
-        # 月別成績を一括取得
+        # 月別成績を一括取得 - case構文を修正
         month_stats = db.session.query(
             Entry.horse_id,
             func.extract('month', Race.date).label('month'),
             func.count(Entry.id).label('total'),
-            func.sum(case([(Entry.position == 1, 1)], else_=0)).label('wins'),
-            func.sum(case([(Entry.position <= 3, 1)], else_=0)).label('top3')
+            func.sum(case((Entry.position == 1, 1), else_=0)).label('wins'),
+            func.sum(case((Entry.position <= 3, 1), else_=0)).label('top3')
         ).join(Race).filter(
             Entry.horse_id.in_(horse_ids),
             Entry.position.isnot(None)
@@ -3498,6 +3498,36 @@ def race_shutuba(race_id):
         # エントリーに統計データを付与
         for entry in entries:
             entry.stats = stats_by_horse.get(entry.horse_id, {})
+
+        # 会場名の辞書を定義
+        VENUE_NAMES = {
+            '東京': '東京競馬場',
+            '中山': '中山競馬場',
+            '阪神': '阪神競馬場',
+            '京都': '京都競馬場',
+            '中京': '中京競馬場',
+            '小倉': '小倉競馬場',
+            '福島': '福島競馬場',
+            '新潟': '新潟競馬場',
+            '札幌': '札幌競馬場',
+            '函館': '函館競馬場',
+            # 地方競馬場も追加
+            '大井': '大井競馬場',
+            '川崎': '川崎競馬場',
+            '船橋': '船橋競馬場',
+            '浦和': '浦和競馬場',
+            '名古屋': '名古屋競馬場',
+            '園田': '園田競馬場',
+            '姫路': '姫路競馬場',
+            '高知': '高知競馬場',
+            '佐賀': '佐賀競馬場',
+            '金沢': '金沢競馬場',
+            '笠松': '笠松競馬場',
+            '盛岡': '盛岡競馬場',
+            '水沢': '水沢競馬場',
+            '門別': '門別競馬場',
+            '帯広': '帯広競馬場',
+        }
 
         return render_template('shutuba.html',
                           race=race,
