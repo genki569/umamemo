@@ -163,9 +163,9 @@
     </div>
     {% endif %}
 
-    <!-- メモセクション - 正しい位置に配置 -->
+    <!-- メモセクション - ボタンの修正 -->
     <div class="race-memo-section minimized">
-        <button type="button" class="memo-toggle">
+        <button type="button" class="memo-toggle" onclick="toggleMemo(this)">
             <i class="fas fa-bookmark"></i>
         </button>
         <div class="memo-content">
@@ -428,35 +428,47 @@
 
 {% block scripts %}
 {{ super() }}
-<!-- JavaScriptファイルを明示的に読み込む -->
-<script src="{{ url_for('static', filename='js/race_memo.js') }}" type="text/javascript"></script>
 <script>
-// インラインスクリプトでも実装（ファイルが読み込めない場合のバックアップ）
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('Inline script loaded');
+// メモトグル機能をグローバル関数として定義
+function toggleMemo(button) {
+    console.log('Toggle memo clicked');
+    const memoSection = button.closest('.race-memo-section');
+    memoSection.classList.toggle('minimized');
     
-    const memoSection = document.querySelector('.race-memo-section');
-    const memoToggle = document.querySelector('.memo-toggle');
-    
-    if (memoToggle && memoSection) {
-        console.log('Memo elements found in inline script');
-        
-        memoToggle.addEventListener('click', function(e) {
-            console.log('Memo toggle clicked in inline script');
-            e.preventDefault();
-            memoSection.classList.toggle('minimized');
-            
-            // アイコンを切り替え
-            const icon = this.querySelector('i');
-            if (memoSection.classList.contains('minimized')) {
-                icon.className = 'fas fa-bookmark';
-            } else {
-                icon.className = 'fas fa-times';
-            }
-        });
+    // アイコンを切り替え
+    const icon = button.querySelector('i');
+    if (memoSection.classList.contains('minimized')) {
+        icon.className = 'fas fa-bookmark';
     } else {
-        console.log('Memo elements not found in inline script');
+        icon.className = 'fas fa-times';
     }
-});
+}
+
+// メモ削除機能
+function deleteRaceMemo(raceId, memoId) {
+    if (confirm('このメモを削除してもよろしいですか？')) {
+        fetch(`/races/${raceId}/memos/${memoId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                const memoElement = document.getElementById(`memo-${memoId}`);
+                if (memoElement) {
+                    memoElement.remove();
+                }
+            } else {
+                alert('メモの削除に失敗しました');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('メモの削除中にエラーが発生しました');
+        });
+    }
+}
 </script>
 {% endblock %}
