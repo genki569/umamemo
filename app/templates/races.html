@@ -239,5 +239,55 @@ function changeDate(date) {
     background-color: white;
     min-width: 100px;
 }
+
+/* レース一覧のスタイル調整 */
+.race-list {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.race-list table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.race-list th, .race-list td {
+    padding: 8px 12px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+.race-list th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+}
+
+.race-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.race-actions .btn {
+    white-space: nowrap;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+    .race-list th, .race-list td {
+        padding: 6px 8px;
+        font-size: 0.9rem;
+    }
+    
+    .race-actions {
+        flex-direction: column;
+        gap: 4px;
+    }
+    
+    .race-actions .btn {
+        font-size: 0.8rem;
+        padding: 2px 6px;
+    }
+}
 </style>
 {% endblock %}
