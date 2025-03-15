@@ -1,139 +1,97 @@
 {% extends "base.html" %}
 
 {% block content %}
-<!-- ヘッダーセクションを追加 -->
 <div class="races-header">
     <div class="container">
         <div class="header-content">
             <h1>レース一覧</h1>
             <p class="header-description">
-                JRAの開催レース情報をチェックできます。
-                <span class="highlight">{{ dates|length }}日分</span>のレース情報を確認できます。
+                JRAの開催レース情報を日付別に確認できます。
+                各レースの詳細情報や出走馬を閲覧できます。
             </p>
-            <div class="header-stats">
-                <div class="stat-badge">
-                    <i class="fas fa-calendar"></i>
-                    <span>日程選択</span>
-                </div>
-                <div class="stat-badge">
-                    <i class="fas fa-map-marker-alt"></i>
-                    <span>開催場所</span>
-                </div>
-                <div class="stat-badge">
-                    <i class="fas fa-horse-head"></i>
-                    <span>出走情報</span>
-                </div>
-            </div>
         </div>
     </div>
 </div>
 
-<div class="race-list-container">
-    <!-- 日付選択部 -->
-    <div class="date-selector">
-        <div class="date-navigation">
-            <button class="date-nav-btn" onclick="navigateDate('prev')">
-                <i class="fas fa-chevron-left"></i>
-            </button>
-            <div class="date-buttons">
-                {% for date in dates %}
-                <a href="{{ url_for('races', date=date.value) }}" 
-                   class="date-btn {% if date.value == selected_date %}active{% endif %}">
-                    {{ date.month }}/{{ date.day }}<br>
-                    ({{ date.weekday }})
-                </a>
-                {% endfor %}
-            </div>
-            <button class="date-nav-btn" onclick="navigateDate('next')">
-                <i class="fas fa-chevron-right"></i>
-            </button>
-        </div>
-        
-        <!-- 日付選択ドロップダウンを追加 -->
-        <div class="date-selector-container">
-            <select id="date-selector" onchange="changeDate(this.value)">
-                {% for date in dates %}
-                    <option value="{{ date.value }}"
-                            {% if date.value == selected_date %}selected{% endif %}>
-                        {{ date.month }}/{{ date.day }}
-                    </option>
-                {% endfor %}
-            </select>
-        </div>
-    </div>
-
-    <!-- 会場ごとのセクション -->
-    <div class="venue-grid">
-        {% for venue_id, venue_data in venue_races.items() %}
-            <div class="venue-card" data-venue-id="{{ venue_id }}">
-                <div class="venue-header">
-                    <h3>
-                        {{ venue_data.venue_name if venue_data.venue_name else '不明' }}
-                    </h3>
-                    <div class="track-info">
-                        <!-- 天候表示 -->
-                        {% set weather_class = {
-                            '晴': 'weather-sunny',
-                            '曇': 'weather-cloudy',
-                            '雨': 'weather-rainy',
-                            '小雨': 'weather-light-rain',
-                            '雪': 'weather-snow'
-                        } %}
-                        <span class="weather-icon {{ weather_class.get(venue_data.weather, 'weather-unknown') }}">
-                            {% set weather_icon = {
-                                '晴': 'fa-sun',
-                                '曇': 'fa-cloud',
-                                '雨': 'fa-cloud-rain',
-                                '小雨': 'fa-cloud-rain',
-                                '雪': 'fa-snowflake'
-                            } %}
-                            <i class="fas {{ weather_icon.get(venue_data.weather, 'fa-question') }}"></i>
-                            {{ venue_data.weather or '不明' }}
-                        </span>
-                        <span class="condition">
-                            <i class="fas fa-road"></i> {{ venue_data.track_condition or '不明' }}
-                        </span>
-                    </div>
-                </div>
-                <div class="race-items">
-                    {% for race_number in range(1, 13) %}
-                        {% set race = venue_data.races|selectattr('race_number', 'equalto', race_number)|first %}
-                        {% if race %}
-                            <div class="race-row">
-                                <div class="race-info">
-                                    <span class="race-number">{{ race_number }}R</span>
-                                    <span class="race-title">{{ race.name }}</span>
-                                </div>
-                                <div class="race-buttons">
-                                    <a href="{{ url_for('race_shutuba', race_id=race.id) }}" class="btn btn-outline-success btn-sm">
-                                        <i class="fas fa-trophy"></i> 出馬表
-                                    </a>
-                                    <a href="{{ url_for('race', race_id=race.id) }}" class="btn btn-outline-info btn-sm">
-                                        <i class="fas fa-book"></i> 結果表
-                                    </a>
-                                </div>
-                            </div>
-                        {% endif %}
+<div class="container mt-4">
+    <div class="race-list-container">
+        <!-- 日付選択部 -->
+        <div class="date-selector">
+            <div class="date-navigation">
+                <button class="date-nav-btn" onclick="navigateDate('prev')">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <div class="date-buttons">
+                    {% for date in dates %}
+                    <a href="{{ url_for('races', date=date.value) }}" 
+                       class="date-btn {% if date.value == selected_date %}active{% endif %}">
+                        {{ date.month }}/{{ date.day }}<br>
+                        ({{ date.weekday }})
+                    </a>
                     {% endfor %}
                 </div>
+                <button class="date-nav-btn" onclick="navigateDate('next')">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
             </div>
-        {% endfor %}
-    </div>
+            
+            <!-- 日付選択ドロップダウンを追加 -->
+            <div class="date-selector-container">
+                <select id="date-selector" onchange="changeDate(this.value)">
+                    {% for date in dates %}
+                        <option value="{{ date.value }}"
+                                {% if date.value == selected_date %}selected{% endif %}>
+                            {{ date.month }}/{{ date.day }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
 
-    {% if not venue_races %}
-    <div class="alert alert-info text-center">
-        この日のレース結果はありません。
+        <!-- 会場ごとのセクション -->
+        {% if races_by_venue %}
+            {% for venue, races in races_by_venue.items() %}
+                <div class="venue-section">
+                    <h3 class="venue-name">{{ venue }}</h3>
+                    <div class="race-cards">
+                        {% for race in races %}
+                            <div class="race-card">
+                                <div class="race-header">
+                                    <span class="race-number">{{ race.race_number }}R</span>
+                                    <span class="race-time">{{ race.post_time.strftime('%H:%M') }}</span>
+                                </div>
+                                <h4 class="race-name">
+                                    <a href="{{ url_for('race_detail', race_id=race.id) }}">{{ race.name }}</a>
+                                </h4>
+                                <div class="race-info">
+                                    <span class="race-course">{{ race.course_type }} {{ race.distance }}m</span>
+                                    <span class="race-class">{{ race.race_class }}</span>
+                                </div>
+                                <div class="race-actions">
+                                    <a href="{{ url_for('race_detail', race_id=race.id) }}" class="btn btn-primary btn-sm">
+                                        <i class="fas fa-info-circle"></i> 詳細
+                                    </a>
+                                    {% if current_user.is_authenticated %}
+                                        <a href="{{ url_for('race_detail', race_id=race.id) }}#prediction" class="btn btn-success btn-sm">
+                                            <i class="fas fa-chart-line"></i> 予想
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="no-races-message">
+                <p>選択された日付のレース情報はありません。</p>
+            </div>
+        {% endif %}
     </div>
-    {% endif %}
 </div>
 
-<!-- Font Awesome の追加 -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-
-<!-- 日付ナビゲーシン用のJavaScript -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const dateButtons = document.querySelectorAll('.date-btn');
     const scrollContainer = document.querySelector('.date-buttons');
     
     // アクティブな日付を中央に表示
@@ -175,27 +133,6 @@ document.addEventListener('keydown', function(e) {
     }
 });
 
-// タッチスワイプのサポート
-let touchStartX = 0;
-const dateButtons = document.querySelector('.date-buttons');
-
-dateButtons.addEventListener('touchstart', e => {
-    touchStartX = e.touches[0].clientX;
-}, { passive: true });
-
-dateButtons.addEventListener('touchend', e => {
-    const touchEndX = e.changedTouches[0].clientX;
-    const diff = touchStartX - touchEndX;
-    
-    if (Math.abs(diff) > 50) {
-        if (diff > 0) {
-            navigateDate('next');
-        } else {
-            navigateDate('prev');
-        }
-    }
-}, { passive: true });
-
 function changeDate(date) {
     window.location.href = '/races?date=' + date;
 }
@@ -214,6 +151,39 @@ function changeDate(date) {
     border-radius: 4px;
     background-color: white;
     min-width: 100px;
+}
+
+/* 横スクロールを防止するスタイル */
+.container {
+    max-width: 100%;
+    padding-left: 15px;
+    padding-right: 15px;
+    overflow-x: hidden;
+}
+
+/* レースカードのレスポンシブ対応 */
+.race-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+@media (max-width: 768px) {
+    .race-cards {
+        grid-template-columns: 1fr;
+    }
+    
+    .date-buttons {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none; /* Firefox */
+        padding-bottom: 5px;
+    }
+    
+    .date-buttons::-webkit-scrollbar {
+        display: none; /* Chrome, Safari, Edge */
+    }
 }
 </style>
 {% endblock %}
