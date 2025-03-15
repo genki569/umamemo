@@ -43,36 +43,10 @@ fi
 
 # スクレイピングスクリプトを実行
 python -c "
-from app.scraping.nar_entry_scraper import *
-import time
+from app.scraping.nar_entry_scraper import get_race_info_for_next_three_days
 
-# スクレイピングを実行
-with sync_playwright() as p:
-    browser = p.chromium.launch(headless=True)
-    context = browser.new_context()
-    page = context.new_page()
-    
-    # レースURLを取得（既存の関数を使用）
-    race_urls = get_race_urls(page, context)
-    print(f'{len(race_urls)}件のレースURLを取得しました')
-    
-    # 各レースの出走表を取得
-    race_entries = []
-    for race_url in race_urls:
-        try:
-            entry_info = scrape_race_entry(page, race_url)
-            if entry_info:
-                race_entries.append(entry_info)
-                # CSVに保存
-                save_to_csv(entry_info)
-                print(f'レース情報を取得しました: {entry_info.get(\"race_name\", \"不明\")}')
-                time.sleep(1)  # サーバー負荷軽減のため
-        except Exception as e:
-            print(f'レース情報取得エラー: {str(e)}')
-    
-    browser.close()
-
-print(f'{len(race_entries)}件のレース情報を取得しました')
+# 今日から3日分のレース情報を取得する関数を実行
+get_race_info_for_next_three_days()
 "
 
 if [ $? -ne 0 ]; then
