@@ -393,6 +393,48 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
+
+    // レース詳細ページのアコーディオン機能
+    const accordionItems = document.querySelectorAll('.accordion-item');
+    if (accordionItems.length > 0) {
+        // アコーディオンが存在する場合、最初の項目を展開（オプション）
+        // document.querySelector('.accordion-button').click();
+        
+        // 着順に応じてバッジの色を変更
+        document.querySelectorAll('.mobile-entries .badge:not(.bg-primary)').forEach(badge => {
+            const text = badge.textContent.trim();
+            if (text === '1着') {
+                badge.className = 'badge bg-success';
+            } else if (text === '2着') {
+                badge.className = 'badge bg-info';
+            } else if (text === '3着') {
+                badge.className = 'badge bg-warning';
+            } else {
+                badge.className = 'badge bg-secondary';
+            }
+        });
+    }
+    
+    // 馬メモボタンのイベントリスナー
+    document.querySelectorAll('.horse-memo-btn').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.stopPropagation(); // アコーディオンの開閉を防止
+            const horseId = this.dataset.horseId;
+            const raceId = this.dataset.raceId;
+            // メモ機能の実装（モーダルを表示するなど）
+            console.log(`馬ID: ${horseId}, レースID: ${raceId} のメモを編集`);
+        });
+    });
+    
+    // お気に入りボタンのイベントリスナー
+    document.querySelectorAll('.horse-favorite-btn').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.stopPropagation(); // アコーディオンの開閉を防止
+            const horseId = this.dataset.horseId;
+            // お気に入り機能の実装
+            console.log(`馬ID: ${horseId} をお気に入りに追加/削除`);
+        });
+    });
 });
 
 // 日付ナビゲーション関数

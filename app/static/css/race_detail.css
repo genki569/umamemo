@@ -139,3 +139,71 @@
         padding-bottom: 100px;
     }
 }
+
+/* モバイル向けアコーディオンスタイル */
+.mobile-entries .accordion-item {
+    margin-bottom: 0.5rem;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+.mobile-entries .accordion-button {
+    padding: 0.75rem 1rem;
+    background-color: #f8f9fa;
+}
+
+.mobile-entries .accordion-button:not(.collapsed) {
+    background-color: #e7f1ff;
+    color: #0d6efd;
+}
+
+.mobile-entries .accordion-button:focus {
+    box-shadow: none;
+    border-color: rgba(0, 0, 0, 0.125);
+}
+
+.mobile-entries .badge {
+    font-size: 0.8rem;
+    padding: 0.35em 0.65em;
+}
+
+.mobile-entries .badge.bg-primary {
+    background-color: #4F46E5 !important;
+}
+
+.mobile-entries .badge.bg-success {
+    background-color: #10B981 !important;
+}
+
+.mobile-entries .accordion-body {
+    padding: 1rem;
+    background-color: #fff;
+}
+
+.mobile-entries .accordion-body p {
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.mobile-entries .accordion-body .btn {
+    font-size: 0.8rem;
+    padding: 0.25rem 0.5rem;
+}
+
+/* 着順によって色分け */
+.mobile-entries .badge.bg-success {
+    background-color: #10B981 !important; /* 1着 */
+}
+
+.mobile-entries .badge.bg-info {
+    background-color: #3B82F6 !important; /* 2着 */
+}
+
+.mobile-entries .badge.bg-warning {
+    background-color: #F59E0B !important; /* 3着 */
+}
+
+.mobile-entries .badge.bg-secondary {
+    background-color: #6B7280 !important; /* その他 */
+}
