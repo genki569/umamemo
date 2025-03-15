@@ -3410,44 +3410,32 @@ def race_shutuba(race_id):
         horse_ids = [entry.horse_id for entry in entries]
 
         # 各馬の最近の戦績を取得
-        recent_results_by_horse = {}
-        for horse_id in horse_ids:
-            # 最近5走の結果を取得
-            recent_results = db.session.query(
-                Entry, Race, Jockey
-            ).join(
-                Race, Entry.race_id == Race.id
-            ).outerjoin(
-                Jockey, Entry.jockey_id == Jockey.id
-            ).filter(
-                Entry.horse_id == horse_id,
-                Entry.position.isnot(None)
-            ).order_by(
-                Race.date.desc()
-            ).limit(5).all()
+        for entry in entries:
+            # ShutubaEntryモデルのget_recent_resultsメソッドを使用
+            recent_entries = entry.get_recent_results(limit=5)
             
             # 結果を整形
             formatted_results = []
-            for entry, race, jockey in recent_results:
+            for recent_entry in recent_entries:
+                race_data = recent_entry.race
+                jockey_data = recent_entry.jockey
+                
                 formatted_results.append({
-                    'date': race.date,
-                    'venue': race.venue,
-                    'name': race.name,
-                    'position': entry.position,
-                    'popularity': entry.popularity,
-                    'jockey_name': jockey.name if jockey else '不明',
-                    'weight_carry': entry.weight,  # weight_carryをweightに変更
-                    'distance': race.distance,
-                    'track_condition': race.track_condition or '不明',
-                    'time': entry.finish_time or '-',
-                    'margin': entry.margin or '-'
+                    'date': race_data.date,
+                    'venue': race_data.venue,
+                    'name': race_data.name,
+                    'position': recent_entry.position,
+                    'popularity': recent_entry.popularity,
+                    'jockey_name': jockey_data.name if jockey_data else '不明',
+                    'weight_carry': getattr(recent_entry, 'weight', '-'),
+                    'distance': race_data.distance,
+                    'track_condition': race_data.track_condition or '不明',
+                    'time': getattr(recent_entry, 'time', '-'),
+                    'margin': getattr(recent_entry, 'margin', '-')
                 })
             
-            recent_results_by_horse[horse_id] = formatted_results
-
-        # エントリーに戦績を付与
-        for entry in entries:
-            entry.recent_results = recent_results_by_horse.get(entry.horse_id, [])
+            # エントリーに戦績を付与
+            entry.recent_results = formatted_results
 
         # 会場名の辞書を定義
         VENUE_NAMES = {
