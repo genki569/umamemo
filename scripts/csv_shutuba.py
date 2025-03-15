@@ -244,12 +244,16 @@ def process_shutuba_data(input_path):
                     existing_race = Race.query.get(race_id)
                     
                     if not existing_race:
+                        # venue_nameをvenueとして使用
+                        venue_name = row['venue_name']
+                        
                         # レース情報を保存
                         race = Race(
                             id=race_id,
                             name=row['race_name'],
                             race_number=int(row['race_number']) if pd.notna(row['race_number']) else None,
-                            venue_name=row['venue_name'],
+                            venue=venue_name,  # venue_nameではなくvenueフィールドに設定
+                            venue_id=generate_venue_code(venue_name),
                             start_time=row['start_time'],
                             course_info=row['course_info'],
                             race_details=row['race_details']
