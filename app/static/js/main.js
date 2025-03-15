@@ -435,6 +435,88 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log(`馬ID: ${horseId} をお気に入りに追加/削除`);
         });
     });
+
+    // レース詳細ページのモバイル表示改善
+    if (isMobile) {
+        // テーブルの横スクロールを改善
+        const tableResponsive = document.querySelector('.race-results-wrapper .table-responsive');
+        if (tableResponsive) {
+            // スクロール位置を記憶する変数
+            let lastScrollLeft = 0;
+            
+            // スクロール位置を保存
+            tableResponsive.addEventListener('scroll', function() {
+                lastScrollLeft = this.scrollLeft;
+                
+                // スクロール中はヒントを非表示
+                this.classList.add('scrolling');
+                
+                // スクロールが止まったらヒントを再表示
+                clearTimeout(this.scrollTimer);
+                this.scrollTimer = setTimeout(() => {
+                    this.classList.remove('scrolling');
+                }, 500);
+            });
+            
+            // 画面回転時にスクロール位置を復元
+            window.addEventListener('orientationchange', function() {
+                setTimeout(() => {
+                    if (tableResponsive) {
+                        tableResponsive.scrollLeft = lastScrollLeft;
+                    }
+                }, 100);
+            });
+            
+            // テーブルの行をタップしたときの処理
+            const tableRows = document.querySelectorAll('.entry-table tbody tr');
+            tableRows.forEach(row => {
+                row.addEventListener('click', function(e) {
+                    // ボタンをクリックした場合は何もしない
+                    if (e.target.tagName === 'BUTTON' || e.target.tagName === 'A' || e.target.tagName === 'I') {
+                        return;
+                    }
+                    
+                    // 行の選択状態をトグル
+                    this.classList.toggle('selected-row');
+                    
+                    // 選択された行のスタイルを設定
+                    if (this.classList.contains('selected-row')) {
+                        this.style.backgroundColor = 'rgba(79, 70, 229, 0.1)';
+                        this.style.fontWeight = 'bold';
+                    } else {
+                        this.style.backgroundColor = '';
+                        this.style.fontWeight = '';
+                    }
+                });
+            });
+            
+            // 馬名のセルをダブルタップしたときに馬詳細ページに移動
+            const horseNameCells = document.querySelectorAll('.entry-table td:nth-child(4)');
+            horseNameCells.forEach(cell => {
+                let tapCount = 0;
+                let tapTimer;
+                
+                cell.addEventListener('click', function(e) {
+                    tapCount++;
+                    
+                    if (tapCount === 1) {
+                        tapTimer = setTimeout(() => {
+                            tapCount = 0;
+                        }, 300);
+                    } else if (tapCount === 2) {
+                        clearTimeout(tapTimer);
+                        tapCount = 0;
+                        
+                        // リンクがあればそのリンク先に移動
+                        const link = this.querySelector('a');
+                        if (link) {
+                            window.location.href = link.href;
+                        }
+                    }
+                });
+            });
+        }
+    }
 });
 
 // 日付ナビゲーション関数
