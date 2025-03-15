@@ -69,6 +69,22 @@
     justify-content: center;
     font-size: 1.2rem;
     cursor: pointer;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    z-index: 1001;
+    padding: 0;
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.memo-toggle:active, .memo-toggle:focus {
+    outline: none;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.memo-toggle i {
+    pointer-events: none;
 }
 
 .memo-content {
