@@ -3394,6 +3394,9 @@ def format_number(value):
 @app.route('/races/<int:race_id>/shutuba')
 def race_shutuba(race_id):
     try:
+        # デバッグ情報を追加
+        current_app.logger.info(f"Accessing shutuba for race_id: {race_id}")
+        
         # レースと出走馬情報を効率的に取得
         race = db.session.query(Race).options(
             joinedload(Race.shutuba_entries).options(
@@ -3503,6 +3506,9 @@ def race_shutuba(race_id):
 
     except Exception as e:
         current_app.logger.error(f"Error in race_shutuba: {str(e)}")
+        # スタックトレースも記録
+        import traceback
+        current_app.logger.error(traceback.format_exc())
         flash('出馬表の取得中にエラーが発生しました', 'error')
         return render_template('shutuba.html', 
                           race=None,

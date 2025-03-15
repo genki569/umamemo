@@ -4,14 +4,26 @@
 <div class="shutuba-container">
     <!-- レースヘッダー -->
     <div class="shutuba-race-header">
-        <h2>{{ race.name }}</h2>
-        <div class="race-details">
-            <span>{{ race.venue }}</span>
-            <span>{{ race.date.strftime('%Y/%m/%d') }}</span>
-            <span>{{ race.distance }}m</span>
-            <span>{{ race.course_type }}</span>
-            <span>発走 {{ race.start_time.strftime('%H:%M') }}</span>
-        </div>
+        {% if race %}
+            <h2>{{ race.name }}</h2>
+            <div class="race-details">
+                <span>{{ race.venue }}</span>
+                {% if race.date %}
+                    <span>{{ race.date.strftime('%Y/%m/%d') }}</span>
+                {% else %}
+                    <span>日付不明</span>
+                {% endif %}
+                <span>{{ race.distance }}m</span>
+                <span>{{ race.course_type }}</span>
+                {% if race.start_time %}
+                    <span>発走 {{ race.start_time.strftime('%H:%M') }}</span>
+                {% else %}
+                    <span>発走時刻不明</span>
+                {% endif %}
+            </div>
+        {% else %}
+            <h2>レース情報が見つかりません</h2>
+        {% endif %}
     </div>
     <div class="back-to-races">
         <a href="{{ url_for('race_list') }}" class="btn-back">
@@ -34,54 +46,58 @@
         <!-- タブコンテンツ -->
         <div class="tab-contents">
             <div class="tab-content" id="shutuba-content">
-                <div class="shutuba-table">
-                    <div class="shutuba-table-wrapper">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>枠番</th>
-                                    <th>馬番</th>
-                                    <th>馬名</th>
-                                    <th>性齢</th>
-                                    <th>騎手</th>
-                                    <th>斤量</th>
-                                    <th>オッズ</th>
-                                    <th>人気</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for entry in entries %}
-                                <tr>
-                                    <td class="text-center">
-                                        <span class="badge bg-bracket-{{ entry.bracket_number }}">
-                                            {{ entry.bracket_number }}
-                                        </span>
-                                    </td>
-                                    <td class="text-center horse-number">{{ entry.horse_number }}</td>
-                                    <td>
-                                        <a href="{{ url_for('horse_detail', horse_id=entry.horse.id) }}" class="horse-name">
-                                            {{ entry.horse.name }}
-                                        </a>
-                                    </td>
-                                    <td class="text-center horse-age">
-                                        {{ entry.horse.sex }}{{ entry.horse.age }}
-                                    </td>
-                                    <td>
-                                        {% if entry.jockey %}
-                                            <a href="{{ url_for('jockey_detail', jockey_id=entry.jockey.id) }}" class="jockey-name">
-                                                {{ entry.jockey.name }}
+                {% if race and entries %}
+                    <div class="shutuba-table">
+                        <div class="shutuba-table-wrapper">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>枠番</th>
+                                        <th>馬番</th>
+                                        <th>馬名</th>
+                                        <th>性齢</th>
+                                        <th>騎手</th>
+                                        <th>斤量</th>
+                                        <th>オッズ</th>
+                                        <th>人気</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for entry in entries %}
+                                    <tr>
+                                        <td class="text-center">
+                                            <span class="badge bg-bracket-{{ entry.bracket_number }}">
+                                                {{ entry.bracket_number }}
+                                            </span>
+                                        </td>
+                                        <td class="text-center horse-number">{{ entry.horse_number }}</td>
+                                        <td>
+                                            <a href="{{ url_for('horse_detail', horse_id=entry.horse.id) }}" class="horse-name">
+                                                {{ entry.horse.name }}
                                             </a>
-                                        {% endif %}
-                                    </td>
-                                    <td class="text-center">{{ entry.weight_carry }}</td>
-                                    <td class="text-end odds">{{ "%.1f"|format(entry.odds) if entry.odds else '-' }}</td>
-                                    <td class="text-center popularity">{{ entry.popularity if entry.popularity else '-' }}</td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+                                        </td>
+                                        <td class="text-center horse-age">
+                                            {{ entry.horse.sex }}{{ entry.horse.age }}
+                                        </td>
+                                        <td>
+                                            {% if entry.jockey %}
+                                                <a href="{{ url_for('jockey_detail', jockey_id=entry.jockey.id) }}" class="jockey-name">
+                                                    {{ entry.jockey.name }}
+                                                </a>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-center">{{ entry.weight_carry }}</td>
+                                        <td class="text-end odds">{{ "%.1f"|format(entry.odds) if entry.odds else '-' }}</td>
+                                        <td class="text-center popularity">{{ entry.popularity if entry.popularity else '-' }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                </div>
+                {% else %}
+                    <p>出馬表データがありません</p>
+                {% endif %}
             </div>
 
             <div class="tab-content" id="results-content">
@@ -140,7 +156,7 @@
                             {{ entry.horse.name }}の分析データ
                         </div>
                         <div class="stats-container">
-                            <!-- 同距離デー��� -->
+                            <!-- 同距離データ -->
                             <div class="stats-section">
                                 <h6 class="stats-title">{{ race.distance }}mでの成績</h6>
                                 {% if entry.distance_stats %}
@@ -157,7 +173,7 @@
                                             </span>
                                         </div>
                                         <div class="stats-item">
-                                            <span class="stats-label">複��</span>
+                                            <span class="stats-label">複勝</span>
                                             <span class="stats-value place-rate">
                                                 {{ entry.distance_stats.top3 }}
                                                 <small>({{ "%.1f"|format(entry.distance_stats.top3_rate) }}%)</small>
