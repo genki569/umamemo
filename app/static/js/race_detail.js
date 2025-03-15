@@ -80,7 +80,8 @@ document.addEventListener('DOMContentLoaded', function() {
             // カードをタップしたときの処理
             row.addEventListener('click', function(e) {
                 // ボタンをクリックした場合は何もしない
-                if (e.target.tagName === 'BUTTON' || e.target.tagName === 'A' || e.target.tagName === 'I') {
+                if (e.target.tagName === 'BUTTON' || e.target.tagName === 'A' || e.target.tagName === 'I' || 
+                    e.target.closest('button') || e.target.closest('a')) {
                     return;
                 }
                 
@@ -110,23 +111,22 @@ document.addEventListener('DOMContentLoaded', function() {
                 const toggleButton = document.createElement('button');
                 toggleButton.className = 'btn-toggle-details';
                 toggleButton.innerHTML = '<i class="fas fa-chevron-down"></i>';
-                toggleButton.style.position = 'absolute';
-                toggleButton.style.right = '15px';
-                toggleButton.style.bottom = '10px';
-                toggleButton.style.background = 'transparent';
-                toggleButton.style.border = 'none';
-                toggleButton.style.color = '#4F46E5';
                 
                 toggleButton.addEventListener('click', function(e) {
                     e.stopPropagation();
                     
                     // 詳細情報の表示/非表示を切り替え
+                    const isExpanded = detailCells[0].style.display !== 'none';
+                    
                     detailCells.forEach(cell => {
-                        cell.style.display = cell.style.display === 'none' ? 'block' : 'none';
+                        cell.style.display = isExpanded ? 'none' : 'block';
                     });
                     
+                    // カードの展開状態を切り替え
+                    row.classList.toggle('expanded', !isExpanded);
+                    
                     // ボタンのアイコンを切り替え
-                    this.innerHTML = detailCells[0].style.display === 'none' ? 
+                    this.innerHTML = isExpanded ? 
                         '<i class="fas fa-chevron-down"></i>' : 
                         '<i class="fas fa-chevron-up"></i>';
                 });
@@ -134,5 +134,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 horseNameCell.appendChild(toggleButton);
             }
         });
+        
+        // 表示の最適化
+        document.querySelector('.race-entries h3').textContent = '出走馬一覧';
+        
+        // スクロール位置をリセット
+        window.scrollTo(0, 0);
     }
 }); 
