@@ -296,6 +296,137 @@ def calculate_bracket(horse_number):
     else:
         return None
 
+def update_race_entry(race_id, entries):
+    """レースの出走表情報を更新する"""
+    try:
+        # 既存のエントリーを削除（オプション）
+        # ShutubaEntry.query.filter_by(race_id=race_id).delete()
+        
+        for entry in entries:
+            try:
+                # 馬情報の取得または作成
+                horse_name = entry.get('horse_name')
+                if not horse_name:
+                    continue
+                    
+                horse = Horse.query.filter_by(name=horse_name).first()
+                if not horse:
+                    horse_id = generate_horse_id(horse_name)
+                    sex_age = entry.get('sex_age', '')
+                    sex = sex_age[0] if sex_age else None
+                    
+                    horse = Horse(
+                        id=horse_id,
+                        name=horse_name,
+                        sex=sex
+                    )
+                    db.session.add(horse)
+                    db.session.flush()  # IDを取得するためにflush
+                
+                # 騎手情報の取得または作成
+                jockey_name = entry.get('jockey_name')
+                jockey_id = None
+                
+                if jockey_name:
+                    jockey = Jockey.query.filter_by(name=jockey_name).first()
+                    if not jockey:
+                        jockey_id = generate_jockey_id(jockey_name)
+                        jockey = Jockey(
+                            id=jockey_id,
+                            name=jockey_name
+                        )
+                        db.session.add(jockey)
+                        db.session.flush()
+                    else:
+                        jockey_id = jockey.id
+                
+                # 馬番の取得
+                horse_number = entry.get('horse_number')
+                if horse_number:
+                    try:
+                        horse_number = int(horse_number)
+                    except (ValueError, TypeError):
+                        horse_number = None
+                
+                # 枠番の計算
+                bracket_number = calculate_bracket(horse_number) if horse_number else None
+                
+                # オッズと人気の取得
+                odds = entry.get('odds')
+                if odds:
+                    try:
+                        odds = float(odds)
+                    except (ValueError, TypeError):
+                        odds = None
+                
+                popularity = entry.get('popularity')
+                if popularity:
+                    try:
+                        popularity = int(popularity)
+                    except (ValueError, TypeError):
+                        popularity = None
+                
+                # 斤量の取得
+                weight_carry = entry.get('weight')
+                if weight_carry:
+                    try:
+                        weight_carry = float(weight_carry)
+                    except (ValueError, TypeError):
+                        weight_carry = None
+                
+                # エントリーIDの生成
+                entry_id = generate_entry_id(race_id, horse_number) if horse_number else None
+                
+                # 既存のエントリーを確認
+                existing_entry = ShutubaEntry.query.filter_by(
+                    race_id=race_id,
+                    horse_id=horse.id
+                ).first()
+                
+                if existing_entry:
+                    # 既存のエントリーを更新
+                    if jockey_id:
+                        existing_entry.jockey_id = jockey_id
+                    if bracket_number:
+                        existing_entry.bracket_number = bracket_number
+                    if horse_number:
+                        existing_entry.horse_number = horse_number
+                    if weight_carry:
+                        existing_entry.weight_carry = weight_carry
+                    if odds:
+                        existing_entry.odds = odds
+                    if popularity:
+                        existing_entry.popularity = popularity
+                else:
+                    # 新しいエントリーを作成
+                    shutuba_entry = ShutubaEntry(
+                        id=entry_id,
+                        race_id=race_id,
+                        horse_id=horse.id,
+                        jockey_id=jockey_id,
+                        bracket_number=bracket_number,
+                        horse_number=horse_number,
+                        weight_carry=weight_carry,
+                        odds=odds,
+                        popularity=popularity
+                    )
+                    db.session.add(shutuba_entry)
+                
+            except Exception as e:
+                print(f"エントリー処理中にエラー: {str(e)}")
+                traceback.print_exc()
+                continue
+        
+        # 変更をコミット
+        db.session.commit()
+        return True
+        
+    except Exception as e:
+        db.session.rollback()
+        print(f"出走表更新中にエラー: {str(e)}")
+        traceback.print_exc()
+        return False
+
 def main():
     """メイン関数"""
     parser = argparse.ArgumentParser(description='CSVファイルからレース出走表をデータベースに保存する')
