@@ -117,22 +117,8 @@ def generate_jockey_id(jockey_name: str) -> str:
 def scrape_race_entry(page, race_url: str) -> Dict[str, any]:
     """出走表ページから情報を取得する"""
     try:
-        # タイムアウト時間を延長し、リトライを追加
-        retry_count = 0
-        max_retries = 3
-        
-        while retry_count < max_retries:
-            try:
-                print(f"レースURL: {race_url} にアクセス中... (試行 {retry_count + 1}/{max_retries})")
-                page.goto(race_url, wait_until='domcontentloaded', timeout=60000)  # タイムアウトを60秒に延長
-                page.wait_for_timeout(5000)  # 待機時間を増やす
-                break  # 成功したらループを抜ける
-            except Exception as e:
-                retry_count += 1
-                if retry_count >= max_retries:
-                    raise  # 最大リトライ回数に達したら例外を投げる
-                print(f"アクセス失敗、{retry_count}/{max_retries}回目のリトライ: {str(e)}")
-                page.wait_for_timeout(10000)  # リトライ前に10秒待機
+        page.goto(race_url, wait_until='domcontentloaded', timeout=30000)
+        page.wait_for_timeout(3000)
         
         # race_idを取得（URLから）
         race_id = race_url.split('race_id=')[1].split('&')[0]
