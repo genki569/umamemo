@@ -7,7 +7,9 @@
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 APP_DIR="$(dirname "$SCRIPT_DIR")"
 LOG_DIR="$APP_DIR/logs"
+LOCK_FILE="/tmp/update_race_entry.lock"
 DATE_FORMAT="%Y-%m-%d %H:%M:%S"
+TIMEOUT=3600  # タイムアウト（秒）
 
 # ディレクトリの作成
 mkdir -p "$LOG_DIR"
@@ -26,11 +28,52 @@ log() {
 # エラーハンドリング
 handle_error() {
     log "エラー: $1"
+    # ロックファイルを削除
+    rm -f "$LOCK_FILE"
     exit 1
 }
 
+# クリーンアップ関数
+cleanup() {
+    log "スクリプトが中断されました"
+    rm -f "$LOCK_FILE"
+    exit 1
+}
+
+# シグナルハンドラの設定
+trap cleanup SIGHUP SIGINT SIGTERM
+
+# ロックファイルの確認
+if [ -f "$LOCK_FILE" ]; then
+    # ロックファイルが存在する場合、プロセスが実行中かチェック
+    PID=$(cat "$LOCK_FILE")
+    if ps -p "$PID" > /dev/null; then
+        log "別のプロセスが実行中です (PID: $PID)"
+        exit 0
+    else
+        log "古いロックファイルを削除します"
+        rm -f "$LOCK_FILE"
+    fi
+fi
+
+# ロックファイルの作成
+echo $$ > "$LOCK_FILE"
+
 # 開始ログ
 log "出走表データ更新を開始します"
+
+# タイムアウト設定
+(
+    sleep $TIMEOUT
+    if [ -f "$LOCK_FILE" ]; then
+        PID=$(cat "$LOCK_FILE")
+        if ps -p "$PID" > /dev/null; then
+            log "タイムアウトしました。プロセスを終了します (PID: $PID)"
+            kill -9 "$PID"
+        fi
+    fi
+) &
+TIMEOUT_PID=$!
 
 # 1. スクレイピングの実行
 log "スクレイピングを開始します..."
@@ -78,6 +121,12 @@ python -m scripts.csv_shutuba "$CSV_FILE"
 if [ $? -ne 0 ]; then
     handle_error "データベースへの保存に失敗しました"
 fi
+
+# タイムアウトプロセスを終了
+kill $TIMEOUT_PID 2>/dev/null
+
+# ロックファイルを削除
+rm -f "$LOCK_FILE"
 
 log "データベースへの保存が完了しました"
 log "出走表データの更新が完了しました"
