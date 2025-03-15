@@ -494,3 +494,12 @@ function animateValue(obj, start, end, duration) {
     };
     window.requestAnimationFrame(step);
 }
+
+// dateButtons変数の重複宣言を修正
+// 既存の宣言を探して、条件付きで宣言するように変更
+if (typeof dateButtons === 'undefined') {
+    const dateButtons = document.querySelector('.date-buttons');
+    if (dateButtons) {
+        // 以下のコードは変更なし
+    }
+}
