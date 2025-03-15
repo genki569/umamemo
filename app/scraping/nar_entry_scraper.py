@@ -280,7 +280,7 @@ def save_to_csv(race_entry: Dict[str, any], filename: str = None):
 
 def get_race_urls_for_date(page, context, date_str: str) -> List[str]:
     """指定日の全レースの出馬表URLを取得"""
-    all_race_urls = set()  # リストからセットに変更して重複を防止
+    all_race_urls = set()  # セットを使用して重複を防止
     try:
         url = f"https://nar.netkeiba.com/top/race_list.html?kaisai_date={date_str}"
         print(f"\n{date_str}のレース情報を取得中...")
@@ -313,17 +313,17 @@ def get_race_urls_for_date(page, context, date_str: str) -> List[str]:
         
         # 直接メインページからすべてのレースURLを取得
         race_links = page.query_selector_all('a[href*="/race/shutuba.html"]')
+        print(f"取得したリンク数: {len(race_links)}")
+        
         for link in race_links:
             href = link.get_attribute('href')
             if href:
                 race_url = f"https://nar.netkeiba.com{href.replace('..', '')}"
-                all_race_urls.add(race_url)  # addを使用してセットに追加
+                all_race_urls.add(race_url)  # セットに追加
                 print(f"レースURL追加: {race_url}")
         
         print(f"メインページから{len(all_race_urls)}件のレースURLを取得しました")
         
-        # 会場ごとのページは処理しない（重複を避けるため）
-                
     except Exception as e:
         print(f"レースURL取得中にエラー: {str(e)}")
         import traceback
@@ -357,7 +357,7 @@ def get_race_info_for_next_three_days():
                     if race_urls:  # レースURLが存在する場合のみ処理
                         for race_url in race_urls:
                             race_entry = scrape_race_entry(page, race_url)
-                            if race_entry and 'horse_name' in race_entry['entries'][0]:
+                            if race_entry and race_entry['entries'] and len(race_entry['entries']) > 0:
                                 save_to_csv(race_entry, filename)
                                 print(f"保存完了: {race_entry['venue_name']} {race_entry['race_number']}R")
                         print(f"{date_str}の処理が完了しました")
@@ -396,7 +396,7 @@ def scrape_race_entries(date_str=None):
         context = browser.new_context()
         page = context.new_page()
         
-        # ここでレースURLを取得する処理を追加
+        # ここを修正: get_race_urls → get_race_urls_for_date
         race_urls = get_race_urls_for_date(page, context, date_str)
         print(f"{len(race_urls)}件のレースURLを取得しました")
         
