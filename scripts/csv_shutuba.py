@@ -247,16 +247,59 @@ def process_shutuba_data(input_path):
                         # venue_nameをvenueとして使用
                         venue_name = row['venue_name']
                         
+                        # 日付情報を取得
+                        race_date = datetime.now().date()  # デフォルト値
+                        if 'date' in row and pd.notna(row['date']):
+                            try:
+                                race_date = datetime.strptime(str(row['date']), '%Y-%m-%d').date()
+                            except ValueError:
+                                pass
+                        
+                        # レース年を取得
+                        race_year = race_date.year if race_date else datetime.now().year
+                        
+                        # コース情報を解析
+                        course_info = row.get('course_info', '')
+                        distance = None
+                        track_type = None
+                        direction = None
+                        
+                        # コース情報から距離とコース種別を抽出
+                        if course_info:
+                            # 例: "ダート1200m"
+                            distance_match = re.search(r'(\d+)m', course_info)
+                            if distance_match:
+                                distance = int(distance_match.group(1))
+                            
+                            if 'ダート' in course_info:
+                                track_type = 'ダート'
+                            elif '芝' in course_info:
+                                track_type = '芝'
+                            
+                            if '右' in course_info:
+                                direction = '右'
+                            elif '左' in course_info:
+                                direction = '左'
+                        
                         # レース情報を保存
                         race = Race(
                             id=race_id,
                             name=row['race_name'],
                             race_number=int(row['race_number']) if pd.notna(row['race_number']) else None,
-                            venue=venue_name,  # venue_nameではなくvenueフィールドに設定
+                            venue=venue_name,
                             venue_id=generate_venue_code(venue_name),
-                            start_time=row['start_time'],
-                            course_info=row['course_info'],
-                            race_details=row['race_details']
+                            date=race_date,
+                            start_time=row['start_time'] if 'start_time' in row else None,
+                            details=row.get('race_details', '') or row.get('course_info', ''),
+                            race_year=race_year,
+                            kai=row.get('kai', ''),
+                            nichi=row.get('nichi', ''),
+                            race_class=row.get('race_class', ''),
+                            distance=distance,
+                            track_type=track_type,
+                            direction=direction,
+                            weather=row.get('weather', ''),
+                            track_condition=row.get('track_condition', '')
                         )
                         db.session.add(race)
                         db.session.commit()  # レースを先にコミット
