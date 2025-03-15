@@ -2,7 +2,7 @@ from playwright.sync_api import sync_playwright, TimeoutError
 import time
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
-from typing import List, Dict
+from typing import List, Dict, Any
 import pandas as pd
 import os
 import csv
@@ -11,6 +11,7 @@ import json
 from app import app, db
 from app.models import Race, Horse, Jockey, ShutubaEntry
 import traceback
+import argparse
 
 def generate_race_id(race_url: str) -> str:
     """レースURLからレースIDを生成（15桁）"""
@@ -249,48 +250,33 @@ def scrape_race_entry(page, race_url: str) -> Dict[str, any]:
         traceback.print_exc()
         return None
 
-def save_to_csv(race_entry: Dict[str, any], filename: str = None):
+def save_to_csv(race_entries: List[Dict[str, Any]], filename: str = None):
     """レース情報をCSVに保存する"""
+    if not race_entries:
+        print("保存するレース情報がありません")
+        return None
+    
+    # ファイル名が指定されていない場合は日付から生成
+    if not filename:
+        date_str = datetime.now().strftime('%Y%m%d')
+        filename = f"race_entries_{date_str}.csv"
+    
     try:
-        os.makedirs('data/race_entries', exist_ok=True)
+        # DataFrameに変換
+        df = pd.DataFrame(race_entries)
         
-        if filename is None:
-            current_date = datetime.now().strftime('%Y%m%d')
-            filename = f'data/race_entries/nar_race_entries_{current_date}.csv'
-        else:
-            filename = f'data/race_entries/{filename}'
+        # entriesカラムをJSON文字列に変換
+        df['entries'] = df['entries'].apply(lambda x: json.dumps(x, ensure_ascii=False))
         
-        # ファイルが存在しない場合は新規作成
-        file_exists = os.path.isfile(filename)
-        
-        with open(filename, 'a', newline='', encoding='utf-8') as f:
-            writer = csv.writer(f)
-            
-            # ヘッダーを書き込む（ファイルが新規の場合のみ）
-            if not file_exists:
-                writer.writerow([
-                    'race_id', 'race_name', 'race_number', 'venue_name', 
-                    'start_time', 'course_info', 'race_details', 'entries'
-                ])
-            
-            # レース情報を1行で書き込む
-            writer.writerow([
-                race_entry['race_id'],
-                race_entry['race_name'],
-                race_entry['race_number'],
-                race_entry['venue_name'],
-                race_entry['start_time'],
-                race_entry['course_info'],
-                race_entry['race_details'],
-                json.dumps(race_entry['entries'], ensure_ascii=False)  # 出走馬情報をJSON形式で保存
-            ])
-            
-        print(f"CSVに保存しました: {filename}")
-            
+        # CSVに保存
+        df.to_csv(filename, index=False, encoding='utf-8')
+        print(f"レース情報をCSVに保存しました: {filename}")
+        return filename
     except Exception as e:
         print(f"CSV保存エラー: {str(e)}")
         import traceback
         traceback.print_exc()
+        return None
 
 def get_race_urls_for_date(page, context, date_str: str) -> List[str]:
     """指定日の全レースの出馬表URLを取得（重複なし）"""
@@ -385,7 +371,7 @@ def get_race_info_for_next_three_days():
                     for race_url in race_urls:
                         race_entry = scrape_race_entry(pages[i], race_url)
                         if race_entry:
-                            save_to_csv(race_entry, filename)
+                            save_to_csv([race_entry], filename)
                             print(f"保存完了: {race_entry['venue_name']} {race_entry['race_number']}R")
                         # 待機時間を短縮
                         pages[i].wait_for_timeout(1000)
@@ -400,6 +386,70 @@ def get_race_info_for_next_three_days():
         import traceback
         traceback.print_exc()
 
-if __name__ == '__main__':
-    print("地方競馬出走表の取得を開始します...")
-    get_race_info_for_next_three_days()
+def scrape_race_entries(date_str=None):
+    """指定された日付のレース出走表をスクレイピング"""
+    # 日付が指定されていない場合は今日の日付を使用
+    if not date_str:
+        date_str = datetime.now().strftime('%Y%m%d')
+    
+    # 日付の形式を確認
+    try:
+        target_date = datetime.strptime(date_str, '%Y%m%d')
+        formatted_date = target_date.strftime('%Y年%m月%d日')
+    except ValueError:
+        print(f"エラー: 無効な日付形式です: {date_str}")
+        return []
+    
+    print(f"{formatted_date}のレース出走表をスクレイピングします...")
+    
+    race_entries = []
+    
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=True)
+        page = browser.new_page()
+        
+        # NAR（地方競馬）のトップページにアクセス
+        page.goto("https://www.keiba.go.jp/")
+        
+        # 日付選択
+        # ... (日付選択の処理)
+        
+        # レース一覧を取得
+        # ... (レース一覧の取得処理)
+        
+        # 各レースの出走表を取得
+        for race_url in race_urls:
+            try:
+                entry_info = scrape_race_entry(page, race_url)
+                if entry_info and entry_info['race_id']:
+                    race_entries.append(entry_info)
+                    print(f"レース情報を取得しました: {entry_info['race_name']}")
+            except Exception as e:
+                print(f"レース情報の取得中にエラー: {str(e)}")
+        
+        browser.close()
+    
+    print(f"{len(race_entries)}件のレース情報を取得しました")
+    return race_entries
+
+def main():
+    """メイン関数"""
+    parser = argparse.ArgumentParser(description='地方競馬の出走表をスクレイピングする')
+    parser.add_argument('--date', type=str, help='対象日付（YYYYMMDD形式）')
+    parser.add_argument('--output', type=str, help='出力CSVファイルのパス')
+    args = parser.parse_args()
+    
+    # スクレイピングの実行
+    race_entries = scrape_race_entries(args.date)
+    
+    # CSVに保存
+    if race_entries:
+        save_to_csv(race_entries, args.output)
+    else:
+        print("保存するレース情報がありません")
+        return 1
+    
+    return 0
+
+if __name__ == "__main__":
+    exit(main())

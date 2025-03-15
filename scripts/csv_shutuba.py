@@ -7,6 +7,8 @@ from datetime import datetime
 from typing import Dict, List
 from app import app, db
 from app.models import Race, Horse, Jockey, ShutubaEntry
+import argparse
+import traceback
 
 def generate_horse_id(horse_name):
     """
@@ -200,98 +202,116 @@ def save_to_database(races_data, horses_data, jockeys_data, entries_data):
             
     except Exception as e:
         print(f"データベース保存エラー: {str(e)}")
-        import traceback
         traceback.print_exc()
         # Flaskアプリケーションコンテキスト内でロールバック
         with app.app_context():
             db.session.rollback()
 
-def process_shutuba_data(input_path: str) -> None:
-    """出走表CSVを読み込んでデータベースに保存"""
-    races_data = []
-    horses_data = {}
-    jockeys_data = {}
-    entries_data = []
-    
-    with open(input_path, 'r', encoding='utf-8') as f:
-        reader = csv.DictReader(f)
-        for row in reader:
-            race_id = row['race_id']
+def process_shutuba_data(input_path):
+    """CSVファイルからデータを読み込み、データベースに保存する"""
+    try:
+        with app.app_context():
+            print(f"CSVファイル {input_path} を読み込んでいます...")
+            df = pd.read_csv(input_path)
+            print(f"読み込んだレース数: {len(df)}")
             
-            # レース情報を保存
-            races_data.append({
-                'id': race_id,
-                'name': row['race_name'],
-                'date': extract_date_from_race_id(race_id),
-                'start_time': row['start_time'],
-                'venue': row['venue_name'],
-                'venue_id': generate_venue_code(row['venue_name']),
-                'race_number': int(row['race_number']),
-                'race_year': race_id[:4],
-                'distance': re.search(r'(\d+)m', row['course_info']).group(1) if re.search(r'(\d+)m', row['course_info']) else None,
-                'track_type': 'ダ' if 'ダ' in row['course_info'] else ('芝' if '芝' in row['course_info'] else None),
-                'details': row['race_details']
-            })
+            # 処理したデータのカウント
+            races_count = 0
             
-            # 出走馬情報をJSONから解析
-            entries = json.loads(row['entries'])
-            
-            for entry in entries:
-                horse_name = entry['horse_name']
-                horse_id = generate_horse_id(horse_name)
-                
-                # 性別と年齢を分離
-                sex_age = entry.get('sex_age', '')
-                sex = sex_age[0] if sex_age else None
-                birth_year = str(int(race_id[:4]) - int(sex_age[1:])) if sex_age and len(sex_age) > 1 else None
-                
-                # 馬情報を保存
-                if horse_id not in horses_data:
-                    horses_data[horse_id] = {
-                        'id': horse_id,
-                        'name': horse_name,
-                        'birth_year': birth_year,
-                        'sex': sex,
-                        'trainer': entry.get('trainer_name'),
-                        'created_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                    }
-                
-                # 騎手情報を保存
-                jockey_name = entry.get('jockey_name')
-                jockey_id = generate_jockey_id(jockey_name) if jockey_name else None
-                if jockey_id and jockey_id not in jockeys_data:
-                    jockeys_data[jockey_id] = {
-                        'id': jockey_id,
-                        'name': jockey_name
-                    }
-                
-                # 出走表エントリー情報を保存
+            for _, row in df.iterrows():
                 try:
-                    horse_number = int(entry.get('horse_number', 0))
-                    entries_data.append({
-                        'id': generate_entry_id(race_id, horse_number),
-                        'race_id': race_id,
-                        'horse_id': horse_id,
-                        'jockey_id': jockey_id,
-                        'bracket_number': (horse_number - 1) // 2 + 1 if horse_number else None,
-                        'horse_number': horse_number,
-                        'weight_carry': float(entry.get('weight', 0)),
-                        'odds': float(entry.get('odds', 0)),
-                        'popularity': int(entry.get('popularity', 0))
-                    })
-                except (ValueError, TypeError):
-                    continue
+                    # entriesカラムをJSONとしてパース
+                    entries_json = row['entries']
+                    
+                    # 文字列の場合はJSONとしてパース
+                    if isinstance(entries_json, str):
+                        try:
+                            entries = json.loads(entries_json)
+                        except json.JSONDecodeError:
+                            print(f"警告: JSONデコードエラー: {entries_json[:100]}...")
+                            continue
+                    else:
+                        entries = entries_json
+                    
+                    # レースIDを取得
+                    try:
+                        race_id = int(row['race_id'])
+                    except (ValueError, TypeError):
+                        print(f"警告: 無効なレースID: {row['race_id']}")
+                        continue
+                    
+                    # レースが既に存在するか確認
+                    existing_race = Race.query.get(race_id)
+                    
+                    if not existing_race:
+                        # レース情報を保存
+                        race = Race(
+                            id=race_id,
+                            name=row['race_name'],
+                            race_number=int(row['race_number']) if pd.notna(row['race_number']) else None,
+                            venue_name=row['venue_name'],
+                            start_time=row['start_time'],
+                            course_info=row['course_info'],
+                            race_details=row['race_details']
+                        )
+                        db.session.add(race)
+                        db.session.commit()  # レースを先にコミット
+                    
+                    # 出走表情報を更新
+                    update_race_entry(race_id, entries)
+                    
+                    races_count += 1
+                    
+                    # 10レースごとに進捗を表示
+                    if races_count % 10 == 0:
+                        print(f"{races_count}レース処理完了")
+                
+                except Exception as e:
+                    print(f"レース処理中にエラー: {str(e)}")
+                    traceback.print_exc()
+            
+            print(f"処理完了: {races_count}レース")
     
-    # データベースに保存
-    save_to_database(races_data, horses_data, jockeys_data, entries_data)
-    print(f"処理完了: レース数={len(races_data)}, 馬={len(horses_data)}, 騎手={len(jockeys_data)}, エントリー={len(entries_data)}")
+    except Exception as e:
+        print(f"データ処理中にエラー: {str(e)}")
+        traceback.print_exc()
+        return False
+    
+    return True
+
+def calculate_bracket(horse_number):
+    """馬番から枠番を計算"""
+    if not horse_number:
+        return None
+    
+    horse_number = int(horse_number)
+    if horse_number <= 8:
+        return horse_number
+    elif horse_number <= 16:
+        return (horse_number - 1) % 8 + 1
+    else:
+        return None
+
+def main():
+    """メイン関数"""
+    parser = argparse.ArgumentParser(description='CSVファイルからレース出走表をデータベースに保存する')
+    parser.add_argument('input_file', type=str, help='入力CSVファイルのパス')
+    args = parser.parse_args()
+    
+    # 入力ファイルの存在確認
+    if not os.path.exists(args.input_file):
+        print(f"エラー: ファイル {args.input_file} が見つかりません")
+        return 1
+    
+    # データ処理の実行
+    success = process_shutuba_data(args.input_file)
+    
+    if success:
+        print("データベースへの保存が完了しました")
+        return 0
+    else:
+        print("データベースへの保存中にエラーが発生しました")
+        return 1
 
 if __name__ == "__main__":
-    import sys
-    if len(sys.argv) != 2:
-        print("Usage: python csv_shutuba.py <input_csv_path>")
-        sys.exit(1)
-    
-    input_path = sys.argv[1]
-    with app.app_context():
-        process_shutuba_data(input_path)
+    exit(main())
