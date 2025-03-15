@@ -78,11 +78,12 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // スクロールアニメーション
+    // モバイルデバイスかどうかを確認
+    const isMobile = window.innerWidth <= 768;
     AOS.init({
-        duration: 800,
-        easing: 'ease-in-out',
-        once: true
+        duration: isMobile ? 0 : 800,
+        once: true,
+        disable: isMobile
     });
 
     // 統計カードのカウントアップアニメーション
