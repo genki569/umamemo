@@ -7,7 +7,7 @@ from app.models import (
     MembershipChangeLog, PaymentLog, ShutubaEntry,
     HorseMemo
 )
-from datetime import datetime, timedelta, date  # dateクラスを追加
+from datetime import datetime, timedelta
 from flask_wtf import FlaskForm
 from wtforms import StringField, TextAreaField, SubmitField, PasswordField
 from wtforms.validators import DataRequired, Email as EmailValidator
@@ -116,143 +116,75 @@ def get_venue_code(venue_name):
 @app.route('/races')
 def races():
     try:
-        current_app.logger.info("Starting races route")
-        
-        # クエリパラメータを取得
-        date_str = request.args.get('date')
-        venue = request.args.get('venue')
-        race_type = request.args.get('type', 'all')  # all, upcoming, past
-        
+        app.logger.info('Starting races route')
         # 利用可能な日付を取得
-        available_dates = db.session.query(Race.date).distinct().order_by(Race.date.desc()).all()
-        current_app.logger.info(f"Available dates: {available_dates}")
+        available_dates = db.session.query(
+            func.date(Race.date).label('race_date')
+        ).distinct().order_by(
+            func.date(Race.date).desc()
+        ).all()
         
-        # 日付が指定されていない場合は最新の日付を使用
-        if not date_str and available_dates:
-            selected_date = available_dates[0][0]
+        app.logger.info(f'Available dates: {available_dates}')
+        
+        # 日付一覧の作成
+        dates = []
+        for date_row in available_dates:
+            date = date_row.race_date
+            dates.append({
+                'value': date.strftime('%Y%m%d'),
+                'month': date.month,
+                'day': date.day,
+                'weekday': date.strftime('%a')
+            })
+
+        # 選択された日付の取得
+        selected_date = request.args.get('date')
+        if selected_date:
+            selected_date = datetime.strptime(selected_date, '%Y%m%d').date()
         else:
-            try:
-                selected_date = datetime.strptime(date_str, '%Y-%m-%d').date()
-            except (ValueError, TypeError):
-                if available_dates:
-                    selected_date = available_dates[0][0]
-                else:
-                    selected_date = datetime.now().date()
-        
-        # 現在の日付を取得
-        today = datetime.now().date()
-        
-        # レースタイプに基づいてクエリを構築
-        query = Race.query
-        
-        if race_type == 'upcoming':
-            # 未来のレース
-            query = query.filter(Race.date >= today)
-        elif race_type == 'past':
-            # 過去のレース
-            query = query.filter(Race.date < today)
-        else:
-            # 選択された日付のレース
-            query = query.filter(Race.date == selected_date)
-        
-        # 会場でフィルタリング
-        if venue:
-            if venue == 'central':
-                # 中央競馬場のコードリスト
-                central_venues = ['101', '102', '103', '104', '105', '106', '107', '108', '109', '110']
-                query = query.filter(Race.venue_id.in_(central_venues))
-            elif venue == 'local':
-                # 地方競馬場のコードリスト
-                local_venues = ['201', '202', '203', '204', '205', '206', '207', '208', '209', '210', 
-                               '211', '212', '213', '214', '215']
-                query = query.filter(Race.venue_id.in_(local_venues))
-            else:
-                # 特定の会場
-                query = query.filter(Race.venue == venue)
-        
-        # レースを取得
-        races = query.order_by(Race.date, Race.venue, Race.race_number).all()
-        
-        # 各レースの状態を確認（結果あり、出馬表のみ、両方）
-        for race in races:
-            # 結果があるかチェック
-            has_results = db.session.query(Entry).filter(
-                Entry.race_id == race.id,
-                Entry.position.isnot(None)
-            ).first() is not None
-            
-            # 出馬表があるかチェック
-            has_shutuba = db.session.query(ShutubaEntry).filter(
-                ShutubaEntry.race_id == race.id
-            ).first() is not None
-            
-            # レースの日付が未来かどうか
-            is_future = False
-            if hasattr(race, 'date') and race.date:
-                if isinstance(race.date, date):
-                    is_future = race.date > today
-                elif isinstance(race.date, str):
-                    try:
-                        race_date = datetime.strptime(race.date, '%Y-%m-%d').date()
-                        is_future = race_date > today
-                    except ValueError:
-                        pass
-            
-            # 状態を設定
-            race.status = {
-                'has_results': has_results,
-                'has_shutuba': has_shutuba,
-                'is_future': is_future
-            }
-        
-        # 会場ごとにレースをグループ化
+            selected_date = available_dates[0].race_date if available_dates else datetime.now().date()
+
+        # レース情報の取得
+        races = Race.query.filter(
+            func.date(Race.date) == selected_date
+        ).all()
+
+        # 会場ごとにグループ化
         venue_races = {}
         for race in races:
-            venue_id = race.venue_id or race.venue or 'unknown'
-            
-            if venue_id not in venue_races:
-                venue_races[venue_id] = {
-                    'venue_name': race.venue,
-                    'races': [],
-                    'weather': race.weather,
-                    'track_condition': race.track_condition
-                }
-            
-            venue_races[venue_id]['races'].append(race)
-        
-        # 日付フォーマット用のデータを作成
-        dates = []
-        for date_tuple in available_dates:
-            date_obj = date_tuple[0]
-            if isinstance(date_obj, date):
-                weekday_names = ['月', '火', '水', '木', '金', '土', '日']
-                weekday = weekday_names[date_obj.weekday()]
-                dates.append({
-                    'value': date_obj.strftime('%Y-%m-%d'),
-                    'month': date_obj.month,
-                    'day': date_obj.day,
-                    'weekday': weekday
-                })
-        
-        return render_template('races.html', 
-                              races=races, 
-                              venue_races=venue_races,
-                              selected_date=selected_date,
-                              available_dates=available_dates,
-                              dates=dates,
-                              race_type=race_type,
-                              venue=venue)
-    
+            venue_code = get_venue_code(race.venue)
+            if venue_code:
+                if venue_code not in venue_races:
+                    venue_races[venue_code] = {
+                        'venue_name': VENUE_NAMES[venue_code],
+                        'weather': getattr(race, 'weather', '不明'),
+                        'track_condition': getattr(race, 'track_condition', '不明'),
+                        'races': []
+                    }
+                venue_races[venue_code]['races'].append(race)
+
+        # レースを各会場内でソート
+        for venue_data in venue_races.values():
+            venue_data['races'].sort(key=lambda x: x.race_number)
+
+        return render_template(
+            'races.html',
+            dates=dates,
+            selected_date=selected_date.strftime('%Y%m%d'),
+            venue_races=venue_races,
+            venues=VENUE_NAMES
+        )
+
     except Exception as e:
-        current_app.logger.error(f"Error in races route: {str(e)}")
-        current_app.logger.error(traceback.format_exc())
-        flash('レース情報の取得中にエラーが発生しました', 'error')
-        return render_template('races.html', 
-                              races=[], 
-                              venue_races={},
-                              selected_date=None, 
-                              available_dates=[],
-                              dates=[])
+        app.logger.error(f'Error: {str(e)}')
+        return render_template(
+            'races.html',
+            dates=[],
+            selected_date=datetime.now().strftime('%Y%m%d'),
+            venue_races={},
+            venues=VENUE_NAMES,
+            error=str(e)
+        )
 
 @app.route('/races/<int:race_id>')
 def race(race_id):
