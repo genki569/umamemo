@@ -2022,13 +2022,29 @@
 
 /* 以下のスタイルを追加 */
 html, body {
-    overflow-x: hidden;
-    width: 100%;
-    max-width: 100%;
+    overflow-x: hidden !important;
+    width: 100% !important;
+    position: relative;
+    margin: 0;
+    padding: 0;
 }
 
-body {
-    position: relative;
+.container, .container-fluid {
+    max-width: 100% !important;
+    overflow-x: hidden !important;
+}
+
+/* すべての要素が画面幅を超えないようにする */
+* {
+    max-width: 100vw;
+    box-sizing: border-box;
+}
+
+/* 特に問題になりやすい要素 */
+.hero-wrapper, .hero-decoration, .features-section, .useful-features, 
+.testimonials-section, .pricing-section, .cta-section {
+    max-width: 100vw;
+    overflow-x: hidden;
 }
 
 /* モバイル対応の基本スタイル */
