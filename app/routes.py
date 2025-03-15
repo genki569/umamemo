@@ -7,7 +7,7 @@ from app.models import (
     MembershipChangeLog, PaymentLog, ShutubaEntry,
     HorseMemo
 )
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date  # dateクラスを追加
 from flask_wtf import FlaskForm
 from wtforms import StringField, TextAreaField, SubmitField, PasswordField
 from wtforms.validators import DataRequired, Email as EmailValidator
@@ -187,7 +187,16 @@ def races():
             ).first() is not None
             
             # レースの日付が未来かどうか
-            is_future = race.date > today if isinstance(race.date, date) else False
+            is_future = False
+            if hasattr(race, 'date') and race.date:
+                if isinstance(race.date, date):
+                    is_future = race.date > today
+                elif isinstance(race.date, str):
+                    try:
+                        race_date = datetime.strptime(race.date, '%Y-%m-%d').date()
+                        is_future = race_date > today
+                    except ValueError:
+                        pass
             
             # 状態を設定
             race.status = {
