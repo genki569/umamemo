@@ -1404,18 +1404,22 @@ def all_reviews():
 @app.route('/races/<int:race_id>/memo/<int:memo_id>/delete', methods=['POST'])
 @login_required
 def delete_race_memo(race_id, memo_id):
-    memo = RaceMemo.query.get_or_404(memo_id)
-    
-    # 権限チェック
-    if memo.user_id != current_user.id:
-        flash('このメモを削除する権限がありません', 'danger')
-        return redirect(url_for('race_detail', race_id=race_id))
-    
-    db.session.delete(memo)
-    db.session.commit()
-    
-    flash('メモを削除しました', 'success')
-    return redirect(url_for('race_detail', race_id=race_id))
+    try:
+        memo = RaceMemo.query.get_or_404(memo_id)
+        
+        # 権限チェック
+        if memo.user_id != current_user.id:
+            return jsonify({'status': 'error', 'message': 'このメモを削除する権限がありません'}), 403
+        
+        db.session.delete(memo)
+        db.session.commit()
+        
+        return jsonify({'status': 'success', 'message': 'メモを削除しました'})
+        
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"Error deleting race memo: {str(e)}")
+        return jsonify({'status': 'error', 'message': 'メモの削除中にエラーが発生しました'}), 500
 
 @app.route('/mypage')
 @login_required
