@@ -200,16 +200,15 @@
                     <tr>
                         <th>枠</th>
                         <th>馬番</th>
-                        <th>斤量</th>
                         <th>馬名</th>
                         <th>性齢</th>
+                        <th>斤量</th>
                         <th>騎手</th>
-                        <th>タイム</th>
-                        <th>着差</th>
-                        <th>上り</th>
                         <th>単勝</th>
                         <th>人気</th>
                         <th>馬体重</th>
+                        <th>調教師</th>
+                        <th>馬主</th>
                         <th>お気に入り</th>
                     </tr>
                 </thead>
@@ -222,18 +221,17 @@
                         <td>
                             <span class="horse-number">{{ entry.horse_number }}</span>
                         </td>
-                        <td>{{ entry.weight_carried }}</td>
                         <td class="horse-name">
                             <a href="{{ url_for('horse_detail', horse_id=entry.horse.id) }}">{{ entry.horse.name }}</a>
                         </td>
                         <td>{{ entry.horse.sex_age }}</td>
+                        <td>{{ entry.weight_carried }}</td>
                         <td>{{ entry.jockey.name }}</td>
-                        <td>{{ entry.finish_time }}</td>
-                        <td>{{ entry.margin }}</td>
-                        <td>{{ entry.last_3f }}</td>
                         <td>{{ entry.odds }}</td>
                         <td>{{ entry.popularity }}</td>
                         <td>{{ entry.horse_weight }}</td>
+                        <td>{{ entry.horse.trainer.name }}</td>
+                        <td>{{ entry.horse.owner }}</td>
                         <td>
                             <button type="button" 
                                     class="btn btn-sm {% if entry.horse.is_favorite(1) %}btn-warning{% else %}btn-outline-warning{% endif %}" 
