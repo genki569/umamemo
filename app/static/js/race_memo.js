@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     console.log('race_memo.js loaded');
     
+    // メモセクションの表示/非表示切り替え
     const memoSection = document.querySelector('.race-memo-section');
     const memoToggle = document.querySelector('.memo-toggle');
     
@@ -8,7 +9,9 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('Memo elements found');
         
         // 初期状態を設定
-        memoSection.classList.add('minimized');
+        if (!memoSection.classList.contains('minimized')) {
+            memoSection.classList.add('minimized');
+        }
         
         memoToggle.addEventListener('click', function() {
             console.log('Memo toggle clicked');
@@ -26,61 +29,12 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('Memo elements not found');
     }
 
-    // メモフォームの送信処理
-    const memoForm = document.querySelector('.race-memo-section form');
-    if (memoForm) {
-        memoForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            console.log('Form submit intercepted');
-            
-            // 通常のフォーム送信を使用
-            const form = this;
-            const formAction = form.action;
-            const formMethod = form.method;
-            
-            console.log('Submitting form to:', formAction, 'with method:', formMethod);
-            
-            // フォームを直接送信
-            form.submit();
-            
-            // 送信後にページをリロード
-            setTimeout(function() {
-                window.location.reload();
-            }, 500);
-        });
-    }
-
-    // メモ削除機能
-    window.deleteRaceMemo = function(raceId, memoId) {
-        if (confirm('このメモを削除してもよろしいですか？')) {
-            console.log('Deleting memo:', memoId, 'for race:', raceId);
-            
-            // 削除用のフォームを動的に作成
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = `/races/${raceId}/memos/${memoId}/delete`;
-            form.style.display = 'none';
-            
-            // CSRFトークンを追加
-            const csrfInput = document.createElement('input');
-            csrfInput.type = 'hidden';
-            csrfInput.name = 'csrf_token';
-            csrfInput.value = document.querySelector('input[name="csrf_token"]').value;
-            form.appendChild(csrfInput);
-            
-            // フォームをドキュメントに追加して送信
-            document.body.appendChild(form);
-            form.submit();
-            
-            // 送信後にページをリロード
-            setTimeout(function() {
-                window.location.reload();
-            }, 500);
-        }
-    };
+    // メモフォームの送信処理は行わない（通常のフォーム送信を使用）
+    
+    // メモ削除ボタンのイベントリスナーも削除（フォーム送信を使用）
 });
 
-// メモの表示を整形する関数
+// メモの表示を整形する関数（必要に応じて）
 function formatMemo(memos) {
     if (!memos || memos.length === 0) return '';
     
