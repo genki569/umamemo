@@ -26,15 +26,24 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('Memo elements not found');
     }
 
-    const memoForm = document.querySelector('form');
+    // メモフォームの送信処理
+    const memoForm = document.querySelector('.race-memo-section form');
     if (memoForm) {
         memoForm.addEventListener('submit', function(e) {
             e.preventDefault();
+            
+            // FormDataオブジェクトを作成
             const formData = new FormData(this);
+            
+            // CSRFトークンを確認
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
             
             fetch(this.action, {
                 method: 'POST',
-                body: formData
+                body: formData,
+                headers: {
+                    'X-CSRFToken': csrfToken
+                }
             })
             .then(response => response.json())
             .then(data => {
@@ -56,8 +65,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     `;
                     
                     // フォームの後に新しいメモを挿入
-                    const form = document.querySelector('form.sticky-note');
-                    form.parentNode.insertBefore(newMemo, form.nextSibling);
+                    memoList.insertBefore(newMemo, memoList.children[1]);
                 } else {
                     throw new Error(data.message || 'メモの保存に失敗しました');
                 }
