@@ -38,6 +38,8 @@
     <script src="https://js.stripe.com/v3/"></script>
     <script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
 
+    <!-- Bootstrap JS を追加 -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 
 </head>
 <body>
@@ -390,6 +392,43 @@
                 });
             }
         });
+    </script>
+
+    <!-- ページの最後にスクリプトを追加 -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- カスタムナビゲーションスクリプト -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // ドロップダウンの機能
+        const dropdowns = document.querySelectorAll('.dropdown-toggle');
+        dropdowns.forEach(dropdown => {
+            dropdown.addEventListener('click', function(e) {
+                e.preventDefault();
+                const menu = this.nextElementSibling;
+                menu.classList.toggle('show');
+            });
+        });
+        
+        // ドロップダウン以外をクリックしたときに閉じる
+        document.addEventListener('click', function(e) {
+            if (!e.target.matches('.dropdown-toggle')) {
+                const dropdowns = document.querySelectorAll('.dropdown-menu.show');
+                dropdowns.forEach(dropdown => {
+                    dropdown.classList.remove('show');
+                });
+            }
+        });
+        
+        // モバイルメニューの開閉
+        const menuToggle = document.querySelector('.navbar-toggler');
+        if (menuToggle) {
+            menuToggle.addEventListener('click', function() {
+                const menu = document.querySelector('.navbar-collapse');
+                menu.classList.toggle('show');
+            });
+        }
+    });
     </script>
 </body>
 </html>
