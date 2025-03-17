@@ -153,4 +153,35 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
+    
+    // スクロールインジケーターの制御
+    const tableResponsive = document.querySelector('.table-responsive');
+    if (tableResponsive) {
+        // スクロール時にインジケーターを非表示
+        tableResponsive.addEventListener('scroll', function() {
+            if (this.scrollLeft > 50) {
+                this.classList.add('scrolled');
+            } else {
+                this.classList.remove('scrolled');
+            }
+        });
+        
+        // 初期状態でスクロール可能かチェック
+        setTimeout(function() {
+            if (tableResponsive.scrollWidth <= tableResponsive.clientWidth) {
+                tableResponsive.classList.add('scrolled');
+            }
+        }, 500);
+    }
+    
+    // クッキーの問題を回避するためにテーブルを強制的に再描画
+    setTimeout(function() {
+        const entryTable = document.querySelector('.entry-table');
+        if (entryTable) {
+            entryTable.style.display = 'none';
+            setTimeout(function() {
+                entryTable.style.display = 'table';
+            }, 10);
+        }
+    }, 100);
 }); 
