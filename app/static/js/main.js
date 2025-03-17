@@ -645,6 +645,25 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
+
+    // CSRFトークンをすべてのAJAXリクエストに追加
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+    
+    // Fetchリクエストのデフォルトヘッダーを設定
+    const originalFetch = window.fetch;
+    window.fetch = function(url, options = {}) {
+        // ヘッダーがない場合は作成
+        if (!options.headers) {
+            options.headers = {};
+        }
+        
+        // CSRFトークンを追加
+        if (typeof options.headers === 'object') {
+            options.headers['X-CSRF-Token'] = csrfToken;
+        }
+        
+        return originalFetch(url, options);
+    };
 });
 
 // 日付ナビゲーション関数

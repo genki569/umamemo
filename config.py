@@ -27,6 +27,7 @@ class Config:
     WTF_CSRF_SECRET_KEY = SECRET_KEY  # SECRET_KEYと同じものを使用
     WTF_CSRF_TIME_LIMIT = None  # トークンの有効期限を無制限に
     WTF_CSRF_SSL_STRICT = False  # SSL制限を緩和（開発環境用）
+    WTF_CSRF_CHECK_DEFAULT = False  # DELETEリクエストのCSRFチェックを無効化（一時的な対策）
     
     # Stripe設定（既存の値を維持）
     STRIPE_PUBLIC_KEY = os.environ.get('STRIPE_PUBLIC_KEY', 'pk_live_51QLJ2oA32E3Y9pFMeVG7Ai1w729edGTgWxhOGXMXQW1Pjo9Nf3i6TtN0sktkUtGCzRRJi6YQRf49LY0FDWkS0NRG00BlyTVySS')
