@@ -595,6 +595,56 @@ document.addEventListener('DOMContentLoaded', function() {
     // スクロール時に遅延読み込みを実行
     window.addEventListener('scroll', lazyLoadElements);
     lazyLoadElements(); // 初回実行
+
+    // モバイルナビゲーションの修正
+    if (window.innerWidth <= 768) {
+        // ナビゲーションの開閉
+        const navbarToggler = document.querySelector('.navbar-toggler');
+        const navbarCollapse = document.querySelector('.navbar-collapse');
+        
+        if (navbarToggler && navbarCollapse) {
+            navbarToggler.addEventListener('click', function() {
+                navbarCollapse.classList.toggle('show');
+            });
+            
+            // 画面外をクリックしたときにメニューを閉じる
+            document.addEventListener('click', function(e) {
+                if (!navbarToggler.contains(e.target) && !navbarCollapse.contains(e.target)) {
+                    navbarCollapse.classList.remove('show');
+                }
+            });
+            
+            // ナビゲーションリンクをクリックしたときにメニューを閉じる
+            const navLinks = navbarCollapse.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    navbarCollapse.classList.remove('show');
+                });
+            });
+        }
+        
+        // ドロップダウンメニューの動作修正
+        const dropdownToggles = document.querySelectorAll('.dropdown-toggle');
+        dropdownToggles.forEach(toggle => {
+            toggle.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                const dropdownMenu = this.nextElementSibling;
+                if (dropdownMenu) {
+                    // 他のドロップダウンを閉じる
+                    document.querySelectorAll('.dropdown-menu.show').forEach(menu => {
+                        if (menu !== dropdownMenu) {
+                            menu.classList.remove('show');
+                        }
+                    });
+                    
+                    // このドロップダウンをトグル
+                    dropdownMenu.classList.toggle('show');
+                }
+            });
+        });
+    }
 });
 
 // 日付ナビゲーション関数

@@ -7,15 +7,42 @@
 @media (max-width: 767.98px) {
     /* スクロール問題を解決 */
     html, body {
-        height: auto;
+        height: auto !important;
         overflow-y: auto !important;
         -webkit-overflow-scrolling: touch;
+        position: relative !important;
     }
     
     /* コンテンツが見えるようにする */
     .container {
         min-height: 50vh;
         padding-bottom: 100px;
+        opacity: 1 !important;
+        visibility: visible !important;
+    }
+    
+    /* ヒーローセクションの表示を強制 */
+    .hero-section {
+        display: block !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        height: auto !important;
+        min-height: 300px;
+        position: relative !important;
+        z-index: 1;
+    }
+    
+    /* ヒーローコンテンツの表示を強制 */
+    .hero-content {
+        display: block !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+    }
+    
+    /* 装飾要素の位置調整 */
+    .hero-decoration {
+        position: absolute;
+        z-index: -1;
     }
     
     /* 遅延読み込み用のプレースホルダー */
@@ -43,6 +70,14 @@
         z-index: 1000;
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
         cursor: pointer;
+    }
+    
+    /* アニメーションを無効化 */
+    .fade-in, .scale-in, [data-aos] {
+        opacity: 1 !important;
+        transform: none !important;
+        animation: none !important;
+        transition: none !important;
     }
 }
 </style>
@@ -340,8 +375,36 @@
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Index page loaded');
     
-    // スクロールインジケーターを追加
+    // モバイル表示の問題を解決
     if (window.innerWidth <= 768) {
+        // 強制的にコンテンツを表示
+        document.body.style.display = 'block';
+        document.body.style.visibility = 'visible';
+        document.body.style.opacity = '1';
+        
+        // ヒーローセクションを強制表示
+        const heroSection = document.querySelector('.hero-section');
+        if (heroSection) {
+            heroSection.style.display = 'block';
+            heroSection.style.visibility = 'visible';
+            heroSection.style.opacity = '1';
+        }
+        
+        // すべてのコンテナを強制表示
+        document.querySelectorAll('.container').forEach(container => {
+            container.style.display = 'block';
+            container.style.visibility = 'visible';
+            container.style.opacity = '1';
+        });
+        
+        // AOS アニメーションを無効化
+        if (typeof AOS !== 'undefined') {
+            AOS.init({
+                disable: true
+            });
+        }
+        
+        // スクロールインジケーターを追加
         const scrollIndicator = document.createElement('div');
         scrollIndicator.className = 'scroll-indicator';
         scrollIndicator.innerHTML = '<i class="fas fa-arrow-down"></i>';
@@ -363,6 +426,25 @@ document.addEventListener('DOMContentLoaded', function() {
                 scrollIndicator.style.display = 'flex';
             }
         });
+        
+        // 1秒後に再度強制表示（遅延読み込みの問題対策）
+        setTimeout(() => {
+            document.body.style.display = 'block';
+            document.body.style.visibility = 'visible';
+            document.body.style.opacity = '1';
+            
+            if (heroSection) {
+                heroSection.style.display = 'block';
+                heroSection.style.visibility = 'visible';
+                heroSection.style.opacity = '1';
+            }
+            
+            document.querySelectorAll('.container').forEach(container => {
+                container.style.display = 'block';
+                container.style.visibility = 'visible';
+                container.style.opacity = '1';
+            });
+        }, 1000);
     }
     
     // 画像の遅延読み込み
