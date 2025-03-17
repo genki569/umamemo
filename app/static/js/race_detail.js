@@ -1,10 +1,14 @@
 function toggleRaceFavorite(raceId) {
     console.log('Toggling favorite for race:', raceId); // デバッグ用
 
+    // CSRFトークンを取得
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+
     fetch(`/api/races/${raceId}/favorite`, {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': csrfToken
         }
     })
     .then(response => response.json())
