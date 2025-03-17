@@ -1,27 +1,61 @@
-function toggleRaceFavorite(raceId) {
-    console.log('Toggling favorite for race:', raceId); // デバッグ用
-
+function toggleRaceFavorite(raceId, horseId) {
+    console.log('Toggling favorite for horse:', horseId, 'in race:', raceId);
+    
     // CSRFトークンを取得
     const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
-
-    fetch(`/api/races/${raceId}/favorite`, {
-        method: 'POST',
+    
+    // お気に入りボタンの要素を取得
+    const button = event.currentTarget;
+    const isCurrentlyFavorite = button.classList.contains('active');
+    
+    // リクエストメソッドとエンドポイントを設定
+    const method = isCurrentlyFavorite ? 'DELETE' : 'POST';
+    const endpoint = '/api/user/favorites';
+    
+    // リクエストを送信
+    fetch(endpoint, {
+        method: method,
         headers: {
             'Content-Type': 'application/json',
             'X-CSRF-Token': csrfToken
-        }
+        },
+        body: JSON.stringify({
+            horse_id: horseId
+        })
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
     .then(data => {
-        if (data.success) {
-            const btn = document.querySelector('.btn-race-favorite');
-            btn.classList.toggle('active');
-            console.log('Favorite toggled successfully'); // デバッグ用
+        if (data.status === 'success') {
+            // UIを更新
+            button.classList.toggle('active');
+            const icon = button.querySelector('i');
+            const text = button.querySelector('span');
+            
+            if (button.classList.contains('active')) {
+                text.textContent = 'お気に入り解除';
+            } else {
+                text.textContent = 'お気に入り登録';
+            }
+            
+            console.log('Favorite toggled successfully');
         } else {
-            console.error('Failed to toggle favorite:', data.error); // デバッグ用
+            console.error('Failed to toggle favorite:', data.error);
+            alert(data.error || 'お気に入りの更新に失敗しました');
         }
     })
-    .catch(error => console.error('Error:', error));
+    .catch(error => {
+        console.error('Error:', error);
+        alert('お気に入りの更新中にエラーが発生しました');
+    });
+    
+    // イベントの伝播を停止
+    event.preventDefault();
+    event.stopPropagation();
 }
 
 // メモの開閉状態を管理

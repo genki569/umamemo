@@ -277,10 +277,10 @@
                                         </form>
                                     </td>
                                     <td>
-                                        <button type="button" 
-                                                class="btn btn-sm {% if entry.horse.is_favorite(1) %}btn-warning{% else %}btn-outline-warning{% endif %}" 
-                                                onclick="toggleFavorite({{ entry.horse.id }})">
-                                            <i class="fas fa-star"></i>
+                                        <button class="btn btn-race-favorite {% if entry.horse.is_favorite(1) %}active{% endif %}" 
+                                                onclick="toggleRaceFavorite({{ race.id }}, {{ entry.horse.id }})">
+                                            <i class="fas fa-heart"></i>
+                                            <span>{% if entry.horse.is_favorite(1) %}お気に入り解除{% else %}お気に入り登録{% endif %}</span>
                                         </button>
                                     </td>
                                 </tr>
@@ -334,10 +334,10 @@
                                         </form>
                                     </td>
                                     <td>
-                                        <button type="button" 
-                                                class="btn btn-sm {% if entry.horse.is_favorite(1) %}btn-warning{% else %}btn-outline-warning{% endif %}" 
-                                                onclick="toggleFavorite({{ entry.horse.id }})">
-                                            <i class="fas fa-star"></i>
+                                        <button class="btn btn-race-favorite {% if entry.horse.is_favorite(1) %}active{% endif %}" 
+                                                onclick="toggleRaceFavorite({{ race.id }}, {{ entry.horse.id }})">
+                                            <i class="fas fa-heart"></i>
+                                            <span>{% if entry.horse.is_favorite(1) %}お気に入り解除{% else %}お気に入り登録{% endif %}</span>
                                         </button>
                                     </td>
                                 </tr>
