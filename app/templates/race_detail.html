@@ -179,11 +179,12 @@
                 
                 {% if memos %}
                     {% for memo in memos %}
-                    <div class="sticky-note" id="memo-{{ memo.id }}">
-                        <div class="sticky-note-content">{{ memo.content }}</div>
-                        <form method="POST" action="{{ url_for('delete_race_memo_post', race_id=race.id, memo_id=memo.id) }}" style="display:inline;">
+                    <div class="memo-item" id="memo-{{ memo.id }}">
+                        <p>{{ memo.content }}</p>
+                        <small>{{ memo.created_at.strftime('%Y/%m/%d %H:%M') }}</small>
+                        <form method="POST" action="{{ url_for('delete_race_memo_post', race_id=race.id, memo_id=memo.id) }}">
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                            <button type="submit" class="btn btn-sm btn-danger sticky-note-delete" 
+                            <button type="submit" class="btn btn-sm btn-danger" 
                                     onclick="return confirm('このメモを削除してもよろしいですか？');">
                                 <i class="fas fa-trash"></i>
                             </button>
