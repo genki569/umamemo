@@ -445,6 +445,38 @@
         font-weight: 500;
         font-size: 14px;
     }
+    
+    /* モバイル表示でのテーブル最適化 */
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .entry-table {
+        width: 100%;
+        font-size: 0.85rem;
+        white-space: nowrap;
+    }
+    
+    .entry-table th, .entry-table td {
+        padding: 0.5rem !important;
+    }
+    
+    /* 馬名のセルは折り返し可能に */
+    .entry-table td:nth-child(4) {
+        white-space: normal;
+        min-width: 120px;
+    }
+    
+    /* スクロールヒントを表示 */
+    .race-entries h3::after {
+        content: "← スクロールできます →";
+        display: block;
+        font-size: 0.8rem;
+        color: #6c757d;
+        font-weight: normal;
+        margin-top: 0.5rem;
+    }
 }
 
 /* モバイル向けアコーディオンスタイル */
