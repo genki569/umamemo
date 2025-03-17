@@ -277,11 +277,10 @@
                                         </form>
                                     </td>
                                     <td>
-                                        <button class="btn btn-race-favorite {% if entry.horse.is_favorite(1) %}active{% endif %}" 
-                                                onclick="toggleRaceFavorite({{ race.id }}, {{ entry.horse.id }})">
-                                            <i class="fas fa-heart"></i>
-                                            <span>{% if entry.horse.is_favorite(1) %}お気に入り解除{% else %}お気に入り登録{% endif %}</span>
-                                        </button>
+                                        <a href="{{ url_for('horse_detail', horse_id=entry.horse.id) }}" class="btn btn-outline-primary btn-sm">
+                                            <i class="fas fa-info-circle"></i>
+                                            <span>詳細を見る</span>
+                                        </a>
                                     </td>
                                 </tr>
                             {% endfor %}
@@ -334,11 +333,10 @@
                                         </form>
                                     </td>
                                     <td>
-                                        <button class="btn btn-race-favorite {% if entry.horse.is_favorite(1) %}active{% endif %}" 
-                                                onclick="toggleRaceFavorite({{ race.id }}, {{ entry.horse.id }})">
-                                            <i class="fas fa-heart"></i>
-                                            <span>{% if entry.horse.is_favorite(1) %}お気に入り解除{% else %}お気に入り登録{% endif %}</span>
-                                        </button>
+                                        <a href="{{ url_for('horse_detail', horse_id=entry.horse.id) }}" class="btn btn-outline-primary btn-sm">
+                                            <i class="fas fa-info-circle"></i>
+                                            <span>詳細を見る</span>
+                                        </a>
                                     </td>
                                 </tr>
                             {% endfor %}
