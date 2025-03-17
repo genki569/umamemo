@@ -487,5 +487,99 @@
         }
     });
     </script>
+
+    <!-- モバイルナビゲーション用のスクリプト -->
+    <script>
+    // 即時実行関数でモバイルナビゲーションを初期化
+    (function() {
+        // DOMの読み込みを待つ
+        function initMobileNav() {
+            console.log('Initializing mobile navigation');
+            
+            // モバイルデバイスの場合のみ実行
+            if (window.innerWidth <= 768) {
+                // ナビゲーションの要素を取得
+                const navbarToggler = document.querySelector('.navbar-toggler');
+                const navbarCollapse = document.querySelector('.navbar-collapse');
+                
+                // トグルボタンのクリックイベント
+                if (navbarToggler && navbarCollapse) {
+                    // 既存のイベントリスナーを削除
+                    const newToggler = navbarToggler.cloneNode(true);
+                    navbarToggler.parentNode.replaceChild(newToggler, navbarToggler);
+                    
+                    // 新しいイベントリスナーを追加
+                    newToggler.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        console.log('Toggler clicked');
+                        navbarCollapse.classList.toggle('show');
+                    });
+                }
+            }
+        }
+        
+        // DOMContentLoadedイベントで初期化
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initMobileNav);
+        } else {
+            initMobileNav();
+        }
+        
+        // 念のため、ウィンドウのロード完了時にも初期化
+        window.addEventListener('load', initMobileNav);
+    })();
+    </script>
+
+    <!-- スクロール問題を修正するインラインスクリプト -->
+    <script>
+    // スクロールを妨げる可能性のあるスタイルを削除
+    (function() {
+        // DOMの読み込みを待つ
+        function fixScrollStyles() {
+            console.log('Fixing scroll styles');
+            
+            // スタイルを修正
+            document.documentElement.style.removeProperty('overflow');
+            document.documentElement.style.removeProperty('height');
+            document.documentElement.style.removeProperty('position');
+            document.body.style.removeProperty('overflow');
+            document.body.style.removeProperty('height');
+            document.body.style.removeProperty('position');
+            
+            // スクロールを妨げる可能性のあるイベントリスナーを無効化
+            window.addEventListener('touchmove', function(e) {
+                e.stopPropagation();
+            }, { passive: true, capture: true });
+            
+            // スクロール位置を保存
+            let lastScrollY = window.scrollY;
+            
+            // スクロールが止まったら強制的に再開
+            setInterval(function() {
+                if (window.scrollY === lastScrollY && window.scrollY > 0) {
+                    // スクロールが止まっている場合、少し動かす
+                    window.scrollBy(0, 1);
+                    window.scrollBy(0, -1);
+                }
+                lastScrollY = window.scrollY;
+            }, 2000);
+        }
+        
+        // 即時実行
+        fixScrollStyles();
+        
+        // DOMContentLoadedイベントでも実行
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', fixScrollStyles);
+        }
+        
+        // ウィンドウのロード完了時にも実行
+        window.addEventListener('load', fixScrollStyles);
+        
+        // 1秒後にも実行
+        setTimeout(fixScrollStyles, 1000);
+    })();
+    </script>
 </body>
 </html>
