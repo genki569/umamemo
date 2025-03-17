@@ -3833,9 +3833,10 @@ def delete_race_memo_post(race_id, memo_id):
         db.session.commit()
         
         flash('メモを削除しました', 'success')
-        return redirect(url_for('race_detail', race_id=race_id))
+        
     except Exception as e:
         db.session.rollback()
-        app.logger.error(f"Error deleting race memo: {str(e)}")
+        current_app.logger.error(f"Error deleting race memo: {str(e)}")
         flash('メモの削除中にエラーが発生しました', 'danger')
-        return redirect(url_for('race_detail', race_id=race_id))
+    
+    return redirect(url_for('race_detail', race_id=race_id))
