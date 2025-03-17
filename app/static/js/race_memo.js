@@ -36,16 +36,22 @@ document.addEventListener('DOMContentLoaded', function() {
             const formData = new FormData(this);
             
             // CSRFトークンを確認
-            const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+            const csrfToken = document.querySelector('input[name="csrf_token"]').value;
             
             fetch(this.action, {
                 method: 'POST',
                 body: formData,
                 headers: {
-                    'X-CSRFToken': csrfToken
-                }
+                    'X-CSRF-Token': csrfToken
+                },
+                credentials: 'same-origin'
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('サーバーエラー: ' + response.status);
+                }
+                return response.json();
+            })
             .then(data => {
                 if (data.status === 'success') {
                     // フォームをリセット
@@ -72,7 +78,7 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('メモの保存に失敗しました');
+                alert('メモの保存に失敗しました: ' + error.message);
             });
         });
     }
@@ -108,26 +114,35 @@ document.addEventListener('DOMContentLoaded', function() {
     // メモ削除機能
     window.deleteRaceMemo = function(raceId, memoId) {
         if (confirm('このメモを削除してもよろしいですか？')) {
+            const csrfToken = document.querySelector('input[name="csrf_token"]').value;
+            
             fetch(`/races/${raceId}/memos/${memoId}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
-                }
+                    'X-CSRF-Token': csrfToken
+                },
+                credentials: 'same-origin'
             })
             .then(response => {
-                if (response.ok) {
+                if (!response.ok) {
+                    throw new Error('サーバーエラー: ' + response.status);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.status === 'success') {
                     const memoElement = document.getElementById(`memo-${memoId}`);
                     if (memoElement) {
                         memoElement.remove();
                     }
                 } else {
-                    alert('メモの削除に失敗しました');
+                    throw new Error(data.message || 'メモの削除に失敗しました');
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('メモの削除中にエラーが発生しました');
+                alert('メモの削除に失敗しました: ' + error.message);
             });
         }
     };
