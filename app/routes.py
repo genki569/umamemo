@@ -3762,32 +3762,14 @@ def user_settings():
 @login_required
 def manage_favorites():
     try:
-        if request.method == 'GET':
-            # お気に入り馬を一括取得
-            favorites = db.session.query(
-                Horse.id,
-                Horse.name,
-                Horse.sex,
-                Horse.trainer
-            ).join(
-                Favorite,
-                and_(
-                    Favorite.horse_id == Horse.id,
-                    Favorite.user_id == current_user.id
-                )
-            ).all()
-            
-            return jsonify([{
-                'id': f.id,
-                'name': f.name,
-                'sex': f.sex,
-                'trainer': f.trainer
-            } for f in favorites])
-            
-        elif request.method == 'POST':
+        current_app.logger.info(f"Managing favorites: {request.method} request from user {current_user.id}")
+        current_app.logger.info(f"Request data: {request.json}")
+        
+        if request.method == 'POST':
             horse_id = request.json.get('horse_id')
             
             if not horse_id:
+                current_app.logger.error("No horse_id provided in request")
                 return jsonify({'error': '馬IDが指定されていません'}), 400
                 
             # 重複チェック
@@ -3796,18 +3778,21 @@ def manage_favorites():
                 .first()
                 
             if existing:
+                current_app.logger.info(f"Horse {horse_id} already in favorites for user {current_user.id}")
                 return jsonify({'error': 'すでにお気に入りに登録されています'}), 400
                 
             favorite = Favorite(user_id=current_user.id, horse_id=horse_id)
             db.session.add(favorite)
             db.session.commit()
             
+            current_app.logger.info(f"Added horse {horse_id} to favorites for user {current_user.id}")
             return jsonify({'status': 'success'})
             
         else:  # DELETE
             horse_id = request.json.get('horse_id')
             
             if not horse_id:
+                current_app.logger.error("No horse_id provided in request")
                 return jsonify({'error': '馬IDが指定されていません'}), 400
                 
             db.session.query(Favorite)\
@@ -3815,11 +3800,13 @@ def manage_favorites():
                 .delete()
                 
             db.session.commit()
+            current_app.logger.info(f"Removed horse {horse_id} from favorites for user {current_user.id}")
             return jsonify({'status': 'success'})
             
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"Error managing favorites: {str(e)}")
+        current_app.logger.error(f"Exception traceback: {traceback.format_exc()}")
         return jsonify({'error': 'お気に入りの処理中にエラーが発生しました'}), 500
 
 @app.route('/races/<int:race_id>/memos/<int:memo_id>/delete', methods=['POST'])
