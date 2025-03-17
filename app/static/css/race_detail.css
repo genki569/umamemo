@@ -446,36 +446,128 @@
         font-size: 14px;
     }
     
-    /* モバイル表示でのテーブル最適化 */
+    /* モバイル表示でのテーブル最適化 - 改良版 */
     .table-responsive {
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
+        margin-bottom: 1rem;
+        position: relative;
     }
     
+    /* テーブル全体のスタイル */
     .entry-table {
         width: 100%;
         font-size: 0.85rem;
         white-space: nowrap;
+        border-collapse: separate;
+        border-spacing: 0;
     }
     
-    .entry-table th, .entry-table td {
+    /* ヘッダー行を固定 */
+    .entry-table thead {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+    }
+    
+    /* ヘッダーセルのスタイル */
+    .entry-table th {
+        background-color: #f8f9fa;
+        font-weight: 600;
         padding: 0.5rem !important;
+        border: 1px solid #dee2e6;
+        text-align: center;
+        min-width: 40px;
     }
     
-    /* 馬名のセルは折り返し可能に */
+    /* 馬番と枠番の列を固定 */
+    .entry-table th:nth-child(1),
+    .entry-table th:nth-child(2),
+    .entry-table td:nth-child(1),
+    .entry-table td:nth-child(2) {
+        position: sticky;
+        left: 0;
+        z-index: 5;
+        background-color: #fff;
+    }
+    
+    .entry-table th:nth-child(2),
+    .entry-table td:nth-child(2) {
+        left: 41px; /* 枠番の列の幅 + ボーダー */
+    }
+    
+    /* 馬名の列を固定 */
+    .entry-table th:nth-child(4),
     .entry-table td:nth-child(4) {
-        white-space: normal;
+        position: sticky;
+        left: 82px; /* 枠番と馬番の列の幅 + ボーダー */
+        z-index: 5;
+        background-color: #fff;
         min-width: 120px;
+        max-width: 120px;
+        white-space: normal;
+        text-align: left;
+        font-weight: bold;
+    }
+    
+    /* セルのスタイル */
+    .entry-table td {
+        padding: 0.5rem !important;
+        border: 1px solid #dee2e6;
+        text-align: center;
+    }
+    
+    /* 偶数行の背景色 */
+    .entry-table tbody tr:nth-child(even) {
+        background-color: #f8f9fa;
+    }
+    
+    /* 偶数行の固定列の背景色 */
+    .entry-table tbody tr:nth-child(even) td:nth-child(1),
+    .entry-table tbody tr:nth-child(even) td:nth-child(2),
+    .entry-table tbody tr:nth-child(even) td:nth-child(4) {
+        background-color: #f8f9fa;
+    }
+    
+    /* 行のホバー効果 */
+    .entry-table tbody tr:hover {
+        background-color: rgba(79, 70, 229, 0.1);
+    }
+    
+    /* ホバー時の固定列の背景色 */
+    .entry-table tbody tr:hover td:nth-child(1),
+    .entry-table tbody tr:hover td:nth-child(2),
+    .entry-table tbody tr:hover td:nth-child(4) {
+        background-color: rgba(79, 70, 229, 0.1);
     }
     
     /* スクロールヒントを表示 */
     .race-entries h3::after {
-        content: "← スクロールできます →";
+        content: "← 横にスクロールできます →";
         display: block;
         font-size: 0.8rem;
         color: #6c757d;
         font-weight: normal;
         margin-top: 0.5rem;
+    }
+    
+    /* スクロールバーのスタイル */
+    .table-responsive::-webkit-scrollbar {
+        height: 6px;
+    }
+    
+    .table-responsive::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 3px;
+    }
+    
+    .table-responsive::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 3px;
+    }
+    
+    .table-responsive::-webkit-scrollbar-thumb:hover {
+        background: #555;
     }
 }
 

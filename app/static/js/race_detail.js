@@ -101,5 +101,56 @@ document.addEventListener('DOMContentLoaded', function() {
             cell.style.fontWeight = 'bold';
             cell.style.textAlign = 'left';
         });
+
+        // テーブルの行をタップしたときの処理
+        const tableRows = table.querySelectorAll('tbody tr');
+        tableRows.forEach(row => {
+            row.addEventListener('click', function(e) {
+                // ボタンをクリックした場合は何もしない
+                if (e.target.tagName === 'BUTTON' || e.target.tagName === 'A' || e.target.tagName === 'I') {
+                    return;
+                }
+                
+                // 他の行の選択を解除
+                tableRows.forEach(r => {
+                    if (r !== this) {
+                        r.classList.remove('selected-row');
+                        r.style.backgroundColor = '';
+                    }
+                });
+                
+                // この行の選択状態をトグル
+                this.classList.toggle('selected-row');
+                
+                // 選択された行のスタイルを設定
+                if (this.classList.contains('selected-row')) {
+                    this.style.backgroundColor = 'rgba(79, 70, 229, 0.2)';
+                } else {
+                    this.style.backgroundColor = '';
+                }
+            });
+        });
+        
+        // ダブルタップで馬詳細ページに移動
+        const horseCells = table.querySelectorAll('td:nth-child(4)');
+        horseCells.forEach(cell => {
+            let lastTap = 0;
+            
+            cell.addEventListener('click', function(e) {
+                const currentTime = new Date().getTime();
+                const tapLength = currentTime - lastTap;
+                
+                if (tapLength < 300 && tapLength > 0) {
+                    // ダブルタップ検出
+                    const link = this.querySelector('a');
+                    if (link) {
+                        window.location.href = link.href;
+                    }
+                    e.preventDefault();
+                }
+                
+                lastTap = currentTime;
+            });
+        });
     }
 }); 
