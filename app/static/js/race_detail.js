@@ -56,77 +56,50 @@ function deleteRaceMemo(raceId, memoId) {
 
 // レース詳細ページのカード表示
 document.addEventListener('DOMContentLoaded', function() {
-    // モバイル表示の場合、テーブルをカード表示に変換
+    // モバイル表示でもテーブル表示を維持する（カード表示を無効化）
     if (window.innerWidth < 768) {
+        // テーブルのスタイルを調整して見やすくする
         const table = document.querySelector('.entry-table');
         if (!table) return;
         
-        // テーブルの行を取得
-        const tableRows = Array.from(table.querySelectorAll('tbody tr'));
-        if (tableRows.length === 0) return;
+        // テーブルのスタイルを調整
+        table.style.fontSize = '0.85rem';
         
-        // テーブルを非表示にする
-        table.style.display = 'none';
+        // テーブルの横スクロールを有効にする
+        const tableContainer = table.closest('.table-responsive');
+        if (tableContainer) {
+            tableContainer.style.overflowX = 'auto';
+        }
         
-        // カードコンテナを作成
-        const cardContainer = document.createElement('div');
-        cardContainer.className = 'mobile-entries';
-        table.parentNode.insertBefore(cardContainer, table.nextSibling);
+        // 各セルの幅を調整
+        const headerCells = table.querySelectorAll('th');
+        headerCells.forEach(cell => {
+            // 必要最小限の幅を設定
+            if (cell.textContent.includes('馬番') || cell.textContent.includes('枠')) {
+                cell.style.width = '40px';
+                cell.style.minWidth = '40px';
+            } else if (cell.textContent.includes('騎手') || cell.textContent.includes('タイム') || 
+                       cell.textContent.includes('着差') || cell.textContent.includes('上り') || 
+                       cell.textContent.includes('人気') || cell.textContent.includes('オッズ')) {
+                cell.style.width = '60px';
+                cell.style.minWidth = '60px';
+            } else if (cell.textContent.includes('馬名')) {
+                cell.style.width = '120px';
+                cell.style.minWidth = '120px';
+            }
+        });
         
-        // 各行をカードに変換
-        tableRows.forEach(row => {
-            // カードを作成
-            const card = document.createElement('div');
-            card.className = 'entry-card';
-            
-            // 必要なデータを抽出
-            const cells = Array.from(row.querySelectorAll('td'));
-            if (cells.length < 4) return;
-            
-            // カードの内容を構築
-            const horseName = cells[3].textContent.trim();
-            const horseLink = cells[3].querySelector('a') ? cells[3].querySelector('a').href : null;
-            const jockey = cells[4].textContent.trim();
-            const weight = cells[5].textContent.trim();
-            const odds = cells[8].textContent.trim();
-            const popularity = cells[9].textContent.trim();
-            
-            // カードのHTMLを構築
-            card.innerHTML = `
-                <div class="card-header">
-                    <span class="gate">${cells[0].textContent.trim()}</span>
-                    <span class="horse-number">${cells[1].textContent.trim()}</span>
-                    <h4 class="horse-name">${horseName}</h4>
-                </div>
-                <div class="card-body">
-                    <div class="info-row">
-                        <span class="label">騎手:</span>
-                        <span class="value">${jockey}</span>
-                    </div>
-                    <div class="info-row">
-                        <span class="label">斤量:</span>
-                        <span class="value">${weight}</span>
-                    </div>
-                    <div class="info-row">
-                        <span class="label">オッズ:</span>
-                        <span class="value">${odds}</span>
-                    </div>
-                    <div class="info-row">
-                        <span class="label">人気:</span>
-                        <span class="value">${popularity}</span>
-                    </div>
-                </div>
-            `;
-            
-            // カードをクリックしたときの処理
-            card.addEventListener('click', function() {
-                if (horseLink) {
-                    window.location.href = horseLink;
-                }
-            });
-            
-            // カードをコンテナに追加
-            cardContainer.appendChild(card);
+        // 行の高さを調整
+        const rows = table.querySelectorAll('tbody tr');
+        rows.forEach(row => {
+            row.style.height = 'auto';
+        });
+        
+        // 馬名のセルを強調
+        const horseNameCells = table.querySelectorAll('td:nth-child(4)');
+        horseNameCells.forEach(cell => {
+            cell.style.fontWeight = 'bold';
+            cell.style.textAlign = 'left';
         });
     }
 }); 
