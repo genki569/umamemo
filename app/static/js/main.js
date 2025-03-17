@@ -223,26 +223,17 @@ document.addEventListener('DOMContentLoaded', function() {
     if (typeof window.dateButtonsInitialized === 'undefined') {
         window.dateButtonsInitialized = true;
         
-        const dateButtonsContainer = document.querySelector('.date-buttons');
+        const dateButtonsContainer = document.querySelector('.date-selector');
         if (dateButtonsContainer) {
-            let touchStartX = 0;
-
-            dateButtonsContainer.addEventListener('touchstart', e => {
-                touchStartX = e.touches[0].clientX;
-            }, { passive: true });
-
-            dateButtonsContainer.addEventListener('touchend', e => {
-                const touchEndX = e.changedTouches[0].clientX;
-                const diff = touchStartX - touchEndX;
-                
-                if (Math.abs(diff) > 50) {
-                    if (diff > 0) {
-                        navigateDate('next');
-                    } else {
-                        navigateDate('prev');
-                    }
-                }
-            }, { passive: true });
+            const dateButtons = dateButtonsContainer.querySelectorAll('.date-btn');
+            dateButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // 他のボタンから選択状態を削除
+                    dateButtons.forEach(btn => btn.classList.remove('active'));
+                    // このボタンを選択状態に
+                    this.classList.add('active');
+                });
+            });
         }
     }
 
@@ -559,6 +550,51 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
     }
+
+    // スクロール位置の記憶と復元
+    const saveScrollPosition = () => {
+        sessionStorage.setItem('scrollPosition', window.scrollY);
+    };
+    
+    // ページ遷移時にスクロール位置を保存
+    document.querySelectorAll('a').forEach(link => {
+        if (link.hostname === window.location.hostname) {
+            link.addEventListener('click', saveScrollPosition);
+        }
+    });
+    
+    // ページ読み込み時にスクロール位置を復元
+    const savedPosition = sessionStorage.getItem('scrollPosition');
+    if (savedPosition) {
+        window.scrollTo(0, parseInt(savedPosition));
+        sessionStorage.removeItem('scrollPosition');
+    }
+
+    // 遅延読み込みの実装
+    const lazyLoadElements = () => {
+        const lazyImages = document.querySelectorAll('img[data-src]');
+        lazyImages.forEach(img => {
+            if (isElementInViewport(img)) {
+                img.src = img.dataset.src;
+                img.removeAttribute('data-src');
+            }
+        });
+    };
+    
+    // 要素が表示領域内にあるか確認
+    const isElementInViewport = (el) => {
+        const rect = el.getBoundingClientRect();
+        return (
+            rect.top >= 0 &&
+            rect.left >= 0 &&
+            rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+            rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+        );
+    };
+    
+    // スクロール時に遅延読み込みを実行
+    window.addEventListener('scroll', lazyLoadElements);
+    lazyLoadElements(); // 初回実行
 });
 
 // 日付ナビゲーション関数

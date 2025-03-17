@@ -8,7 +8,8 @@ document.addEventListener('DOMContentLoaded', function() {
             // APIエンドポイントを修正
             const response = await fetch('/mypage/api/notifications');
             if (!response.ok) {
-                throw new Error('通知の取得に失敗しました');
+                console.warn('通知の取得に失敗しました:', response.status);
+                return { notifications: [], unread_count: 0 };
             }
             const data = await response.json();
             updateNotificationBadge(data.unread_count);
@@ -16,12 +17,14 @@ document.addEventListener('DOMContentLoaded', function() {
             return data;
         } catch (error) {
             console.error('通知の取得中にエラーが発生しました:', error);
-            return [];
+            return { notifications: [], unread_count: 0 };
         }
     }
     
     // 通知バッジを更新
     function updateNotificationBadge(count) {
+        if (!notificationBadge) return;
+        
         if (count > 0) {
             notificationBadge.textContent = count;
             notificationBadge.style.display = 'block';
@@ -32,11 +35,17 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 通知リストを更新
     function updateNotificationList(notifications) {
+        if (!notificationList) return;
+        
         notificationList.innerHTML = '';
-        notifications.forEach(notification => {
-            const item = createNotificationItem(notification);
-            notificationList.appendChild(item);
-        });
+        if (notifications && notifications.length > 0) {
+            notifications.forEach(notification => {
+                const item = createNotificationItem(notification);
+                notificationList.appendChild(item);
+            });
+        } else {
+            notificationList.innerHTML = '<div class="empty-notification">新しい通知はありません</div>';
+        }
     }
     
     // 通知アイテムを作成
@@ -55,7 +64,18 @@ document.addEventListener('DOMContentLoaded', function() {
         return item;
     }
     
-    // 定期的に通知を更新
-    setInterval(fetchNotifications, 60000); // 1分ごとに更新
-    fetchNotifications(); // 初回読み込み
+    // 要素が存在する場合のみ通知更新を設定
+    if (notificationList || notificationBadge) {
+        // 初回読み込み
+        fetchNotifications();
+        
+        // 定期的に通知を更新（エラーが発生しても続行）
+        setInterval(() => {
+            try {
+                fetchNotifications();
+            } catch (e) {
+                console.warn('通知の更新中にエラーが発生しました:', e);
+            }
+        }, 60000); // 1分ごとに更新
+    }
 }); 
