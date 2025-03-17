@@ -171,7 +171,7 @@
         <div class="memo-content">
             <h5>レースメモ</h5>
             {% if current_user.is_authenticated %}
-                <form action="{{ url_for('save_race_memo', race_id=race.id) }}" method="POST" class="sticky-note">
+                <form method="POST" action="{{ url_for('save_race_memo', race_id=race.id) }}" class="sticky-note">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <textarea name="content" placeholder="メモを入力..." required></textarea>
                     <button type="submit" class="btn btn-primary btn-sm">保存</button>
@@ -181,7 +181,7 @@
                     {% for memo in memos %}
                     <div class="sticky-note" id="memo-{{ memo.id }}">
                         <div class="sticky-note-content">{{ memo.content }}</div>
-                        <form action="{{ url_for('delete_race_memo_post', race_id=race.id, memo_id=memo.id) }}" method="POST" style="display:inline;">
+                        <form method="POST" action="{{ url_for('delete_race_memo_post', race_id=race.id, memo_id=memo.id) }}" style="display:inline;">
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                             <button type="submit" class="btn btn-sm btn-danger sticky-note-delete" 
                                     onclick="return confirm('このメモを削除してもよろしいですか？');">
