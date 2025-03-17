@@ -1,4 +1,50 @@
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('main.js loaded');
+    
+    // モバイルデバイスの検出
+    const isMobile = window.innerWidth <= 768;
+    console.log('Mobile device detected:', isMobile);
+    
+    // モバイル向けの最適化
+    if (isMobile) {
+        // 画像の遅延読み込み
+        const lazyImages = document.querySelectorAll('img[data-src]');
+        lazyImages.forEach(img => {
+            img.src = img.dataset.src;
+            img.removeAttribute('data-src');
+        });
+        
+        // フォントサイズの最適化
+        document.body.style.fontSize = '16px';
+        
+        // ヘッダーの最適化
+        const header = document.querySelector('header');
+        if (header) {
+            header.style.padding = '10px 15px';
+        }
+        
+        // コンテンツの最適化
+        const containers = document.querySelectorAll('.container');
+        containers.forEach(container => {
+            container.style.padding = '0 15px';
+        });
+    }
+    
+    // ページの表示を確認
+    setTimeout(() => {
+        const body = document.body;
+        if (body.offsetHeight === 0 || body.innerHTML.trim() === '') {
+            console.error('Page content is empty or not visible');
+            // 強制的にページを再描画
+            body.style.display = 'none';
+            setTimeout(() => {
+                body.style.display = '';
+            }, 10);
+        } else {
+            console.log('Page content is visible');
+        }
+    }, 500);
+
     // フラッシュメッセージの自動非表示
     const flashes = document.querySelector('.flashes');
     if (flashes) {
@@ -77,9 +123,6 @@ document.addEventListener('DOMContentLoaded', function() {
             priceSection.style.display = this.value === 'paid' ? 'block' : 'none';
         });
     }
-
-    // モバイルデバイスかどうかを確認
-    const isMobile = window.innerWidth <= 768;
 
     // 統計カードのカウントアップアニメーション
     const statsNumbers = document.querySelectorAll('.stats-number');
