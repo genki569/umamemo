@@ -39,20 +39,10 @@ function toggleMemo() {
     isMemoMinimized = !isMemoMinimized;
 }
 
-// メモの削除機能
-function deleteRaceMemo(raceId, memoId) {
-    if (confirm('このメモを削除してもよろしいですか？')) {
-        fetch(`/race/${raceId}/memo/${memoId}`, {
-            method: 'DELETE',
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === 'success') {
-                document.getElementById(`memo-${memoId}`).remove();
-            }
-        });
-    }
-}
+// メモの削除機能 - 無効化
+// function deleteRaceMemo(raceId, memoId) {
+//     // 関数の内容をコメントアウト
+// }
 
 // テーブルの表示を最適化
 function optimizeTableDisplay() {
