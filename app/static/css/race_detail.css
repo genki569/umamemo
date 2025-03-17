@@ -147,350 +147,54 @@
     
     /* テーブルをカード形式に変換 */
     .entry-table {
-        border-collapse: separate;
-        border-spacing: 0 10px;
-        background: transparent;
-        border: none;
-        margin: 0;
-        width: 100%;
-    }
-    
-    .entry-table thead {
-        display: none; /* ヘッダーを非表示 */
-    }
-    
-    .entry-table tbody tr {
-        display: block;
-        margin-bottom: 15px;
-        border-radius: 10px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        background: white;
-        position: relative;
-        overflow: hidden;
-        border: none;
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-    
-    .entry-table tbody tr:active {
-        transform: scale(0.98);
-        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
-    }
-    
-    .entry-table tbody td {
-        display: block;
-        text-align: left;
-        padding: 0 !important;
-        border: none;
-        position: relative;
-    }
-    
-    /* 着順と馬番を目立たせる */
-    .entry-table tbody td:nth-child(1),
-    .entry-table tbody td:nth-child(3) {
-        display: inline-block;
-        width: auto;
-        padding: 5px 10px !important;
-        font-weight: bold;
-        font-size: 1rem;
-    }
-    
-    /* 着順 */
-    .entry-table tbody td:nth-child(1) {
-        position: absolute;
-        top: 10px;
-        left: 10px;
-        background: #f0f0f0;
-        border-radius: 50%;
-        width: 30px;
-        height: 30px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 2;
-    }
-    
-    /* 枠番 */
-    .entry-table tbody td:nth-child(2) {
-        display: none; /* 枠番は非表示 */
-    }
-    
-    /* 馬番 */
-    .entry-table tbody td:nth-child(3) {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        background: #4F46E5;
-        color: white;
-        border-radius: 5px;
-        padding: 2px 8px !important;
-        font-size: 0.9rem;
-    }
-    
-    /* 馬名 */
-    .entry-table tbody td:nth-child(4) {
-        padding: 50px 15px 15px 15px !important;
-        font-size: 1.1rem;
-        font-weight: bold;
-        border-bottom: 1px solid #eee;
-        min-height: 80px;
-    }
-    
-    .entry-table tbody td:nth-child(4) a {
-        color: #4F46E5;
-        text-decoration: none;
-    }
-    
-    /* 詳細情報セル */
-    .entry-table tbody td:nth-child(5),
-    .entry-table tbody td:nth-child(6),
-    .entry-table tbody td:nth-child(7),
-    .entry-table tbody td:nth-child(8),
-    .entry-table tbody td:nth-child(9),
-    .entry-table tbody td:nth-child(10),
-    .entry-table tbody td:nth-child(11),
-    .entry-table tbody td:nth-child(12) {
-        padding: 8px 15px !important;
-        font-size: 0.9rem;
-        border-bottom: 1px solid #f5f5f5;
-    }
-    
-    /* 最後のセルの下線を消す */
-    .entry-table tbody td:nth-child(12) {
-        border-bottom: none;
-    }
-    
-    /* メモとお気に入りボタン */
-    .entry-table tbody td:nth-child(13),
-    .entry-table tbody td:nth-child(14) {
-        display: inline-block;
-        width: 50%;
-        padding: 10px 15px !important;
-        text-align: center;
-        background: #f9f9f9;
-        border-top: 1px solid #eee;
-    }
-    
-    /* ラベルを追加 */
-    .entry-table tbody td:nth-child(5)::before,
-    .entry-table tbody td:nth-child(6)::before,
-    .entry-table tbody td:nth-child(7)::before,
-    .entry-table tbody td:nth-child(8)::before,
-    .entry-table tbody td:nth-child(9)::before,
-    .entry-table tbody td:nth-child(10)::before,
-    .entry-table tbody td:nth-child(11)::before,
-    .entry-table tbody td:nth-child(12)::before {
-        display: inline-block;
-        width: 60px;
-        font-weight: bold;
-        color: #666;
-    }
-    
-    .entry-table tbody td:nth-child(5)::before { content: "騎手: "; }
-    .entry-table tbody td:nth-child(6)::before { content: "タイム: "; }
-    .entry-table tbody td:nth-child(7)::before { content: "着差: "; }
-    .entry-table tbody td:nth-child(8)::before { content: "通過: "; }
-    .entry-table tbody td:nth-child(9)::before { content: "上り: "; }
-    .entry-table tbody td:nth-child(10)::before { content: "体重: "; }
-    .entry-table tbody td:nth-child(11)::before { content: "人気: "; }
-    .entry-table tbody td:nth-child(12)::before { content: "オッズ: "; }
-    
-    /* 着順によって色分け */
-    .entry-table tbody tr.first-place td:nth-child(1) {
-        background-color: #10B981;
-        color: white;
-    }
-    
-    .entry-table tbody tr.second-place td:nth-child(1) {
-        background-color: #3B82F6;
-        color: white;
-    }
-    
-    .entry-table tbody tr.third-place td:nth-child(1) {
-        background-color: #F59E0B;
-        color: white;
-    }
-    
-    /* ボタンのスタイル調整 */
-    .entry-table .btn {
-        width: 100%;
-        padding: 8px !important;
-        font-size: 0.9rem;
-        height: auto;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    
-    /* 展開/折りたたみボタンのスタイル */
-    .btn-toggle-details {
-        position: absolute;
-        right: 15px;
-        bottom: 10px;
-        background: transparent;
-        border: none;
-        color: #4F46E5;
-        padding: 5px;
-        font-size: 1rem;
-        cursor: pointer;
-        z-index: 3;
-        width: 30px;
-        height: 30px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 50%;
-        transition: background-color 0.2s ease;
-    }
-    
-    .btn-toggle-details:hover {
-        background-color: rgba(79, 70, 229, 0.1);
-    }
-    
-    .btn-toggle-details:active {
-        background-color: rgba(79, 70, 229, 0.2);
-    }
-    
-    /* テーブルの横スクロールヒントを非表示 */
-    .race-entries h3::after {
-        content: "";
-    }
-    
-    /* スクロールヒントを非表示 */
-    .table-responsive::after {
-        display: none;
-    }
-    
-    /* テーブルレスポンシブのスタイル調整 */
-    .table-responsive {
-        overflow-x: visible;
-        box-shadow: none;
-        padding: 0 10px;
-    }
-    
-    /* 詳細情報が表示されているカードのスタイル */
-    .entry-table tbody tr.expanded {
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    }
-    
-    /* 詳細情報が表示されているカードの馬名セル */
-    .entry-table tbody tr.expanded td:nth-child(4) {
-        border-bottom-color: #ddd;
-    }
-    
-    /* モバイル表示用のカードスタイル */
-    .mobile-entries {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        margin-top: 15px;
-    }
-    
-    .entry-card {
-        background: white;
-        border-radius: 8px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        overflow: hidden;
-        cursor: pointer;
-        transition: transform 0.2s;
-    }
-    
-    .entry-card:hover {
-        transform: translateY(-2px);
-    }
-    
-    .card-header {
-        display: flex;
-        align-items: center;
-        padding: 10px;
-        background: #f8f9fa;
-        border-bottom: 1px solid #e9ecef;
-    }
-    
-    .gate, .horse-number {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 30px;
-        height: 30px;
-        border-radius: 50%;
-        margin-right: 10px;
-        font-weight: bold;
-    }
-    
-    .gate {
-        background: #e9ecef;
-    }
-    
-    .horse-number {
-        background: #4F46E5;
-        color: white;
-    }
-    
-    .horse-name {
-        margin: 0;
-        font-size: 16px;
-        flex-grow: 1;
-    }
-    
-    .card-body {
-        padding: 10px;
-    }
-    
-    .info-row {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 5px;
-    }
-    
-    .label {
-        color: #6c757d;
-        font-size: 14px;
-    }
-    
-    .value {
-        font-weight: 500;
-        font-size: 14px;
-    }
-    
-    /* モバイル表示でのテーブル最適化 - 改良版 */
-    .table-responsive {
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        margin-bottom: 1rem;
-        position: relative;
-    }
-    
-    /* テーブル全体のスタイル */
-    .entry-table {
         width: 100%;
         font-size: 0.75rem;
-        white-space: nowrap;
-        border-collapse: separate;
-        border-spacing: 0;
+        border-collapse: collapse;
+        background: #fff;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        margin-bottom: 1.5rem;
     }
     
-    /* ヘッダー行を固定 */
-    .entry-table thead {
-        position: sticky;
-        top: 0;
-        z-index: 10;
-    }
-    
-    /* ヘッダーセルのスタイル */
     .entry-table th {
         background-color: #f8f9fa;
         font-weight: 600;
         padding: 0.5rem 0.25rem;
-        border: 1px solid #dee2e6;
         text-align: center;
-        min-width: 40px;
+        border: 1px solid #dee2e6;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        white-space: nowrap;
     }
     
-    /* 馬番と枠番の列を固定 */
+    .entry-table td {
+        padding: 0.5rem 0.25rem;
+        border: 1px solid #dee2e6;
+        text-align: center;
+        vertical-align: middle;
+        white-space: nowrap;
+    }
+    
+    /* 馬名のセル */
+    .entry-table td.horse-name {
+        text-align: left;
+        font-weight: 500;
+        min-width: 120px;
+        max-width: 150px;
+        white-space: normal;
+    }
+    
+    /* 固定列 */
     .entry-table th:nth-child(1),
     .entry-table th:nth-child(2),
+    .entry-table th:nth-child(3),
+    .entry-table th:nth-child(4),
     .entry-table td:nth-child(1),
-    .entry-table td:nth-child(2) {
+    .entry-table td:nth-child(2),
+    .entry-table td:nth-child(3),
+    .entry-table td:nth-child(4) {
         position: sticky;
         left: 0;
         z-index: 5;
@@ -499,62 +203,41 @@
     
     .entry-table th:nth-child(2),
     .entry-table td:nth-child(2) {
-        left: 41px; /* 枠番の列の幅 + ボーダー */
+        left: 41px;
     }
     
-    /* 馬名の列を固定 */
+    .entry-table th:nth-child(3),
+    .entry-table td:nth-child(3) {
+        left: 82px;
+    }
+    
     .entry-table th:nth-child(4),
     .entry-table td:nth-child(4) {
-        position: sticky;
-        left: 82px; /* 枠番と馬番の列の幅 + ボーダー */
-        z-index: 5;
-        background-color: #fff;
-        min-width: 120px;
-        max-width: 120px;
-        white-space: normal;
-        text-align: left;
-        font-weight: bold;
-    }
-    
-    /* セルのスタイル */
-    .entry-table td {
-        padding: 0.5rem 0.25rem;
-        border: 1px solid #dee2e6;
-        text-align: center;
-    }
-    
-    /* 偶数行の背景色 */
-    .entry-table tbody tr:nth-child(even) {
-        background-color: #f8f9fa;
+        left: 123px;
     }
     
     /* 偶数行の固定列の背景色 */
     .entry-table tbody tr:nth-child(even) td:nth-child(1),
     .entry-table tbody tr:nth-child(even) td:nth-child(2),
+    .entry-table tbody tr:nth-child(even) td:nth-child(3),
     .entry-table tbody tr:nth-child(even) td:nth-child(4) {
         background-color: #f8f9fa;
-    }
-    
-    /* 行のホバー効果 */
-    .entry-table tbody tr:hover {
-        background-color: rgba(79, 70, 229, 0.1);
     }
     
     /* ホバー時の固定列の背景色 */
     .entry-table tbody tr:hover td:nth-child(1),
     .entry-table tbody tr:hover td:nth-child(2),
+    .entry-table tbody tr:hover td:nth-child(3),
     .entry-table tbody tr:hover td:nth-child(4) {
         background-color: rgba(79, 70, 229, 0.1);
     }
     
-    /* スクロールヒントを表示 */
-    .race-entries h3::after {
-        content: "← 横にスクロールできます →";
-        display: block;
-        font-size: 0.8rem;
-        color: #6c757d;
-        font-weight: normal;
-        margin-top: 0.5rem;
+    /* テーブルのスクロール領域 */
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        max-width: 100%;
+        margin: 0 auto;
     }
     
     /* スクロールバーのスタイル */
@@ -689,3 +372,44 @@
 .rank-1 { color: #10B981; font-weight: bold; }
 .rank-2 { color: #3B82F6; font-weight: bold; }
 .rank-3 { color: #F59E0B; font-weight: bold; }
+
+/* デスクトップ表示のスタイル */
+@media (min-width: 768px) {
+    .entry-table {
+        width: 100%;
+        font-size: 0.85rem;
+        border-collapse: collapse;
+        background: #fff;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        margin-bottom: 1.5rem;
+    }
+    
+    .entry-table th {
+        background-color: #f8f9fa;
+        font-weight: 600;
+        padding: 0.75rem 0.5rem;
+        text-align: center;
+        border: 1px solid #dee2e6;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        white-space: nowrap;
+    }
+    
+    .entry-table td {
+        padding: 0.75rem 0.5rem;
+        border: 1px solid #dee2e6;
+        text-align: center;
+        vertical-align: middle;
+    }
+    
+    /* 馬名のセル */
+    .entry-table td.horse-name {
+        text-align: left;
+        font-weight: 500;
+        min-width: 150px;
+        max-width: 200px;
+    }
+}
