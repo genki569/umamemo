@@ -163,30 +163,35 @@
     </div>
     {% endif %}
 
-    <!-- メモセクション - ボタンの修正 -->
+    <!-- メモセクション -->
     <div class="race-memo-section minimized">
-        <button type="button" class="memo-toggle" onclick="document.querySelector('.race-memo-section').classList.toggle('minimized'); this.querySelector('i').className = document.querySelector('.race-memo-section').classList.contains('minimized') ? 'fas fa-bookmark' : 'fas fa-times';">
+        <button class="memo-toggle">
             <i class="fas fa-bookmark"></i>
         </button>
         <div class="memo-content">
-            <!-- 新規メモ入力フォーム -->
-            <form method="POST" action="{{ url_for('save_race_memo', race_id=race.id) }}" class="sticky-note">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                <textarea name="memo" class="sticky-note-content" placeholder="メモを入力..."></textarea>
-                <button type="submit" class="btn btn-sm btn-primary mt-2">保存</button>
-            </form>
-            
-            <!-- 既存のメモ一覧 -->
-            {% if race.get_memos() %}
-                {% for memo in race.get_memos()|reverse %}
-                <div class="sticky-note" id="memo-{{ memo.id }}">
-                    <div class="sticky-note-content">{{ memo.content }}</div>
-                    <button type="button" class="btn btn-sm btn-danger sticky-note-delete" 
-                            onclick="if(confirm('このメモを削除してもよろしいですか？')){fetch('/races/{{ race.id }}/memos/{{ memo.id }}',{method:'DELETE',headers:{'Content-Type':'application/json','X-CSRF-Token':document.querySelector('meta[name=\'csrf-token\']').content}}).then(r=>{if(r.ok)document.getElementById('memo-{{ memo.id }}').remove();else alert('メモの削除に失敗しました');}).catch(e=>{console.error(e);alert('エラーが発生しました');});}">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </div>
-                {% endfor %}
+            <h5>レースメモ</h5>
+            {% if current_user.is_authenticated %}
+                <form action="{{ url_for('save_race_memo', race_id=race.id) }}" method="POST" class="sticky-note">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <textarea name="content" placeholder="メモを入力..." required></textarea>
+                    <button type="submit" class="btn btn-primary btn-sm">保存</button>
+                </form>
+                
+                {% if memos %}
+                    {% for memo in memos %}
+                    <div class="sticky-note" id="memo-{{ memo.id }}">
+                        <div class="sticky-note-content">{{ memo.content }}</div>
+                        <button type="button" class="btn btn-sm btn-danger sticky-note-delete" 
+                                onclick="deleteRaceMemo({{ race.id }}, {{ memo.id }})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                    {% endfor %}
+                {% endif %}
+            {% else %}
+                <p class="text-center">
+                    <a href="{{ url_for('login') }}">ログイン</a>してメモを追加できます
+                </p>
             {% endif %}
         </div>
     </div>
