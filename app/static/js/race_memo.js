@@ -31,7 +31,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // メモフォームの送信処理は行わない（通常のフォーム送信を使用）
     
-    // メモ削除ボタンのイベントリスナーも削除（フォーム送信を使用）
+    // メモ削除ボタンのイベントリスナーを削除（フォーム送信を使用）
+    // document.querySelectorAll('.sticky-note-delete').forEach(button => {
+    //     button.addEventListener('click', function(e) {
+    //         // イベントリスナーの内容をコメントアウト
+    //     });
+    // });
 });
 
 // メモの表示を整形する関数（必要に応じて）
