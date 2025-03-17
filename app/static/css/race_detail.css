@@ -17,25 +17,31 @@
 /* テーブル */
 .entry-table {
     width: 100%;
-    font-size: var(--font-size-sm);
+    font-size: 0.85rem;
     border-collapse: collapse;
-    background: var(--color-background);
-    border-radius: var(--border-radius);
+    background: #fff;
+    border-radius: 8px;
     overflow: hidden;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    margin-bottom: 1.5rem;
 }
 
 .entry-table th {
-    background: var(--color-surface);
-    padding: var(--space-sm);
+    background-color: #f8f9fa;
     font-weight: 600;
+    padding: 0.75rem 0.5rem;
     text-align: center;
-    border: 1px solid var(--color-border);
+    border: 1px solid #dee2e6;
+    position: sticky;
+    top: 0;
+    z-index: 10;
 }
 
 .entry-table td {
-    padding: var(--space-sm);
+    padding: 0.75rem 0.5rem;
+    border: 1px solid #dee2e6;
     text-align: center;
-    border: 1px solid var(--color-border);
+    vertical-align: middle;
 }
 
 /* メモ機能 */
@@ -457,7 +463,7 @@
     /* テーブル全体のスタイル */
     .entry-table {
         width: 100%;
-        font-size: 0.85rem;
+        font-size: 0.75rem;
         white-space: nowrap;
         border-collapse: separate;
         border-spacing: 0;
@@ -474,7 +480,7 @@
     .entry-table th {
         background-color: #f8f9fa;
         font-weight: 600;
-        padding: 0.5rem !important;
+        padding: 0.5rem 0.25rem;
         border: 1px solid #dee2e6;
         text-align: center;
         min-width: 40px;
@@ -512,7 +518,7 @@
     
     /* セルのスタイル */
     .entry-table td {
-        padding: 0.5rem !important;
+        padding: 0.5rem 0.25rem;
         border: 1px solid #dee2e6;
         text-align: center;
     }
@@ -638,3 +644,48 @@
 .mobile-entries .badge.bg-secondary {
     background-color: #6B7280 !important; /* その他 */
 }
+
+/* 枠番の色分け */
+.gate-1 { background-color: #ffffff; color: #000000; }
+.gate-2 { background-color: #000000; color: #ffffff; }
+.gate-3 { background-color: #e74c3c; color: #ffffff; }
+.gate-4 { background-color: #3498db; color: #ffffff; }
+.gate-5 { background-color: #f1c40f; color: #000000; }
+.gate-6 { background-color: #2ecc71; color: #ffffff; }
+.gate-7 { background-color: #e67e22; color: #ffffff; }
+.gate-8 { background-color: #9b59b6; color: #ffffff; }
+
+/* 馬番のスタイル */
+.horse-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: #4F46E5;
+    color: white;
+    font-weight: bold;
+}
+
+/* 馬名のセル */
+.entry-table td.horse-name {
+    text-align: left;
+    font-weight: 500;
+    max-width: 150px;
+}
+
+/* 偶数行の背景色 */
+.entry-table tbody tr:nth-child(even) {
+    background-color: #f8f9fa;
+}
+
+/* ホバー効果 */
+.entry-table tbody tr:hover {
+    background-color: rgba(79, 70, 229, 0.1);
+}
+
+/* 着順によって色分け */
+.rank-1 { color: #10B981; font-weight: bold; }
+.rank-2 { color: #3B82F6; font-weight: bold; }
+.rank-3 { color: #F59E0B; font-weight: bold; }
