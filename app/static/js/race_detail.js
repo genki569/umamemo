@@ -54,7 +54,68 @@ function deleteRaceMemo(raceId, memoId) {
     }
 }
 
-// レース詳細ページのカード表示
+// テーブルの表示を最適化
+function optimizeTableDisplay() {
+    const entryTable = document.querySelector('.entry-table');
+    if (!entryTable) return;
+    
+    // 馬名のセルにクラスを追加
+    const horseNameCells = entryTable.querySelectorAll('td:nth-child(4)');
+    horseNameCells.forEach(cell => {
+        cell.classList.add('horse-name');
+    });
+    
+    // 各セルの幅を調整
+    const headerCells = entryTable.querySelectorAll('th');
+    headerCells.forEach((cell, index) => {
+        // 必要最小限の幅を設定
+        if (index === 0 || index === 1 || index === 2) { // 着順、枠番、馬番
+            cell.style.width = '40px';
+            cell.style.minWidth = '40px';
+            cell.style.maxWidth = '40px';
+        } else if (index === 3) { // 馬名
+            cell.style.width = '120px';
+            cell.style.minWidth = '120px';
+            cell.style.maxWidth = '120px';
+        } else if (index === 5) { // 騎手
+            cell.style.width = '80px';
+            cell.style.minWidth = '80px';
+            cell.style.maxWidth = '80px';
+        } else { // その他
+            cell.style.width = '70px';
+            cell.style.minWidth = '70px';
+        }
+    });
+    
+    // テーブルを強制的に再描画
+    entryTable.style.display = 'none';
+    setTimeout(() => {
+        entryTable.style.display = 'table';
+        
+        // 表示後に再度幅を調整
+        setTimeout(() => {
+            const tableWidth = entryTable.offsetWidth;
+            const containerWidth = entryTable.closest('.table-responsive').offsetWidth;
+            
+            // テーブルが表示領域より広い場合、固定列の背景色を確実に設定
+            if (tableWidth > containerWidth) {
+                const fixedCells = entryTable.querySelectorAll('td:nth-child(-n+4)');
+                fixedCells.forEach(cell => {
+                    const row = cell.closest('tr');
+                    const isEven = [...row.parentNode.children].indexOf(row) % 2 === 1;
+                    
+                    if (isEven) {
+                        cell.style.backgroundColor = '#f8f9fa';
+                    } else {
+                        cell.style.backgroundColor = '#fff';
+                    }
+                });
+            }
+        }, 100);
+    }, 10);
+}
+
+// DOMContentLoaded時に実行
 document.addEventListener('DOMContentLoaded', function() {
     // モバイル表示でもテーブル表示を維持する（カード表示を無効化）
     if (window.innerWidth < 768) {
@@ -174,14 +235,14 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 500);
     }
     
-    // クッキーの問題を回避するためにテーブルを強制的に再描画
-    setTimeout(function() {
-        const entryTable = document.querySelector('.entry-table');
-        if (entryTable) {
-            entryTable.style.display = 'none';
-            setTimeout(function() {
-                entryTable.style.display = 'table';
-            }, 10);
-        }
-    }, 100);
+    // テーブルの表示を最適化
+    optimizeTableDisplay();
+    
+    // ウィンドウのリサイズ時にも最適化
+    window.addEventListener('resize', optimizeTableDisplay);
+    
+    // 向きが変わった時にも最適化
+    window.addEventListener('orientationchange', function() {
+        setTimeout(optimizeTableDisplay, 100);
+    });
 }); 

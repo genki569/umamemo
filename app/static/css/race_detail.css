@@ -189,16 +189,74 @@
         z-index: 10;
     }
     
-    /* 馬名のセル */
+    /* 固定列の位置調整 */
+    .entry-table th:nth-child(1),
+    .entry-table td:nth-child(1) {
+        left: 0;
+        z-index: 6;
+        min-width: 40px;
+    }
+    
+    .entry-table th:nth-child(2),
+    .entry-table td:nth-child(2) {
+        left: 40px;
+        z-index: 6;
+        min-width: 40px;
+    }
+    
+    .entry-table th:nth-child(3),
+    .entry-table td:nth-child(3) {
+        left: 80px;
+        z-index: 6;
+        min-width: 40px;
+    }
+    
+    .entry-table th:nth-child(4),
+    .entry-table td:nth-child(4) {
+        left: 120px;
+        z-index: 6;
+        min-width: 120px;
+        max-width: 120px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    /* 馬名のセルのスタイル調整 */
     .entry-table td.horse-name {
         text-align: left;
         font-weight: 500;
         min-width: 120px;
-        max-width: 150px;
-        white-space: normal;
+        max-width: 120px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
     
-    /* 固定列 */
+    /* 馬名のリンクのスタイル */
+    .entry-table td.horse-name a {
+        display: block;
+        width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    
+    /* 固定列以外のセルの最小幅を設定 */
+    .entry-table th:not(:nth-child(1)):not(:nth-child(2)):not(:nth-child(3)):not(:nth-child(4)),
+    .entry-table td:not(:nth-child(1)):not(:nth-child(2)):not(:nth-child(3)):not(:nth-child(4)) {
+        min-width: 70px;
+    }
+    
+    /* 騎手名のセルの幅を調整 */
+    .entry-table th:nth-child(6),
+    .entry-table td:nth-child(6) {
+        min-width: 80px;
+        max-width: 80px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    /* 固定列の背景色を確実に設定 */
     .entry-table th:nth-child(1),
     .entry-table th:nth-child(2),
     .entry-table th:nth-child(3),
@@ -207,25 +265,7 @@
     .entry-table td:nth-child(2),
     .entry-table td:nth-child(3),
     .entry-table td:nth-child(4) {
-        position: sticky;
-        left: 0;
-        z-index: 5;
         background-color: #fff;
-    }
-    
-    .entry-table th:nth-child(2),
-    .entry-table td:nth-child(2) {
-        left: 41px;
-    }
-    
-    .entry-table th:nth-child(3),
-    .entry-table td:nth-child(3) {
-        left: 82px;
-    }
-    
-    .entry-table th:nth-child(4),
-    .entry-table td:nth-child(4) {
-        left: 123px;
     }
     
     /* 偶数行の固定列の背景色 */
@@ -242,6 +282,18 @@
     .entry-table tbody tr:hover td:nth-child(3),
     .entry-table tbody tr:hover td:nth-child(4) {
         background-color: rgba(79, 70, 229, 0.1);
+    }
+    
+    /* テーブルのセル間の境界線を明確に */
+    .entry-table th,
+    .entry-table td {
+        border: 1px solid #dee2e6;
+    }
+    
+    /* テーブルのセルパディングを調整 */
+    .entry-table th,
+    .entry-table td {
+        padding: 0.5rem 0.25rem;
     }
     
     /* テーブルのスクロール領域 */
