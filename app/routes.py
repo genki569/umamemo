@@ -187,7 +187,7 @@ def races():
         )
 
 @app.route('/races/<int:race_id>')
-def race_detail(race_id):
+def race(race_id):
     try:
         race = Race.query.get_or_404(race_id)
         entries = db.session.query(Entry)\
@@ -201,22 +201,9 @@ def race_detail(race_id):
             .order_by(Entry.horse_number.asc())\
             .all()
             
-        # メモを取得
-        memos = []
-        if current_user.is_authenticated:
-            memos = RaceMemo.query.filter_by(
-                race_id=race_id,
-                user_id=current_user.id
-            ).order_by(RaceMemo.created_at.desc()).all()
-        
-        return render_template(
-            'race_detail.html',
-            race=race,
-            entries=entries,
-            prev_race=prev_race,
-            next_race=next_race,
-            memos=memos  # メモをテンプレートに渡す
-        )
+        return render_template('race_detail.html', 
+                             race=race, 
+                             entries=entries)
     except Exception as e:
         app.logger.error(f"Error in race: {str(e)}")
         return jsonify({'error': str(e)}), 500
@@ -579,27 +566,31 @@ def horse_note(horse_id):
 @login_required
 def save_race_memo(race_id):
     try:
-        content = request.form.get('content')
+        content = request.form.get('memo')
         if not content:
-            flash('メモの内容を入力してください', 'danger')
-            return redirect(url_for('race_detail', race_id=race_id))
+            flash('メモ内容を入力してください', 'error')
+            return redirect(f'/races/{race_id}')  # 直接URLを指定
+            
+        race = Race.query.get_or_404(race_id)
         
         memo = RaceMemo(
             race_id=race_id,
             user_id=current_user.id,
-            content=content
+            content=content,
+            created_at=datetime.now()
         )
         
         db.session.add(memo)
         db.session.commit()
-        
         flash('メモを保存しました', 'success')
-        return redirect(url_for('race_detail', race_id=race_id))
+        
     except Exception as e:
         db.session.rollback()
-        app.logger.error(f"Error saving race memo: {str(e)}")
-        flash('メモの保存中にエラーが発生しました', 'danger')
-        return redirect(url_for('race_detail', race_id=race_id))
+        app.logger.error(f'Error saving race memo: {str(e)}')
+        flash('メモの保存に失敗しました', 'error')
+    
+    # 正しいレース詳細ページにリダイレクト
+    return redirect(f'/races/{race_id}')
 
 def format_date(date_str):
     """文字整形す"""
