@@ -181,10 +181,13 @@
                     {% for memo in memos %}
                     <div class="sticky-note" id="memo-{{ memo.id }}">
                         <div class="sticky-note-content">{{ memo.content }}</div>
-                        <button type="button" class="btn btn-sm btn-danger sticky-note-delete" 
-                                onclick="deleteRaceMemo({{ race.id }}, {{ memo.id }})">
-                            <i class="fas fa-trash"></i>
-                        </button>
+                        <form action="{{ url_for('delete_race_memo_post', race_id=race.id, memo_id=memo.id) }}" method="POST" style="display:inline;">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="btn btn-sm btn-danger sticky-note-delete" 
+                                    onclick="return confirm('このメモを削除してもよろしいですか？');">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </form>
                     </div>
                     {% endfor %}
                 {% endif %}
