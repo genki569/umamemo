@@ -2143,64 +2143,91 @@ p, h1, h2, h3, h4, h5, h6, span, a, div {
 
 /* モバイル表示の基本設定 */
 @media (max-width: 767.98px) {
-    body {
-        font-size: 16px;
-        line-height: 1.5;
-        overflow-x: hidden;
-    }
-    
-    .container {
-        padding-left: 15px;
-        padding-right: 15px;
-        width: 100%;
-        max-width: 100%;
-    }
-    
-    h1 {
-        font-size: 1.8rem;
-    }
-    
-    h2 {
-        font-size: 1.5rem;
-    }
-    
-    h3 {
-        font-size: 1.3rem;
-    }
-    
-    /* ナビゲーションの調整 */
+    /* ナビゲーションバーの修正 */
     .navbar {
-        padding: 0.5rem 1rem;
+        padding: 0.5rem;
+        width: 100%;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 1030;
+        background-color: #fff;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     }
     
+    /* ナビゲーションバーのコンテナ */
+    .navbar .container {
+        padding: 0;
+        min-height: auto;
+    }
+    
+    /* ブランドロゴ */
     .navbar-brand {
         font-size: 1.2rem;
+        padding: 0.5rem;
+        margin-right: 0;
     }
     
-    /* コンテンツの調整 */
-    .section {
-        padding: 2rem 0;
+    /* トグルボタン */
+    .navbar-toggler {
+        padding: 0.25rem 0.5rem;
+        font-size: 1rem;
+        border: none;
+        outline: none !important;
+        box-shadow: none !important;
     }
     
-    .card {
-        margin-bottom: 1rem;
+    /* ナビゲーションメニュー */
+    .navbar-collapse {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background-color: #fff;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        z-index: 1029;
+        padding: 0.5rem;
     }
     
-    /* 画像の調整 */
-    img {
-        max-width: 100%;
-        height: auto;
+    /* ナビゲーションリンク */
+    .navbar-nav {
+        padding: 0.5rem 0;
     }
     
-    /* フォームの調整 */
-    input, select, textarea {
-        font-size: 16px; /* iOSでズームを防止 */
+    .nav-item {
+        margin: 0;
+        padding: 0;
     }
     
-    /* フッターの調整 */
-    footer {
-        padding: 1.5rem 0;
-        text-align: center;
+    .nav-link {
+        padding: 0.75rem 1rem;
+        border-radius: 4px;
+    }
+    
+    /* ドロップダウンメニュー */
+    .dropdown-menu {
+        position: static !important;
+        float: none;
+        width: 100%;
+        border: none;
+        box-shadow: none;
+        padding: 0;
+        margin: 0;
+        transform: none !important;
+    }
+    
+    .dropdown-item {
+        padding: 0.75rem 1.5rem;
+    }
+    
+    /* メインコンテンツのパディング調整（ヘッダーの高さ分） */
+    body {
+        padding-top: 60px;
+    }
+    
+    /* ヘッダー下のコンテンツ */
+    .main-content {
+        margin-top: 1rem;
     }
 }
 
