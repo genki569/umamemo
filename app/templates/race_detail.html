@@ -191,157 +191,60 @@
         </div>
     </div>
 
-    <!-- 結果表をラップ -->
-    <div class="race-results-wrapper">
+    <!-- 出走表セクション -->
+    <div class="race-entries">
+        <h3 class="section-title">出走表</h3>
         <div class="table-responsive">
-            <!-- 出走馬一覧 -->
-            {% if entries %}
-            <div class="race-entries">
-                <h3>出走馬一覧</h3>
-                <div class="table-responsive" style="margin: 0 auto; max-width: 95%;">
-                    <table class="table table-striped table-bordered entry-table">
-                        <thead>
-                            <tr>
-                                <th>着順</th>
-                                <th>枠番</th>
-                                <th>馬番</th>
-                                <th>馬名</th>
-                                <th>騎手</th>
-                                <th>タイム</th>
-                                <th>着差</th>
-                                <th>通過</th>
-                                <th>上り</th>
-                                <th>体重</th>
-                                <th>人気</th>
-                                <th>オッズ</th>
-                                <th>メモ</th>
-                                <th>お気に入り</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {# まず着順のある馬（数字のみ）を表示、ソートも追加 #}
-                            {% for entry in entries|selectattr('position', 'defined')|selectattr('position', 'number')|sort(attribute='position') %}
-                                <tr>
-                                    <td>{{ entry.position }}</td>
-                                    <td>{{ entry.frame_number or '-' }}</td>
-                                    <td>{{ entry.horse_number or '-' }}</td>
-                                    <td>
-                                        <a href="{{ url_for('horse_detail', horse_id=entry.horse.id) }}" class="text-decoration-none">
-                                            {{ entry.horse.name }}
-                                        </a>
-                                    </td>
-                                    <td>
-                                        {% if entry.jockey %}
-                                        <a href="{{ url_for('jockey_detail', jockey_id=entry.jockey.id) }}" class="text-decoration-none">
-                                            {{ entry.jockey.name }}
-                                        </a>
-                                        {% else %}
-                                        -
-                                        {% endif %}
-                                    </td>
-                                    <td>{{ entry.time or '-' }}</td>
-                                    <td>{{ entry.margin or '-' }}</td>
-                                    <td>{{ entry.passing or '-' }}</td>
-                                    <td>{{ entry.last_3f or '-' }}</td>
-                                    <td>{{ entry.horse_weight }}{% if entry.weight_change %}({{ entry.weight_change }}){% endif %}</td>
-                                    <td>{{ entry.popularity or '-' }}</td>
-                                    <td>{{ entry.odds if entry.odds else '-' }}</td>
-                                    <td>
-                                        <form method="POST" action="{{ url_for('save_horse_memo', horse_id=entry.horse_id) }}" class="memo-form">
-                                            <div class="input-group">
-                                                <textarea class="form-control form-control-sm" name="content" rows="2" placeholder="メモを入力..."></textarea>
-                                                <button type="submit" class="btn btn-sm btn-outline-primary">
-                                                    <i class="fas fa-save"></i>
-                                                </button>
-                                            </div>
-                                            {% if entry.horse.get_memos() %}
-                                                <div class="mt-2">
-                                                    {% for memo in entry.horse.get_memos()|reverse %}
-                                                        <div class="small text-muted mb-1">
-                                                            {{ memo.content }}
-                                                            <br>
-                                                            <small>{{ memo.created_at }}</small>
-                                                        </div>
-                                                    {% endfor %}
-                                                </div>
-                                            {% endif %}
-                                        </form>
-                                    </td>
-                                    <td>
-                                        <button type="button" 
-                                                class="btn btn-sm {% if entry.horse.is_favorite(1) %}btn-warning{% else %}btn-outline-warning{% endif %}" 
-                                                onclick="toggleFavorite({{ entry.horse.id }})">
-                                            <i class="fas fa-star"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                            {# 次に着順のない馬や特殊記号の馬を表示 #}
-                            {% for entry in entries if not entry.position or not entry.position is number %}
-                                <tr>
-                                    <td>{{ entry.position or '-' }}</td>
-                                    <td>{{ entry.frame_number or '-' }}</td>
-                                    <td>{{ entry.horse_number or '-' }}</td>
-                                    <td>
-                                        <a href="{{ url_for('horse_detail', horse_id=entry.horse.id) }}" class="text-decoration-none">
-                                            {{ entry.horse.name }}
-                                        </a>
-                                    </td>
-                                    <td>
-                                        {% if entry.jockey %}
-                                        <a href="{{ url_for('jockey_detail', jockey_id=entry.jockey.id) }}" class="text-decoration-none">
-                                            {{ entry.jockey.name }}
-                                        </a>
-                                        {% else %}
-                                        -
-                                        {% endif %}
-                                    </td>
-                                    <td>{{ entry.time or '-' }}</td>
-                                    <td>{{ entry.margin or '-' }}</td>
-                                    <td>{{ entry.passing or '-' }}</td>
-                                    <td>{{ entry.last_3f or '-' }}</td>
-                                    <td>{{ entry.horse_weight }}{% if entry.weight_change %}({{ entry.weight_change }}){% endif %}</td>
-                                    <td>{{ entry.popularity or '-' }}</td>
-                                    <td>{{ entry.odds if entry.odds else '-' }}</td>
-                                    <td>
-                                        <form method="POST" action="{{ url_for('save_horse_memo', horse_id=entry.horse_id) }}" class="memo-form">
-                                            <div class="input-group">
-                                                <textarea class="form-control form-control-sm" name="content" rows="2" placeholder="メモを入力..."></textarea>
-                                                <button type="submit" class="btn btn-sm btn-outline-primary">
-                                                    <i class="fas fa-save"></i>
-                                                </button>
-                                            </div>
-                                            {% if entry.horse.get_memos() %}
-                                                <div class="mt-2">
-                                                    {% for memo in entry.horse.get_memos()|reverse %}
-                                                        <div class="small text-muted mb-1">
-                                                            {{ memo.content }}
-                                                            <br>
-                                                            <small>{{ memo.created_at }}</small>
-                                                        </div>
-                                                    {% endfor %}
-                                                </div>
-                                            {% endif %}
-                                        </form>
-                                    </td>
-                                    <td>
-                                        <button type="button" 
-                                                class="btn btn-sm {% if entry.horse.is_favorite(1) %}btn-warning{% else %}btn-outline-warning{% endif %}" 
-                                                onclick="toggleFavorite({{ entry.horse.id }})">
-                                            <i class="fas fa-star"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            {% else %}
-            <div class="alert alert-info">
-                このレースの出走馬情報はまだ登録されていません。
-            </div>
-            {% endif %}
+            <table class="entry-table">
+                <thead>
+                    <tr>
+                        <th>枠</th>
+                        <th>馬番</th>
+                        <th>斤量</th>
+                        <th>馬名</th>
+                        <th>性齢</th>
+                        <th>騎手</th>
+                        <th>タイム</th>
+                        <th>着差</th>
+                        <th>上り</th>
+                        <th>単勝</th>
+                        <th>人気</th>
+                        <th>馬体重</th>
+                        <th>お気に入り</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in race.entries %}
+                    <tr>
+                        <td>
+                            <span class="gate-{{ entry.gate_number }}">{{ entry.gate_number }}</span>
+                        </td>
+                        <td>
+                            <span class="horse-number">{{ entry.horse_number }}</span>
+                        </td>
+                        <td>{{ entry.weight_carried }}</td>
+                        <td class="horse-name">
+                            <a href="{{ url_for('horse_detail', horse_id=entry.horse.id) }}">{{ entry.horse.name }}</a>
+                        </td>
+                        <td>{{ entry.horse.sex_age }}</td>
+                        <td>{{ entry.jockey.name }}</td>
+                        <td>{{ entry.finish_time }}</td>
+                        <td>{{ entry.margin }}</td>
+                        <td>{{ entry.last_3f }}</td>
+                        <td>{{ entry.odds }}</td>
+                        <td>{{ entry.popularity }}</td>
+                        <td>{{ entry.horse_weight }}</td>
+                        <td>
+                            <button type="button" 
+                                    class="btn btn-sm {% if entry.horse.is_favorite(1) %}btn-warning{% else %}btn-outline-warning{% endif %}" 
+                                    onclick="toggleFavorite({{ entry.horse.id }})">
+                                <i class="fas fa-star"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
 
