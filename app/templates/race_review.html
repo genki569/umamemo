@@ -3,7 +3,7 @@
 {% block content %}
 <div class="container mt-4">
     <div class="mb-3">
-        <a href="{{ url_for('race_detail', race_id=race.id) }}" class="btn btn-outline-secondary">
+        <a href="{{ url_for('race', race_id=race.id) }}" class="btn btn-outline-secondary">
             <i class="fas fa-arrow-left"></i> レース結果に戻る
         </a>
     </div>
@@ -71,37 +71,19 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const saleStatus = document.getElementById('saleStatus');
-    const priceSection = document.getElementById('priceSection');
-    const priceInput = document.querySelector('input[name="price"]');
-
-    // 初期表示の設定
-    if (saleStatus.value === 'paid') {
-        priceSection.style.display = 'block';
-        priceInput.required = true;
-    }
-
-    // 選択変更時の処理
-    saleStatus.addEventListener('change', function() {
-        if (this.value === 'paid') {
-            priceSection.style.display = 'block';
-            priceInput.required = true;
-            if (!priceInput.value) {
-                priceInput.value = '100';  // デフォルト値
+    // 有料コンテンツのチェックボックスの処理
+    const isPremiumCheckbox = document.getElementById('is_premium');
+    const priceSection = document.querySelector('.premium-price');
+    
+    if (isPremiumCheckbox && priceSection) {
+        isPremiumCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                priceSection.style.display = 'block';
+            } else {
+                priceSection.style.display = 'none';
             }
-        } else {
-            priceSection.style.display = 'none';
-            priceInput.required = false;
-        }
-    });
-
-    // フォーム送信前の検証
-    document.querySelector('form').addEventListener('submit', function(e) {
-        if (saleStatus.value === 'paid' && (!priceInput.value || priceInput.value < 100)) {
-            e.preventDefault();
-            alert('有料販売の場合は、100ポイント以上の価格を設定してください。');
-        }
-    });
+        });
+    }
 });
 </script>
 {% endblock %} 
