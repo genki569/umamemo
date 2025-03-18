@@ -1884,48 +1884,25 @@ def unread_notifications_count():
 
 @app.route('/review/market')
 def review_market():
-    """レビューマーケットページ"""
     try:
-        app.logger.info("Accessing review market page")
-        page = request.args.get('page', 1, type=int)
+        # 有料レビューの一覧を取得
+        premium_reviews = RaceReview.query.filter_by(is_premium=True).order_by(RaceReview.created_at.desc()).all()
         
-        # 公開済みのレビューのみを取得
-        reviews = RaceReview.query\
-            .filter(RaceReview.sale_status != 'draft')\
-            .order_by(RaceReview.created_at.desc())\
-            .paginate(page=page, per_page=10, error_out=False)
-            
-        # レースの情報も取得し、日付を適切に処理
-        races = {}
-        for review in reviews.items:
-            race = Race.query.get(review.race_id)
-            if race:
-                # 文字列の日付をdatetimeオブジェクトに変換
-                if isinstance(race.date, str):
-                    try:
-                        race.date = datetime.strptime(race.date, '%Y-%m-%d')
-                    except ValueError:
-                        race.date = None
-                races[review.race_id] = race
-            
-        # 購入済みレビューのIDリストを取得
-        purchased_review_ids = set()
+        # 購入済みレビューのIDリスト（ログインしている場合のみ）
+        purchased_review_ids = []
         if current_user.is_authenticated:
-            purchased_review_ids = set(
-                review.id for review in current_user.purchased_race_reviews
-            )
+            # purchased_race_reviewsプロパティを使用
+            purchased_review_ids = current_user.purchased_race_reviews
         
-        return render_template(
-            'review/market.html',
-            reviews=reviews,
-            races=races,
-            purchased_review_ids=purchased_review_ids
-        )
-        
+        return render_template('review_market.html', 
+                              reviews=premium_reviews,
+                              purchased_review_ids=purchased_review_ids)
     except Exception as e:
-        app.logger.error(f"Error in review_market: {str(e)}")
-        flash('レビューの取得に失敗しました', 'error')
-        return redirect(url_for('index'))
+        current_app.logger.error(f"Error in review_market: {str(e)}")
+        current_app.logger.error(traceback.format_exc())
+        return render_template('error.html', 
+                              error_message="レビュー一覧の取得中にエラーが発生しました。",
+                              debug_info=str(e)), 500
 
 @app.route('/mypage/charge-points', methods=['GET'])
 @login_required
