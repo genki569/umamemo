@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>回顧ノート一覧</h1>
+    
+    <ul class="nav nav-tabs mb-4" id="reviewTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="my-reviews-tab" data-bs-toggle="tab" data-bs-target="#my-reviews" type="button" role="tab" aria-controls="my-reviews" aria-selected="true">
+                自分の回顧
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="purchased-reviews-tab" data-bs-toggle="tab" data-bs-target="#purchased-reviews" type="button" role="tab" aria-controls="purchased-reviews" aria-selected="false">
+                購入した回顧
+            </button>
+        </li>
+    </ul>
+    
+    <div class="tab-content" id="reviewTabsContent">
+        <div class="tab-pane fade show active" id="my-reviews" role="tabpanel" aria-labelledby="my-reviews-tab">
+            {% if user_reviews %}
+                <div class="row">
+                    {% for review in user_reviews %}
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-0">{{ review.race.name }}</h5>
+                                    {% if review.is_premium %}
+                                        <span class="badge bg-primary">有料コンテンツ</span>
+                                    {% endif %}
+                                </div>
+                                <div class="card-body">
+                                    <p class="card-text">
+                                        <small class="text-muted">
+                                            {{ review.race.date.strftime('%Y/%m/%d') }} - {{ review.race.venue }}
+                                        </small>
+                                    </p>
+                                    <p class="card-text">
+                                        {% if review.overall_impression %}
+                                            {{ review.overall_impression[:100] }}{% if review.overall_impression|length > 100 %}...{% endif %}
+                                        {% else %}
+                                            <span class="text-muted">内容なし</span>
+                                        {% endif %}
+                                    </p>
+                                </div>
+                                <div class="card-footer">
+                                    <a href="{{ url_for('review_detail', review_id=review.id) }}" class="btn btn-sm btn-primary">
+                                        <i class="fas fa-eye"></i> 詳細を見る
+                                    </a>
+                                    <a href="{{ url_for('race_review', race_id=review.race_id) }}" class="btn btn-sm btn-outline-secondary">
+                                        <i class="fas fa-edit"></i> 編集する
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    まだ回顧ノートを作成していません。
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="tab-pane fade" id="purchased-reviews" role="tabpanel" aria-labelledby="purchased-reviews-tab">
+            {% if purchased_reviews %}
+                <div class="row">
+                    {% for review in purchased_reviews %}
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100">
+                                <div class="card-header">
+                                    <h5 class="mb-0">{{ review.race.name }}</h5>
+                                </div>
+                                <div class="card-body">
+                                    <p class="card-text">
+                                        <small class="text-muted">
+                                            {{ review.race.date.strftime('%Y/%m/%d') }} - {{ review.race.venue }}
+                                        </small>
+                                    </p>
+                                    <p class="card-text">
+                                        <strong>作成者:</strong> {{ review.user.username }}
+                                    </p>
+                                    <p class="card-text">
+                                        {% if review.overall_impression %}
+                                            {{ review.overall_impression[:100] }}{% if review.overall_impression|length > 100 %}...{% endif %}
+                                        {% else %}
+                                            <span class="text-muted">内容なし</span>
+                                        {% endif %}
+                                    </p>
+                                </div>
+                                <div class="card-footer">
+                                    <a href="{{ url_for('review_detail', review_id=review.id) }}" class="btn btn-sm btn-primary">
+                                        <i class="fas fa-eye"></i> 詳細を見る
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    まだ回顧ノートを購入していません。
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %} 
