@@ -1755,88 +1755,78 @@ def view_review(race_id, review_id):
         flash('レビューの表示に失敗しました', 'error')
         return redirect(url_for('index'))
 
-@app.route('/reviews/<int:review_id>/purchase', methods=['POST'])
+@app.route('/reviews/<int:review_id>/purchase', methods=['GET', 'POST'])
 @login_required
 def purchase_review(review_id):
-    """レビーを購入する"""
-    try:
-        review = RaceReview.query.get_or_404(review_id)
+    review = RaceReview.query.get_or_404(review_id)
+    
+    # 自分のレビューは購入不要
+    if review.user_id == current_user.id:
+        return redirect(url_for('review_detail', review_id=review_id))
+    
+    # 既に購入済みかチェック
+    existing_purchase = ReviewPurchase.query.filter_by(
+        user_id=current_user.id,
+        review_id=review_id,
+        status='completed'
+    ).first()
+    
+    if existing_purchase:
+        return redirect(url_for('review_detail', review_id=review_id))
+    
+    if request.method == 'POST':
+        # ポイント残高チェック
+        if current_user.point_balance < review.price:
+            flash('ポイント残高が不足しています。', 'danger')
+            return redirect(url_for('mypage_points'))
         
-        # 自分の投稿は購入できない
-        if review.user_id == current_user.id:
-            return jsonify({
-                'success': False,
-                'message': '自分の投稿は購入できません'
-            }), 400
+        try:
+            # ポイント引き落とし
+            current_user.point_balance -= review.price
             
-        # 既に購入済みかェック
-        if ReviewPurchase.query.filter_by(
-            user_id=current_user.id,
-            review_id=review_id
-        ).first():
-            return jsonify({
-                'success': False,
-                'message': '既に購入済みです'
-            }), 400
+            # 購入記録作成
+            purchase = ReviewPurchase(
+                user_id=current_user.id,
+                review_id=review_id,
+                price=review.price,
+                status='completed'
+            )
             
-        # ポイント残高をチェック
-        current_balance = UserPoint.get_balance(current_user.id)
-        if current_balance < review.price:
-            return jsonify({
-                'success': False,
-                'message': 'ポイント不足していす'
-            }), 400
+            # 販売者にポイント付与（手数料10%）
+            if review.user:
+                seller_amount = int(review.price * 0.9)
+                review.user.point_balance += seller_amount
+                
+                # ポイントログ記録
+                seller_log = UserPointLog(
+                    user_id=review.user_id,
+                    amount=seller_amount,
+                    description=f'レビュー販売: {review.race.name}',
+                    transaction_type='sale'
+                )
+                db.session.add(seller_log)
             
-        # 購入処
-        purchase = ReviewPurchase(
-            user_id=current_user.id,
-            review_id=review_id,
-            price=review.price
-        )
-        
-        # ポイント履歴を記録
-        buyer_point = UserPoint(
-            user_id=current_user.id,
-            amount=-review.price,
-            type='review_purchase',
-            description=f'レビュー購: {review.title}'
-        )
-        
-        seller_point = UserPoint(
-            user_id=review.user_id,
-            amount=review.price,
-            type='review_sale',
-            description=f'レビュー売上: {review.title}'
-        )
-        
-        db.session.add(purchase)
-        db.session.add(buyer_point)
-        db.session.add(seller_point)
-        
-        # 購入通知
-        notification = Notification(
-            user_id=review.user_id,
-            title='レビューが購入されまし',
-            message=f'あなたのレビュー「{review.title}」が購入されまた。',
-            notification_type='review_purchased'
-        )
-        db.session.add(notification)
-        
-        db.session.commit()
-        
-        return jsonify({
-            'success': True,
-            'message': 'レビューを購入しまし',
-            'new_balance': UserPoint.get_balance(current_user.id)
-        })
-        
-    except Exception as e:
-        db.session.rollback()
-        app.logger.error(f"Error in purchase_review: {str(e)}")
-        return jsonify({
-            'success': False,
-            'message': '購入処理に失敗しました'
-        }), 500
+            # 購入者のポイントログ
+            buyer_log = UserPointLog(
+                user_id=current_user.id,
+                amount=-review.price,
+                description=f'レビュー購入: {review.race.name}',
+                transaction_type='purchase'
+            )
+            
+            db.session.add(purchase)
+            db.session.add(buyer_log)
+            db.session.commit()
+            
+            flash('レビューを購入しました。', 'success')
+            return redirect(url_for('review_detail', review_id=review_id))
+            
+        except Exception as e:
+            db.session.rollback()
+            current_app.logger.error(f"Error purchasing review: {str(e)}")
+            flash('購入処理中にエラーが発生しました。', 'danger')
+    
+    return render_template('purchase_review.html', review=review)
 
 @app.route('/webhook/stripe', methods=['POST'])
 def stripe_webhook():
@@ -3886,3 +3876,38 @@ def save_review(race_id):
         flash('レビューの保存中にエラーが発生しました', 'danger')
         # 正しいエンドポイント名に修正
         return redirect(url_for('race', race_id=race_id))
+
+@app.route('/reviews/<int:review_id>')
+def review_detail(review_id):
+    review = RaceReview.query.get_or_404(review_id)
+    
+    # 非公開レビューの場合、アクセス権をチェック
+    if not review.is_public:
+        if not current_user.is_authenticated:
+            flash('このレビューは非公開です。', 'warning')
+            return redirect(url_for('index'))
+        
+        # 作成者でない場合、購入済みかチェック
+        if review.user_id != current_user.id:
+            purchase = ReviewPurchase.query.filter_by(
+                user_id=current_user.id,
+                review_id=review_id,
+                status='completed'
+            ).first()
+            
+            if not purchase:
+                flash('このレビューにアクセスする権限がありません。', 'warning')
+                return redirect(url_for('index'))
+    
+    # 有料コンテンツの場合、購入済みかチェック
+    if review.is_premium and current_user.is_authenticated and review.user_id != current_user.id:
+        purchase = ReviewPurchase.query.filter_by(
+            user_id=current_user.id,
+            review_id=review_id,
+            status='completed'
+        ).first()
+        
+        if not purchase:
+            return redirect(url_for('purchase_review', review_id=review_id))
+    
+    return render_template('review_detail.html', review=review)
