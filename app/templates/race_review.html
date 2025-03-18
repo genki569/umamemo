@@ -13,115 +13,35 @@
         <span class="text-muted">{{ race.date }} {{ race.venue }}</span>
     </div>
 
-    <form method="POST" class="review-form">
-        <!-- 基本情報 -->
-        <div class="mb-3">
-            <label class="form-label">タイトル</label>
-            <input type="text" name="title" class="form-control" 
-                   value="{{ review.title if review else '' }}" required>
+    <form method="POST" action="{{ url_for('save_review', race_id=race.id) }}" class="review-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        
+        <div class="form-group mb-3">
+            <label for="summary">要約（100文字以内）</label>
+            <input type="text" class="form-control" id="summary" name="summary" 
+                   maxlength="100" value="{{ review.summary if review else '' }}">
         </div>
-
-        <!-- レース分析セクション -->
-        <div class="card mb-4">
-            <div class="card-header">
-                <h4 class="mb-0">レース分析</h4>
-            </div>
-            <div class="card-body">
-                <div class="mb-3">
-                    <label for="pace_analysis" class="form-label">ペース分析</label>
-                    <textarea class="form-control" id="pace_analysis" name="pace_analysis" rows="3" 
-                              placeholder="ペースの流れや各馬の位置取りについて...">{{ review.pace_analysis if review else '' }}</textarea>
-                </div>
-
-                <div class="mb-3">
-                    <label for="track_condition_note" class="form-label">馬場状態</label>
-                    <textarea class="form-control" id="track_condition_note" name="track_condition_note" rows="3"
-                              placeholder="馬場状態とその影響について...">{{ review.track_condition_note if review else '' }}</textarea>
-                </div>
-
-                <div class="mb-3">
-                    <label for="race_flow" class="form-label">レース展開</label>
-                    <textarea class="form-control" id="race_flow" name="race_flow" rows="3"
-                              placeholder="レース全体の流れについて...">{{ review.race_flow if review else '' }}</textarea>
-                </div>
-
-                <div class="mb-3">
-                    <label for="overall_impression" class="form-label">総評</label>
-                    <textarea class="form-control" id="overall_impression" name="overall_impression" rows="3"
-                              placeholder="レース全体の印象について...">{{ review.overall_impression if review else '' }}</textarea>
-                </div>
-            </div>
+        
+        <div class="form-group mb-3">
+            <label for="content">レース分析</label>
+            <textarea class="form-control" id="content" name="content" rows="10" required>{{ review.content if review else '' }}</textarea>
         </div>
-
-        <!-- 馬の分析セクション -->
-        <div class="card mb-4">
-            <div class="card-header">
-                <h4 class="mb-0">馬の分析</h4>
-            </div>
-            <div class="card-body">
-                <div class="mb-3">
-                    <label for="winner_analysis" class="form-label">勝ち馬分析</label>
-                    <textarea class="form-control" id="winner_analysis" name="winner_analysis" rows="3"
-                              placeholder="勝ち馬の強さと勝因について...">{{ review.winner_analysis if review else '' }}</textarea>
-                </div>
-
-                <div class="mb-3">
-                    <label for="placed_horses_analysis" class="form-label">上位馬分析</label>
-                    <textarea class="form-control" id="placed_horses_analysis" name="placed_horses_analysis" rows="3"
-                              placeholder="2着以下の上位馬について...">{{ review.placed_horses_analysis if review else '' }}</textarea>
-                </div>
-
-                <div class="mb-3">
-                    <label for="notable_performances" class="form-label">注目すべき馬</label>
-                    <textarea class="form-control" id="notable_performances" name="notable_performances" rows="3"
-                              placeholder="特に印象に残った馬の動きについて...">{{ review.notable_performances if review else '' }}</textarea>
-                </div>
-
-                <div class="mb-3">
-                    <label for="future_prospects" class="form-label">今後の展望</label>
-                    <textarea class="form-control" id="future_prospects" name="future_prospects" rows="3"
-                              placeholder="注目馬の次走以降について...">{{ review.future_prospects if review else '' }}</textarea>
-                </div>
-            </div>
+        
+        <div class="form-check mb-3">
+            <input class="form-check-input" type="checkbox" id="is_premium" name="is_premium"
+                   {% if review and review.is_premium %}checked{% endif %}>
+            <label class="form-check-label" for="is_premium">
+                有料コンテンツとして公開する
+            </label>
         </div>
-
-        <!-- 公開設定 -->
-        <div class="card mb-4">
-            <div class="card-header">
-                <h4 class="mb-0">公開設定</h4>
-            </div>
-            <div class="card-body">
-                <div class="mb-3">
-                    <label class="form-label">公開設定</label>
-                    <select name="sale_status" class="form-select" id="saleStatus">
-                        <option value="free" {% if review and review.sale_status == 'free' %}selected{% endif %}>無料公開</option>
-                        <option value="paid" {% if review and review.sale_status == 'paid' %}selected{% endif %}>有料販売</option>
-                        <option value="draft" {% if review and review.sale_status == 'draft' %}selected{% endif %}>下書き</option>
-                    </select>
-                </div>
-
-                <div id="priceSection" class="mb-3" {% if not review or review.sale_status != 'paid' %}style="display: none;"{% endif %}>
-                    <label class="form-label">販売価格（ポイント）</label>
-                    <input type="number" name="price" class="form-control" min="100" step="100"
-                           value="{{ review.price if review and review.price else '100' }}" required>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">説明文</label>
-                    <textarea name="description" class="form-control" rows="3"
-                              placeholder="回顧ノートの概要や特徴について...">{{ review.description if review else '' }}</textarea>
-                </div>
-            </div>
+        
+        <div class="form-group mb-3 premium-price" style="{% if not review or not review.is_premium %}display: none;{% endif %}">
+            <label for="price">価格（ポイント）</label>
+            <input type="number" class="form-control" id="price" name="price" min="1" max="1000"
+                   value="{{ review.price if review and review.price else 100 }}">
         </div>
-
-        <div class="d-flex justify-content-between">
-            <button type="submit" class="btn btn-primary">
-                <i class="fas fa-save"></i> 保存
-            </button>
-            <a href="{{ url_for('race_detail', race_id=race.id) }}" class="btn btn-secondary">
-                キャンセル
-            </a>
-        </div>
+        
+        <button type="submit" class="btn btn-primary">保存する</button>
     </form>
 </div>
 
