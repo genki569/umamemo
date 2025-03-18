@@ -3867,10 +3867,12 @@ def save_review(race_id):
             db.session.commit()
             flash('レビューを保存しました', 'success')
         
-        return redirect(url_for('race_detail', race_id=race_id))
+        # 正しいエンドポイント名に修正
+        return redirect(url_for('race', race_id=race_id))
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"Error saving review: {str(e)}")
         current_app.logger.error(traceback.format_exc())
         flash('レビューの保存中にエラーが発生しました', 'danger')
-        return redirect(url_for('race_detail', race_id=race_id))
+        # 正しいエンドポイント名に修正
+        return redirect(url_for('race', race_id=race_id))
