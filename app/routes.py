@@ -1894,6 +1894,9 @@ def review_market():
             # 直接クエリを実行して購入済みレビューのIDを取得
             purchases = ReviewPurchase.query.filter_by(user_id=current_user.id).all()
             purchased_review_ids = [purchase.review_id for purchase in purchases]
+            
+            # デバッグログを追加
+            current_app.logger.info(f"User {current_user.id} has purchased reviews: {purchased_review_ids}")
         
         return render_template('review_market.html', 
                               reviews=premium_reviews,
@@ -3809,3 +3812,53 @@ def delete_race_memo_post(race_id, memo_id):
         flash('メモの削除中にエラーが発生しました', 'danger')
     
     return redirect(url_for('race_detail', race_id=race_id))
+
+@app.route('/races/<int:race_id>/review', methods=['POST'])
+@login_required
+def save_review(race_id):
+    try:
+        # フォームからデータを取得
+        content = request.form.get('content')
+        summary = request.form.get('summary', '')
+        is_premium = 'is_premium' in request.form
+        price = int(request.form.get('price', 0)) if is_premium else 0
+        
+        # デバッグログを追加
+        current_app.logger.info(f"Saving review for race {race_id}: premium={is_premium}, price={price}")
+        
+        # 既存のレビューを確認
+        existing_review = RaceReview.query.filter_by(
+            user_id=current_user.id,
+            race_id=race_id
+        ).first()
+        
+        if existing_review:
+            # 既存のレビューを更新
+            existing_review.content = content
+            existing_review.summary = summary
+            existing_review.is_premium = is_premium
+            existing_review.price = price
+            existing_review.updated_at = datetime.utcnow()
+            db.session.commit()
+            flash('レビューを更新しました', 'success')
+        else:
+            # 新しいレビューを作成
+            new_review = RaceReview(
+                user_id=current_user.id,
+                race_id=race_id,
+                content=content,
+                summary=summary,
+                is_premium=is_premium,
+                price=price
+            )
+            db.session.add(new_review)
+            db.session.commit()
+            flash('レビューを保存しました', 'success')
+        
+        return redirect(url_for('race', race_id=race_id))
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"Error saving review: {str(e)}")
+        current_app.logger.error(traceback.format_exc())
+        flash('レビューの保存中にエラーが発生しました', 'danger')
+        return redirect(url_for('race', race_id=race_id))
