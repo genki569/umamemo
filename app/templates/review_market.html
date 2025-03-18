@@ -17,10 +17,10 @@
                                 </small>
                             </p>
                             <p class="card-text">
-                                {% if hasattr(review, 'summary') and review.summary %}
-                                    {{ review.summary[:100] }}{% if review.summary|length > 100 %}...{% endif %}
+                                {% if review.overall_impression %}
+                                    {{ review.overall_impression[:100] }}{% if review.overall_impression|length > 100 %}...{% endif %}
                                 {% else %}
-                                    {{ review.content[:100] if hasattr(review, 'content') and review.content else '内容なし' }}{% if hasattr(review, 'content') and review.content and review.content|length > 100 %}...{% endif %}
+                                    {{ '内容なし' }}
                                 {% endif %}
                             </p>
                             <p class="card-text">
