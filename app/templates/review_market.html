@@ -16,7 +16,13 @@
                                     {{ review.race.date.strftime('%Y/%m/%d') }} - {{ review.race.venue }}
                                 </small>
                             </p>
-                            <p class="card-text">{{ review.summary[:100] }}{% if review.summary|length > 100 %}...{% endif %}</p>
+                            <p class="card-text">
+                                {% if hasattr(review, 'summary') and review.summary %}
+                                    {{ review.summary[:100] }}{% if review.summary|length > 100 %}...{% endif %}
+                                {% else %}
+                                    {{ review.content[:100] if hasattr(review, 'content') and review.content else '内容なし' }}{% if hasattr(review, 'content') and review.content and review.content|length > 100 %}...{% endif %}
+                                {% endif %}
+                            </p>
                             <p class="card-text">
                                 <small class="text-muted">
                                     作成者: {{ review.user.username }} | 

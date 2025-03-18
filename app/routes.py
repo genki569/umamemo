@@ -1910,6 +1910,12 @@ def review_market():
             # デバッグログを追加
             current_app.logger.info(f"User {current_user.id} has purchased reviews: {purchased_review_ids}")
         
+        # レビューにsummary属性がない場合、contentから生成
+        for review in premium_reviews:
+            if not hasattr(review, 'summary') or not review.summary:
+                # contentの最初の100文字をsummaryとして動的に追加
+                review.summary = review.content[:100] if review.content else ''
+        
         return render_template('review_market.html', 
                               reviews=premium_reviews,
                               purchased_review_ids=purchased_review_ids)
@@ -3836,7 +3842,7 @@ def save_review(race_id):
         price = int(request.form.get('price', 0)) if is_premium else 0
         
         # デバッグログを追加
-        current_app.logger.info(f"Saving review for race {race_id}: content={content[:20]}..., summary={summary}, premium={is_premium}, price={price}")
+        current_app.logger.info(f"Saving review for race {race_id}: content={content[:20]}..., premium={is_premium}, price={price}")
         
         # 既存のレビューを確認
         existing_review = RaceReview.query.filter_by(
@@ -3847,7 +3853,9 @@ def save_review(race_id):
         if existing_review:
             # 既存のレビューを更新
             existing_review.content = content
-            existing_review.summary = summary
+            # summaryフィールドがあれば更新、なければcontentの最初の部分を使用
+            if hasattr(existing_review, 'summary'):
+                existing_review.summary = summary
             existing_review.is_premium = is_premium
             existing_review.price = price
             existing_review.updated_at = datetime.utcnow()
@@ -3859,10 +3867,12 @@ def save_review(race_id):
                 user_id=current_user.id,
                 race_id=race_id,
                 content=content,
-                summary=summary,
                 is_premium=is_premium,
                 price=price
             )
+            # summaryフィールドがあれば設定
+            if hasattr(RaceReview, 'summary'):
+                new_review.summary = summary
             db.session.add(new_review)
             db.session.commit()
             flash('レビューを保存しました', 'success')
