@@ -33,7 +33,7 @@
         </form>
     </div>
     
-    <!-- 馬一覧のカードをさらに小さくして、より多くを表示 -->
+    <!-- 馬一覧のカードをおしゃれに表示 -->
     <div class="horses-grid">
         {% for horse in horses %}
         <div class="horse-card">
@@ -44,8 +44,8 @@
             <div class="horse-info">
                 <span class="horse-attribute">{{ horse.sex }}</span>
             </div>
-            <a href="{{ url_for('horse_detail', horse_id=horse.id) }}" class="btn btn-primary btn-sm horse-detail-btn">
-                詳細
+            <a href="{{ url_for('horse_detail', horse_id=horse.id) }}" class="btn horse-detail-btn">
+                詳細を見る
             </a>
         </div>
         {% endfor %}
