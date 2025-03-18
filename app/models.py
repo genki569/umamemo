@@ -429,6 +429,9 @@ class User(UserMixin, db.Model):
     # レビュー関連のリレーションシップを追加
     reviews = db.relationship('RaceReview', backref='author', lazy='dynamic')
 
+    # リレーションシップを追加
+    purchased_reviews = db.relationship('ReviewPurchase', backref='purchaser', lazy='dynamic')
+    
     def get_point_balance(self):
         return self.point_balance
     
@@ -475,6 +478,13 @@ class User(UserMixin, db.Model):
     
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
+
+    # 購入済みレビューを取得するプロパティを追加
+    @property
+    def purchased_race_reviews(self):
+        """ユーザーが購入したレース回顧のIDリストを返す"""
+        purchases = ReviewPurchase.query.filter_by(user_id=self.id).all()
+        return [purchase.review_id for purchase in purchases]
 
 # お気に入モデルを追加
 class Favorite(db.Model):
