@@ -1882,7 +1882,7 @@ def unread_notifications_count():
         app.logger.error(f"Error in unread_notifications_count: {str(e)}")
         return jsonify({'count': 0})
 
-@app.route('/review/market')
+@app.route('/reviews/market')
 def review_market():
     try:
         # 有料レビューの一覧を取得
@@ -1891,8 +1891,8 @@ def review_market():
         # 購入済みレビューのIDリスト（ログインしている場合のみ）
         purchased_review_ids = []
         if current_user.is_authenticated:
-            # purchased_race_reviewsプロパティを使用
-            purchased_review_ids = current_user.purchased_race_reviews
+            # get_purchased_review_idsメソッドを使用
+            purchased_review_ids = current_user.get_purchased_review_ids()
         
         return render_template('review_market.html', 
                               reviews=premium_reviews,
