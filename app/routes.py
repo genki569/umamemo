@@ -1381,7 +1381,7 @@ def race_review(race_id):
                 db.session.commit()
                 flash('レビューを保存しました', 'success')
             
-            return redirect(url_for('race_detail', race_id=race_id))
+            return redirect(url_for('race', race_id=race_id))
         except Exception as e:
             db.session.rollback()
             current_app.logger.error(f"Error saving review: {str(e)}")
