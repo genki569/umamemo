@@ -1891,8 +1891,9 @@ def review_market():
         # 購入済みレビューのIDリスト（ログインしている場合のみ）
         purchased_review_ids = []
         if current_user.is_authenticated:
-            # get_purchased_review_idsメソッドを使用
-            purchased_review_ids = current_user.get_purchased_review_ids()
+            # 直接クエリを実行して購入済みレビューのIDを取得
+            purchases = ReviewPurchase.query.filter_by(user_id=current_user.id).all()
+            purchased_review_ids = [purchase.review_id for purchase in purchases]
         
         return render_template('review_market.html', 
                               reviews=premium_reviews,
