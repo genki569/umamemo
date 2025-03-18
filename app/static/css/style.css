@@ -602,118 +602,205 @@
     border: 1px solid #E0E0E0;
 }
 
-/* 馬一覧のグリッドレイアウト - より密集したレイアウト */
-.horses-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); /* 幅を120pxに縮小 */
-    gap: 10px; /* 隙間を減らす */
-    margin: 15px 0;
+/* 馬一覧ページのスタイリング改善 */
+.horses-header {
+    background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+    padding: 2rem 0;
+    color: white;
+    margin-bottom: 1.5rem;
+    border-radius: 0 0 20px 20px;
+    box-shadow: 0 4px 12px rgba(108, 92, 231, 0.2);
 }
 
-/* 馬カードのスタイル - よりコンパクトに */
+.header-content {
+    text-align: center;
+}
+
+.header-description {
+    max-width: 700px;
+    margin: 0 auto;
+    font-size: 1rem;
+    opacity: 0.9;
+}
+
+.highlight {
+    color: #ffeaa7;
+    font-weight: 700;
+}
+
+/* 検索フォームの改善 */
+.search-container {
+    margin-bottom: 1.5rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.search-form .input-group {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.search-form .form-control {
+    border: none;
+    padding: 0.8rem 1rem;
+    font-size: 1rem;
+}
+
+.search-form .btn {
+    padding: 0.8rem 1.5rem;
+    font-weight: 500;
+}
+
+.search-form .btn-primary {
+    background: #6c5ce7;
+    border-color: #6c5ce7;
+}
+
+/* 馬一覧のグリッドレイアウト - モダンなデザイン */
+.horses-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 15px;
+    margin: 1.5rem 0;
+}
+
+/* 馬カードのスタイル - モダンでおしゃれに */
 .horse-card {
     background-color: #fff;
-    border-radius: 6px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    padding: 10px; /* パディングを減らす */
+    border-radius: 12px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+    padding: 12px;
     text-align: center;
-    transition: transform 0.2s, box-shadow 0.2s;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.horse-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, #6c5ce7, #a29bfe);
+    opacity: 0;
+    transition: opacity 0.3s ease;
 }
 
 .horse-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    box-shadow: 0 8px 20px rgba(108, 92, 231, 0.15);
 }
 
-/* 馬アイコン - サイズ縮小 */
+.horse-card:hover::before {
+    opacity: 1;
+}
+
+/* 馬アイコン - モダンなデザイン */
 .horse-icon {
-    width: 40px; /* サイズを縮小 */
-    height: 40px; /* サイズを縮小 */
-    background-color: #6c5ce7;
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, #6c5ce7, #a29bfe);
     color: white;
-    border-radius: 50%;
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 auto 8px; /* 下マージンを減らす */
-    font-size: 18px; /* フォントサイズを縮小 */
+    margin: 0 auto 10px;
+    font-size: 22px;
+    box-shadow: 0 4px 8px rgba(108, 92, 231, 0.2);
 }
 
-/* 馬名 - フォントサイズ縮小 */
+/* 馬名 - 読みやすく */
 .horse-name {
-    font-size: 14px; /* フォントサイズを縮小 */
+    font-size: 15px;
     font-weight: 600;
-    margin: 0 0 5px; /* マージンを減らす */
+    margin: 0 0 6px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    color: #2d3436;
 }
 
-/* 馬の属性 - マージン縮小 */
+/* 馬の属性 - スタイリッシュに */
 .horse-info {
-    font-size: 11px; /* フォントサイズを縮小 */
-    color: #666;
-    margin-bottom: 8px; /* マージンを減らす */
+    font-size: 12px;
+    color: #636e72;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: center;
+    gap: 5px;
 }
 
-/* 詳細ボタン - サイズ縮小 */
+.horse-attribute {
+    background-color: #f5f6fa;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-weight: 500;
+}
+
+/* 詳細ボタン - モダンなデザイン */
 .horse-detail-btn {
     width: 100%;
-    background-color: #007bff;
+    background: linear-gradient(90deg, #6c5ce7, #a29bfe);
     border: none;
     color: white;
-    padding: 3px 0; /* パディングを減らす */
-    font-size: 11px; /* フォントサイズを縮小 */
+    padding: 6px 0;
+    font-size: 13px;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
 }
 
-/* レスポンシブ対応 - さらに小さく */
+.horse-detail-btn:hover {
+    background: linear-gradient(90deg, #5d4de0, #9187fa);
+    box-shadow: 0 4px 8px rgba(108, 92, 231, 0.3);
+}
+
+/* レスポンシブ対応 - スマートに */
 @media (max-width: 767.98px) {
     .horses-grid {
-        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); /* モバイルではさらに小さく */
-        gap: 8px;
+        grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+        gap: 12px;
     }
     
     .horse-card {
-        padding: 8px;
+        padding: 10px;
     }
     
     .horse-icon {
-        width: 35px;
-        height: 35px;
-        font-size: 16px;
+        width: 40px;
+        height: 40px;
+        font-size: 18px;
     }
     
     .horse-name {
-        font-size: 12px;
-    }
-    
-    .horse-info {
-        font-size: 10px;
-    }
-    
-    .horse-detail-btn {
-        font-size: 10px;
-        padding: 2px 0;
+        font-size: 13px;
     }
 }
 
-/* 検索フォームの最適化 */
-.search-container {
-    margin-bottom: 10px; /* マージンを減らす */
-}
-
-.search-form .input-group {
-    max-width: 100%;
-}
-
-/* ページネーションの最適化 */
+/* ページネーションの改善 */
 .pagination {
-    margin-top: 10px; /* マージンを減らす */
+    margin-top: 1.5rem;
 }
 
 .page-link {
-    padding: 0.3rem 0.6rem; /* パディングを減らす */
-    font-size: 0.85rem; /* フォントサイズを縮小 */
+    color: #6c5ce7;
+    border-color: #e9ecef;
+    padding: 0.5rem 0.8rem;
+    font-weight: 500;
+}
+
+.page-item.active .page-link {
+    background-color: #6c5ce7;
+    border-color: #6c5ce7;
+}
+
+.page-item.disabled .page-link {
+    color: #b2bec3;
 }
 
 /* フッターのモバイル対応 */
