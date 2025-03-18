@@ -479,9 +479,8 @@ class User(UserMixin, db.Model):
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
 
-    # 購入済みレビューを取得するプロパティを追加
-    @property
-    def purchased_race_reviews(self):
+    # 購入済みレビューを取得するメソッドを追加
+    def get_purchased_review_ids(self):
         """ユーザーが購入したレース回顧のIDリストを返す"""
         purchases = ReviewPurchase.query.filter_by(user_id=self.id).all()
         return [purchase.review_id for purchase in purchases]
