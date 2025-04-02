@@ -1,8 +1,17 @@
 // グローバル変数として一度だけ宣言
 var observer;
+var csrfToken;
 
 document.addEventListener('DOMContentLoaded', function() {
     console.log('main.js loaded');
+    
+    // CSRFトークンを一度だけ取得
+    if (!csrfToken) {
+        csrfToken = document.querySelector('meta[name="csrf-token"]')?.content ||
+                   document.querySelector('#csrf-form input[name="csrf_token"]')?.value ||
+                   document.querySelector('input[name="csrf_token"]')?.value;
+        console.log('CSRF Token initialized');
+    }
     
     // モバイルデバイスの検出
     const isMobile = window.innerWidth <= 768;
@@ -70,175 +79,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // レビュー購入処理
     document.querySelectorAll('.purchase-review').forEach(button => {
-        button.addEventListener('click', async (e) => {
-            e.preventDefault();
-            
-            if (!confirm('このレビューを購入しますか？')) {
-                return;
-            }
-            
-            const reviewId = e.target.dataset.reviewId;
-            const reviewPrice = parseInt(e.target.dataset.reviewPrice);
-            const currentPoints = parseInt(e.target.dataset.userPoints || 0);
-            
-            // ポイント不足チェック
-            if (currentPoints < reviewPrice) {
-                const requiredPoints = reviewPrice - currentPoints;
-                const chargeUrl = `/mypage/charge-points?required_points=${requiredPoints}&return_to=${encodeURIComponent(window.location.pathname)}`;
-                if (confirm('ポイントが不足しています。チャージページに移動しますか？')) {
-                    window.location.href = chargeUrl;
-                    return;
-                }
-                return;
-            }
-            
-            try {
-                const response = await fetch(`/reviews/${reviewId}/purchase`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').content
-                    }
-                });
-                
-                const data = await response.json();
-                
-                if (data.success) {
-                    alert('レビューを購入しました。');
-                    window.location.href = data.redirect_url;
-                } else {
-                    alert(data.message || '購入処理中にエラーが発生しました。');
-                }
-                
-            } catch (error) {
-                console.error('Error:', error);
-                alert('購入処理中にエラーが発生しました。');
-            }
-        });
+        button.addEventListener('click', purchaseReview);
     });
-
-    // フォーム送信のイベントリスナーを削除（通常のフォーム送信を使用）
-    // 代わりに、価格セクションの表示制御のみを残す
-    const saleStatus = document.getElementById('saleStatus');
-    if (saleStatus) {
-        saleStatus.addEventListener('change', function() {
-            const priceSection = document.getElementById('priceSection');
-            priceSection.style.display = this.value === 'paid' ? 'block' : 'none';
-        });
-    }
-
-    // 統計カードのカウントアップアニメーション
-    const statsNumbers = document.querySelectorAll('.stats-number');
-    statsNumbers.forEach(number => {
-        const finalValue = parseInt(number.textContent);
-        animateValue(number, 0, finalValue, 2000);
-    });
-
-    // ホバーエフェクト
-    const cards = document.querySelectorAll('.card');
-    cards.forEach(card => {
-        card.addEventListener('mouseenter', function() {
-            this.style.transform = 'translateY(-10px)';
-        });
-        card.addEventListener('mouseleave', function() {
-            this.style.transform = 'translateY(0)';
-        });
-    });
-
-    // ポイントチャージフォームの処理
-    const paymentForm = document.getElementById('payment-form');
-    if (paymentForm) {
-        const stripe = Stripe(paymentForm.dataset.stripeKey);
-        const elements = stripe.elements();
-        const card = elements.create('card', {
-            style: {
-                base: {
-                    fontSize: '16px',
-                    color: '#32325d',
-                }
-            }
-        });
-
-        // カード入力フォームをマウント
-        card.mount('#card-element');
-
-        // エラーハンドリング
-        card.addEventListener('change', function(event) {
-            const displayError = document.getElementById('card-errors');
-            if (event.error) {
-                displayError.textContent = event.error.message;
-            } else {
-                displayError.textContent = '';
-            }
-        });
-
-        // フォーム送信処理
-        paymentForm.addEventListener('submit', async function(event) {
-            event.preventDefault();
-            
-            const submitButton = document.getElementById('submit-button');
-            submitButton.disabled = true;
-            submitButton.textContent = '処理中...';
-
-            try {
-                const {token, error} = await stripe.createToken(card);
-
-                if (error) {
-                    const errorElement = document.getElementById('card-errors');
-                    errorElement.textContent = error.message;
-                    submitButton.disabled = false;
-                    submitButton.textContent = 'チャージする';
-                    return;
-                }
-
-                // トークンをサーバーに送信
-                const response = await fetch('/mypage/charge-points', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').content
-                    },
-                    body: JSON.stringify({
-                        stripeToken: token.id,
-                        amount: document.getElementById('amount').value
-                    })
-                });
-
-                const result = await response.json();
-
-                if (result.success) {
-                    window.location.href = result.redirect_url || '/mypage';
-                } else {
-                    throw new Error(result.message || '決済処理に失敗しました');
-                }
-
-            } catch (error) {
-                console.error('Error:', error);
-                const errorElement = document.getElementById('card-errors');
-                errorElement.textContent = error.message || '決済処理中にエラーが発生しました';
-                submitButton.disabled = false;
-                submitButton.textContent = 'チャージする';
-            }
-        });
-    }
-
-    // レース一覧ページの日付ナビゲーション
-    if (typeof window.dateButtonsInitialized === 'undefined') {
-        window.dateButtonsInitialized = true;
-        
-        const dateButtonsContainer = document.querySelector('.date-selector');
-        if (dateButtonsContainer) {
-            const dateButtons = dateButtonsContainer.querySelectorAll('.date-btn');
-            dateButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    // 他のボタンから選択状態を削除
-                    dateButtons.forEach(btn => btn.classList.remove('active'));
-                    // このボタンを選択状態に
-                    this.classList.add('active');
-                });
-            });
-        }
-    }
 
     // 新しいアニメーション機能の追加
     // AOSの初期化
@@ -366,70 +208,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }, 300);
             }
         }, 3000);
-    }
-
-    // CSRFトークンを取得（複数のソースから試行）
-    const csrfToken = 
-        document.querySelector('meta[name="csrf-token"]')?.content ||
-        document.querySelector('#csrf-form input[name="csrf_token"]')?.value ||
-        document.querySelector('input[name="csrf_token"]')?.value;
-
-    if (!csrfToken) {
-        console.error('CSRF token not found');
-        return;
-    }
-
-    // フォームにCSRFトークンを追加
-    document.querySelectorAll('form').forEach(function(form) {
-        if (!form.querySelector('input[name="csrf_token"]')) {
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = 'csrf_token';
-            input.value = csrfToken;
-            form.appendChild(input);
-        }
-    });
-
-    // 動的に追加されるフォームのための監視
-    const observer = new MutationObserver(function(mutations) {
-        mutations.forEach(function(mutation) {
-            mutation.addedNodes.forEach(function(node) {
-                if (node.nodeName === 'FORM' && !node.querySelector('input[name="csrf_token"]')) {
-                    const input = document.createElement('input');
-                    input.type = 'hidden';
-                    input.name = 'csrf_token';
-                    input.value = csrfToken;
-                    node.appendChild(input);
-                }
-            });
-        });
-    });
-
-    // body全体を監視
-    observer.observe(document.body, {
-        childList: true,
-        subtree: true
-    });
-
-    // Ajaxリクエスト用のCSRFトークンヘッダー設定
-    const token = document.querySelector('meta[name="csrf-token"]')?.content || csrfToken;
-    if (token) {
-        document.querySelectorAll('form').forEach(form => {
-            form.addEventListener('submit', function(e) {
-                if (this.method.toLowerCase() === 'post') {
-                    const csrfInput = this.querySelector('input[name="csrf_token"]');
-                    if (!csrfInput) {
-                        e.preventDefault();
-                        const input = document.createElement('input');
-                        input.type = 'hidden';
-                        input.name = 'csrf_token';
-                        input.value = token;
-                        this.appendChild(input);
-                        this.submit();
-                    }
-                }
-            });
-        });
     }
 
     // レース詳細ページのアコーディオン機能
@@ -706,6 +484,9 @@ function performPrediction() {
     const raceId = this.dataset.raceId;
     fetch(`/predict/${raceId}`, {
         method: 'POST',
+        headers: {
+            'X-CSRFToken': csrfToken
+        }
     })
     .then(response => response.json())
     .then(data => {
@@ -728,12 +509,13 @@ function displayPredictionResults(predictions) {
     });
     document.getElementById('prediction-results').style.display = 'block';
 }
+
 // フォームのバリデーション関数
 function validateForm(event) {
     const usernameInput = document.getElementById('username');
     const passwordInput = document.getElementById('password');
 
-    if (usernameInput.value.trim() === '' || passwordInput.value.trim() === '') {
+    if (usernameInput && passwordInput && (usernameInput.value.trim() === '' || passwordInput.value.trim() === '')) {
         event.preventDefault();
         alert('ユーザー名とパスワードを入力してください。');
     }
