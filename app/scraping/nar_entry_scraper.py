@@ -351,27 +351,40 @@ def get_race_info_for_next_three_days():
                     
                     print(f"\n{date_str}の処理を開始します...")
                     
-                    race_urls = get_race_urls_for_date(page, context, date_str)
-                    print(f"{date_str}のレースURL数: {len(race_urls)}")
-                    
-                    if race_urls:  # レースURLが存在する場合のみ処理
-                        for race_url in race_urls:
-                            race_entry = scrape_race_entry(page, race_url)
-                            if race_entry and race_entry['entries'] and len(race_entry['entries']) > 0:
-                                save_to_csv(race_entry, filename)
-                                print(f"保存完了: {race_entry['venue_name']} {race_entry['race_number']}R")
-                        print(f"{date_str}の処理が完了しました")
-                    else:
-                        print(f"{date_str}のレースはありません")
+                    try:
+                        race_urls = get_race_urls_for_date(page, context, date_str)
+                        print(f"{date_str}のレースURL数: {len(race_urls)}")
+                        
+                        if race_urls:  # レースURLが存在する場合のみ処理
+                            for race_url in race_urls:
+                                try:
+                                    race_entry = scrape_race_entry(page, race_url)
+                                    if race_entry and race_entry['entries'] and len(race_entry['entries']) > 0:
+                                        save_to_csv(race_entry, filename)
+                                        print(f"保存完了: {race_entry['venue_name']} {race_entry['race_number']}R")
+                                except Exception as e:
+                                    print(f"レース情報取得エラー: {str(e)}")
+                                    traceback.print_exc()
+                            print(f"{date_str}の処理が完了しました")
+                        else:
+                            print(f"{date_str}のレースはありません")
+                    except Exception as e:
+                        print(f"{date_str}の処理中にエラーが発生しました: {str(e)}")
+                        traceback.print_exc()
                 
             finally:
-                context.close()
-                browser.close()
+                try:
+                    context.close()
+                    browser.close()
+                except Exception as e:
+                    print(f"ブラウザクローズ中にエラーが発生: {str(e)}")
                 
     except Exception as e:
         print(f"処理エラー: {str(e)}")
-        import traceback
         traceback.print_exc()
+        return False
+    
+    return True
 
 def scrape_race_entries(date_str=None):
     """指定された日付のレース出走表をスクレイピング"""
