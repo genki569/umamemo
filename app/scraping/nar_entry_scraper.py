@@ -11,6 +11,7 @@ import json
 from app import app, db
 from app.models import Race, Horse, Jockey, ShutubaEntry
 import traceback
+import sys
 
 def generate_race_id(race_url: str) -> str:
     """レースURLからレースIDを生成（15桁）"""
@@ -430,4 +431,10 @@ def scrape_race_entries(date_str=None):
 
 if __name__ == '__main__':
     print("地方競馬出走表の取得を開始します...")
-    get_race_info_for_next_three_days()
+    success = get_race_info_for_next_three_days()
+    if success:
+        print("スクレイピングが正常に完了しました")
+        sys.exit(0)
+    else:
+        print("スクレイピングに失敗しました")
+        sys.exit(1)

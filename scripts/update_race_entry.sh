@@ -75,13 +75,20 @@ log "出走表データ更新を開始します"
 ) &
 TIMEOUT_PID=$!
 
-# 1. スクレイピングの実行
+# スクレイピングの実行
 log "スクレイピングを開始します..."
 cd "$APP_DIR" || handle_error "アプリケーションディレクトリに移動できません"
-python -m app.scraping.nar_entry_scraper > "${LOG_DIR}/scraping_${CURRENT_DATE}.log" 2>&1
+
+# 仮想環境がある場合はアクティベート
+if [ -d "$APP_DIR/venv" ]; then
+    source "$APP_DIR/venv/bin/activate"
+fi
+
+# スクレイピングスクリプトを実行
+python -m app.scraping.nar_entry_scraper
 
 if [ $? -ne 0 ]; then
-    handle_error "スクレイピングに失敗しました。ログを確認してください: ${LOG_DIR}/scraping_${CURRENT_DATE}.log"
+    handle_error "スクレイピングに失敗しました"
 fi
 
 log "スクレイピングが完了しました"
