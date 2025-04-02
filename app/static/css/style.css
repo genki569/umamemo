@@ -1163,6 +1163,9 @@ p, h1, h2, h3, h4, h5, h6, span, a, div {
     overflow: hidden;
     background-color: #f8f9fa;
     z-index: 1; /* z-indexを追加 */
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
 }
 
 .hero-image {
@@ -1198,10 +1201,31 @@ p, h1, h2, h3, h4, h5, h6, span, a, div {
     padding: 2rem;
     max-width: 800px;
     margin: 0 auto;
-    display: flex;
+    display: flex !important;
     flex-direction: column;
     justify-content: center;
     height: 100%;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+.hero-title {
+    font-size: 3.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.hero-subtitle {
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.hero-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
 }
 
 /* モバイル向けの調整 */
@@ -1214,6 +1238,19 @@ p, h1, h2, h3, h4, h5, h6, span, a, div {
     .hero-content {
         padding: 2rem 1rem;
     }
+    
+    .hero-title {
+        font-size: 2.5rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.2rem;
+    }
+    
+    .hero-buttons {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
 }
 
 /* 機能セクション */
@@ -1222,4 +1259,52 @@ p, h1, h2, h3, h4, h5, h6, span, a, div {
     background-color: #fff;
     position: relative;
     z-index: 1; /* z-indexを追加 */
+}
+
+.section-title {
+    text-align: center;
+    margin-bottom: 3rem;
+    font-weight: 700;
+    color: #333;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.feature-card {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.feature-icon {
+    font-size: 2.5rem;
+    color: #007bff;
+    margin-bottom: 1.5rem;
+}
+
+.feature-card h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #333;
+}
+
+.feature-list {
+    padding-left: 1.5rem;
+    margin-top: 1rem;
+}
+
+.feature-list li {
+    margin-bottom: 0.5rem;
 }
