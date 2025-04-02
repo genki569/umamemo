@@ -1903,8 +1903,8 @@ def review_market():
         # レビューにsummary属性がない場合、contentから生成
         for review in premium_reviews:
             if not hasattr(review, 'summary') or not review.summary:
-                # contentの最初の100文字をsummaryとして動的に追加
-                review.summary = review.overall_impression[:100] if hasattr(review, "overall_impression") and review.overall_impression else "" if review.content else ''
+               
+                review.overall_impression = ''
         
         return render_template('review_market.html', 
                               reviews=premium_reviews,

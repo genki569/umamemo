@@ -75,22 +75,17 @@ log "出走表データ更新を開始します"
 ) &
 TIMEOUT_PID=$!
 
-# 1. スクレイピングの実行
+# スクレイピングの実行
 log "スクレイピングを開始します..."
 cd "$APP_DIR" || handle_error "アプリケーションディレクトリに移動できません"
 
-# Pythonの仮想環境がある場合はアクティベート
-if [ -f "$APP_DIR/venv/bin/activate" ]; then
+# 仮想環境がある場合はアクティベート
+if [ -d "$APP_DIR/venv" ]; then
     source "$APP_DIR/venv/bin/activate"
 fi
 
 # スクレイピングスクリプトを実行
-python -c "
-from app.scraping.nar_entry_scraper import get_race_info_for_next_three_days
-
-# 今日から3日分のレース情報を取得する関数を実行
-get_race_info_for_next_three_days()
-"
+python -m app.scraping.nar_entry_scraper
 
 if [ $? -ne 0 ]; then
     handle_error "スクレイピングに失敗しました"
