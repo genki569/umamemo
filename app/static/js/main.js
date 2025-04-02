@@ -72,6 +72,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 heroContent.style.opacity = '1';
             }
         }
+        
+        // 機能セクションの表示を確認
+        const featuresSection = document.querySelector('.features-section');
+        if (featuresSection) {
+            console.log('Features section found');
+            featuresSection.style.display = 'block';
+            featuresSection.style.visibility = 'visible';
+            featuresSection.style.opacity = '1';
+        }
     }, 500);
 
     // フラッシュメッセージの自動非表示
@@ -117,12 +126,7 @@ document.addEventListener('DOMContentLoaded', function() {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('visible');
-                    
-                    // 数値のカウントアップアニメーション
-                    if (entry.target.classList.contains('stats-number')) {
-                        const finalValue = parseInt(entry.target.dataset.value);
-                        animateValue(entry.target, 0, finalValue, 2000);
-                    }
+                    console.log('Element is now visible:', entry.target);
                 }
             });
         }, {
@@ -132,8 +136,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // アニメーション対象の要素を監視
-    document.querySelectorAll('.fade-in, .scale-in, .stats-number').forEach(el => {
+    document.querySelectorAll('.fade-in, .scale-in').forEach(el => {
         observer.observe(el);
+        console.log('Observing element:', el);
     });
 
     // ホバーエフェクトの強化
@@ -464,6 +469,11 @@ document.addEventListener('DOMContentLoaded', function() {
         
         return originalFetch(url, options);
     };
+
+    // デバッグ情報の出力
+    console.log('Document height:', document.body.offsetHeight);
+    console.log('Window height:', window.innerHeight);
+    console.log('Visible elements:', document.querySelectorAll('*:not([style*="display: none"])').length);
 });
 
 // 日付ナビゲーション関数
@@ -561,4 +571,36 @@ window.onerror = function(message, source, lineno, colno, error) {
     console.log('Column: ' + colno);
     console.log('Error object: ' + error);
     return false;
+};
+
+// ページ読み込み完了時の処理
+window.onload = function() {
+    console.log('Window loaded');
+    
+    // すべての画像が読み込まれたか確認
+    const images = document.querySelectorAll('img');
+    let loadedImages = 0;
+    
+    images.forEach(img => {
+        if (img.complete) {
+            loadedImages++;
+        } else {
+            img.addEventListener('load', () => {
+                loadedImages++;
+                console.log(`Image loaded: ${loadedImages}/${images.length}`);
+            });
+            
+            img.addEventListener('error', () => {
+                console.error(`Failed to load image: ${img.src}`);
+            });
+        }
+    });
+    
+    console.log(`Initially loaded images: ${loadedImages}/${images.length}`);
+    
+    // ヒーローセクションの再確認
+    const heroSection = document.querySelector('.hero-section');
+    if (heroSection) {
+        console.log('Hero section dimensions:', heroSection.getBoundingClientRect());
+    }
 };
