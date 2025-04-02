@@ -42,47 +42,103 @@
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     </form>
     
-    <!-- ナビゲーションバー -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+    <!-- ナビゲーション部分 -->
+    <nav class="navbar navbar-expand-lg">
         <div class="container">
             <a class="navbar-brand" href="{{ url_for('index') }}">
-                <i class="fas fa-horse text-primary"></i> 馬メモ
+                <i class="fas fa-horse me-2"></i>馬メモ
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+                <i class="fas fa-bars"></i>
             </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('races') }}">レース情報</a>
+
+            <div class="collapse navbar-collapse" id="navbarContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <!-- レース情報ドロップダウン -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            レース情報
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="{{ url_for('races') }}">レース一覧</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{{ url_for('races') }}?type=upcoming">今後のレース</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('races') }}?type=past">過去のレース</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{{ url_for('races') }}?venue=central">中央競馬</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('races') }}?venue=local">地方競馬</a></li>
+                        </ul>
                     </li>
+
+                    <!-- 競走馬情報 -->
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('horses') }}">競走馬一覧</a>
+                        <a class="nav-link" href="{{ url_for('horses') }}">
+                            <i class="fas fa-horse me-2"></i>馬一覧
+                        </a>
                     </li>
+
+                    <!-- 騎手情報 -->
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('jockeys') }}">騎手一覧</a>
+                        <a class="nav-link" href="{{ url_for('jockeys') }}">
+                            <i class="fas fa-user-tie me-2"></i>騎手一覧
+                        </a>
                     </li>
+
+                    <!-- 回顧ノート -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('review_market') }}">
+                            <i class="fas fa-book me-2"></i>回顧ノート
+                        </a>
+                    </li>
+
+                    {% if current_user.is_authenticated %}
+                    <!-- プレミアム機能（ログイン時のみ） -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('premium_features') }}">
+                            <i class="fas fa-crown me-2"></i>プレミアム
+                        </a>
+                    </li>
+                    {% endif %}
                 </ul>
+
+                <!-- 右側のナビゲーション -->
                 <ul class="navbar-nav">
                     {% if current_user.is_authenticated %}
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fas fa-user-circle"></i> {{ current_user.username }}
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" 
+                               data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-user me-2"></i>{{ current_user.username }}
                             </a>
-                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                <li><a class="dropdown-item" href="{{ url_for('mypage') }}">マイページ</a></li>
-                                <li><a class="dropdown-item" href="{{ url_for('mypage_reviews') }}">回顧ノート</a></li>
-                                <li><a class="dropdown-item" href="{{ url_for('mypage_favorites') }}">お気に入り</a></li>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                <li>
+                                    <a class="dropdown-item" href="{{ url_for('mypage_home') }}">
+                                        <i class="fas fa-home me-2"></i>マイページ
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{{ url_for('mypage_memos') }}">
+                                        <i class="fas fa-sticky-note me-2"></i>メモ一覧
+                                    </a>
+                                </li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="{{ url_for('logout') }}">ログアウト</a></li>
+                                <li>
+                                    <a class="dropdown-item" href="{{ url_for('logout') }}">
+                                        <i class="fas fa-sign-out-alt me-2"></i>ログアウト
+                                    </a>
+                                </li>
                             </ul>
                         </li>
                     {% else %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('login') }}">ログイン</a>
+                            <a class="nav-link" href="{{ url_for('login') }}">
+                                <i class="fas fa-sign-in-alt me-2"></i>ログイン
+                            </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('register') }}">新規登録</a>
+                            <a class="nav-link" href="{{ url_for('register') }}">
+                                <i class="fas fa-user-plus me-2"></i>会員登録
+                            </a>
                         </li>
                     {% endif %}
                 </ul>
@@ -90,83 +146,165 @@
         </div>
     </nav>
 
-    <!-- フラッシュメッセージ -->
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            <div class="container mt-3">
-                <div class="flashes">
-                    {% for category, message in messages %}
-                        <div class="alert alert-{{ category }}">
-                            {{ message }}
-                        </div>
-                    {% endfor %}
-                </div>
-            </div>
-        {% endif %}
-    {% endwith %}
-
-    <!-- メインコンテンツ -->
-    <main>
+    <!-- メインコンテンツをラップ -->
+    <div class="main-content">
         {% block content %}{% endblock %}
-    </main>
+    </div>
 
     <!-- フッター -->
-    <footer class="footer mt-5 py-3 bg-light">
+    <footer class="footer">
         <div class="container">
-            <div class="row">
-                <div class="col-md-4">
-                    <h5>馬メモ</h5>
-                    <p>競馬ファンのための情報共有プラットフォーム</p>
+            <div class="row g-4">
+                <!-- フッター部分のロゴセクション -->
+                <div class="col-lg-4 mb-4 mb-lg-0">
+                    <a href="{{ url_for('index') }}" class="text-decoration-none">
+                        <span class="footer-logo">
+                            <span class="gradient-text h3 mb-0">馬メモ</span>
+                            <small class="footer-subtitle">Uma Memo</small>
+                        </span>
+                    </a>
+                    <p class="footer-description mt-3">
+                        競馬をもっと楽しく、もっと身近に。<br>
+                        <span class="highlight">あなただけの競馬メモを作りましょう。</span>
+                    </p>
+                    <div class="footer-social mt-3">
+                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-line"></i></a>
+                    </div>
                 </div>
-                <div class="col-md-4">
-                    <h5>リンク</h5>
-                    <ul class="list-unstyled">
-                        <li><a href="{{ url_for('index') }}">ホーム</a></li>
-                        <li><a href="{{ url_for('races') }}">レース情報</a></li>
-                        <li><a href="{{ url_for('about') }}">サイトについて</a></li>
-                        <li><a href="{{ url_for('terms') }}">利用規約</a></li>
-                        <li><a href="{{ url_for('privacy') }}">プライバシーポリシー</a></li>
-                    </ul>
+                
+                <!-- メインメュー -->
+                <div class="col-lg-4 mb-4 mb-lg-0">
+                    <h5 class="mb-3">メニュー</h5>
+                    <div class="d-flex flex-column gap-2">
+                        <a href="{{ url_for('races') }}" class="text-decoration-none text-muted">
+                            <i class="fas fa-flag-checkered me-2"></i>レース情報
+                        </a>
+                        <a href="{{ url_for('horses') }}" class="text-decoration-none text-muted">
+                            <i class="fas fa-horse me-2"></i>馬一覧
+                        </a>
+                        <a href="{{ url_for('jockeys') }}" class="text-decoration-none text-muted">
+                            <i class="fas fa-user-tie me-2"></i>騎手一覧
+                        </a>
+                        <a href="{{ url_for('review_market') }}" class="text-decoration-none text-muted">
+                            <i class="fas fa-book me-2"></i>回顧ノート
+                        </a>
+                        {% if current_user.is_authenticated %}
+                        <a href="{{ url_for('premium_features') }}" class="text-decoration-none text-muted">
+                            <i class="fas fa-crown me-2"></i>プレミアム
+                        </a>
+                        {% endif %}
+                        <!-- 法的情報セクション -->
+                        <div class="footer-menu-section">
+                            <h6 class="text-muted mb-3">法的情報</h6>
+                            <div class="legal-links">
+                                <a href="{{ url_for('terms') }}">
+                                    <i class="fas fa-file-contract"></i>
+                                    <span>利用規約</span>
+                                </a>
+                                <a href="{{ url_for('privacy') }}">
+                                    <i class="fas fa-shield-alt"></i>
+                                    <span>プライバシーポリシー</span>
+                                </a>
+                                <a href="{{ url_for('commercial_transactions') }}">
+                                    <i class="fas fa-shopping-bag"></i>
+                                    <span>特定商取引法基づく表記</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="col-md-4">
-                    <h5>お問い合わせ</h5>
-                    <p>ご質問やフィードバックがありましたら、お気軽にお問い合わせください。</p>
-                    <a href="{{ url_for('contact') }}" class="btn btn-outline-primary">お問い合わせ</a>
+                
+                <!-- アカウント関連 -->
+                <div class="col-lg-4">
+                    <h5 class="mb-3">アカウント</h5>
+                    {% if current_user.is_authenticated %}
+                        <div class="d-flex flex-column gap-2">
+                            <a href="{{ url_for('mypage_home') }}" class="text-decoration-none text-muted">
+                                <i class="fas fa-user me-2"></i>マイページ
+                            </a>
+                            <a href="{{ url_for('favorites') }}" class="text-decoration-none text-muted">
+                                <i class="fas fa-star me-2"></i>お気に入り
+                            </a>
+                            <a href="{{ url_for('charge_points') }}" class="text-decoration-none text-muted">
+                                <i class="fas fa-coins me-2"></i>ポイントチャージ
+                            </a>
+                            <a href="{{ url_for('mypage_settings') }}" class="text-decoration-none text-muted">
+                                <i class="fas fa-cog me-2"></i>設定
+                            </a>
+                        </div>
+                    {% else %}
+                        <div class="d-flex flex-column gap-2">
+                            <a href="{{ url_for('login') }}" class="btn btn-outline-secondary w-100">
+                                <i class="fas fa-sign-in-alt me-2"></i>ログイン
+                            </a>
+                            <a href="{{ url_for('register') }}" class="btn btn-primary w-100">
+                                <i class="fas fa-user-plus me-2"></i>新規登録
+                            </a>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
-            <hr>
-            <div class="text-center">
-                <p>&copy; 2023 馬メモ All Rights Reserved.</p>
+            
+            <!-- コピーライト -->
+            <div class="border-top mt-4 pt-3">
+                <div class="row">
+                    <div class="col-12 text-center">
+                        <small class="text-muted">
+                            &copy; 2024 馬メモ All rights reserved.
+                            {% if current_user.is_authenticated and current_user.is_admin %}
+                                <a href="{{ url_for('admin_dashboard') }}" class="text-muted text-decoration-none ms-2" style="font-size: 0.8em;">・</a>
+                            {% endif %}
+                        </small>
+                    </div>
+                </div>
             </div>
         </div>
     </footer>
 
-    <!-- 基本スクリプト -->
+    <!-- JavaScriptファイルの読み込み - 一度だけ読み込む -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    
+    <!-- メインJavaScriptファイル - 一度だけ読み込む -->
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     
-    <!-- ページ固有のスクリプト -->
-    {% block scripts %}{% endblock %}
+    <!-- その他のJavaScriptファイル -->
+    <script src="{{ url_for('static', filename='js/settings.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/notifications.js') }}"></script>
+
+    <!-- ページ固有のJavaScript -->
+    {% block extra_js %}{% endblock %}
+
+    <!-- AOSの初期化 -->
+    <script>
+        // モバイルデバイスかどうかを確認
+        const isMobile = window.innerWidth <= 768;
+        
+        // AOSの初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof AOS !== 'undefined') {
+                AOS.init({
+                    duration: isMobile ? 0 : 800,
+                    once: true,
+                    disable: isMobile
+                });
+            }
+        });
+    </script>
     
-    <!-- 共通のJavaScript -->
+    <!-- カスタムナビゲーションスクリプト -->
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // CSRFトークンの取得
-        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-        
-        // Ajaxリクエスト用のヘッダー設定
-        const headers = {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': csrfToken
-        };
-        
-        // ドロップダウンメニューの初期化
-        const dropdownToggle = document.querySelectorAll('.dropdown-toggle');
-        dropdownToggle.forEach(toggle => {
-            toggle.addEventListener('click', function(e) {
+        // ドロップダウンの機能
+        const dropdowns = document.querySelectorAll('.dropdown-toggle');
+        dropdowns.forEach(dropdown => {
+            dropdown.addEventListener('click', function(e) {
                 e.preventDefault();
-                const dropdownMenu = this.nextElementSibling;
-                dropdownMenu.classList.toggle('show');
+                const menu = this.nextElementSibling;
+                menu.classList.toggle('show');
             });
         });
         
