@@ -1,3 +1,6 @@
+// グローバル変数として一度だけ宣言
+var observer;
+
 document.addEventListener('DOMContentLoaded', function() {
     console.log('main.js loaded');
     
@@ -250,22 +253,24 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Intersection Observerの設定
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('visible');
-                
-                // 数値のカウントアップアニメーション
-                if (entry.target.classList.contains('stats-number')) {
-                    const finalValue = parseInt(entry.target.dataset.value);
-                    animateValue(entry.target, 0, finalValue, 2000);
+    if (!observer) {
+        observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    
+                    // 数値のカウントアップアニメーション
+                    if (entry.target.classList.contains('stats-number')) {
+                        const finalValue = parseInt(entry.target.dataset.value);
+                        animateValue(entry.target, 0, finalValue, 2000);
+                    }
                 }
-            }
+            });
+        }, {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
         });
-    }, {
-        threshold: 0.1,
-        rootMargin: '0px 0px -50px 0px'
-    });
+    }
 
     // アニメーション対象の要素を監視
     document.querySelectorAll('.fade-in, .scale-in, .stats-number').forEach(el => {
@@ -747,3 +752,14 @@ function animateValue(obj, start, end, duration) {
     };
     window.requestAnimationFrame(step);
 }
+
+// エラーハンドリングの改善
+window.onerror = function(message, source, lineno, colno, error) {
+    console.log('JavaScript Error Details');
+    console.log('Message: ' + message);
+    console.log('URL: ' + source);
+    console.log('Line: ' + lineno);
+    console.log('Column: ' + colno);
+    console.log('Error object: ' + error);
+    return false;
+};
