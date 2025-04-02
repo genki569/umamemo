@@ -1904,7 +1904,7 @@ def review_market():
         for review in premium_reviews:
             if not hasattr(review, 'summary') or not review.summary:
                 # contentの最初の100文字をsummaryとして動的に追加
-                review.summary = review.content[:100] if review.content else ''
+                review.summary = review.overall_impression[:100] if hasattr(review, "overall_impression") and review.overall_impression else "" if review.content else ''
         
         return render_template('review_market.html', 
                               reviews=premium_reviews,
@@ -3807,7 +3807,7 @@ def delete_race_memo_post(race_id, memo_id):
         # 権限チェック
         if memo.user_id != current_user.id:
             flash('このメモを削除する権限がありません', 'danger')
-            return redirect(url_for('race_detail', race_id=race_id))
+            return redirect(url_for('race', race_id=race_id))
         
         db.session.delete(memo)
         db.session.commit()
@@ -3819,7 +3819,7 @@ def delete_race_memo_post(race_id, memo_id):
         current_app.logger.error(f"Error deleting race memo: {str(e)}")
         flash('メモの削除中にエラーが発生しました', 'danger')
     
-    return redirect(url_for('race_detail', race_id=race_id))
+    return redirect(url_for('race', race_id=race_id))
 
 @app.route('/races/<int:race_id>/review', methods=['POST'])
 @login_required

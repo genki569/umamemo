@@ -5,7 +5,7 @@
     <h2>{{ race.name }} の回顧一覧</h2>
     
     <div class="mb-3">
-        <a href="{{ url_for('race_detail', race_id=race.id) }}" class="btn btn-secondary">
+        <a href="{{ url_for('race', race_id=race.id) }}" class="btn btn-secondary">
             レース詳細に戻る
         </a>
         <a href="{{ url_for('race_review', race_id=race.id) }}" class="btn btn-primary">
