@@ -66,45 +66,34 @@
                     </li>
                 </ul>
                 
-                <ul class="navbar-nav">
+                <div class="navbar-nav">
                     {% if current_user.is_authenticated %}
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown">
-                            <i class="fas fa-user-circle me-1"></i>
-                            {{ current_user.username }}
+                    <div class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle me-1"></i>{{ current_user.username }}
                         </a>
-                        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                            <a class="dropdown-item" href="{{ url_for('mypage_home') }}">
-                                <i class="fas fa-home me-2"></i>マイページ
+                        <div class="dropdown-menu dropdown-menu-end">
+                            <a class="dropdown-item" href="{{ url_for('mypage') }}">
+                                <i class="fas fa-user me-2"></i>マイページ
                             </a>
                             <a class="dropdown-item" href="{{ url_for('mypage_reviews') }}">
                                 <i class="fas fa-book me-2"></i>回顧ノート
-                            </a>
-                            <a class="dropdown-item" href="{{ url_for('favorites') }}">
-                                <i class="fas fa-star me-2"></i>お気に入り
-                            </a>
-                            <a class="dropdown-item" href="{{ url_for('mypage_settings') }}">
-                                <i class="fas fa-cog me-2"></i>設定
                             </a>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="{{ url_for('logout') }}">
                                 <i class="fas fa-sign-out-alt me-2"></i>ログアウト
                             </a>
                         </div>
-                    </li>
+                    </div>
                     {% else %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('login') }}">
-                            <i class="fas fa-sign-in-alt me-1"></i>ログイン
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="btn btn-primary btn-sm nav-btn" href="{{ url_for('register') }}">
-                            新規登録
-                        </a>
-                    </li>
+                    <a class="nav-link" href="{{ url_for('login') }}">
+                        <i class="fas fa-sign-in-alt me-1"></i>ログイン
+                    </a>
+                    <a class="nav-link" href="{{ url_for('register') }}">
+                        <i class="fas fa-user-plus me-1"></i>新規登録
+                    </a>
                     {% endif %}
-                </ul>
+                </div>
             </div>
         </div>
     </nav>
@@ -159,7 +148,7 @@
                     <h5 class="mb-3">アカウント</h5>
                     {% if current_user.is_authenticated %}
                     <div class="d-flex flex-column gap-2">
-                        <a href="{{ url_for('mypage_home') }}" class="text-decoration-none text-muted">
+                        <a href="{{ url_for('mypage') }}" class="text-decoration-none text-muted">
                             <i class="fas fa-user me-2"></i>マイページ
                         </a>
                         <a href="{{ url_for('favorites') }}" class="text-decoration-none text-muted">

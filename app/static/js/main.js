@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
         csrfToken = document.querySelector('meta[name="csrf-token"]')?.content ||
                    document.querySelector('#csrf-form input[name="csrf_token"]')?.value ||
                    document.querySelector('input[name="csrf_token"]')?.value;
-        console.log('CSRF Token initialized');
+        console.log('CSRF Token initialized:', csrfToken ? 'Yes' : 'No');
     }
     
     // モバイルデバイスの検出
@@ -50,10 +50,27 @@ document.addEventListener('DOMContentLoaded', function() {
             // 強制的にページを再描画
             body.style.display = 'none';
             setTimeout(() => {
-                body.style.display = '';
+                body.style.display = 'block';
             }, 10);
         } else {
             console.log('Page content is visible');
+        }
+        
+        // ヒーローセクションの表示を確認
+        const heroSection = document.querySelector('.hero-section');
+        if (heroSection) {
+            console.log('Hero section found');
+            heroSection.style.display = 'block';
+            heroSection.style.visibility = 'visible';
+            heroSection.style.opacity = '1';
+            
+            const heroContent = document.querySelector('.hero-content');
+            if (heroContent) {
+                console.log('Hero content found');
+                heroContent.style.display = 'flex';
+                heroContent.style.visibility = 'visible';
+                heroContent.style.opacity = '1';
+            }
         }
     }, 500);
 
