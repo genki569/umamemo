@@ -87,6 +87,7 @@
     height: 70vh;
     min-height: 500px;
     overflow: hidden;
+    background-color: #f8f9fa; /* フォールバック背景色 */
 }
 
 .hero-image {
@@ -176,6 +177,93 @@
         display: none;
     }
 }
+
+/* 機能セクションのスタイル */
+.features-section {
+    padding: 4rem 0;
+    background-color: #fff;
+}
+
+.section-title {
+    text-align: center;
+    margin-bottom: 3rem;
+    font-weight: 700;
+    color: #333;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.feature-card {
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 2rem;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.feature-icon {
+    width: 60px;
+    height: 60px;
+    background-color: #f0f4ff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+}
+
+.feature-icon i {
+    font-size: 24px;
+    color: #4f46e5;
+}
+
+.feature-card h3 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.feature-list {
+    padding-left: 1.5rem;
+    margin-top: 1rem;
+}
+
+.feature-list li {
+    margin-bottom: 0.5rem;
+    position: relative;
+}
+
+/* アニメーション */
+.fade-in {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.scale-in {
+    opacity: 0;
+    transform: scale(0.9);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.scale-in.visible {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.shadow-hover:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
 </style>
 {% endblock %}
 
@@ -199,16 +287,13 @@
     </div>
 </section>
 
-<!-- 画像参照を削除 -->
-<!-- <img src="{{ url_for('static', filename='images/main-image.jpg') }}" alt="メイン画像"> -->
-
 <!-- 主な機能セクション -->
 <section class="features-section">
     <div class="container">
-        <h2 class="section-title fade-in">主な機能</h2>
+        <h2 class="section-title">主な機能</h2>
         <div class="features-grid">
             <!-- レース回顧機能 -->
-            <div class="feature-card shadow-hover fade-in">
+            <div class="feature-card">
                 <div class="feature-icon">
                     <i class="fas fa-search"></i>
                 </div>
@@ -218,16 +303,10 @@
                     <li>レース後の馬の様子を詳細にメモ</li>
                     <li>上がり順位やラップタイムを自動記録</li>
                     <li>馬場状態との相性を数値化して管理</li>
-                    <li>次走での狙い目ポイントを整理・分析</li>
-                    <li>パドックや返し馬の画像を保存可能</li>
-                    <li>カスタムタグで効率的に整理</li>
-                    <li>AI分析による客観的な評価付け</li>
-                    <li>他ユーザーの回顧と比較可能</li>
-                    <li>血統との相性を自動分析</li>
                 </ul>
             </div>
             <!-- 予想活用機能 -->
-            <div class="feature-card shadow-hover fade-in">
+            <div class="feature-card">
                 <div class="feature-icon">
                     <i class="fas fa-chart-line"></i>
                 </div>
@@ -237,12 +316,6 @@
                     <li>過去のメモを時系列で振り返り</li>
                     <li>AI搭載の好走パターン分析</li>
                     <li>条件適性をスコアで可視化</li>
-                    <li>独自の予想指数を自動生成</li>
-                    <li>血統的な相性を深層分析</li>
-                    <li>ビッグデータに基づく予想支援</li>
-                    <li>天候変化による影響を予測</li>
-                    <li>オッズ推移との相関分析</li>
-                    <li>類似レースの自動ピックアップ</li>
                 </ul>
             </div>
         </div>
