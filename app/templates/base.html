@@ -32,8 +32,68 @@
     
     <meta name="csrf-token" content="{{ csrf_token() }}">
     
-    <!-- Stripe.jsは一度だけ読み込む -->
+    <!-- 必要なJavaScript -->
     <script src="https://js.stripe.com/v3/"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
+
+    <!-- Bootstrap JS を追加 -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- モバイルヘッダー修正用のインラインスタイル -->
+    <style>
+    @media (max-width: 767.98px) {
+        /* ナビゲーションバーの修正 */
+        .navbar {
+            padding: 0.5rem;
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1030;
+            background-color: #fff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* ナビゲーションバーのコンテナ */
+        .navbar .container {
+            padding: 0;
+            min-height: auto;
+        }
+        
+        /* ブランドロゴ */
+        .navbar-brand {
+            font-size: 1.2rem;
+            padding: 0.5rem;
+            margin-right: 0;
+        }
+        
+        /* トグルボタン */
+        .navbar-toggler {
+            padding: 0.25rem 0.5rem;
+            font-size: 1rem;
+            border: none;
+            outline: none !important;
+            box-shadow: none !important;
+        }
+        
+        /* ナビゲーションメニュー */
+        .navbar-collapse {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background-color: #fff;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1029;
+            padding: 0.5rem;
+        }
+        
+        /* メインコンテンツのパディング調整（ヘッダーの高さ分） */
+        body {
+            padding-top: 60px;
+        }
+    }
+    </style>
     {% endblock %}
 </head>
 <body>
@@ -263,17 +323,109 @@
         </div>
     </footer>
 
-    <!-- JavaScriptファイルの読み込み - 一度だけ読み込む -->
+    <!-- JavaScriptの読み込み -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- カスタムJavaScriptファイルの読み込み -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/settings.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/notifications.js') }}"></script>
+
+    <!-- フバッグ用スクリプトを追加 -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM Content Loaded');
+            
+            // 要素の表示状態をチェック
+            const checkVisibility = () => {
+                console.log('Checking visibility...');
+                
+                // ヘッダーの状態
+                const header = document.querySelector('.horses-header');
+                if (header) {
+                    console.log('Header:', {
+                        display: getComputedStyle(header).display,
+                        visibility: getComputedStyle(header).visibility,
+                        opacity: getComputedStyle(header).opacity
+                    });
+                }
+                
+                // カードの状態
+                const cards = document.querySelectorAll('.horse-card');
+                console.log('Cards count:', cards.length);
+                if (cards.length > 0) {
+                    console.log('First card:', {
+                        display: getComputedStyle(cards[0]).display,
+                        visibility: getComputedStyle(cards[0]).visibility,
+                        opacity: getComputedStyle(cards[0]).opacity
+                    });
+                }
+            };
+
+            // 複数のタイミングでチェック
+            checkVisibility();
+            setTimeout(checkVisibility, 100);
+            setTimeout(checkVisibility, 500);
+            setTimeout(checkVisibility, 1000);
+        });
+    </script>
+
+    <!-- エラーの詳細なキャプチャ -->
+    <script>
+        window.onerror = function(msg, url, lineNo, columnNo, error) {
+            console.group('JavaScript Error Details');
+            console.error('Message:', msg);
+            console.error('URL:', url);
+            console.error('Line:', lineNo);
+            console.error('Column:', columnNo);
+            console.error('Error object:', error);
+            console.groupEnd();
+            return false;
+        };
+    </script>
+
+    <!-- 既存のエラーハンドリングコードの後に追加 -->
+    <script>
+        // ページ読み込み完了時に実行
+        window.addEventListener('load', function() {
+            console.log('ページが完全に読み込まれました');
+            
+            // DOMの状態を確認
+            const bodyContent = document.body.innerHTML;
+            if (bodyContent.trim().length === 0) {
+                console.error('ボディコンテンツが空です');
+            } else {
+                console.log('ボディコンテンツが存在します');
+            }
+            
+            // スタイルシートの読み込み状態を確認
+            const styleSheets = document.styleSheets;
+            console.log(`読み込まれたスタイルシート数: ${styleSheets.length}`);
+            
+            // JavaScriptファイルの読み込み状態を確認
+            const scripts = document.scripts;
+            console.log(`読み込まれたスクリプト数: ${scripts.length}`);
+        });
+    </script>
+
+    <!-- モバイル用固定フッターCTA -->
+    {% if not current_user.is_authenticated %}
+    <div class="mobile-fixed-cta">
+        <div class="mobile-cta-buttons">
+            <a href="{{ url_for('register') }}" class="mobile-cta-primary">無料で始める</a>
+            <a href="{{ url_for('login') }}" class="mobile-cta-secondary">ログイン</a>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- JavaScriptファイルの重複読み込みを修正 -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    
-    <!-- メインJavaScriptファイル - 一度だけ読み込む -->
+
+    <!-- アプリケーション固有のJavaScript - 必須のみ読み込む -->
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-    
-    <!-- その他のJavaScriptファイル -->
-    <script src="{{ url_for('static', filename='js/settings.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/notifications.js') }}"></script>
 
     <!-- ページ固有のJavaScript -->
     {% block extra_js %}{% endblock %}
@@ -294,6 +446,9 @@
             }
         });
     </script>
+
+    <!-- ページの最後にスクリプトを追加 -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     
     <!-- カスタムナビゲーションスクリプト -->
     <script>
@@ -327,6 +482,100 @@
             });
         }
     });
+    </script>
+
+    <!-- モバイルナビゲーション用のスクリプト -->
+    <script>
+    // 即時実行関数でモバイルナビゲーションを初期化
+    (function() {
+        // DOMの読み込みを待つ
+        function initMobileNav() {
+            console.log('Initializing mobile navigation');
+            
+            // モバイルデバイスの場合のみ実行
+            if (window.innerWidth <= 768) {
+                // ナビゲーションの要素を取得
+                const navbarToggler = document.querySelector('.navbar-toggler');
+                const navbarCollapse = document.querySelector('.navbar-collapse');
+                
+                // トグルボタンのクリックイベント
+                if (navbarToggler && navbarCollapse) {
+                    // 既存のイベントリスナーを削除
+                    const newToggler = navbarToggler.cloneNode(true);
+                    navbarToggler.parentNode.replaceChild(newToggler, navbarToggler);
+                    
+                    // 新しいイベントリスナーを追加
+                    newToggler.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        console.log('Toggler clicked');
+                        navbarCollapse.classList.toggle('show');
+                    });
+                }
+            }
+        }
+        
+        // DOMContentLoadedイベントで初期化
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initMobileNav);
+        } else {
+            initMobileNav();
+        }
+        
+        // 念のため、ウィンドウのロード完了時にも初期化
+        window.addEventListener('load', initMobileNav);
+    })();
+    </script>
+
+    <!-- スクロール問題を修正するインラインスクリプト -->
+    <script>
+    // スクロールを妨げる可能性のあるスタイルを削除
+    (function() {
+        // DOMの読み込みを待つ
+        function fixScrollStyles() {
+            console.log('Fixing scroll styles');
+            
+            // スタイルを修正
+            document.documentElement.style.removeProperty('overflow');
+            document.documentElement.style.removeProperty('height');
+            document.documentElement.style.removeProperty('position');
+            document.body.style.removeProperty('overflow');
+            document.body.style.removeProperty('height');
+            document.body.style.removeProperty('position');
+            
+            // スクロールを妨げる可能性のあるイベントリスナーを無効化
+            window.addEventListener('touchmove', function(e) {
+                e.stopPropagation();
+            }, { passive: true, capture: true });
+            
+            // スクロール位置を保存
+            let lastScrollY = window.scrollY;
+            
+            // スクロールが止まったら強制的に再開
+            setInterval(function() {
+                if (window.scrollY === lastScrollY && window.scrollY > 0) {
+                    // スクロールが止まっている場合、少し動かす
+                    window.scrollBy(0, 1);
+                    window.scrollBy(0, -1);
+                }
+                lastScrollY = window.scrollY;
+            }, 2000);
+        }
+        
+        // 即時実行
+        fixScrollStyles();
+        
+        // DOMContentLoadedイベントでも実行
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', fixScrollStyles);
+        }
+        
+        // ウィンドウのロード完了時にも実行
+        window.addEventListener('load', fixScrollStyles);
+        
+        // 1秒後にも実行
+        setTimeout(fixScrollStyles, 1000);
+    })();
     </script>
 </body>
 </html>
