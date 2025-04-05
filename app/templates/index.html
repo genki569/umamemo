@@ -250,213 +250,188 @@
 
 {% block content %}
 <!-- ヒーローセクション -->
-<section class="umamemo-hero">
-    <div class="umamemo-hero-image">
-        <img src="{{ url_for('static', filename='images/hero-bg.jpg') }}" alt="メイン画像" class="umamemo-desktop-image">
-        <img src="{{ url_for('static', filename='images/hero-bg-mobile.jpg') }}" alt="メイン画像（モバイル）" class="umamemo-mobile-image">
-    </div>
-    <div class="umamemo-hero-overlay"></div>
-    <div class="umamemo-hero-content">
-        <h1 class="umamemo-hero-title">馬メモ</h1>
-        <p class="umamemo-hero-subtitle">競馬ファンのための情報共有プラットフォーム</p>
-        <div class="umamemo-hero-buttons">
-            <a href="{{ url_for('races') }}" class="btn btn-primary btn-lg">レース情報を見る</a>
+<section class="hero-section">
+    <div class="container text-center py-5">
+        <h1 class="display-4 mb-3">馬メモ</h1>
+        <p class="lead mb-4">競馬ファンのための情報共有プラットフォーム</p>
+        <div class="d-flex justify-content-center gap-3">
             {% if not current_user.is_authenticated %}
-            <a href="{{ url_for('register') }}" class="btn btn-outline-light btn-lg">新規登録</a>
+                <a href="{{ url_for('register') }}" class="btn btn-primary">無料で始める</a>
             {% endif %}
+            <a href="{{ url_for('races') }}" class="btn btn-outline-secondary">レース情報を見る</a>
         </div>
     </div>
 </section>
 
 <!-- 主な機能セクション -->
-<section class="umamemo-section umamemo-section-white">
-    <div class="umamemo-container">
-        <h2 class="umamemo-section-title">主な機能</h2>
-        
-        <div class="umamemo-features-grid">
-            <!-- レース情報機能 -->
-            <div class="umamemo-feature-card">
-                <div class="umamemo-feature-icon">
-                    <i class="fas fa-horse-head"></i>
+<section class="bg-light py-5">
+    <div class="container">
+        <h2 class="text-center mb-5">主な機能</h2>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="fas fa-search fa-3x text-primary mb-3"></i>
+                        <h3 class="card-title h5">レース検索</h3>
+                        <p class="card-text">過去のレース結果や出走表を簡単に検索できます。</p>
+                        <ul class="list-unstyled text-start">
+                            <li><i class="fas fa-check text-success me-2"></i>日付から検索</li>
+                            <li><i class="fas fa-check text-success me-2"></i>開催場所から検索</li>
+                            <li><i class="fas fa-check text-success me-2"></i>レース名から検索</li>
+                        </ul>
+                    </div>
                 </div>
-                <h3 class="umamemo-feature-title">レース情報</h3>
-                <p class="umamemo-feature-text">中央競馬・地方競馬の最新レース情報をリアルタイムで確認できます。</p>
-                <ul class="umamemo-feature-list">
-                    <li>出走馬の詳細データ</li>
-                    <li>騎手・調教師情報</li>
-                    <li>オッズ情報（中央競馬）</li>
-                </ul>
             </div>
-            
-            <!-- 回顧ノート機能 -->
-            <div class="umamemo-feature-card">
-                <div class="umamemo-feature-icon">
-                    <i class="fas fa-book"></i>
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="fas fa-sticky-note fa-3x text-primary mb-3"></i>
+                        <h3 class="card-title h5">回顧ノート</h3>
+                        <p class="card-text">レースの分析や感想を記録して共有できます。</p>
+                        <ul class="list-unstyled text-start">
+                            <li><i class="fas fa-check text-success me-2"></i>ペース分析</li>
+                            <li><i class="fas fa-check text-success me-2"></i>レース展開の記録</li>
+                            <li><i class="fas fa-check text-success me-2"></i>注目馬のチェック</li>
+                        </ul>
+                    </div>
                 </div>
-                <h3 class="umamemo-feature-title">回顧ノート</h3>
-                <p class="umamemo-feature-text">レース後の印象を詳細に記録し、次走での予想に活かすための総合的な回顧システム。</p>
-                <ul class="umamemo-feature-list">
-                    <li>レース後の馬の様子を詳細にメモ</li>
-                    <li>上がり順位やラップタイムを自動記録</li>
-                    <li>馬場状態との相性を数値化して管理</li>
-                </ul>
             </div>
-            
-            <!-- 予想活用機能 -->
-            <div class="umamemo-feature-card">
-                <div class="umamemo-feature-icon">
-                    <i class="fas fa-chart-line"></i>
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="fas fa-chart-line fa-3x text-primary mb-3"></i>
+                        <h3 class="card-title h5">予想サポート</h3>
+                        <p class="card-text">データに基づいた予想をサポートします。</p>
+                        <ul class="list-unstyled text-start">
+                            <li><i class="fas fa-check text-success me-2"></i>過去の成績分析</li>
+                            <li><i class="fas fa-check text-success me-2"></i>血統データの確認</li>
+                            <li><i class="fas fa-check text-success me-2"></i>条件適性をスコアで可視化</li>
+                        </ul>
+                    </div>
                 </div>
-                <h3 class="umamemo-feature-title">予想に活用</h3>
-                <p class="umamemo-feature-text">過去の回顧データとAI分析を組み合わせた、より精度の高い予想支援システム。</p>
-                <ul class="umamemo-feature-list">
-                    <li>過去のメモを時系列で振り返り</li>
-                    <li>AI搭載の好走パターン分析</li>
-                    <li>条件適性をスコアで可視化</li>
-                </ul>
             </div>
         </div>
     </div>
 </section>
 
 <!-- 使い方セクション -->
-<section class="umamemo-section umamemo-section-gray">
-    <div class="umamemo-container">
-        <h2 class="umamemo-section-title">使い方</h2>
-        <div class="umamemo-steps-container">
-            <div class="umamemo-step-item">
-                <div class="umamemo-step-number">1</div>
-                <h3>会員登録</h3>
-                <p>無料で簡単に<br>アカウント作成</p>
-                <div class="umamemo-step-details">
-                    <p>メールアドレスで登録</p>
-                    <p>SNSアカウントでも登録可能</p>
+<section class="py-5">
+    <div class="container">
+        <h2 class="text-center mb-5">使い方</h2>
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 60px; height: 60px;">1</div>
+                        <h3 class="card-title h5">会員登録</h3>
+                        <p class="card-text">無料で簡単に登録できます。メールアドレスとパスワードだけで完了します。</p>
+                    </div>
                 </div>
             </div>
-            <div class="umamemo-step-item">
-                <div class="umamemo-step-number">2</div>
-                <h3>レースを探す</h3>
-                <p>気になるレースを<br>検索して見つけます</p>
-                <div class="umamemo-step-details">
-                    <p>開催日程から簡単検索</p>
-                    <p>お気に入りレース登録可能</p>
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 60px; height: 60px;">2</div>
+                        <h3 class="card-title h5">レースを探す</h3>
+                        <p class="card-text">検索機能を使って、気になるレースを探しましょう。</p>
+                    </div>
                 </div>
             </div>
-            <div class="umamemo-step-item">
-                <div class="umamemo-step-number">3</div>
-                <h3>馬を探す</h3>
-                <p>気になる馬を<br>検索して見つけます</p>
-                <div class="umamemo-step-details">
-                    <p>血統からも検索可能</p>
-                    <p>フリーワード検索対応</p>
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 60px; height: 60px;">3</div>
+                        <h3 class="card-title h5">回顧を書く</h3>
+                        <p class="card-text">レース結果を分析して、あなたの視点で回顧を記録しましょう。</p>
+                    </div>
                 </div>
             </div>
-            <div class="umamemo-step-item">
-                <div class="umamemo-step-number">4</div>
-                <h3>メモを残す</h3>
-                <p>レース後の印象を<br>自由に記録</p>
-                <div class="umamemo-step-details">
-                    <p>テンプレート機能で簡単入力</p>
-                    <p>画像の添付も可能</p>
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 60px; height: 60px;">4</div>
+                        <h3 class="card-title h5">共有する</h3>
+                        <p class="card-text">あなたの分析を他のユーザーと共有して、競馬の楽しさを広げましょう。</p>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- 馬メモを使うメリット -->
-<section class="umamemo-section umamemo-section-white">
-    <div class="umamemo-container">
-        <h2 class="umamemo-section-title">馬メモを使うメリット</h2>
-        <div class="umamemo-features-grid">
-            <div class="umamemo-feature-card">
-                <div class="umamemo-feature-icon">
-                    <i class="fas fa-clock"></i>
+<!-- 料金プラン -->
+<section class="bg-light py-5">
+    <div class="container">
+        <h2 class="text-center mb-5">料金プラン</h2>
+        <div class="row justify-content-center g-4">
+            <div class="col-md-5">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-header bg-white text-center border-0 pt-4">
+                        <h3 class="h4">無料プラン</h3>
+                        <div class="h1 mb-0">¥0<span class="text-muted fs-6">/月</span></div>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled">
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>レース検索</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>馬名検索</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>基本的な通知機能</li>
+                        </ul>
+                        <div class="text-center mt-4">
+                            <a href="{{ url_for('register') }}" class="btn btn-outline-primary">今すぐ始める</a>
+                        </div>
+                    </div>
                 </div>
-                <h3 class="umamemo-feature-title">いつでもどこでも</h3>
-                <p class="umamemo-feature-text">スマホやタブレットからいつでもアクセス。競馬場でもオフィスでも自宅でも、思いついたときにすぐメモできます。</p>
             </div>
-            <div class="umamemo-feature-card">
-                <div class="umamemo-feature-icon">
-                    <i class="fas fa-search"></i>
+            <div class="col-md-5">
+                <div class="card h-100 border-0 shadow">
+                    <div class="card-header bg-primary text-white text-center border-0 pt-4">
+                        <h3 class="h4">プレミアム</h3>
+                        <div class="h1 mb-0">¥980<span class="fs-6">/月</span></div>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled">
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>全ての無料機能</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>AI分析機能</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>データエクスポート</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>広告非表示</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>優先サポート</li>
+                        </ul>
+                        <div class="text-center mt-4">
+                            <a href="{{ url_for('premium') }}" class="btn btn-primary">詳細を見る</a>
+                        </div>
+                    </div>
                 </div>
-                <h3 class="umamemo-feature-title">簡単に探せる</h3>
-                <p class="umamemo-feature-text">馬名、レース名、日付など様々な条件で過去のメモを検索。必要な情報をすぐに見つけられます。</p>
-            </div>
-            <div class="umamemo-feature-card">
-                <div class="umamemo-feature-icon">
-                    <i class="fas fa-chart-bar"></i>
-                </div>
-                <h3 class="umamemo-feature-title">データで見る</h3>
-                <p class="umamemo-feature-text">蓄積したメモをグラフやチャートで可視化。馬の調子や成長が一目でわかります。</p>
-            </div>
-            <div class="umamemo-feature-card">
-                <div class="umamemo-feature-icon">
-                    <i class="fas fa-users"></i>
-                </div>
-                <h3 class="umamemo-feature-title">仲間と共有</h3>
-                <p class="umamemo-feature-text">メモを友人や仲間と共有して意見交換。みんなの視点を取り入れて予想の精度を高められます。</p>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- 料金プランセクション -->
-<section class="umamemo-section umamemo-section-gray">
-    <div class="umamemo-container">
-        <h2 class="umamemo-section-title">料金プラン</h2>
-        <div class="umamemo-plans-grid">
-            <div class="umamemo-plan-card">
-                <h3>無料プラン</h3>
-                <div class="umamemo-price">¥0</div>
-                <ul class="umamemo-plan-features">
-                    <li>基本的なメモ機能</li>
-                    <li>レース検索</li>
-                    <li>馬名検索</li>
-                    <li>基本的な通知機能</li>
-                </ul>
-                <a href="{{ url_for('register') }}" class="umamemo-btn-plan">今すぐ始める</a>
-            </div>
-            <div class="umamemo-plan-card premium">
-                <h3>プレミアム</h3>
-                <div class="umamemo-price">¥980<span>/月</span></div>
-                <ul class="umamemo-plan-features">
-                    <li>全ての無料機能</li>
-                    <li>AI分析機能</li>
-                    <li>データエクスポート</li>
-                    <li>広告非表示</li>
-                    <li>優先サポート</li>
-                </ul>
-                <a href="{{ url_for('premium') }}" class="umamemo-btn-plan">詳細を見る</a>
             </div>
         </div>
     </div>
 </section>
 
 <!-- CTAセクション -->
-<section class="umamemo-cta-section">
-    <div class="umamemo-container">
-        <div class="umamemo-cta-content">
-            <h2>さっそく始めてみましょう</h2>
-            <p>無料で全ての基本機能をお使いいただけます。</p>
-            <div class="umamemo-cta-buttons">
-                {% if not current_user.is_authenticated %}
-                    <a href="{{ url_for('register') }}" class="umamemo-btn-start">無料で始める</a>
-                {% endif %}
-                <a href="{{ url_for('review_market') }}" class="umamemo-btn-market">回顧マーケットを見る</a>
-            </div>
-            <p class="umamemo-cta-note">※会員登録後いつでもアップグレード可能です</p>
+<section class="py-5 bg-primary text-white">
+    <div class="container text-center">
+        <h2 class="mb-3">さっそく始めてみましょう</h2>
+        <p class="mb-4">無料で全ての基本機能をお使いいただけます。</p>
+        <div class="d-flex justify-content-center gap-3">
+            {% if not current_user.is_authenticated %}
+                <a href="{{ url_for('register') }}" class="btn btn-light">無料で始める</a>
+            {% endif %}
+            <a href="{{ url_for('review_market') }}" class="btn btn-outline-light">回顧マーケットを見る</a>
         </div>
+        <p class="mt-3 small">※会員登録後いつでもアップグレード可能です</p>
     </div>
 </section>
 
 {% if current_user.is_authenticated and current_user.is_admin %}
-<div class="umamemo-container mt-4">
-    <div class="umamemo-admin-card">
-        <h5>管理者メニュー</h5>
-        <a href="{{ url_for('admin_dashboard') }}" class="umamemo-btn-admin">
-            <i class="fas fa-cog"></i>管理画面へ
-        </a>
+<div class="container mt-4 mb-4">
+    <div class="card border-primary">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">管理者メニュー</h5>
+        </div>
+        <div class="card-body">
+            <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-primary">
+                <i class="fas fa-cog me-2"></i>管理画面へ
+            </a>
+        </div>
     </div>
 </div>
 {% endif %}
@@ -467,59 +442,6 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     console.log('index.js loaded');
-    
-    // ヒーローセクションの表示を確認
-    const heroSection = document.querySelector('.umamemo-hero');
-    if (heroSection) {
-        console.log('Hero section found');
-        heroSection.style.display = 'flex';
-        heroSection.style.visibility = 'visible';
-        heroSection.style.opacity = '1';
-        
-        const heroContent = document.querySelector('.umamemo-hero-content');
-        if (heroContent) {
-            console.log('Hero content found');
-            heroContent.style.display = 'block';
-            heroContent.style.visibility = 'visible';
-            heroContent.style.opacity = '1';
-        }
-    }
-    
-    // 機能セクションの表示を確認
-    const featuresSection = document.querySelector('.umamemo-section');
-    if (featuresSection) {
-        console.log('Features section found');
-        featuresSection.style.display = 'block';
-        featuresSection.style.visibility = 'visible';
-        featuresSection.style.opacity = '1';
-        
-        // 機能カードのアニメーション
-        const featureCards = document.querySelectorAll('.umamemo-feature-card');
-        featureCards.forEach((card, index) => {
-            setTimeout(() => {
-                card.style.opacity = '1';
-                card.style.transform = 'translateY(0)';
-            }, 100 * index);
-        });
-    } else {
-        console.error('Features section not found');
-    }
-    
-    // 遅延読み込み関数
-    function lazyLoad() {
-        const lazyImages = document.querySelectorAll('img[data-src]');
-        lazyImages.forEach(img => {
-            if (img.getBoundingClientRect().top <= window.innerHeight && img.getBoundingClientRect().bottom >= 0) {
-                img.src = img.dataset.src;
-                img.removeAttribute('data-src');
-            }
-        });
-    }
-    
-    window.addEventListener('scroll', lazyLoad);
-    window.addEventListener('resize', lazyLoad);
-    window.addEventListener('orientationchange', lazyLoad);
-    lazyLoad(); // 初回実行
 });
 </script>
 {% endblock %}
