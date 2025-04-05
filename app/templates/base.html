@@ -22,85 +22,80 @@
     {% endblock %}
 </head>
 <body>
-    <!-- 非表示のCSRFトークンフォーム -->
-    <form id="csrf-form" style="display: none;">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-    </form>
-    
-    <!-- ナビゲーション部分 -->
-    <nav class="navbar navbar-expand-lg">
-        <div class="container">
-            <a class="navbar-brand" href="{{ url_for('index') }}">
-                <i class="fas fa-horse me-2"></i>馬メモ
-            </a>
-            
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
-                <i class="fas fa-bars"></i>
-            </button>
-            
-            <div class="collapse navbar-collapse" id="navbarContent">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('races') }}">レース情報</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('horses') }}">馬一覧</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('jockeys') }}">騎手一覧</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('review_market') }}">回顧ノート</a>
-                    </li>
-                </ul>
-                
-                <div class="navbar-nav">
-                    {% if current_user.is_authenticated %}
-                    <div class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+    <!-- ヘッダー -->
+    <header class="header">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container">
+                <a class="navbar-brand" href="{{ url_for('index') }}">
+                    <i class="fas fa-horse-head text-primary me-2"></i>馬メモ
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('races') }}">レース情報</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('horses') }}">馬一覧</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('jockeys') }}">騎手一覧</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('review_notes') }}">回顧ノート</a>
+                        </li>
+                    </ul>
+                    <ul class="navbar-nav">
+                        {% if current_user.is_authenticated %}
+                        <li class="nav-item dropdown">
+                          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="fas fa-user-circle me-1"></i>{{ current_user.username }}
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-end">
-                            <a class="dropdown-item" href="{{ url_for('mypage_home') }}">
-                                <i class="fas fa-user me-2"></i>マイページ
-                            </a>
-                            <a class="dropdown-item" href="{{ url_for('mypage_reviews') }}">
-                                <i class="fas fa-book me-2"></i>回顧ノート
-                            </a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="{{ url_for('logout') }}">
-                                <i class="fas fa-sign-out-alt me-2"></i>ログアウト
-                            </a>
-                        </div>
-                    </div>
-                    {% else %}
-                    <a class="nav-link" href="{{ url_for('login') }}">
-                        <i class="fas fa-sign-in-alt me-1"></i>ログイン
-                    </a>
-                    <a class="nav-link" href="{{ url_for('register') }}">
-                        <i class="fas fa-user-plus me-1"></i>新規登録
-                    </a>
-                    {% endif %}
+                          </a>
+                          <div class="dropdown-menu dropdown-menu-end">
+                             <a class="dropdown-item" href="{{ url_for('mypage_home') }}">
+                                  <i class="fas fa-user me-2"></i>マイページ
+                              </a>
+                              <a class="dropdown-item" href="{{ url_for('settings') }}">
+                                  <i class="fas fa-cog me-2"></i>設定
+                              </a>
+                              <div class="dropdown-divider"></div>
+                              <a class="dropdown-item" href="{{ url_for('logout') }}">
+                                  <i class="fas fa-sign-out-alt me-2"></i>ログアウト
+                              </a>
+                          </div>
+                        </li>
+                        {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('login') }}">ログイン</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="btn btn-primary" href="{{ url_for('register') }}">新規登録</a>
+                        </li>
+                        {% endif %}
+                    </ul>
                 </div>
             </div>
-        </div>
-    </nav>
+        </nav>
+    </header>
     
     <!-- フラッシュメッセージ -->
     {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-    <div class="flashes container mt-3">
-        {% for category, message in messages %}
-        <div class="alert alert-{{ category }}">
-            {{ message }}
-        </div>
-        {% endfor %}
-    </div>
-    {% endif %}
+        {% if messages %}
+            <div class="container mt-3">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
     {% endwith %}
     
     <!-- メインコンテンツ -->
-    <main>
+    <main class="main-content">
         {% block content %}{% endblock %}
     </main>
     
