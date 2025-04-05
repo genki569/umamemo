@@ -3,6 +3,11 @@
 {% block styles %}
 {{ super() }}
 <style>
+/* 全体のスタイル調整 */
+body {
+    overflow-x: hidden;
+}
+
 /* モバイル向けの調整 */
 @media (max-width: 767.98px) {
     /* スクロール問題を解決 */
@@ -86,11 +91,14 @@
 /* ヒーローセクション */
 .hero-section {
     position: relative;
-    height: 70vh;
+    height: 80vh;
     min-height: 500px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    text-align: center;
     overflow: hidden;
-    background-color: #f8f9fa;
-    z-index: 1;
 }
 
 .hero-image {
@@ -99,7 +107,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 0;
+    z-index: -1;
 }
 
 .hero-image img {
@@ -108,82 +116,54 @@
     object-fit: cover;
 }
 
+.desktop-image {
+    display: block;
+}
+
+.mobile-image {
+    display: none;
+}
+
 .hero-overlay {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 1;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 0;
 }
 
 .hero-content {
     position: relative;
-    z-index: 2;
-    color: #fff;
-    text-align: center;
-    padding: 2rem;
+    z-index: 1;
     max-width: 800px;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    height: 100%;
+    padding: 0 20px;
 }
 
 .hero-title {
-    font-size: 3.5rem;
+    font-size: 4rem;
     font-weight: 700;
     margin-bottom: 1rem;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .hero-subtitle {
     font-size: 1.5rem;
     margin-bottom: 2rem;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 .hero-buttons {
     display: flex;
     gap: 1rem;
     justify-content: center;
-    flex-wrap: wrap;
 }
 
-/* レスポンシブ対応 */
-@media (max-width: 768px) {
-    .desktop-image {
-        display: none;
-    }
-    
-    .hero-title {
-        font-size: 2.5rem;
-    }
-    
-    .hero-subtitle {
-        font-size: 1.2rem;
-    }
-    
-    .hero-buttons {
-        flex-direction: column;
-        gap: 0.5rem;
-    }
-}
-
-@media (min-width: 769px) {
-    .mobile-image {
-        display: none;
-    }
-}
-
-/* 機能セクションのスタイル */
+/* 機能セクション */
 .features-section {
-    padding: 4rem 0;
-    background-color: #fff;
-    position: relative;
-    z-index: 2;
+    padding: 5rem 0;
+    background-color: #f8f9fa;
 }
 
 .section-title {
@@ -206,6 +186,8 @@
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
     padding: 2rem;
     transition: all 0.3s ease;
+    opacity: 0;
+    transform: translateY(20px);
 }
 
 .feature-icon {
@@ -450,23 +432,23 @@
 </section>
 
 <!-- 使い方セクション -->
-<section class="usage-section">
+<section class="how-to-section py-5">
     <div class="container">
-        <h2 class="section-title fade-in">基本的な使い方</h2>
+        <h2 class="section-title">使い方</h2>
         <div class="steps-container">
             <div class="step-item shadow-hover scale-in" data-aos="fade-up">
                 <div class="step-number">1</div>
                 <h3>会員登録</h3>
-                <p>メールアドレスで<br>簡単に登録できます</p>
+                <p>無料で簡単に<br>アカウント作成</p>
                 <div class="step-details">
-                    <p>メールアドレスのみで登録可能</p>
-                    <p>SNSアカウントでも登録OK</p>
+                    <p>メールアドレスで登録</p>
+                    <p>SNSアカウントでも登録可能</p>
                 </div>
             </div>
             <div class="step-item shadow-hover scale-in" data-aos="fade-up" data-aos-delay="200">
                 <div class="step-number">2</div>
-                <h3>レースを選ぶ</h3>
-                <p>気になるレースの<br>結果をチェック</p>
+                <h3>レースを探す</h3>
+                <p>気になるレースを<br>検索して見つけます。</p>
                 <div class="step-details">
                     <p>開催日程から簡単検索</p>
                     <p>お気に入りレース登録可能</p>
@@ -597,6 +579,29 @@ document.addEventListener('DOMContentLoaded', function() {
     } else {
         console.error('Features section not found');
     }
+    
+    // 使い方セクションのアニメーション
+    const stepItems = document.querySelectorAll('.step-item');
+    stepItems.forEach((item, index) => {
+        setTimeout(() => {
+            item.classList.add('visible');
+        }, 200 * index);
+    });
+    
+    // フェードインアニメーション
+    const fadeElements = document.querySelectorAll('.fade-in');
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.1 });
+    
+    fadeElements.forEach(el => {
+        observer.observe(el);
+    });
     
     // 遅延読み込み関数
     function lazyLoad() {
