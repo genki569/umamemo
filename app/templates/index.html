@@ -578,6 +578,26 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
+    // 機能セクションの表示を確認
+    const featuresSection = document.querySelector('.features-section');
+    if (featuresSection) {
+        console.log('Features section found');
+        featuresSection.style.display = 'block';
+        featuresSection.style.visibility = 'visible';
+        featuresSection.style.opacity = '1';
+        
+        // 機能カードのアニメーション
+        const featureCards = document.querySelectorAll('.feature-card');
+        featureCards.forEach((card, index) => {
+            setTimeout(() => {
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, 100 * index);
+        });
+    } else {
+        console.error('Features section not found');
+    }
+    
     // 遅延読み込み関数
     function lazyLoad() {
         const lazyImages = document.querySelectorAll('img[data-src]');
