@@ -1258,20 +1258,37 @@ p, h1, h2, h3, h4, h5, h6, span, a, div {
     padding: 4rem 0;
     background-color: #fff;
     position: relative;
-    z-index: 1; /* z-indexを追加 */
+    z-index: 1;
+    margin-top: 0;
+    margin-bottom: 0;
 }
 
 .section-title {
-    text-align: center;
-    margin-bottom: 3rem;
+    font-size: 2.5rem;
     font-weight: 700;
     color: #333;
+    margin-bottom: 2rem;
+    position: relative;
+    display: inline-block;
+}
+
+.section-title:after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 4px;
+    background-color: #007bff;
+    border-radius: 2px;
 }
 
 .features-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 2rem;
+    margin-top: 3rem;
 }
 
 .feature-card {
@@ -1280,6 +1297,9 @@ p, h1, h2, h3, h4, h5, h6, span, a, div {
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
     padding: 2rem;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
 .feature-card:hover {
@@ -1291,6 +1311,7 @@ p, h1, h2, h3, h4, h5, h6, span, a, div {
     font-size: 2.5rem;
     color: #007bff;
     margin-bottom: 1.5rem;
+    text-align: center;
 }
 
 .feature-card h3 {
@@ -1298,13 +1319,35 @@ p, h1, h2, h3, h4, h5, h6, span, a, div {
     font-weight: 600;
     margin-bottom: 1rem;
     color: #333;
+    text-align: center;
 }
 
 .feature-list {
     padding-left: 1.5rem;
     margin-top: 1rem;
+    margin-bottom: 0;
 }
 
 .feature-list li {
     margin-bottom: 0.5rem;
+}
+
+/* モバイル向けの調整 */
+@media (max-width: 767.98px) {
+    .features-section {
+        padding: 3rem 0;
+    }
+    
+    .section-title {
+        font-size: 2rem;
+    }
+    
+    .features-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .feature-card {
+        padding: 1.5rem;
+    }
 }
