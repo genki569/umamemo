@@ -31,7 +31,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 1;
+    z-index: 0;
 }
 
 .umamemo-hero-image img {
@@ -41,14 +41,6 @@
     opacity: 0.8;
 }
 
-.umamemo-desktop-image {
-    display: block;
-}
-
-.umamemo-mobile-image {
-    display: none;
-}
-
 .umamemo-hero-overlay {
     position: absolute;
     top: 0;
@@ -56,12 +48,12 @@
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.4);
-    z-index: 2;
+    z-index: 1;
 }
 
 .umamemo-hero-content {
     position: relative;
-    z-index: 3;
+    z-index: 2;
     color: #fff;
     text-align: center;
     max-width: 800px;
@@ -119,7 +111,6 @@
 .umamemo-section {
     padding: 5rem 0;
     position: relative;
-    z-index: 1;
 }
 
 .umamemo-section-white {
@@ -180,240 +171,39 @@
     font-size: 2.5rem;
     color: #007bff;
     margin-bottom: 1.5rem;
-    text-align: center;
 }
 
 .umamemo-feature-title {
     font-size: 1.5rem;
-    font-weight: 600;
+    font-weight: 700;
     margin-bottom: 1rem;
     color: #333;
-    text-align: center;
 }
 
 .umamemo-feature-text {
+    color: #666;
     margin-bottom: 1.5rem;
-    flex-grow: 1;
 }
 
 .umamemo-feature-list {
-    padding-left: 1.5rem;
-    margin-top: 1rem;
-    margin-bottom: 0;
+    list-style-type: none;
+    padding-left: 0;
+    margin-top: auto;
 }
 
 .umamemo-feature-list li {
+    position: relative;
+    padding-left: 1.5rem;
     margin-bottom: 0.5rem;
+    color: #555;
 }
 
-/* 使い方セクション */
-.umamemo-steps-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 2rem;
-    margin-top: 3rem;
-}
-
-.umamemo-step-item {
-    background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    padding: 2rem;
-    text-align: center;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.umamemo-step-item:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-}
-
-.umamemo-step-number {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 50px;
-    height: 50px;
-    background-color: #007bff;
-    color: #fff;
-    font-size: 1.5rem;
-    font-weight: 700;
-    border-radius: 50%;
-    margin: 0 auto 1.5rem;
-}
-
-.umamemo-step-item h3 {
-    font-size: 1.5rem;
-    font-weight: 600;
-    margin-bottom: 1rem;
-    color: #333;
-}
-
-.umamemo-step-item p {
-    margin-bottom: 1.5rem;
-}
-
-.umamemo-step-details {
-    text-align: left;
-    border-top: 1px solid #eee;
-    padding-top: 1rem;
-}
-
-.umamemo-step-details p {
-    margin-bottom: 0.5rem;
-    font-size: 0.9rem;
-    color: #666;
-}
-
-.umamemo-step-details p:before {
+.umamemo-feature-list li:before {
     content: '✓';
+    position: absolute;
+    left: 0;
     color: #007bff;
-    margin-right: 0.5rem;
-}
-
-/* 料金プランセクション */
-.umamemo-plans-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2rem;
-    margin-top: 3rem;
-}
-
-.umamemo-plan-card {
-    background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    padding: 2rem;
-    text-align: center;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.umamemo-plan-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-}
-
-.umamemo-plan-card h3 {
-    font-size: 1.8rem;
-    font-weight: 700;
-    margin-bottom: 1rem;
-    color: #333;
-}
-
-.umamemo-price {
-    font-size: 2.5rem;
-    font-weight: 700;
-    color: #007bff;
-    margin-bottom: 2rem;
-}
-
-.umamemo-price span {
-    font-size: 1rem;
-    font-weight: 400;
-    color: #666;
-}
-
-.umamemo-plan-features {
-    list-style: none;
-    padding: 0;
-    margin-bottom: 2rem;
-}
-
-.umamemo-plan-features li {
-    padding: 0.5rem 0;
-    border-bottom: 1px solid #eee;
-}
-
-.umamemo-plan-features li:last-child {
-    border-bottom: none;
-}
-
-.umamemo-btn-plan {
-    display: inline-block;
-    padding: 0.75rem 1.5rem;
-    background-color: #007bff;
-    color: #fff;
-    border-radius: 5px;
-    text-decoration: none;
-    font-weight: 600;
-    transition: background-color 0.3s ease;
-}
-
-.umamemo-btn-plan:hover {
-    background-color: #0056b3;
-    color: #fff;
-}
-
-.umamemo-plan-card.premium {
-    background-color: #f8f9fa;
-    border: 2px solid #007bff;
-}
-
-/* CTA セクション */
-.umamemo-cta-section {
-    background: linear-gradient(135deg, #007bff, #6610f2);
-    color: #fff;
-    padding: 4rem 0;
-    text-align: center;
-}
-
-.umamemo-cta-content {
-    max-width: 800px;
-    margin: 0 auto;
-}
-
-.umamemo-cta-content h2 {
-    font-size: 2.5rem;
-    font-weight: 700;
-    margin-bottom: 1rem;
-}
-
-.umamemo-cta-content p {
-    font-size: 1.2rem;
-    margin-bottom: 2rem;
-}
-
-.umamemo-cta-buttons {
-    display: flex;
-    gap: 1rem;
-    justify-content: center;
-    margin-bottom: 1.5rem;
-}
-
-.umamemo-btn-start {
-    display: inline-block;
-    padding: 0.75rem 1.5rem;
-    background-color: #fff;
-    color: #007bff;
-    border-radius: 5px;
-    text-decoration: none;
-    font-weight: 600;
-    transition: background-color 0.3s ease;
-}
-
-.umamemo-btn-start:hover {
-    background-color: #f8f9fa;
-}
-
-.umamemo-btn-market {
-    display: inline-block;
-    padding: 0.75rem 1.5rem;
-    background-color: transparent;
-    color: #fff;
-    border: 2px solid #fff;
-    border-radius: 5px;
-    text-decoration: none;
-    font-weight: 600;
-    transition: background-color 0.3s ease;
-}
-
-.umamemo-btn-market:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-}
-
-.umamemo-cta-note {
-    font-size: 0.9rem;
-    opacity: 0.8;
+    font-weight: bold;
 }
 
 /* モバイル向けの調整 */
@@ -454,10 +244,6 @@
     .umamemo-feature-card {
         padding: 1.5rem;
     }
-    
-    .umamemo-cta-buttons {
-        flex-direction: column;
-    }
 }
 </style>
 {% endblock %}
@@ -466,8 +252,8 @@
 <!-- ヒーローセクション -->
 <section class="umamemo-hero">
     <div class="umamemo-hero-image">
-        <img src="{{ url_for('static', filename='images/gene-devine-U-yHjENTmMg-unsplash.jpg') }}" alt="メイン画像" class="umamemo-desktop-image">
-        <img src="{{ url_for('static', filename='images/horse-7833667_1280.jpg') }}" alt="メイン画像" class="umamemo-mobile-image">
+        <img src="{{ url_for('static', filename='images/hero-bg.jpg') }}" alt="メイン画像" class="umamemo-desktop-image">
+        <img src="{{ url_for('static', filename='images/hero-bg-mobile.jpg') }}" alt="メイン画像（モバイル）" class="umamemo-mobile-image">
     </div>
     <div class="umamemo-hero-overlay"></div>
     <div class="umamemo-hero-content">
