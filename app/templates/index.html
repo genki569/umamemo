@@ -14,13 +14,15 @@
 /* ヒーローセクション */
 .umamemo-hero {
     position: relative;
+    width: 100%;
     height: 70vh;
     min-height: 500px;
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    margin-bottom: 3rem;
+    margin-bottom: 0;
+    background-color: #000;
 }
 
 .umamemo-hero-image {
@@ -29,13 +31,14 @@
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 0;
+    z-index: 1;
 }
 
 .umamemo-hero-image img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    opacity: 0.8;
 }
 
 .umamemo-desktop-image {
@@ -52,30 +55,30 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 1;
+    background-color: rgba(0, 0, 0, 0.4);
+    z-index: 2;
 }
 
 .umamemo-hero-content {
     position: relative;
-    z-index: 2;
+    z-index: 3;
     color: #fff;
     text-align: center;
     max-width: 800px;
-    padding: 0 20px;
+    padding: 2rem;
 }
 
 .umamemo-hero-title {
-    font-size: 3.5rem;
+    font-size: 4rem;
     font-weight: 700;
     margin-bottom: 1rem;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
 }
 
 .umamemo-hero-subtitle {
     font-size: 1.5rem;
     margin-bottom: 2rem;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
 }
 
 .umamemo-hero-buttons {
@@ -84,9 +87,37 @@
     justify-content: center;
 }
 
+.umamemo-hero-buttons .btn {
+    padding: 0.75rem 1.5rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-radius: 30px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.umamemo-hero-buttons .btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+}
+
+.umamemo-hero-buttons .btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+.umamemo-hero-buttons .btn-outline-light {
+    color: #fff;
+    border-color: #fff;
+}
+
+.umamemo-hero-buttons .btn-outline-light:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
 /* 共通セクションスタイル */
 .umamemo-section {
-    padding: 4rem 0;
+    padding: 5rem 0;
     position: relative;
     z-index: 1;
 }
@@ -136,6 +167,8 @@
     height: 100%;
     display: flex;
     flex-direction: column;
+    opacity: 0;
+    transform: translateY(20px);
 }
 
 .umamemo-feature-card:hover {
@@ -384,12 +417,7 @@
 }
 
 /* モバイル向けの調整 */
-@media (max-width: 767.98px) {
-    .umamemo-hero {
-        height: auto;
-        min-height: 400px;
-    }
-    
+@media (max-width: 768px) {
     .umamemo-desktop-image {
         display: none;
     }
@@ -408,7 +436,7 @@
     
     .umamemo-hero-buttons {
         flex-direction: column;
-        gap: 0.5rem;
+        gap: 0.75rem;
     }
     
     .umamemo-section {
@@ -419,16 +447,11 @@
         font-size: 2rem;
     }
     
-    .umamemo-features-grid,
-    .umamemo-steps-container,
-    .umamemo-plans-grid {
+    .umamemo-features-grid {
         grid-template-columns: 1fr;
-        gap: 1.5rem;
     }
     
-    .umamemo-feature-card,
-    .umamemo-step-item,
-    .umamemo-plan-card {
+    .umamemo-feature-card {
         padding: 1.5rem;
     }
     
@@ -659,22 +682,42 @@
 document.addEventListener('DOMContentLoaded', function() {
     console.log('index.js loaded');
     
-    // すべてのセクションを表示
-    const sections = document.querySelectorAll('.umamemo-section, .umamemo-hero, .umamemo-cta-section');
-    sections.forEach(section => {
-        section.style.display = 'block';
-        section.style.visibility = 'visible';
-        section.style.opacity = '1';
-    });
+    // ヒーローセクションの表示を確認
+    const heroSection = document.querySelector('.umamemo-hero');
+    if (heroSection) {
+        console.log('Hero section found');
+        heroSection.style.display = 'flex';
+        heroSection.style.visibility = 'visible';
+        heroSection.style.opacity = '1';
+        
+        const heroContent = document.querySelector('.umamemo-hero-content');
+        if (heroContent) {
+            console.log('Hero content found');
+            heroContent.style.display = 'block';
+            heroContent.style.visibility = 'visible';
+            heroContent.style.opacity = '1';
+        }
+    }
     
-    // カードのアニメーション
-    const cards = document.querySelectorAll('.umamemo-feature-card, .umamemo-step-item, .umamemo-plan-card');
-    cards.forEach((card, index) => {
-        setTimeout(() => {
-            card.style.opacity = '1';
-            card.style.transform = 'translateY(0)';
-        }, 100 * index);
-    });
+    // 機能セクションの表示を確認
+    const featuresSection = document.querySelector('.umamemo-section');
+    if (featuresSection) {
+        console.log('Features section found');
+        featuresSection.style.display = 'block';
+        featuresSection.style.visibility = 'visible';
+        featuresSection.style.opacity = '1';
+        
+        // 機能カードのアニメーション
+        const featureCards = document.querySelectorAll('.umamemo-feature-card');
+        featureCards.forEach((card, index) => {
+            setTimeout(() => {
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, 100 * index);
+        });
+    } else {
+        console.error('Features section not found');
+    }
     
     // 遅延読み込み関数
     function lazyLoad() {
