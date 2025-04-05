@@ -3,102 +3,38 @@
 {% block styles %}
 {{ super() }}
 <style>
-/* 全体のスタイル調整 */
-body {
-    overflow-x: hidden;
+/* リセットとベーススタイル */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
-/* モバイル向けの調整 */
-@media (max-width: 767.98px) {
-    /* スクロール問題を解決 */
-    html, body {
-        height: auto !important;
-        overflow-y: auto !important;
-        -webkit-overflow-scrolling: touch;
-        position: relative !important;
-    }
-    
-    /* コンテンツが見えるようにする */
-    .container {
-        min-height: 50vh;
-        padding-bottom: 100px;
-        opacity: 1 !important;
-        visibility: visible !important;
-    }
-    
-    /* ヒーローセクションの表示を強制 */
-    .hero-section {
-        display: block !important;
-        opacity: 1 !important;
-        visibility: visible !important;
-        height: auto !important;
-        min-height: 300px;
-        position: relative !important;
-        z-index: 1;
-    }
-    
-    /* ヒーローコンテンツの表示を強制 */
-    .hero-content {
-        display: block !important;
-        opacity: 1 !important;
-        visibility: visible !important;
-        position: relative !important;
-        z-index: 10;
-    }
-    
-    /* 装飾要素の位置調整 */
-    .hero-decoration {
-        position: absolute;
-        z-index: -1;
-    }
-    
-    /* 遅延読み込み用のプレースホルダー */
-    .lazy-placeholder {
-        background-color: #f0f0f0;
-        min-height: 200px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    
-    /* スクロールインジケーター */
-    .scroll-indicator {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        width: 40px;
-        height: 40px;
-        background-color: rgba(79, 70, 229, 0.8);
-        color: white;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 1000;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-        cursor: pointer;
-    }
-    
-    /* アニメーションを無効化 */
-    .fade-in, .scale-in, [data-aos] {
-        opacity: 1 !important;
-        transform: none !important;
-        animation: none !important;
-        transition: none !important;
-    }
+body {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    overflow-x: hidden;
+    background-color: #f8f9fa;
+}
+
+.container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 15px;
 }
 
 /* ヒーローセクション */
 .hero-section {
     position: relative;
-    height: 80vh;
+    height: 70vh;
     min-height: 500px;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #fff;
-    text-align: center;
     overflow: hidden;
+    margin-bottom: 3rem;
 }
 
 .hero-image {
@@ -107,7 +43,7 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: -1;
+    z-index: 0;
 }
 
 .hero-image img {
@@ -131,18 +67,20 @@ body {
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.5);
-    z-index: 0;
+    z-index: 1;
 }
 
 .hero-content {
     position: relative;
-    z-index: 1;
+    z-index: 2;
+    color: #fff;
+    text-align: center;
     max-width: 800px;
     padding: 0 20px;
 }
 
 .hero-title {
-    font-size: 4rem;
+    font-size: 3.5rem;
     font-weight: 700;
     margin-bottom: 1rem;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
@@ -162,16 +100,31 @@ body {
 
 /* 機能セクション */
 .features-section {
-    padding: 5rem 0;
-    background-color: #f8f9fa;
+    padding: 4rem 0;
+    background-color: #fff;
+    position: relative;
+    z-index: 1;
 }
 
 .section-title {
-    text-align: center;
     font-size: 2.5rem;
     font-weight: 700;
+    text-align: center;
     margin-bottom: 3rem;
     color: #333;
+    position: relative;
+}
+
+.section-title:after {
+    content: '';
+    position: absolute;
+    bottom: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 4px;
+    background-color: #007bff;
+    border-radius: 2px;
 }
 
 .features-grid {
@@ -182,72 +135,94 @@ body {
 
 .feature-card {
     background-color: #fff;
-    border-radius: 12px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
     padding: 2rem;
-    transition: all 0.3s ease;
-    opacity: 0;
-    transform: translateY(20px);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
 }
 
 .feature-icon {
-    width: 60px;
-    height: 60px;
-    background: linear-gradient(135deg, #6c5ce7, #a29bfe);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    font-size: 2.5rem;
+    color: #007bff;
     margin-bottom: 1.5rem;
-}
-
-.feature-icon i {
-    font-size: 24px;
-    color: #fff;
+    text-align: center;
 }
 
 .feature-card h3 {
     font-size: 1.5rem;
-    margin-bottom: 1rem;
     font-weight: 600;
+    margin-bottom: 1rem;
+    color: #333;
+    text-align: center;
+}
+
+.feature-card p {
+    margin-bottom: 1.5rem;
+    flex-grow: 1;
 }
 
 .feature-list {
     padding-left: 1.5rem;
     margin-top: 1rem;
+    margin-bottom: 0;
 }
 
 .feature-list li {
     margin-bottom: 0.5rem;
-    position: relative;
 }
 
-/* アニメーション */
-.fade-in {
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.6s ease, transform 0.6s ease;
-}
-
-.fade-in.visible {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-.scale-in {
-    opacity: 0;
-    transform: scale(0.9);
-    transition: opacity 0.6s ease, transform 0.6s ease;
-}
-
-.scale-in.visible {
-    opacity: 1;
-    transform: scale(1);
-}
-
-.shadow-hover:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+/* モバイル向けの調整 */
+@media (max-width: 767.98px) {
+    .hero-section {
+        height: auto;
+        min-height: 400px;
+    }
+    
+    .desktop-image {
+        display: none;
+    }
+    
+    .mobile-image {
+        display: block;
+    }
+    
+    .hero-title {
+        font-size: 2.5rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.2rem;
+    }
+    
+    .hero-buttons {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .features-section {
+        padding: 3rem 0;
+    }
+    
+    .section-title {
+        font-size: 2rem;
+    }
+    
+    .features-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .feature-card {
+        padding: 1.5rem;
+    }
 }
 </style>
 {% endblock %}
@@ -273,9 +248,9 @@ body {
 </section>
 
 <!-- 主な機能セクション -->
-<section class="features-section py-5">
+<section class="features-section">
     <div class="container">
-        <h2 class="section-title text-center mb-5">主な機能</h2>
+        <h2 class="section-title">主な機能</h2>
         
         <div class="features-grid">
             <!-- レース情報機能 -->
@@ -550,14 +525,6 @@ document.addEventListener('DOMContentLoaded', function() {
         heroSection.style.display = 'block';
         heroSection.style.visibility = 'visible';
         heroSection.style.opacity = '1';
-        
-        const heroContent = document.querySelector('.hero-content');
-        if (heroContent) {
-            console.log('Hero content found');
-            heroContent.style.display = 'flex';
-            heroContent.style.visibility = 'visible';
-            heroContent.style.opacity = '1';
-        }
     }
     
     // 機能セクションの表示を確認
@@ -571,37 +538,12 @@ document.addEventListener('DOMContentLoaded', function() {
         // 機能カードのアニメーション
         const featureCards = document.querySelectorAll('.feature-card');
         featureCards.forEach((card, index) => {
-            setTimeout(() => {
-                card.style.opacity = '1';
-                card.style.transform = 'translateY(0)';
-            }, 100 * index);
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
         });
     } else {
         console.error('Features section not found');
     }
-    
-    // 使い方セクションのアニメーション
-    const stepItems = document.querySelectorAll('.step-item');
-    stepItems.forEach((item, index) => {
-        setTimeout(() => {
-            item.classList.add('visible');
-        }, 200 * index);
-    });
-    
-    // フェードインアニメーション
-    const fadeElements = document.querySelectorAll('.fade-in');
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('visible');
-                observer.unobserve(entry.target);
-            }
-        });
-    }, { threshold: 0.1 });
-    
-    fadeElements.forEach(el => {
-        observer.observe(el);
-    });
     
     // 遅延読み込み関数
     function lazyLoad() {
