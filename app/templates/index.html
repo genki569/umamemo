@@ -15,8 +15,8 @@
 .umamemo-hero {
     position: relative;
     width: 100%;
-    height: 80vh;
-    min-height: 550px;
+    height: 70vh;
+    min-height: 500px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -39,13 +39,6 @@
     height: 100%;
     object-fit: cover;
     opacity: 0.85;
-    filter: brightness(0.9) contrast(1.1) saturate(1.2);
-    transform: scale(1.05);
-    transition: transform 10s ease-out;
-}
-
-.umamemo-hero.loaded .umamemo-hero-image img {
-    transform: scale(1);
 }
 
 .umamemo-desktop-image {
@@ -73,154 +66,44 @@
     text-align: center;
     max-width: 800px;
     padding: 2rem;
-    opacity: 0;
-    transform: translateY(30px);
-    transition: opacity 1s ease, transform 1s ease;
-}
-
-.umamemo-hero.loaded .umamemo-hero-content {
-    opacity: 1;
-    transform: translateY(0);
 }
 
 .umamemo-hero-title {
-    font-size: 5rem;
-    font-weight: 800;
+    font-size: 4rem;
+    font-weight: 700;
     margin-bottom: 1.5rem;
-    text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.8);
-    letter-spacing: 2px;
-    position: relative;
-    display: inline-block;
-}
-
-.umamemo-hero-title:after {
-    content: '';
-    position: absolute;
-    bottom: -10px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 80px;
-    height: 4px;
-    background-color: #007bff;
-    border-radius: 2px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
 }
 
 .umamemo-hero-subtitle {
-    font-size: 1.8rem;
-    margin-bottom: 2.5rem;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
-    font-weight: 300;
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 1s ease 0.3s, transform 1s ease 0.3s;
-}
-
-.umamemo-hero.loaded .umamemo-hero-subtitle {
-    opacity: 1;
-    transform: translateY(0);
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
 }
 
 .umamemo-hero-buttons {
     display: flex;
     gap: 1.5rem;
     justify-content: center;
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 1s ease 0.6s, transform 1s ease 0.6s;
-}
-
-.umamemo-hero.loaded .umamemo-hero-buttons {
-    opacity: 1;
-    transform: translateY(0);
 }
 
 .umamemo-hero-buttons .btn {
-    padding: 0.85rem 2rem;
-    font-size: 1.2rem;
+    padding: 0.75rem 1.5rem;
+    font-size: 1.1rem;
     font-weight: 600;
-    border-radius: 50px;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    position: relative;
-    overflow: hidden;
-    z-index: 1;
-}
-
-.umamemo-hero-buttons .btn:before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 0;
-    height: 100%;
-    background-color: rgba(255, 255, 255, 0.1);
-    transition: width 0.4s ease;
-    z-index: -1;
-}
-
-.umamemo-hero-buttons .btn:hover:before {
-    width: 100%;
+    border-radius: 30px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
 }
 
 .umamemo-hero-buttons .btn:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
-}
-
-.umamemo-hero-buttons .btn-primary {
-    background-color: #007bff;
-    border-color: #007bff;
-}
-
-.umamemo-hero-buttons .btn-outline-light {
-    color: #fff;
-    border-color: #fff;
-    border-width: 2px;
-}
-
-.umamemo-hero-buttons .btn-outline-light:hover {
-    background-color: rgba(255, 255, 255, 0.15);
-}
-
-/* スクロールダウンインジケーター */
-.umamemo-scroll-indicator {
-    position: absolute;
-    bottom: 30px;
-    left: 50%;
-    transform: translateX(-50%);
-    color: #fff;
-    font-size: 1.5rem;
-    opacity: 0;
-    animation: fadeInUp 1s ease 1.5s forwards, bounce 2s infinite 2.5s;
-    z-index: 3;
-}
-
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translate(-50%, 20px);
-    }
-    to {
-        opacity: 1;
-        transform: translate(-50%, 0);
-    }
-}
-
-@keyframes bounce {
-    0%, 20%, 50%, 80%, 100% {
-        transform: translate(-50%, 0);
-    }
-    40% {
-        transform: translate(-50%, -10px);
-    }
-    60% {
-        transform: translate(-50%, -5px);
-    }
+    transform: translateY(-3px);
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.3);
 }
 
 /* 共通セクションスタイル */
 .umamemo-section {
-    padding: 5rem 0;
+    padding: 4rem 0;
     position: relative;
     z-index: 1;
 }
@@ -264,59 +147,52 @@
 .umamemo-feature-card {
     background-color: #fff;
     border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
     padding: 2rem;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    opacity: 0;
-    transform: translateY(20px);
+    transition: all 0.3s ease;
 }
 
 .umamemo-feature-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
 }
 
 .umamemo-feature-icon {
     font-size: 2.5rem;
     color: #007bff;
     margin-bottom: 1.5rem;
-    text-align: center;
 }
 
 .umamemo-feature-title {
     font-size: 1.5rem;
-    font-weight: 600;
+    font-weight: 700;
     margin-bottom: 1rem;
     color: #333;
 }
 
 .umamemo-feature-text {
+    color: #666;
     margin-bottom: 1.5rem;
-    flex-grow: 1;
 }
 
 .umamemo-feature-list {
     list-style-type: none;
     padding-left: 0;
-    margin-bottom: 0;
 }
 
 .umamemo-feature-list li {
     position: relative;
     padding-left: 1.5rem;
     margin-bottom: 0.5rem;
+    color: #555;
 }
 
 .umamemo-feature-list li:before {
-    content: '\f00c';
-    font-family: 'Font Awesome 5 Free';
-    font-weight: 900;
+    content: '✓';
     position: absolute;
     left: 0;
     color: #007bff;
+    font-weight: bold;
 }
 
 /* モバイル向けの調整 */
@@ -330,20 +206,16 @@
     }
     
     .umamemo-hero-title {
-        font-size: 3rem;
+        font-size: 2.5rem;
     }
     
     .umamemo-hero-subtitle {
-        font-size: 1.3rem;
+        font-size: 1.2rem;
     }
     
     .umamemo-hero-buttons {
         flex-direction: column;
-        gap: 0.75rem;
-    }
-    
-    .umamemo-section {
-        padding: 3rem 0;
+        gap: 1rem;
     }
     
     .umamemo-section-title {
@@ -365,22 +237,19 @@
 <!-- ヒーローセクション -->
 <section class="umamemo-hero">
     <div class="umamemo-hero-image">
-        <img src="{{ url_for('static', filename='images/gene-devine-U-yHjENTmMg-unsplash.jpg') }}" alt="メイン画像" class="umamemo-desktop-image">
-        <img src="{{ url_for('static', filename='images/horse-7833667_1280.jpg') }}" alt="メイン画像" class="umamemo-mobile-image">
+        <img src="{{ url_for('static', filename='images/hero-bg.jpg') }}" alt="メイン画像" class="umamemo-desktop-image">
+        <img src="{{ url_for('static', filename='images/hero-bg-mobile.jpg') }}" alt="メイン画像（モバイル）" class="umamemo-mobile-image">
     </div>
     <div class="umamemo-hero-overlay"></div>
     <div class="umamemo-hero-content">
         <h1 class="umamemo-hero-title">馬メモ</h1>
         <p class="umamemo-hero-subtitle">競馬ファンのための情報共有プラットフォーム</p>
         <div class="umamemo-hero-buttons">
-            <a href="{{ url_for('races') }}" class="btn btn-primary btn-lg">レース情報を見る</a>
+            <a href="{{ url_for('races') }}" class="btn btn-primary">レース情報を見る</a>
             {% if not current_user.is_authenticated %}
-            <a href="{{ url_for('register') }}" class="btn btn-outline-light btn-lg">新規登録</a>
+            <a href="{{ url_for('register') }}" class="btn btn-outline-light">新規登録</a>
             {% endif %}
         </div>
-    </div>
-    <div class="umamemo-scroll-indicator">
-        <i class="fas fa-chevron-down"></i>
     </div>
 </section>
 
@@ -584,82 +453,14 @@
 document.addEventListener('DOMContentLoaded', function() {
     console.log('index.js loaded');
     
-    // ヒーローセクションのアニメーション
-    const heroSection = document.querySelector('.umamemo-hero');
-    if (heroSection) {
-        console.log('Hero section found');
-        
-        // 画像の読み込みを確認
-        const heroImages = heroSection.querySelectorAll('img');
-        let loadedImages = 0;
-        
-        const checkAllImagesLoaded = () => {
-            loadedImages++;
-            if (loadedImages >= heroImages.length) {
-                // すべての画像が読み込まれたらアニメーション開始
-                setTimeout(() => {
-                    heroSection.classList.add('loaded');
-                }, 100);
-            }
-        };
-        
-        heroImages.forEach(img => {
-            if (img.complete) {
-                checkAllImagesLoaded();
-            } else {
-                img.addEventListener('load', checkAllImagesLoaded);
-                img.addEventListener('error', checkAllImagesLoaded);
-            }
-        });
-        
-        // 画像の読み込みに関わらず、一定時間後にアニメーション開始
+    // 機能カードのアニメーション
+    const featureCards = document.querySelectorAll('.umamemo-feature-card');
+    featureCards.forEach((card, index) => {
         setTimeout(() => {
-            heroSection.classList.add('loaded');
-        }, 500);
-    }
-    
-    // スクロールダウンインジケーターのクリックイベント
-    const scrollIndicator = document.querySelector('.umamemo-scroll-indicator');
-    if (scrollIndicator) {
-        scrollIndicator.addEventListener('click', () => {
-            const featuresSection = document.querySelector('.umamemo-section');
-            if (featuresSection) {
-                featuresSection.scrollIntoView({ behavior: 'smooth' });
-            }
-        });
-    }
-    
-    // 機能セクションの表示を確認
-    const featuresSection = document.querySelector('.umamemo-section');
-    if (featuresSection) {
-        console.log('Features section found');
-        
-        // Intersection Observerを使用して、要素が画面に入ったときにアニメーション
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.style.display = 'block';
-                    entry.target.style.visibility = 'visible';
-                    entry.target.style.opacity = '1';
-                    
-                    // 機能カードのアニメーション
-                    const featureCards = entry.target.querySelectorAll('.umamemo-feature-card');
-                    featureCards.forEach((card, index) => {
-                        setTimeout(() => {
-                            card.style.opacity = '1';
-                            card.style.transform = 'translateY(0)';
-                        }, 100 * index);
-                    });
-                    
-                    observer.unobserve(entry.target);
-                }
-            });
-        }, { threshold: 0.1 });
-        
-        observer.observe(featuresSection);
-    } else {
-        console.error('Features section not found');
-    }
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, 100 * index);
+    });
     
     // 遅延読み込み関数
     function lazyLoad() {
