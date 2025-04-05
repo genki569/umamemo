@@ -80,6 +80,17 @@ document.addEventListener('DOMContentLoaded', function() {
             featuresSection.style.display = 'block';
             featuresSection.style.visibility = 'visible';
             featuresSection.style.opacity = '1';
+            
+            // 機能カードのアニメーション
+            const featureCards = document.querySelectorAll('.feature-card');
+            featureCards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, 100 * index);
+            });
+        } else {
+            console.error('Features section not found');
         }
     }, 500);
 
