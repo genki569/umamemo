@@ -3405,6 +3405,21 @@ def race_shutuba(race_id):
 
         # 各馬の最近の戦績を取得
         for entry in entries:
+            # 馬のメモを取得
+            if entry.horse and hasattr(entry.horse, 'memo') and entry.horse.memo:
+                try:
+                    # JSONからメモリストを取得
+                    memo_list = json.loads(entry.horse.memo)
+                    if memo_list and isinstance(memo_list, list):
+                        # 最新のメモを取得
+                        entry.latest_memo = memo_list[-1]['content'] if memo_list else None
+                    else:
+                        entry.latest_memo = None
+                except (json.JSONDecodeError, KeyError, IndexError):
+                    entry.latest_memo = None
+            else:
+                entry.latest_memo = None
+                
             # ShutubaEntryモデルのget_recent_resultsメソッドを使用
             recent_entries = entry.get_recent_results(limit=5)
             
