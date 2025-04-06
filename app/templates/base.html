@@ -110,15 +110,22 @@
                 <div class="col-md-4 mb-3 mb-md-0">
                     <h5>リンク</h5>
                     <ul class="list-unstyled">
-                        <li><a href="{{ url_for('about') }}" class="text-decoration-none">サービスについて</a></li>
-                        <li><a href="{{ url_for('terms') }}" class="text-decoration-none">利用規約</a></li>
-                        <li><a href="{{ url_for('privacy') }}" class="text-decoration-none">プライバシーポリシー</a></li>
+                        <li><a href="{{ url_for('index') }}" class="text-decoration-none">ホーム</a></li>
+                        <li><a href="{{ url_for('races') }}" class="text-decoration-none">レース情報</a></li>
+                        <li><a href="{{ url_for('review_market') }}" class="text-decoration-none">回顧ノート</a></li>
                     </ul>
                 </div>
                 <div class="col-md-4">
-                    <h5>お問い合わせ</h5>
-                    <p class="text-muted">ご質問やフィードバックがありましたら、お気軽にお問い合わせください。</p>
-                    <a href="{{ url_for('contact') }}" class="btn btn-sm btn-outline-secondary">お問い合わせ</a>
+                    <h5>アカウント</h5>
+                    <ul class="list-unstyled">
+                        {% if current_user.is_authenticated %}
+                            <li><a href="{{ url_for('mypage_home') }}" class="text-decoration-none">マイページ</a></li>
+                            <li><a href="{{ url_for('settings') }}" class="text-decoration-none">設定</a></li>
+                        {% else %}
+                            <li><a href="{{ url_for('login') }}" class="text-decoration-none">ログイン</a></li>
+                            <li><a href="{{ url_for('register') }}" class="text-decoration-none">新規登録</a></li>
+                        {% endif %}
+                    </ul>
                 </div>
             </div>
             <hr>
