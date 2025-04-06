@@ -21,7 +21,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     {% endblock %}
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100">
     <!-- ヘッダー -->
     <header class="header">
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -95,14 +95,36 @@
     {% endwith %}
     
     <!-- メインコンテンツ -->
-    <main class="main-content">
+    <main class="main-content flex-grow-1">
         {% block content %}{% endblock %}
     </main>
     
     <!-- フッター -->
-    <footer class="footer mt-auto py-3">
-        <div class="container text-center">
-            <span class="text-muted">&copy; 2023 馬メモ All Rights Reserved.</span>
+    <footer class="footer mt-auto py-3 bg-light">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-3 mb-md-0">
+                    <h5>馬メモ</h5>
+                    <p class="text-muted">競馬ファンのための情報共有プラットフォーム</p>
+                </div>
+                <div class="col-md-4 mb-3 mb-md-0">
+                    <h5>リンク</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="{{ url_for('about') }}" class="text-decoration-none">サービスについて</a></li>
+                        <li><a href="{{ url_for('terms') }}" class="text-decoration-none">利用規約</a></li>
+                        <li><a href="{{ url_for('privacy') }}" class="text-decoration-none">プライバシーポリシー</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5>お問い合わせ</h5>
+                    <p class="text-muted">ご質問やフィードバックがありましたら、お気軽にお問い合わせください。</p>
+                    <a href="{{ url_for('contact') }}" class="btn btn-sm btn-outline-secondary">お問い合わせ</a>
+                </div>
+            </div>
+            <hr>
+            <div class="text-center">
+                <p class="mb-0 text-muted">&copy; 2023 馬メモ All Rights Reserved.</p>
+            </div>
         </div>
     </footer>
     
