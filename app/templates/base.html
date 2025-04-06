@@ -29,6 +29,7 @@
       --primary-purple: #8B5CF6;
       --secondary-color: #1E293B;
       --accent-color: #FF6B35;
+      --accent-color-light: #FF9F1C;
       --light-color: #F8FAFC;
       --dark-color: #0F172A;
       --gray-color: #64748B;
@@ -58,6 +59,17 @@
       position: relative;
       z-index: 1000;
       padding: 0.5rem 0;
+    }
+    
+    /* ヘッダーにオレンジのアクセントラインを追加 */
+    .umamemo-header::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(to right, var(--accent-color), var(--accent-color-light));
     }
 
     .umamemo-navbar {
@@ -193,9 +205,6 @@
       padding: 0.8rem 0;
       margin: 0.125rem 0 0;
       font-size: 1rem;
-      color: #212529;
-      text-align: left;
-      list-style: none;
       background-color: #fff;
       background-clip: padding-box;
       border: 1px solid rgba(0, 0, 0, 0.05);
@@ -225,9 +234,8 @@
       padding: 0.5rem 1.5rem;
       clear: both;
       font-weight: 400;
-      color: #212529;
+      color: var(--secondary-color);
       text-align: inherit;
-      text-decoration: none;
       white-space: nowrap;
       background-color: transparent;
       border: 0;
@@ -255,8 +263,6 @@
       border: 1px solid rgba(255, 255, 255, 0.3);
       border-radius: 0.25rem;
       color: white;
-      cursor: pointer;
-      display: none;
     }
 
     .umamemo-navbar-toggler-icon {
@@ -291,7 +297,7 @@
       left: 0;
       right: 0;
       height: 4px;
-      background: linear-gradient(to right, #FF6B35, #FF9F1C);
+      background: linear-gradient(to right, var(--accent-color), var(--accent-color-light));
     }
 
     .umamemo-footer h5 {
@@ -309,7 +315,7 @@
       left: 0;
       width: 40px;
       height: 3px;
-      background: linear-gradient(to right, #FF6B35, #FF9F1C);
+      background: linear-gradient(to right, var(--accent-color), var(--accent-color-light));
     }
 
     .umamemo-footer p {
@@ -319,8 +325,7 @@
 
     .umamemo-social-icons {
       display: flex;
-      gap: 1rem;
-      margin-top: 1.5rem;
+      gap: 0.75rem;
     }
 
     .umamemo-social-icons a {
