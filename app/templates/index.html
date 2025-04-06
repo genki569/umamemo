@@ -263,50 +263,99 @@
     justify-content: center;
     margin: 0 auto;
 }
+
+/* バウンスアニメーション */
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+    40% {transform: translateY(-20px);}
+    60% {transform: translateY(-10px);}
+}
+.animate-bounce {
+    animation: bounce 2s infinite;
+}
+
+/* フェードインアニメーション */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in {
+    animation: fadeIn 0.8s ease forwards;
+}
 </style>
 {% endblock %}
 
 {% block content %}
 <!-- ヒーローセクション -->
-<section style="background-color: #000; position: relative; height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+<section style="position: relative; height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden;">
     <!-- 背景画像 -->
-    <img src="{{ url_for('static', filename='images/gene-devine-U-yHjENTmMg-unsplash.jpg') }}" alt="馬メモ" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.7;">
+    <img src="{{ url_for('static', filename='images/gene-devine-U-yHjENTmMg-unsplash.jpg') }}" alt="馬メモ" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; filter: brightness(0.7) contrast(1.1);">
     
     <!-- オーバーレイ -->
-    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);"></div>
+    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, rgba(15, 23, 42, 0.8) 0%, rgba(30, 41, 59, 0.7) 100%);"></div>
     
     <!-- コンテンツ -->
     <div class="container position-relative" style="z-index: 10;">
-        <div class="text-center text-white">
-            <h1 class="display-2 fw-bold mb-4" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">馬メモ</h1>
-            <p class="lead fs-3 mb-5" style="text-shadow: 1px 1px 3px rgba(0,0,0,0.5);">競馬ファンのための情報共有プラットフォーム</p>
-            <div class="d-flex justify-content-center gap-4">
-                <a href="{{ url_for('races') }}" class="btn btn-primary btn-lg px-5 py-3 rounded-pill fw-bold">レース情報を見る</a>
-                {% if not current_user.is_authenticated %}
-                    <a href="{{ url_for('register') }}" class="btn btn-outline-light btn-lg px-5 py-3 rounded-pill fw-bold">新規登録</a>
-                {% endif %}
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center text-white animate-fade-in">
+                <h1 class="display-2 fw-bold mb-4" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.5); letter-spacing: -1px;">馬メモ</h1>
+                <p class="lead fs-3 mb-5" style="text-shadow: 1px 1px 3px rgba(0,0,0,0.5); font-weight: 300;">競馬ファンのための情報共有プラットフォーム</p>
+                <div class="d-flex justify-content-center gap-4">
+                    <a href="{{ url_for('races') }}" class="btn btn-primary btn-lg px-5 py-3 rounded-pill fw-bold" style="background: linear-gradient(to right, #3563E9, #4F46E5); border: none; box-shadow: 0 10px 20px rgba(53, 99, 233, 0.3);">レース情報を見る</a>
+                    {% if not current_user.is_authenticated %}
+                        <a href="{{ url_for('register') }}" class="btn btn-outline-light btn-lg px-5 py-3 rounded-pill fw-bold" style="backdrop-filter: blur(5px); background-color: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2);">新規登録</a>
+                    {% endif %}
+                </div>
             </div>
         </div>
+    </div>
+    
+    <!-- スクロールダウン矢印 -->
+    <div class="position-absolute bottom-0 start-50 translate-middle-x mb-4 text-white animate-bounce" style="z-index: 10;">
+        <a href="#features" class="text-white">
+            <i class="fas fa-chevron-down fa-2x"></i>
+        </a>
     </div>
 </section>
 
 <!-- 主な機能セクション -->
-<section class="py-5">
+<section id="features" class="py-5" style="background-color: #F8FAFC;">
     <div class="container py-5">
-        <h2 class="text-center display-5 mb-5">主な機能</h2>
+        <div class="row mb-5">
+            <div class="col-lg-6 mx-auto text-center">
+                <h6 class="text-primary fw-bold mb-3" style="letter-spacing: 2px; text-transform: uppercase;">機能紹介</h6>
+                <h2 class="display-5 mb-4" style="font-weight: 700; color: #1E293B;">主な機能</h2>
+                <p class="lead text-muted">馬メモは競馬ファンのために設計された、使いやすく強力な機能を提供します。</p>
+            </div>
+        </div>
         <div class="row g-5">
             <div class="col-md-4">
-                <div class="card h-100 border-0 shadow-sm rounded-3 hover-lift">
+                <div class="card h-100 border-0 shadow-sm rounded-4 hover-lift" style="border-radius: 16px; overflow: hidden;">
                     <div class="card-body text-center p-5">
-                        <div class="icon-wrapper mb-4">
-                            <i class="fas fa-search fa-3x text-primary"></i>
+                        <div class="icon-wrapper mb-4" style="background: linear-gradient(135deg, rgba(53, 99, 233, 0.1) 0%, rgba(79, 70, 229, 0.1) 100%);">
+                            <i class="fas fa-search fa-3x" style="color: #3563E9;"></i>
                         </div>
-                        <h3 class="card-title h4 mb-3">レース検索</h3>
-                        <p class="card-text mb-4">過去のレース結果や出走表を簡単に検索できます。</p>
+                        <h3 class="card-title h4 mb-3" style="font-weight: 700; color: #1E293B;">レース検索</h3>
+                        <p class="card-text mb-4 text-muted">過去のレース結果や出走表を簡単に検索できます。</p>
                         <ul class="list-unstyled text-start">
-                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>日付から検索</li>
-                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>開催場所から検索</li>
-                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>レース名から検索</li>
+                            <li class="mb-3 d-flex align-items-center">
+                                <span class="me-3 d-flex align-items-center justify-content-center" style="width: 24px; height: 24px; background-color: rgba(16, 185, 129, 0.1); border-radius: 50%;">
+                                    <i class="fas fa-check" style="font-size: 12px; color: #10B981;"></i>
+                                </span>
+                                <span>日付から検索</span>
+                            </li>
+                            <li class="mb-3 d-flex align-items-center">
+                                <span class="me-3 d-flex align-items-center justify-content-center" style="width: 24px; height: 24px; background-color: rgba(16, 185, 129, 0.1); border-radius: 50%;">
+                                    <i class="fas fa-check" style="font-size: 12px; color: #10B981;"></i>
+                                </span>
+                                <span>開催場所から検索</span>
+                            </li>
+                            <li class="mb-3 d-flex align-items-center">
+                                <span class="me-3 d-flex align-items-center justify-content-center" style="width: 24px; height: 24px; background-color: rgba(16, 185, 129, 0.1); border-radius: 50%;">
+                                    <i class="fas fa-check" style="font-size: 12px; color: #10B981;"></i>
+                                </span>
+                                <span>レース名から検索</span>
+                            </li>
                         </ul>
                     </div>
                 </div>
@@ -348,121 +397,64 @@
 </section>
 
 <!-- 使い方セクション -->
-<section class="py-5 bg-light">
+<section class="py-5" style="background-color: #fff;">
     <div class="container py-5">
-        <h2 class="text-center display-5 mb-5">使い方</h2>
-        <div class="row g-4">
-            <div class="col-md-6 col-lg-3">
-                <div class="card h-100 border-0 shadow-sm rounded-3 hover-lift">
-                    <div class="card-body text-center p-4">
-                        <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto mb-4" style="width: 80px; height: 80px; font-size: 2rem;">1</div>
-                        <h3 class="card-title h4 mb-3">会員登録</h3>
-                        <p class="card-text">無料で簡単に登録できます。メールアドレスとパスワードだけで完了します。</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6 col-lg-3">
-                <div class="card h-100 border-0 shadow-sm rounded-3 hover-lift">
-                    <div class="card-body text-center p-4">
-                        <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto mb-4" style="width: 80px; height: 80px; font-size: 2rem;">2</div>
-                        <h3 class="card-title h4 mb-3">レースを探す</h3>
-                        <p class="card-text">検索機能を使って、気になるレースを探しましょう。</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6 col-lg-3">
-                <div class="card h-100 border-0 shadow-sm rounded-3 hover-lift">
-                    <div class="card-body text-center p-4">
-                        <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto mb-4" style="width: 80px; height: 80px; font-size: 2rem;">3</div>
-                        <h3 class="card-title h4 mb-3">回顧を書く</h3>
-                        <p class="card-text">レース結果を分析して、あなたの視点で回顧を記録しましょう。</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6 col-lg-3">
-                <div class="card h-100 border-0 shadow-sm rounded-3 hover-lift">
-                    <div class="card-body text-center p-4">
-                        <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto mb-4" style="width: 80px; height: 80px; font-size: 2rem;">4</div>
-                        <h3 class="card-title h4 mb-3">共有する</h3>
-                        <p class="card-text">あなたの分析を他のユーザーと共有して、競馬の楽しさを広げましょう。</p>
-                    </div>
-                </div>
+        <div class="row mb-5">
+            <div class="col-lg-6 mx-auto text-center">
+                <h6 class="text-primary fw-bold mb-3" style="letter-spacing: 2px; text-transform: uppercase;">簡単ステップ</h6>
+                <h2 class="display-5 mb-4" style="font-weight: 700; color: #1E293B;">使い方</h2>
+                <p class="lead text-muted">馬メモは直感的で使いやすいインターフェースを提供します。</p>
             </div>
         </div>
+        
+        <!-- 使い方のステップカード -->
+        
     </div>
 </section>
 
 <!-- 料金プラン -->
-<section class="py-5">
+<section class="py-5" style="background-color: #F8FAFC;">
     <div class="container py-5">
-        <h2 class="text-center display-5 mb-5">料金プラン</h2>
-        <div class="row justify-content-center g-5">
-            <div class="col-md-5">
-                <div class="card h-100 border-0 shadow-sm rounded-3 hover-lift">
-                    <div class="card-header bg-white text-center border-0 pt-5 pb-0">
-                        <h3 class="h3 mb-2">無料プラン</h3>
-                        <div class="display-4 fw-bold mb-0">¥0<span class="text-muted fs-6">/月</span></div>
-                    </div>
-                    <div class="card-body p-5">
-                        <ul class="list-unstyled mb-5">
-                            <li class="mb-3"><i class="fas fa-check text-success me-2"></i>レース検索</li>
-                            <li class="mb-3"><i class="fas fa-check text-success me-2"></i>馬名検索</li>
-                            <li class="mb-3"><i class="fas fa-check text-success me-2"></i>基本的な通知機能</li>
-                        </ul>
-                        <div class="text-center">
-                            <a href="{{ url_for('register') }}" class="btn btn-outline-primary btn-lg px-5 py-3 rounded-pill fw-bold">今すぐ始める</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-5">
-                <div class="card h-100 border-0 shadow rounded-3 hover-lift" style="transform: scale(1.05);">
-                    <div class="card-header bg-primary text-white text-center border-0 pt-5 pb-0">
-                        <span class="badge bg-warning text-dark position-absolute top-0 start-50 translate-middle px-4 py-2 rounded-pill fw-bold">おすすめ</span>
-                        <h3 class="h3 mb-2">プレミアム</h3>
-                        <div class="display-4 fw-bold mb-0">¥980<span class="fs-6">/月</span></div>
-                    </div>
-                    <div class="card-body p-5">
-                        <ul class="list-unstyled mb-5">
-                            <li class="mb-3"><i class="fas fa-check text-success me-2"></i>全ての無料機能</li>
-                            <li class="mb-3"><i class="fas fa-check text-success me-2"></i>AI分析機能</li>
-                            <li class="mb-3"><i class="fas fa-check text-success me-2"></i>データエクスポート</li>
-                            <li class="mb-3"><i class="fas fa-check text-success me-2"></i>広告非表示</li>
-                            <li class="mb-3"><i class="fas fa-check text-success me-2"></i>優先サポート</li>
-                        </ul>
-                        <div class="text-center">
-                            <a href="{{ url_for('premium') }}" class="btn btn-primary btn-lg px-5 py-3 rounded-pill fw-bold">詳細を見る</a>
-                        </div>
-                    </div>
-                </div>
+        <div class="row mb-5">
+            <div class="col-lg-6 mx-auto text-center">
+                <h6 class="text-primary fw-bold mb-3" style="letter-spacing: 2px; text-transform: uppercase;">料金プラン</h6>
+                <h2 class="display-5 mb-4" style="font-weight: 700; color: #1E293B;">あなたに合ったプランを選択</h2>
+                <p class="lead text-muted">ニーズに合わせて最適なプランをお選びいただけます。</p>
             </div>
         </div>
+        
+        <!-- 料金プランカード -->
+        
     </div>
 </section>
 
 <!-- CTAセクション -->
-<section class="py-5 bg-primary text-white">
+<section class="py-5" style="background: linear-gradient(135deg, #3563E9 0%, #4F46E5 100%);">
     <div class="container py-5 text-center">
-        <h2 class="display-5 mb-4">さっそく始めてみましょう</h2>
-        <p class="lead fs-4 mb-5">無料で全ての基本機能をお使いいただけます。</p>
-        <div class="d-flex justify-content-center gap-4">
-            {% if not current_user.is_authenticated %}
-                <a href="{{ url_for('register') }}" class="btn btn-light btn-lg px-5 py-3 rounded-pill fw-bold">無料で始める</a>
-            {% endif %}
-            <a href="{{ url_for('review_market') }}" class="btn btn-outline-light btn-lg px-5 py-3 rounded-pill fw-bold">回顧マーケットを見る</a>
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <h2 class="display-5 mb-4 text-white" style="font-weight: 700;">さっそく始めてみましょう</h2>
+                <p class="lead fs-4 mb-5 text-white opacity-90">無料で全ての基本機能をお使いいただけます。</p>
+                <div class="d-flex justify-content-center gap-4">
+                    {% if not current_user.is_authenticated %}
+                        <a href="{{ url_for('register') }}" class="btn btn-light btn-lg px-5 py-3 rounded-pill fw-bold" style="box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);">無料で始める</a>
+                    {% endif %}
+                    <a href="{{ url_for('review_market') }}" class="btn btn-outline-light btn-lg px-5 py-3 rounded-pill fw-bold" style="backdrop-filter: blur(5px); background-color: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2);">回顧マーケットを見る</a>
+                </div>
+                <p class="mt-4 fs-6 text-white opacity-75">※会員登録後いつでもアップグレード可能です</p>
+            </div>
         </div>
-        <p class="mt-4 fs-6">※会員登録後いつでもアップグレード可能です</p>
     </div>
 </section>
 
 {% if current_user.is_authenticated and current_user.is_admin %}
 <div class="container mt-5 mb-5">
-    <div class="card border-primary rounded-3 shadow">
-        <div class="card-header bg-primary text-white py-3">
-            <h5 class="mb-0 fw-bold">管理者メニュー</h5>
+    <div class="card border-0 rounded-4 shadow" style="border-radius: 16px; overflow: hidden;">
+        <div class="card-header py-4" style="background: linear-gradient(to right, #3563E9, #4F46E5); border: none;">
+            <h5 class="mb-0 fw-bold text-white">管理者メニュー</h5>
         </div>
         <div class="card-body p-4">
-            <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-primary btn-lg">
+            <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-primary btn-lg rounded-pill">
                 <i class="fas fa-cog me-2"></i>管理画面へ
             </a>
         </div>
@@ -476,6 +468,37 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     console.log('index.js loaded');
+    
+    // スムーズスクロール
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            
+            document.querySelector(this.getAttribute('href')).scrollIntoView({
+                behavior: 'smooth'
+            });
+        });
+    });
+    
+    // スクロール時のアニメーション
+    const animateOnScroll = function() {
+        const elements = document.querySelectorAll('.card, .icon-wrapper, h2, .lead');
+        
+        elements.forEach(element => {
+            const elementPosition = element.getBoundingClientRect().top;
+            const windowHeight = window.innerHeight;
+            
+            if (elementPosition < windowHeight - 100) {
+                element.classList.add('animate-fade-in');
+            }
+        });
+    };
+    
+    // 初期ロード時にアニメーション
+    animateOnScroll();
+    
+    // スクロール時にアニメーション
+    window.addEventListener('scroll', animateOnScroll);
 });
 </script>
 {% endblock %}
