@@ -16,6 +16,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     
@@ -36,32 +38,37 @@
     }
 
     body {
-      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-family: 'Noto Sans JP', 'Helvetica Neue', Arial, sans-serif;
       color: var(--secondary-color);
       line-height: 1.6;
+      background-color: #FAFAFA;
     }
 
     /* ヘッダースタイル */
     .header {
       border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      background-color: #fff;
+      box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
     }
 
     .navbar {
-      padding: 1rem 0;
+      padding: 0.8rem 0;
       transition: var(--transition);
     }
 
     .navbar-dark {
-      background: linear-gradient(to right, var(--secondary-color), var(--dark-color)) !important;
+      background: linear-gradient(to right, #3563E9, #4F46E5) !important;
     }
 
     .navbar-brand {
-      font-size: 1.5rem;
+      font-size: 1.6rem;
       letter-spacing: -0.5px;
+      font-weight: 700;
     }
 
     .navbar-brand i {
       color: var(--primary-color) !important;
+      font-size: 1.8rem;
     }
 
     .nav-link {
@@ -69,6 +76,7 @@
       padding: 0.5rem 1rem;
       font-weight: 500;
       transition: var(--transition);
+      font-size: 0.95rem;
     }
 
     .nav-link::after {
@@ -89,7 +97,7 @@
     }
 
     .navbar-dark .nav-link {
-      color: rgba(255, 255, 255, 0.85) !important;
+      color: rgba(255, 255, 255, 0.9) !important;
     }
 
     .navbar-dark .nav-link:hover,
@@ -122,12 +130,12 @@
     }
 
     .dropdown-item {
-      padding: 0.75rem 1.5rem;
+      padding: 0.7rem 1.5rem;
       transition: var(--transition);
     }
 
     .dropdown-item:hover {
-      background-color: rgba(53, 99, 233, 0.1);
+      background-color: rgba(53, 99, 233, 0.05);
     }
 
     .dropdown-item i {
@@ -136,17 +144,29 @@
 
     /* フッタースタイル */
     .footer {
-      background: linear-gradient(to right, var(--secondary-color), var(--dark-color)) !important;
+      background: linear-gradient(to right, #3563E9, #4F46E5) !important;
       color: #fff;
-      padding: 3rem 0 1.5rem;
+      padding: 4rem 0 2rem;
+      position: relative;
+    }
+
+    .footer::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 10px;
+      background: linear-gradient(90deg, #FF6B35, #FF8E6E);
     }
 
     .footer h5 {
       color: #fff;
-      font-weight: 600;
+      font-weight: 700;
       margin-bottom: 1.5rem;
       position: relative;
       display: inline-block;
+      font-size: 1.2rem;
     }
 
     .footer h5::after {
@@ -156,22 +176,27 @@
       left: 0;
       width: 40px;
       height: 3px;
-      background-color: var(--primary-color);
+      background-color: #FF6B35;
       border-radius: 1.5px;
     }
 
     .footer p {
-      color: rgba(255, 255, 255, 0.7);
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 0.95rem;
     }
 
     .footer a {
-      color: rgba(255, 255, 255, 0.8);
+      color: rgba(255, 255, 255, 0.9);
       transition: var(--transition);
+      text-decoration: none;
+      font-size: 0.95rem;
+      display: inline-block;
+      margin-bottom: 0.5rem;
     }
 
     .footer a:hover {
       color: #fff;
-      text-decoration: none;
+      transform: translateX(5px);
     }
 
     .footer .list-unstyled li {
@@ -196,7 +221,30 @@
     }
 
     .footer .text-muted {
-      color: rgba(255, 255, 255, 0.5) !important;
+      color: rgba(255, 255, 255, 0.7) !important;
+      font-size: 0.9rem;
+    }
+
+    .footer .social-icons {
+      display: flex;
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .footer .social-icons a {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      transition: var(--transition);
+    }
+
+    .footer .social-icons a:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+      transform: translateY(-5px);
     }
 
     /* アラートスタイル */
@@ -223,8 +271,8 @@
     <header class="header">
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <div class="container">
-                <a class="navbar-brand fw-bold" href="{{ url_for('index') }}">
-                    <i class="fas fa-horse-head text-primary me-2"></i>馬メモ
+                <a class="navbar-brand" href="{{ url_for('index') }}">
+                    <i class="fas fa-horse-head me-2"></i>馬メモ
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -297,30 +345,37 @@
     </main>
     
     <!-- フッター -->
-    <footer class="footer mt-auto py-3 bg-light">
+    <footer class="footer mt-auto">
         <div class="container">
             <div class="row">
-                <div class="col-md-4 mb-3 mb-md-0">
+                <div class="col-md-4 mb-4 mb-md-0">
                     <h5>馬メモ</h5>
-                    <p class="text-muted">競馬ファンのための情報共有プラットフォーム</p>
+                    <p>競馬ファンのための情報共有プラットフォーム</p>
+                    <div class="social-icons">
+                        <a href="#" aria-label="Twitter"><i class="fab fa-twitter text-white"></i></a>
+                        <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f text-white"></i></a>
+                        <a href="#" aria-label="Instagram"><i class="fab fa-instagram text-white"></i></a>
+                    </div>
                 </div>
-                <div class="col-md-4 mb-3 mb-md-0">
+                <div class="col-md-4 mb-4 mb-md-0">
                     <h5>リンク</h5>
                     <ul class="list-unstyled">
-                        <li><a href="{{ url_for('index') }}" class="text-decoration-none">ホーム</a></li>
-                        <li><a href="{{ url_for('races') }}" class="text-decoration-none">レース情報</a></li>
-                        <li><a href="{{ url_for('review_market') }}" class="text-decoration-none">回顧ノート</a></li>
+                        <li><a href="{{ url_for('index') }}"><i class="fas fa-home me-2"></i>ホーム</a></li>
+                        <li><a href="{{ url_for('races') }}"><i class="fas fa-flag-checkered me-2"></i>レース情報</a></li>
+                        <li><a href="{{ url_for('horses') }}"><i class="fas fa-horse me-2"></i>馬一覧</a></li>
+                        <li><a href="{{ url_for('review_market') }}"><i class="fas fa-sticky-note me-2"></i>回顧ノート</a></li>
                     </ul>
                 </div>
                 <div class="col-md-4">
                     <h5>アカウント</h5>
                     <ul class="list-unstyled">
                         {% if current_user.is_authenticated %}
-                            <li><a href="{{ url_for('mypage_home') }}" class="text-decoration-none">マイページ</a></li>
-                            <li><a href="{{ url_for('settings') }}" class="text-decoration-none">設定</a></li>
+                            <li><a href="{{ url_for('mypage_home') }}"><i class="fas fa-user me-2"></i>マイページ</a></li>
+                            <li><a href="{{ url_for('settings') }}"><i class="fas fa-cog me-2"></i>設定</a></li>
+                            <li><a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt me-2"></i>ログアウト</a></li>
                         {% else %}
-                            <li><a href="{{ url_for('login') }}" class="text-decoration-none">ログイン</a></li>
-                            <li><a href="{{ url_for('register') }}" class="text-decoration-none">新規登録</a></li>
+                            <li><a href="{{ url_for('login') }}"><i class="fas fa-sign-in-alt me-2"></i>ログイン</a></li>
+                            <li><a href="{{ url_for('register') }}"><i class="fas fa-user-plus me-2"></i>新規登録</a></li>
                         {% endif %}
                     </ul>
                 </div>
