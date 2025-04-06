@@ -5,15 +5,17 @@
     <!-- ヘッダー部分 -->
     <div class="shutuba-header">
         <h1>出馬表</h1>
-        <div class="date-selector">
-            {% for date in dates %}
-            <a href="{{ url_for('shutuba_list', date=date.value) }}" class="date-item {% if date.value == selected_date.strftime('%Y%m%d') %}active{% endif %}">
-                <div class="date-month">{{ date.month }}月</div>
-                <div class="date-day">{{ date.day }}</div>
-                <div class="date-weekday">{{ date.weekday }}</div>
-            </a>
-            {% endfor %}
-        </div>
+    </div>
+
+    <!-- 日付選択 -->
+    <div class="date-selector">
+        {% for date in dates %}
+        <a href="{{ url_for('shutuba_list', date=date.value) }}" class="date-item {% if date.value == selected_date.strftime('%Y%m%d') %}active{% endif %}">
+            <div class="date-month">{{ date.month }}月</div>
+            <div class="date-day">{{ date.day }}</div>
+            <div class="date-weekday">{{ date.weekday }}</div>
+        </a>
+        {% endfor %}
     </div>
 
     {% if error %}
@@ -43,18 +45,13 @@
                 {% for race in venue_data.races %}
                 <a href="{{ url_for('race_shutuba', race_id=race.id) }}" class="race-item">
                     <div class="race-circle">{{ race.race_number }}R</div>
-                    <div class="race-details">
+                    <div class="race-content">
                         <div class="race-name">{{ race.name }}</div>
-                        <div class="race-info">
-                            <span class="race-time">
-                                <i class="far fa-clock"></i> {{ race.start_time.strftime('%H:%M') if race.start_time else '時刻不明' }}
-                            </span>
-                            <span class="race-distance">
-                                <i class="fas fa-ruler-horizontal"></i> {{ race.distance }}m
-                            </span>
-                            <span class="race-course">
-                                {{ race.course_type }}
-                            </span>
+                        <div class="race-time">
+                            <i class="far fa-clock"></i> {{ race.start_time.strftime('%H:%M') if race.start_time else '時刻不明' }}
+                        </div>
+                        <div class="race-distance">
+                            <i class="fas fa-ruler-horizontal"></i> {{ race.distance }}m
                         </div>
                     </div>
                     <div class="race-arrow">
@@ -76,6 +73,19 @@
 
 <style>
 /* 出馬表ページのスタイル */
+:root {
+    --primary-color: #6366F1;
+    --primary-gradient: linear-gradient(135deg, #4F46E5 0%, #8B5CF6 100%);
+    --text-color: #333;
+    --light-bg: #f8f9fa;
+    --border-radius: 10px;
+}
+
+body {
+    font-family: 'Noto Sans JP', sans-serif;
+    background-color: #f5f5f5;
+}
+
 .shutuba-container {
     max-width: 1200px;
     margin: 0 auto;
@@ -83,17 +93,13 @@
 }
 
 .shutuba-header {
-    margin-bottom: 30px;
+    margin-bottom: 20px;
 }
 
 .shutuba-header h1 {
     font-size: 2rem;
     font-weight: 700;
-    margin-bottom: 20px;
-    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-purple) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    display: inline-block;
+    color: var(--text-color);
 }
 
 .date-selector {
@@ -101,47 +107,39 @@
     overflow-x: auto;
     padding: 10px 0;
     gap: 10px;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
+    -webkit-overflow-scrolling: touch;
 }
 
 .date-item {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 10px 15px;
-    border-radius: 10px;
-    background-color: #f8f9fa;
+    padding: 10px;
+    border-radius: var(--border-radius);
+    background-color: var(--light-bg);
     text-decoration: none;
-    color: var(--dark-color);
-    transition: all 0.3s ease;
+    color: var(--text-color);
     min-width: 60px;
-}
-
-.date-item:hover {
-    background-color: #e9ecef;
-    transform: translateY(-2px);
+    text-align: center;
 }
 
 .date-item.active {
-    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-purple) 100%);
+    background: var(--primary-gradient);
     color: white;
-    box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3);
 }
 
 .date-month {
     font-size: 0.8rem;
-    opacity: 0.8;
 }
 
 .date-day {
-    font-size: 1.4rem;
+    font-size: 1.5rem;
     font-weight: 700;
-    line-height: 1.2;
 }
 
 .date-weekday {
     font-size: 0.8rem;
-    opacity: 0.8;
 }
 
 .selected-date {
@@ -151,14 +149,14 @@
 .selected-date h2 {
     font-size: 1.5rem;
     font-weight: 600;
-    color: var(--dark-color);
+    color: var(--text-color);
 }
 
 .venue-section {
     margin-bottom: 30px;
-    border-radius: 15px;
+    border-radius: var(--border-radius);
     overflow: hidden;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
 }
 
 .venue-header {
@@ -166,7 +164,7 @@
     justify-content: space-between;
     align-items: center;
     padding: 15px 20px;
-    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-purple) 100%);
+    background: var(--primary-gradient);
     color: white;
 }
 
@@ -181,10 +179,6 @@
     gap: 15px;
 }
 
-.weather, .track-condition {
-    font-size: 1rem;
-}
-
 .race-list {
     background-color: white;
 }
@@ -194,74 +188,55 @@
     align-items: center;
     padding: 15px 20px;
     text-decoration: none;
-    color: var(--dark-color);
+    color: var(--text-color);
     border-bottom: 1px solid #eee;
-    transition: background-color 0.2s ease;
 }
 
 .race-item:last-child {
     border-bottom: none;
 }
 
-.race-item:hover {
-    background-color: #f8f9fa;
-}
-
 .race-circle {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 50px;
-    height: 50px;
-    background-color: var(--primary-blue);
+    width: 45px;
+    height: 45px;
+    background-color: var(--primary-color);
     color: white;
     border-radius: 50%;
     font-weight: 700;
     margin-right: 15px;
     flex-shrink: 0;
-    font-size: 1.1rem;
 }
 
-.race-details {
+.race-content {
     flex-grow: 1;
 }
 
 .race-name {
     font-weight: 600;
     margin-bottom: 5px;
-    font-size: 1.1rem;
 }
 
-.race-info {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
-    font-size: 0.9rem;
-    color: var(--gray-color);
-}
-
-.race-time, .race-distance, .race-course {
-    display: flex;
+.race-time, .race-distance {
+    display: inline-flex;
     align-items: center;
     gap: 5px;
+    font-size: 0.9rem;
+    color: #666;
+    margin-right: 15px;
 }
 
 .race-arrow {
-    color: var(--gray-color);
-    margin-left: 10px;
+    color: #ccc;
 }
 
 .no-races {
     background-color: white;
-    border-radius: 15px;
+    border-radius: var(--border-radius);
     padding: 30px;
     text-align: center;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-}
-
-.no-races p {
-    font-size: 1.1rem;
-    color: var(--gray-color);
 }
 
 @media (max-width: 768px) {
@@ -272,11 +247,6 @@
     
     .venue-conditions {
         margin-top: 10px;
-    }
-    
-    .race-info {
-        flex-direction: column;
-        gap: 5px;
     }
 }
 </style>
