@@ -29,44 +29,46 @@
         <h2>{{ selected_date.strftime('%Y年%m月%d日') }}の出馬表</h2>
     </div>
 
-    <!-- 会場ごとのレース一覧 -->
-    {% if venue_races %}
-        {% for venue_code, venue_data in venue_races.items() %}
-        <div class="venue-section">
-            <div class="venue-header">
-                <h3>{{ venue_data.venue_name }}</h3>
-                <div class="venue-conditions">
-                    <span class="weather"><i class="fas fa-cloud-sun"></i></span>
-                    <span class="track-condition"><i class="fas fa-road"></i></span>
+    <!-- 会場ごとのレース一覧（横並び） -->
+    <div class="venue-grid">
+        {% if venue_races %}
+            {% for venue_code, venue_data in venue_races.items() %}
+            <div class="venue-section">
+                <div class="venue-header">
+                    <h3>{{ venue_data.venue_name }}</h3>
+                    <div class="venue-conditions">
+                        <span class="weather"><i class="fas fa-cloud-sun"></i></span>
+                        <span class="track-condition"><i class="fas fa-road"></i></span>
+                    </div>
+                </div>
+
+                <div class="race-list">
+                    {% for race in venue_data.races %}
+                    <a href="{{ url_for('race_shutuba', race_id=race.id) }}" class="race-item">
+                        <div class="race-circle">{{ race.race_number }}R</div>
+                        <div class="race-content">
+                            <div class="race-name">{{ race.name }}</div>
+                            <div class="race-time">
+                                <i class="far fa-clock"></i> {{ race.start_time.strftime('%H:%M') if race.start_time else '時刻不明' }}
+                            </div>
+                            <div class="race-distance">
+                                <i class="fas fa-ruler-horizontal"></i> {{ race.distance }}m
+                            </div>
+                        </div>
+                        <div class="race-arrow">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </a>
+                    {% endfor %}
                 </div>
             </div>
-
-            <div class="race-list">
-                {% for race in venue_data.races %}
-                <a href="{{ url_for('race_shutuba', race_id=race.id) }}" class="race-item">
-                    <div class="race-circle">{{ race.race_number }}R</div>
-                    <div class="race-content">
-                        <div class="race-name">{{ race.name }}</div>
-                        <div class="race-time">
-                            <i class="far fa-clock"></i> {{ race.start_time.strftime('%H:%M') if race.start_time else '時刻不明' }}
-                        </div>
-                        <div class="race-distance">
-                            <i class="fas fa-ruler-horizontal"></i> {{ race.distance }}m
-                        </div>
-                    </div>
-                    <div class="race-arrow">
-                        <i class="fas fa-chevron-right"></i>
-                    </div>
-                </a>
-                {% endfor %}
+            {% endfor %}
+        {% else %}
+            <div class="no-races">
+                <p>この日の出馬表はありません。</p>
             </div>
-        </div>
-        {% endfor %}
-    {% else %}
-        <div class="no-races">
-            <p>この日の出馬表はありません。</p>
-        </div>
-    {% endif %}
+        {% endif %}
+    </div>
 
     {% endif %}
 </div>
@@ -152,8 +154,15 @@ body {
     color: var(--text-color);
 }
 
+/* 会場を横に並べるグリッド */
+.venue-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    gap: 20px;
+}
+
 .venue-section {
-    margin-bottom: 30px;
+    margin-bottom: 20px;
     border-radius: var(--border-radius);
     overflow: hidden;
     box-shadow: 0 2px 10px rgba(0,0,0,0.05);
@@ -181,6 +190,8 @@ body {
 
 .race-list {
     background-color: white;
+    max-height: 600px;
+    overflow-y: auto;
 }
 
 .race-item {
@@ -237,9 +248,14 @@ body {
     border-radius: var(--border-radius);
     padding: 30px;
     text-align: center;
+    grid-column: 1 / -1;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 900px) {
+    .venue-grid {
+        grid-template-columns: 1fr;
+    }
+    
     .venue-header {
         flex-direction: column;
         align-items: flex-start;
