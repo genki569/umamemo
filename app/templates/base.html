@@ -35,6 +35,8 @@
       --border-radius: 12px;
       --box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
       --transition: all 0.3s ease;
+      --gradient-start: #4F46E5;
+      --gradient-end: #3563E9;
     }
 
     body {
@@ -44,11 +46,11 @@
       background-color: #FAFAFA;
     }
 
-    /* ヘッダースタイル */
+    /* ヘッダースタイル - レース一覧ページに合わせる */
     .header {
-      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-      background-color: #fff;
-      box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+      background: linear-gradient(135deg, #4F46E5 0%, #3563E9 100%);
+      box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+      color: white;
     }
 
     .navbar {
@@ -56,18 +58,15 @@
       transition: var(--transition);
     }
 
-    .navbar-dark {
-      background: linear-gradient(to right, #3563E9, #4F46E5) !important;
-    }
-
     .navbar-brand {
       font-size: 1.6rem;
       letter-spacing: -0.5px;
       font-weight: 700;
+      color: white !important;
     }
 
     .navbar-brand i {
-      color: var(--primary-color) !important;
+      color: white !important;
       font-size: 1.8rem;
     }
 
@@ -77,6 +76,11 @@
       font-weight: 500;
       transition: var(--transition);
       font-size: 0.95rem;
+      color: rgba(255, 255, 255, 0.9) !important;
+    }
+
+    .nav-link:hover {
+      color: white !important;
     }
 
     .nav-link::after {
@@ -86,7 +90,7 @@
       left: 50%;
       width: 0;
       height: 2px;
-      background-color: var(--primary-color);
+      background-color: white;
       transition: var(--transition);
       transform: translateX(-50%);
     }
@@ -96,57 +100,105 @@
       width: 70%;
     }
 
-    .navbar-dark .nav-link {
-      color: rgba(255, 255, 255, 0.9) !important;
-    }
-
-    .navbar-dark .nav-link:hover,
-    .navbar-dark .nav-link.active {
-      color: #fff !important;
-    }
-
     .btn-primary {
-      background-color: var(--primary-color);
-      border-color: var(--primary-color);
+      background: linear-gradient(to right, #4F46E5, #3563E9);
+      border: none;
       border-radius: 30px;
       padding: 0.5rem 1.5rem;
       font-weight: 600;
       box-shadow: 0 4px 6px rgba(53, 99, 233, 0.2);
       transition: var(--transition);
+      color: white;
     }
 
     .btn-primary:hover {
-      background-color: #2954d4;
-      border-color: #2954d4;
+      background: linear-gradient(to right, #4338CA, #2954d4);
       transform: translateY(-2px);
       box-shadow: 0 6px 12px rgba(53, 99, 233, 0.3);
     }
 
+    .btn-outline-primary {
+      color: var(--primary-color);
+      border-color: var(--primary-color);
+      border-radius: 30px;
+      padding: 0.5rem 1.5rem;
+      font-weight: 600;
+      transition: var(--transition);
+    }
+
+    .btn-outline-primary:hover {
+      background-color: var(--primary-color);
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 6px rgba(53, 99, 233, 0.2);
+    }
+
+    /* ドロップダウンメニュー */
     .dropdown-menu {
       border: none;
-      border-radius: var(--border-radius);
-      box-shadow: var(--box-shadow);
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
       overflow: hidden;
     }
 
     .dropdown-item {
-      padding: 0.7rem 1.5rem;
+      padding: 0.75rem 1.5rem;
+      font-weight: 500;
       transition: var(--transition);
     }
 
     .dropdown-item:hover {
-      background-color: rgba(53, 99, 233, 0.05);
-    }
-
-    .dropdown-item i {
+      background-color: rgba(53, 99, 233, 0.1);
       color: var(--primary-color);
     }
 
-    /* フッタースタイル */
+    .dropdown-item i {
+      color: var(--gray-color);
+      transition: var(--transition);
+    }
+
+    .dropdown-item:hover i {
+      color: var(--primary-color);
+    }
+
+    .dropdown-divider {
+      margin: 0.5rem 0;
+      border-color: rgba(0, 0, 0, 0.05);
+    }
+
+    /* カードスタイル */
+    .card {
+      border-radius: var(--border-radius);
+      border: none;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+      transition: var(--transition);
+    }
+
+    .card:hover {
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-header {
+      background-color: transparent;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      padding: 1.5rem;
+    }
+
+    .card-body {
+      padding: 1.5rem;
+    }
+
+    .card-footer {
+      background-color: transparent;
+      border-top: 1px solid rgba(0, 0, 0, 0.05);
+      padding: 1.5rem;
+    }
+
+    /* フッタースタイル - レース一覧ページに合わせる */
     .footer {
-      background: linear-gradient(to right, #3563E9, #4F46E5) !important;
-      color: #fff;
-      padding: 4rem 0 2rem;
+      background: linear-gradient(135deg, #4F46E5 0%, #3563E9 100%);
+      color: white;
+      padding: 3rem 0 2rem;
       position: relative;
     }
 
@@ -156,47 +208,29 @@
       top: 0;
       left: 0;
       width: 100%;
-      height: 10px;
-      background: linear-gradient(90deg, #FF6B35, #FF8E6E);
+      height: 4px;
+      background: linear-gradient(to right, #FF6B35, #FF9F1C);
     }
 
     .footer h5 {
-      color: #fff;
       font-weight: 700;
       margin-bottom: 1.5rem;
-      position: relative;
-      display: inline-block;
-      font-size: 1.2rem;
-    }
-
-    .footer h5::after {
-      content: '';
-      position: absolute;
-      bottom: -8px;
-      left: 0;
-      width: 40px;
-      height: 3px;
-      background-color: #FF6B35;
-      border-radius: 1.5px;
+      color: white;
     }
 
     .footer p {
       color: rgba(255, 255, 255, 0.8);
-      font-size: 0.95rem;
     }
 
     .footer a {
-      color: rgba(255, 255, 255, 0.9);
-      transition: var(--transition);
+      color: rgba(255, 255, 255, 0.8);
       text-decoration: none;
-      font-size: 0.95rem;
-      display: inline-block;
-      margin-bottom: 0.5rem;
+      transition: var(--transition);
     }
 
     .footer a:hover {
-      color: #fff;
-      transform: translateX(5px);
+      color: white;
+      text-decoration: none;
     }
 
     .footer .list-unstyled li {
@@ -204,7 +238,7 @@
     }
 
     .footer .btn-outline-secondary {
-      color: #fff;
+      color: white;
       border-color: rgba(255, 255, 255, 0.3);
       border-radius: 30px;
       transition: var(--transition);
@@ -221,17 +255,17 @@
     }
 
     .footer .text-muted {
-      color: rgba(255, 255, 255, 0.7) !important;
-      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.5) !important;
     }
 
-    .footer .social-icons {
+    /* ソーシャルアイコン */
+    .social-icons {
       display: flex;
-      gap: 15px;
-      margin-top: 20px;
+      gap: 1rem;
+      margin-top: 1.5rem;
     }
 
-    .footer .social-icons a {
+    .social-icons a {
       display: flex;
       align-items: center;
       justify-content: center;
@@ -242,9 +276,9 @@
       transition: var(--transition);
     }
 
-    .footer .social-icons a:hover {
+    .social-icons a:hover {
       background-color: rgba(255, 255, 255, 0.2);
-      transform: translateY(-5px);
+      transform: translateY(-3px);
     }
 
     /* アラートスタイル */
@@ -269,9 +303,9 @@
 <body class="d-flex flex-column min-vh-100">
     <!-- ヘッダー -->
     <header class="header">
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <nav class="navbar navbar-expand-lg">
             <div class="container">
-                <a class="navbar-brand" href="{{ url_for('index') }}">
+                <a class="navbar-brand fw-bold text-white" href="{{ url_for('index') }}">
                     <i class="fas fa-horse-head me-2"></i>馬メモ
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -316,7 +350,7 @@
                             <a class="nav-link fw-bold" href="{{ url_for('login') }}">ログイン</a>
                         </li>
                         <li class="nav-item">
-                            <a class="btn btn-primary fw-bold" href="{{ url_for('register') }}">新規登録</a>
+                            <a class="btn btn-light fw-bold" href="{{ url_for('register') }}">新規登録</a>
                         </li>
                         {% endif %}
                     </ul>
@@ -352,9 +386,9 @@
                     <h5>馬メモ</h5>
                     <p>競馬ファンのための情報共有プラットフォーム</p>
                     <div class="social-icons">
-                        <a href="#" aria-label="Twitter"><i class="fab fa-twitter text-white"></i></a>
-                        <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f text-white"></i></a>
-                        <a href="#" aria-label="Instagram"><i class="fab fa-instagram text-white"></i></a>
+                        <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
                     </div>
                 </div>
                 <div class="col-md-4 mb-4 mb-md-0">
@@ -382,7 +416,7 @@
             </div>
             <hr>
             <div class="text-center">
-                <p class="mb-0 text-muted">&copy; 2023 馬メモ All Rights Reserved.</p>
+                <p class="mb-0">&copy; 2023 馬メモ All Rights Reserved.</p>
             </div>
         </div>
     </footer>
