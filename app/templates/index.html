@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% block styles %}
+{{ super() }}
 <style>
 .hover-lift {
     transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -38,6 +39,8 @@
 .animate-fade-in {
     animation: fadeIn 0.8s ease forwards;
 }
+
+/* ヘッダーのスタイルを上書きしている可能性のあるスタイルを削除 */
 </style>
 {% endblock %}
 
