@@ -25,7 +25,8 @@
     <style>
     /* グローバルスタイル */
     :root {
-      --primary-color: #3563E9;
+      --primary-blue: #4F46E5;
+      --primary-purple: #8B5CF6;
       --secondary-color: #1E293B;
       --accent-color: #FF6B35;
       --light-color: #F8FAFC;
@@ -35,8 +36,6 @@
       --border-radius: 12px;
       --box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
       --transition: all 0.3s ease;
-      --gradient-start: #4F46E5;
-      --gradient-end: #3563E9;
     }
 
     body {
@@ -47,24 +46,27 @@
       display: flex;
       flex-direction: column;
       min-height: 100vh;
+      margin: 0;
+      padding: 0;
     }
 
-    /* 新しいヘッダースタイル */
+    /* 馬メモヘッダー - レース一覧ページと同じ色に合わせる */
     .umamemo-header {
-      background: linear-gradient(135deg, #4F46E5 0%, #3563E9 100%);
-      box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+      background: linear-gradient(135deg, #4F46E5 0%, #8B5CF6 100%);
+      box-shadow: 0 4px 20px rgba(79, 70, 229, 0.2);
       color: white;
       position: relative;
       z-index: 1000;
+      padding: 0.5rem 0;
     }
 
     .umamemo-navbar {
       padding: 0.8rem 0;
-      transition: all 0.3s ease;
+      transition: var(--transition);
     }
 
     .umamemo-brand {
-      font-size: 1.6rem;
+      font-size: 1.8rem;
       letter-spacing: -0.5px;
       font-weight: 700;
       color: white !important;
@@ -75,7 +77,7 @@
 
     .umamemo-brand i {
       color: white !important;
-      font-size: 1.8rem;
+      font-size: 2rem;
       margin-right: 0.5rem;
     }
 
@@ -84,18 +86,19 @@
       list-style: none;
       margin: 0;
       padding: 0;
+      align-items: center;
     }
 
     .umamemo-nav-item {
-      margin: 0 0.5rem;
+      margin: 0 0.8rem;
     }
 
     .umamemo-nav-link {
       position: relative;
-      padding: 0.5rem 1rem;
+      padding: 0.5rem 0.2rem;
       font-weight: 500;
-      transition: all 0.3s ease;
-      font-size: 0.95rem;
+      transition: var(--transition);
+      font-size: 1rem;
       color: rgba(255, 255, 255, 0.9) !important;
       text-decoration: none;
       display: block;
@@ -109,36 +112,35 @@
       content: '';
       position: absolute;
       bottom: 0;
-      left: 50%;
+      left: 0;
       width: 0;
       height: 2px;
       background-color: white;
-      transition: all 0.3s ease;
-      transform: translateX(-50%);
+      transition: var(--transition);
     }
 
     .umamemo-nav-link:hover::after,
     .umamemo-nav-link.active::after {
-      width: 70%;
+      width: 100%;
     }
 
     .umamemo-btn-primary {
-      background: linear-gradient(to right, #4F46E5, #3563E9);
+      background: linear-gradient(to right, #4F46E5, #8B5CF6);
       border: none;
       border-radius: 30px;
-      padding: 0.5rem 1.5rem;
+      padding: 0.6rem 1.8rem;
       font-weight: 600;
-      box-shadow: 0 4px 6px rgba(53, 99, 233, 0.2);
-      transition: all 0.3s ease;
+      box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3);
+      transition: var(--transition);
       color: white;
       text-decoration: none;
       display: inline-block;
     }
 
     .umamemo-btn-primary:hover {
-      background: linear-gradient(to right, #4338CA, #2954d4);
+      background: linear-gradient(to right, #4338CA, #7C3AED);
       transform: translateY(-2px);
-      box-shadow: 0 6px 12px rgba(53, 99, 233, 0.3);
+      box-shadow: 0 6px 15px rgba(79, 70, 229, 0.4);
       color: white;
     }
 
@@ -146,19 +148,19 @@
       background-color: white;
       border: none;
       border-radius: 30px;
-      padding: 0.5rem 1.5rem;
+      padding: 0.6rem 1.8rem;
       font-weight: 600;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      transition: all 0.3s ease;
-      color: var(--primary-color);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      transition: var(--transition);
+      color: var(--primary-blue);
       text-decoration: none;
       display: inline-block;
     }
 
     .umamemo-btn-light:hover {
       transform: translateY(-2px);
-      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-      color: var(--primary-color);
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+      color: var(--primary-purple);
     }
 
     /* ドロップダウンメニュー */
@@ -188,7 +190,7 @@
       z-index: 1000;
       display: none;
       min-width: 10rem;
-      padding: 0.5rem 0;
+      padding: 0.8rem 0;
       margin: 0.125rem 0 0;
       font-size: 1rem;
       color: #212529;
@@ -196,13 +198,25 @@
       list-style: none;
       background-color: #fff;
       background-clip: padding-box;
-      border: 0;
+      border: 1px solid rgba(0, 0, 0, 0.05);
       border-radius: 0.5rem;
-      box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     }
 
     .umamemo-dropdown-menu.show {
       display: block;
+      animation: fadeInDown 0.3s ease;
+    }
+
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     .umamemo-dropdown-item {
@@ -217,28 +231,28 @@
       white-space: nowrap;
       background-color: transparent;
       border: 0;
-      transition: all 0.2s ease;
+      transition: var(--transition);
     }
 
-    .umamemo-dropdown-item:hover {
-      color: var(--primary-color);
-      background-color: rgba(53, 99, 233, 0.05);
+    .umamemo-dropdown-item:hover, .umamemo-dropdown-item:focus {
+      color: var(--primary-blue);
+      background-color: rgba(79, 70, 229, 0.05);
     }
 
     .umamemo-dropdown-divider {
       height: 0;
       margin: 0.5rem 0;
       overflow: hidden;
-      border-top: 1px solid #e9ecef;
+      border-top: 1px solid rgba(0, 0, 0, 0.05);
     }
 
-    /* ハンバーガーメニュー */
+    /* ナビゲーショントグルボタン */
     .umamemo-navbar-toggler {
       padding: 0.25rem 0.75rem;
       font-size: 1.25rem;
       line-height: 1;
       background-color: transparent;
-      border: 1px solid rgba(255, 255, 255, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.3);
       border-radius: 0.25rem;
       color: white;
       cursor: pointer;
@@ -256,35 +270,51 @@
       background-size: 100%;
     }
 
-    /* 新しいフッタースタイル */
+    /* メインコンテンツ */
+    .umamemo-main {
+      flex: 1 0 auto;
+    }
+
+    /* フッター */
     .umamemo-footer {
-      background: linear-gradient(135deg, #4F46E5 0%, #3563E9 100%);
+      background: linear-gradient(135deg, #4F46E5 0%, #8B5CF6 100%);
       color: white;
       padding: 3rem 0 1.5rem;
-      margin-top: auto;
+      margin-top: 3rem;
+      position: relative;
+    }
+
+    .umamemo-footer::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(to right, #FF6B35, #FF9F1C);
     }
 
     .umamemo-footer h5 {
       font-weight: 700;
       margin-bottom: 1.5rem;
-      color: white;
+      font-size: 1.2rem;
+      position: relative;
+      display: inline-block;
+    }
+
+    .umamemo-footer h5::after {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      left: 0;
+      width: 40px;
+      height: 3px;
+      background: linear-gradient(to right, #FF6B35, #FF9F1C);
     }
 
     .umamemo-footer p {
-      color: rgba(255, 255, 255, 0.8);
-    }
-
-    .umamemo-footer-link {
-      color: rgba(255, 255, 255, 0.8);
-      text-decoration: none;
-      transition: all 0.3s ease;
-      display: inline-block;
-      margin-bottom: 0.75rem;
-    }
-
-    .umamemo-footer-link:hover {
-      color: white;
-      transform: translateX(5px);
+      opacity: 0.9;
+      margin-bottom: 1.5rem;
     }
 
     .umamemo-social-icons {
@@ -297,80 +327,85 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 36px;
-      height: 36px;
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
-      background-color: rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.1);
       color: white;
-      transition: all 0.3s ease;
+      transition: var(--transition);
     }
 
     .umamemo-social-icons a:hover {
-      background-color: rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.2);
       transform: translateY(-3px);
+    }
+
+    .umamemo-footer-link {
+      color: rgba(255, 255, 255, 0.9);
+      text-decoration: none;
+      display: inline-block;
+      margin-bottom: 0.8rem;
+      transition: var(--transition);
+      position: relative;
+      padding-left: 0;
+    }
+
+    .umamemo-footer-link:hover {
+      color: white;
+      transform: translateX(5px);
     }
 
     .umamemo-footer hr {
       border-color: rgba(255, 255, 255, 0.1);
-      margin: 2rem 0;
+      margin: 2rem 0 1rem;
     }
 
     .umamemo-copyright {
-      color: rgba(255, 255, 255, 0.6);
+      color: rgba(255, 255, 255, 0.7);
       font-size: 0.9rem;
-    }
-
-    /* メインコンテンツ */
-    .umamemo-main {
-      flex-grow: 1;
     }
 
     /* レスポンシブ対応 */
     @media (max-width: 991.98px) {
+      .umamemo-navbar-toggler {
+        display: block;
+      }
+
       .umamemo-navbar-collapse {
-        position: fixed;
-        top: 0;
+        position: absolute;
+        top: 100%;
         left: 0;
-        bottom: 0;
-        width: 280px;
+        right: 0;
+        background: linear-gradient(135deg, #4F46E5 0%, #8B5CF6 100%);
         padding: 1rem;
-        background: linear-gradient(135deg, #4F46E5 0%, #3563E9 100%);
-        z-index: 1050;
-        transform: translateX(-100%);
-        transition: transform 0.3s ease;
-        overflow-y: auto;
-        display: flex;
-        flex-direction: column;
+        display: none;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
       }
 
       .umamemo-navbar-collapse.show {
-        transform: translateX(0);
-        box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-      }
-
-      .umamemo-navbar-toggler {
         display: block;
       }
 
       .umamemo-nav {
         flex-direction: column;
-        margin-top: 2rem;
+        align-items: flex-start;
       }
 
       .umamemo-nav-item {
         margin: 0.5rem 0;
+        width: 100%;
       }
 
       .umamemo-nav-link {
-        padding: 0.75rem 0;
+        padding: 0.5rem 0;
       }
 
       .umamemo-dropdown-menu {
         position: static;
         box-shadow: none;
-        background-color: rgba(255, 255, 255, 0.05);
-        border-radius: 0.5rem;
-        margin-top: 0.5rem;
+        background: transparent;
+        border: none;
+        padding: 0.5rem 0 0.5rem 1rem;
       }
 
       .umamemo-dropdown-item {
@@ -400,7 +435,7 @@
     {% endblock %}
 </head>
 <body>
-    <!-- 新しいヘッダー -->
+    <!-- 馬メモヘッダー -->
     <header class="umamemo-header">
         <div class="container">
             <nav class="umamemo-navbar">
@@ -482,7 +517,7 @@
         {% block content %}{% endblock %}
     </main>
     
-    <!-- 新しいフッター -->
+    <!-- 馬メモフッター -->
     <footer class="umamemo-footer">
         <div class="container">
             <div class="row">
