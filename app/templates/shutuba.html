@@ -457,4 +457,37 @@
     }
 }
 </style>
+
+<!-- タブ切り替え用のJavaScriptを追加 -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // URLからタブパラメータを取得
+    const urlParams = new URLSearchParams(window.location.search);
+    const tabParam = urlParams.get('tab');
+    
+    // タブの初期選択（URLパラメータがあればそれを使用）
+    if (tabParam) {
+        const tabId = `tab${tabParam}`;
+        const tabRadio = document.getElementById(tabId);
+        if (tabRadio) {
+            tabRadio.checked = true;
+        }
+    }
+    
+    // タブボタンのクリックイベント
+    const tabButtons = document.querySelectorAll('.tab-button');
+    tabButtons.forEach((button, index) => {
+        button.addEventListener('click', function() {
+            // タブの切り替え
+            const tabId = `tab${index + 1}`;
+            document.getElementById(tabId).checked = true;
+            
+            // URLパラメータの更新（オプション）
+            const url = new URL(window.location);
+            url.searchParams.set('tab', index + 1);
+            window.history.pushState({}, '', url);
+        });
+    });
+});
+</script>
 {% endblock %}
