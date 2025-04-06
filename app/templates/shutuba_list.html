@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="races-container">
+<div class="shutuba-container">
     <!-- ヘッダー部分 -->
-    <div class="races-header">
+    <div class="shutuba-header">
         <h1>出馬表</h1>
-        <div class="races-date-selector">
+        <div class="date-selector">
             {% for date in dates %}
             <a href="{{ url_for('shutuba_list', date=date.value) }}" class="date-item {% if date.value == selected_date.strftime('%Y%m%d') %}active{% endif %}">
                 <div class="date-month">{{ date.month }}月</div>
@@ -30,28 +30,22 @@
     <!-- 会場ごとのレース一覧 -->
     {% if venue_races %}
         {% for venue_code, venue_data in venue_races.items() %}
-        <div class="venue-container">
+        <div class="venue-section">
             <div class="venue-header">
-                <div class="venue-name">
-                    <h3>{{ venue_data.venue_name }}</h3>
-                </div>
-                <div class="venue-info">
-                    <span class="venue-weather">
-                        <i class="fas fa-cloud-sun"></i> {{ venue_data.weather }}
-                    </span>
-                    <span class="venue-track">
-                        <i class="fas fa-road"></i> {{ venue_data.track_condition }}
-                    </span>
+                <h3>{{ venue_data.venue_name }}</h3>
+                <div class="venue-conditions">
+                    <span class="weather"><i class="fas fa-cloud-sun"></i></span>
+                    <span class="track-condition"><i class="fas fa-road"></i></span>
                 </div>
             </div>
 
             <div class="race-list">
                 {% for race in venue_data.races %}
                 <a href="{{ url_for('race_shutuba', race_id=race.id) }}" class="race-item">
-                    <div class="race-number">{{ race.race_number }}R</div>
-                    <div class="race-info">
+                    <div class="race-circle">{{ race.race_number }}R</div>
+                    <div class="race-details">
                         <div class="race-name">{{ race.name }}</div>
-                        <div class="race-details">
+                        <div class="race-info">
                             <span class="race-time">
                                 <i class="far fa-clock"></i> {{ race.start_time.strftime('%H:%M') if race.start_time else '時刻不明' }}
                             </span>
@@ -59,7 +53,7 @@
                                 <i class="fas fa-ruler-horizontal"></i> {{ race.distance }}m
                             </span>
                             <span class="race-course">
-                                <i class="fas fa-road"></i> {{ race.course_type }}
+                                {{ race.course_type }}
                             </span>
                         </div>
                     </div>
@@ -81,31 +75,33 @@
 </div>
 
 <style>
-/* レース一覧ページのスタイル */
-.races-container {
+/* 出馬表ページのスタイル */
+.shutuba-container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
 }
 
-.races-header {
-    display: flex;
-    flex-direction: column;
+.shutuba-header {
     margin-bottom: 30px;
 }
 
-.races-header h1 {
+.shutuba-header h1 {
     font-size: 2rem;
     font-weight: 700;
     margin-bottom: 20px;
-    color: var(--dark-color);
+    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-purple) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
 }
 
-.races-date-selector {
+.date-selector {
     display: flex;
     overflow-x: auto;
-    padding-bottom: 10px;
+    padding: 10px 0;
     gap: 10px;
+    margin-bottom: 20px;
 }
 
 .date-item {
@@ -118,7 +114,7 @@
     text-decoration: none;
     color: var(--dark-color);
     transition: all 0.3s ease;
-    min-width: 70px;
+    min-width: 60px;
 }
 
 .date-item:hover {
@@ -158,12 +154,11 @@
     color: var(--dark-color);
 }
 
-.venue-container {
-    background-color: white;
-    border-radius: 15px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+.venue-section {
     margin-bottom: 30px;
+    border-radius: 15px;
     overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
 }
 
 .venue-header {
@@ -175,28 +170,23 @@
     color: white;
 }
 
-.venue-name h3 {
+.venue-header h3 {
     margin: 0;
     font-size: 1.3rem;
     font-weight: 600;
 }
 
-.venue-info {
+.venue-conditions {
     display: flex;
     gap: 15px;
 }
 
-.venue-weather, .venue-track {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 0.9rem;
+.weather, .track-condition {
+    font-size: 1rem;
 }
 
-/* 縦並びリスト形式に変更 */
 .race-list {
-    display: flex;
-    flex-direction: column;
+    background-color: white;
 }
 
 .race-item {
@@ -206,7 +196,7 @@
     text-decoration: none;
     color: var(--dark-color);
     border-bottom: 1px solid #eee;
-    transition: all 0.3s ease;
+    transition: background-color 0.2s ease;
 }
 
 .race-item:last-child {
@@ -217,34 +207,36 @@
     background-color: #f8f9fa;
 }
 
-.race-number {
+.race-circle {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 40px;
-    height: 40px;
+    width: 50px;
+    height: 50px;
     background-color: var(--primary-blue);
     color: white;
     border-radius: 50%;
     font-weight: 700;
     margin-right: 15px;
     flex-shrink: 0;
+    font-size: 1.1rem;
 }
 
-.race-info {
+.race-details {
     flex-grow: 1;
 }
 
 .race-name {
     font-weight: 600;
     margin-bottom: 5px;
+    font-size: 1.1rem;
 }
 
-.race-details {
+.race-info {
     display: flex;
     flex-wrap: wrap;
     gap: 15px;
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     color: var(--gray-color);
 }
 
@@ -278,11 +270,11 @@
         align-items: flex-start;
     }
     
-    .venue-info {
+    .venue-conditions {
         margin-top: 10px;
     }
     
-    .race-details {
+    .race-info {
         flex-direction: column;
         gap: 5px;
     }
