@@ -297,6 +297,35 @@
     .animate-fade-in {
       animation: fadeIn 0.5s ease forwards;
     }
+
+    /* ナビゲーショントグルボタンの修正 */
+    .navbar-toggler {
+      border-color: rgba(255, 255, 255, 0.5);
+      color: white;
+    }
+
+    .navbar-toggler-icon {
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.9%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+    }
+
+    /* ナビゲーションリンクの色を強調 */
+    .nav-link {
+      color: white !important;
+      font-weight: 600;
+    }
+
+    .nav-link:hover {
+      color: rgba(255, 255, 255, 0.9) !important;
+    }
+
+    /* ドロップダウンメニューの調整 */
+    .dropdown-menu {
+      background-color: white;
+    }
+
+    .dropdown-item {
+      color: var(--secondary-color);
+    }
     </style>
     {% endblock %}
 </head>
