@@ -60,6 +60,7 @@
                                         <th>斤量</th>
                                         <th>オッズ</th>
                                         <th>人気</th>
+                                        <th>メモ</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -89,6 +90,7 @@
                                         <td class="text-center">{{ entry.weight_carry }}</td>
                                         <td class="text-end odds">{{ "%.1f"|format(entry.odds) if entry.odds else '-' }}</td>
                                         <td class="text-center popularity">{{ entry.popularity if entry.popularity else '-' }}</td>
+                                        <td>{{ entry.latest_memo or '-' }}</td>
                                     </tr>
                                     {% endfor %}
                                 </tbody>
