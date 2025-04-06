@@ -96,7 +96,9 @@
                         </div>
                     </div>
                 {% else %}
-                    <p>出馬表データがありません</p>
+                    <div class="no-data">
+                        <p>出馬表データがありません</p>
+                    </div>
                 {% endif %}
             </div>
 
@@ -246,6 +248,7 @@
 
 <!-- 枠番の色用のCSS -->
 <style>
+/* 枠番の色 */
 .bg-bracket-1 { background-color: #FFFFFF; color: #000000; border: 1px solid #000000; }
 .bg-bracket-2 { background-color: #000000; color: #FFFFFF; }
 .bg-bracket-3 { background-color: #FF0000; color: #FFFFFF; }
@@ -254,6 +257,153 @@
 .bg-bracket-6 { background-color: #00FF00; color: #000000; }
 .bg-bracket-7 { background-color: #FFA500; color: #000000; }
 .bg-bracket-8 { background-color: #FFC0CB; color: #000000; }
+
+/* 出馬表のコンテナ */
+.shutuba-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* レースヘッダー */
+.shutuba-race-header {
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.shutuba-race-header h2 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.race-details {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    color: #666;
+}
+
+/* 戻るボタン */
+.back-to-races {
+    margin-bottom: 20px;
+}
+
+.btn-back {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 15px;
+    background-color: #f5f5f5;
+    color: #333;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.btn-back:hover {
+    background-color: #e0e0e0;
+}
+
+.btn-back i {
+    margin-right: 5px;
+}
+
+/* タブコントロール */
+.tab-controls {
+    margin-bottom: 30px;
+}
+
+.tab-controls input[type="radio"] {
+    display: none;
+}
+
+.tab-buttons {
+    display: flex;
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 20px;
+}
+
+.tab-button {
+    padding: 10px 20px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    border-bottom: none;
+    border-radius: 4px 4px 0 0;
+    background-color: #f5f5f5;
+    margin-right: 5px;
+    transition: all 0.3s ease;
+}
+
+.tab-button:hover {
+    background-color: #e0e0e0;
+}
+
+#tab1:checked ~ .tab-buttons label[for="tab1"],
+#tab2:checked ~ .tab-buttons label[for="tab2"],
+#tab3:checked ~ .tab-buttons label[for="tab3"] {
+    background-color: #fff;
+    border-color: #ddd;
+    border-bottom-color: #fff;
+    color: #4F46E5;
+    font-weight: 600;
+}
+
+.tab-content {
+    display: none;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+#tab1:checked ~ .tab-contents #shutuba-content,
+#tab2:checked ~ .tab-contents #past-results-content,
+#tab3:checked ~ .tab-contents #analysis-content {
+    display: block;
+}
+
+/* 出馬表テーブル */
+.shutuba-table {
+    overflow-x: auto;
+}
+
+.shutuba-table table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.shutuba-table th,
+.shutuba-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.shutuba-table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+}
+
+.shutuba-table tr:hover {
+    background-color: rgba(79, 70, 229, 0.05);
+}
+
+.horse-name, .jockey-name {
+    color: #4F46E5;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.horse-name:hover, .jockey-name:hover {
+    text-decoration: underline;
+}
+
+.no-data {
+    text-align: center;
+    padding: 30px;
+    color: #666;
+}
 
 /* モバイル対応のスタイル追加 */
 @media (max-width: 768px) {
