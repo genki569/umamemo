@@ -118,10 +118,10 @@ def get_venue_code(venue_name):
 def races():
     try:
         app.logger.info('Starting races route')
-        # 利用可能な日付を取得
+        # 利用可能な日付を取得（結果が登録されているレースのみ）
         available_dates = db.session.query(
             func.date(Race.date).label('race_date')
-        ).distinct().order_by(
+        ).join(Entry).distinct().order_by(
             func.date(Race.date).desc()
         ).all()
         
@@ -145,10 +145,10 @@ def races():
         else:
             selected_date = available_dates[0].race_date if available_dates else datetime.now().date()
 
-        # レース情報の取得
-        races = Race.query.filter(
+        # レース情報の取得（結果が登録されているレースのみ）
+        races = Race.query.join(Entry).filter(
             func.date(Race.date) == selected_date
-        ).all()
+        ).distinct().all()
 
         # 会場ごとにグループ化
         venue_races = {}

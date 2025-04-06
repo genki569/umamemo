@@ -451,8 +451,8 @@
                     
                     <button class="umamemo-navbar-toggler d-lg-none" type="button" id="umamemoNavbarToggler">
                         <span class="umamemo-navbar-toggler-icon"></span>
-                    </button>
-                    
+            </button>
+
                     <div class="umamemo-navbar-collapse d-lg-flex" id="umamemoNavbarCollapse">
                         <ul class="umamemo-nav me-auto">
                             <li class="umamemo-nav-item">
@@ -470,7 +470,7 @@
                         </ul>
                         
                         <ul class="umamemo-nav">
-                            {% if current_user.is_authenticated %}
+                    {% if current_user.is_authenticated %}
                             <li class="umamemo-nav-item umamemo-dropdown">
                                 <a class="umamemo-nav-link umamemo-dropdown-toggle" id="userDropdown">
                                     <i class="fas fa-user-circle me-1"></i>{{ current_user.username }}
@@ -487,19 +487,19 @@
                                         <i class="fas fa-sign-out-alt me-2"></i>ログアウト
                                     </a>
                                 </div>
-                            </li>
-                            {% else %}
+                        </li>
+                    {% else %}
                             <li class="umamemo-nav-item">
                                 <a class="umamemo-nav-link" href="{{ url_for('login') }}">ログイン</a>
-                            </li>
+                        </li>
                             <li class="umamemo-nav-item">
                                 <a class="umamemo-btn-light" href="{{ url_for('register') }}">新規登録</a>
-                            </li>
-                            {% endif %}
-                        </ul>
-                    </div>
-                </div>
-            </nav>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
         </div>
     </header>
     
@@ -521,7 +521,7 @@
     <main class="umamemo-main">
         {% block content %}{% endblock %}
     </main>
-    
+
     <!-- 馬メモフッター -->
     <footer class="umamemo-footer">
         <div class="container">
@@ -564,7 +564,7 @@
             </div>
         </div>
     </footer>
-    
+
     {% block scripts %}
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -573,7 +573,7 @@
     <!-- Custom JS -->
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function() {
         // ハンバーガーメニューの開閉
         const navbarToggler = document.getElementById('umamemoNavbarToggler');
         const navbarCollapse = document.getElementById('umamemoNavbarCollapse');
@@ -601,7 +601,7 @@
                 }
             });
         }
-    });
+        });
     </script>
     {% endblock %}
 </body>
