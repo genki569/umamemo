@@ -6,176 +6,185 @@
     
     <!-- 日付選択 -->
     <div class="date-selector mb-4">
-        <div class="d-flex justify-content-between align-items-center">
-            <button class="btn btn-outline-primary" onclick="changeDate('{{ prev_date }}')">
-                <i class="fas fa-chevron-left"></i> 前日
-            </button>
-            
-            <h2 class="date-display mb-0">{{ selected_date.strftime('%Y年%m月%d日') }}</h2>
-            
-            <button class="btn btn-outline-primary" onclick="changeDate('{{ next_date }}')">
-                次日 <i class="fas fa-chevron-right"></i>
-            </button>
-        </div>
-        
-        <!-- 日付選択カレンダー -->
-        <div class="mt-3">
-            <input type="date" class="form-control" id="dateSelector" value="{{ selected_date.strftime('%Y-%m-%d') }}" onchange="changeDate(this.value)">
+        <div class="date-list">
+            {% for date in dates %}
+            <a href="{{ url_for('shutuba_list', date=date.value) }}" class="date-item {% if date.value == selected_date.strftime('%Y%m%d') %}active{% endif %}">
+                <div class="date-month">{{ date.month }}月</div>
+                <div class="date-day">{{ date.day }}</div>
+                <div class="date-weekday">{{ date.weekday }}</div>
+            </a>
+            {% endfor %}
         </div>
     </div>
     
-    <!-- 会場別レース一覧 -->
-    <div class="venue-grid">
-        {% for venue_id, venue_data in venue_races.items() %}
-            <div class="venue-card">
-                <div class="venue-header">
-                    <h3>{{ venue_data.venue_name }}</h3>
-                </div>
-                <div class="race-items">
-                    {% for race in venue_data.races|sort(attribute='race_number') %}
-                        <div class="race-item">
-                            <div class="race-number">{{ race.race_number }}R</div>
-                            <div class="race-info">
-                                <div class="race-time">{{ race.start_time or '--:--' }}</div>
-                                <div class="race-name">{{ race.name }}</div>
-                                <div class="race-details">
-                                    {{ race.track_type or '不明' }} {{ race.distance or '不明' }}m
-                                </div>
-                                <div class="race-links">
-                                    <a href="{{ url_for('race_shutuba', race_id=race.id) }}" class="btn btn-outline-primary btn-sm">
-                                        <i class="fas fa-horse"></i> 出馬表
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    {% endfor %}
+    {% if error %}
+    <div class="alert alert-danger">
+        {{ error }}
+    </div>
+    {% else %}
+    
+    <!-- 選択された日付の表示 -->
+    <div class="selected-date mb-4">
+        <h2>{{ selected_date.strftime('%Y年%m月%d日') }}の出馬表</h2>
+    </div>
+    
+    <!-- 会場ごとのレース一覧 -->
+    {% if venue_races %}
+        {% for venue_code, venue_data in venue_races.items() %}
+        <div class="venue-section mb-5">
+            <div class="venue-header">
+                <h3>{{ venue_data.venue_name }}</h3>
+                <div class="venue-conditions">
+                    <span class="weather">天候: {{ venue_data.weather }}</span>
+                    <span class="track-condition">馬場: {{ venue_data.track_condition }}</span>
                 </div>
             </div>
+            
+            <div class="race-list">
+                {% for race in venue_data.races %}
+                <a href="{{ url_for('race_shutuba', race_id=race.id) }}" class="race-card">
+                    <div class="race-number">{{ race.race_number }}R</div>
+                    <div class="race-name">{{ race.name }}</div>
+                    <div class="race-details">
+                        <span class="race-time">{{ race.start_time.strftime('%H:%M') if race.start_time else '時刻不明' }}</span>
+                        <span class="race-distance">{{ race.distance }}m</span>
+                        <span class="race-course">{{ race.course_type }}</span>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
         {% endfor %}
-    </div>
-
-    {% if not venue_races %}
-    <div class="alert alert-info text-center">
-        この日の出馬表はありません。
-    </div>
+    {% else %}
+        <div class="no-races">
+            <p>この日の出馬表はありません。</p>
+        </div>
+    {% endif %}
+    
     {% endif %}
 </div>
 
-{% block styles %}
 <style>
-/* 出馬表のスタイル */
-.venue-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 20px;
-    margin-top: 20px;
+/* 出馬表ページのスタイル */
+.date-selector {
+    overflow-x: auto;
+    white-space: nowrap;
+    padding-bottom: 10px;
 }
 
-.venue-card {
+.date-list {
+    display: flex;
+}
+
+.date-item {
+    display: inline-block;
+    text-align: center;
+    padding: 10px 15px;
+    margin-right: 10px;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+    color: #333;
+    text-decoration: none;
+    transition: all 0.3s;
+}
+
+.date-item:hover {
+    background-color: #e9ecef;
+}
+
+.date-item.active {
+    background-color: #4F46E5;
+    color: white;
+}
+
+.date-month {
+    font-size: 0.8rem;
+}
+
+.date-day {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.date-weekday {
+    font-size: 0.8rem;
+}
+
+.venue-section {
     background-color: white;
-    border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow);
-    overflow: hidden;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.venue-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
 }
 
 .venue-header {
-    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-purple) 100%);
-    color: white;
-    padding: 12px 15px;
-    border-top-left-radius: var(--border-radius);
-    border-top-right-radius: var(--border-radius);
-}
-
-.venue-header h3 {
-    margin: 0;
-    font-size: 1.2rem;
-    font-weight: 600;
-}
-
-.race-items {
-    padding: 10px;
-}
-
-.race-item {
     display: flex;
-    padding: 10px;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
     border-bottom: 1px solid #eee;
-    transition: background-color 0.2s;
 }
 
-.race-item:last-child {
-    border-bottom: none;
+.venue-conditions {
+    display: flex;
+    gap: 15px;
 }
 
-.race-item:hover {
-    background-color: rgba(79, 70, 229, 0.05);
+.race-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 15px;
+}
+
+.race-card {
+    display: block;
+    padding: 15px;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+    color: #333;
+    text-decoration: none;
+    transition: all 0.3s;
+}
+
+.race-card:hover {
+    background-color: #e9ecef;
+    transform: translateY(-2px);
 }
 
 .race-number {
-    background-color: var(--primary-blue);
-    color: white;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     font-weight: bold;
-    margin-right: 15px;
-    flex-shrink: 0;
-}
-
-.race-info {
-    flex-grow: 1;
-}
-
-.race-time {
-    color: var(--gray-color);
-    font-size: 0.9rem;
-    margin-bottom: 3px;
+    color: #4F46E5;
 }
 
 .race-name {
-    font-weight: 600;
-    margin-bottom: 5px;
+    font-weight: bold;
+    margin: 5px 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .race-details {
-    font-size: 0.85rem;
-    color: var(--gray-color);
-    margin-bottom: 8px;
-}
-
-.race-links {
     display: flex;
     gap: 10px;
+    font-size: 0.9rem;
+    color: #666;
 }
 
-/* 日付セレクター */
-.date-selector {
-    background-color: white;
-    padding: 15px;
-    border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow);
-}
-
-.date-display {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: var(--secondary-color);
+@media (max-width: 768px) {
+    .venue-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .venue-conditions {
+        margin-top: 5px;
+    }
+    
+    .race-list {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
 }
 </style>
-{% endblock %}
-
-<script>
-function changeDate(date) {
-    window.location.href = '/shutuba?date=' + date;
-}
-</script>
 {% endblock %} 

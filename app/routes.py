@@ -880,67 +880,77 @@ def create_entry(race, entry_data):
 @app.route('/shutuba')
 def shutuba_list():
     try:
-        # 日付の取得（races関数と同じロジック）
-        selected_date = request.args.get('date')
-        if selected_date:
-            try:
-                target_date = datetime.strptime(selected_date, '%Y-%m-%d').date()
-            except ValueError:
-                target_date = datetime.now().date()
-        else:
-            target_date = datetime.now().date()
-
-        # 出馬表があるレースのみを取得
-        races = Race.query\
-            .join(ShutubaEntry)\
-            .filter(func.date(Race.date) == target_date)\
-            .group_by(Race.id)\
-            .order_by(Race.venue_id, Race.race_number)\
-            .all()
-
-        # 利用可能な日付リストを取得（出馬表があるもののみ）
-        available_dates = db.session.query(distinct(Race.date))\
-            .join(ShutubaEntry)\
-            .order_by(Race.date.desc())\
-            .all()
-
-        # 日付リストを整形
+        # 日付パラメータの取得（デフォルトは今日）
+        date_str = request.args.get('date')
+        
+        try:
+            if date_str:
+                selected_date = datetime.strptime(date_str, '%Y%m%d').date()
+            else:
+                selected_date = datetime.now().date()
+        except ValueError:
+            selected_date = datetime.now().date()
+        
+        # 利用可能な日付を取得（出馬表があるレースのみ）
+        available_dates = db.session.query(
+            func.date(Race.date).label('race_date')
+        ).join(ShutubaEntry).distinct().order_by(
+            func.date(Race.date)
+        ).all()
+        
+        # 日付一覧の作成
         dates = []
-        for (date,) in available_dates:
-            if isinstance(date, datetime):
-                date = date.date()
+        for date_row in available_dates:
+            date = date_row.race_date
             dates.append({
-                'value': date.strftime('%Y-%m-%d'),
+                'value': date.strftime('%Y%m%d'),
                 'month': date.month,
                 'day': date.day,
-                'weekday': ['月', '火', '水', '木', '金', '土', '日'][date.weekday()]
+                'weekday': date.strftime('%a')
             })
-
-        # 会場ごとにレースをグループ化
+        
+        # 選択された日付の出馬表を取得
+        races = Race.query.join(ShutubaEntry).filter(
+            func.date(Race.date) == selected_date
+        ).distinct().all()
+        
+        # 会場ごとにグループ化
         venue_races = {}
         for race in races:
-            venue_id = str(race.venue_id)
-            if venue_id not in venue_races:
-                venue_races[venue_id] = {
-                    'venue_name': VENUE_NAMES.get(venue_id, '不明'),
-                    'weather': race.weather,
-                    'track_condition': race.track_condition,
-                    'races': []
-                }
-            venue_races[venue_id]['races'].append(race)
-
-        return render_template('shutuba_list.html',
-                            dates=dates,
-                            date=target_date,
-                            selected_date=selected_date,
-                            venue_races=venue_races)
-
+            venue_code = get_venue_code(race.venue)
+            if venue_code:
+                if venue_code not in venue_races:
+                    venue_races[venue_code] = {
+                        'venue_name': VENUE_NAMES.get(venue_code, race.venue),
+                        'weather': getattr(race, 'weather', '不明'),
+                        'track_condition': getattr(race, 'track_condition', '不明'),
+                        'races': []
+                    }
+                venue_races[venue_code]['races'].append(race)
+        
+        # レースを各会場内でソート
+        for venue_data in venue_races.values():
+            venue_data['races'].sort(key=lambda x: x.race_number)
+        
+        return render_template(
+            'shutuba_list.html',
+            dates=dates,
+            selected_date=selected_date,
+            venue_races=venue_races,
+            venues=VENUE_NAMES
+        )
+        
     except Exception as e:
-        app.logger.error(f"Error in shutuba_list: {str(e)}")
-        return render_template('shutuba_list.html',
-                            dates=[],
-                            date=datetime.now().date(),
-                            venue_races={})
+        app.logger.error(f'Error in shutuba_list: {str(e)}')
+        # エラー時にもselected_dateを渡す
+        return render_template(
+            'shutuba_list.html',
+            dates=[],
+            selected_date=datetime.now().date(),
+            venue_races={},
+            venues=VENUE_NAMES,
+            error=str(e)
+        )
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
