@@ -41,6 +41,7 @@ def custom_login_required(f):
 @app.route('/')
 @app.route('/index')
 def index():
+    # ここに特別な処理があるか確認
     return render_template('index.html')
 
 class LoginForm(FlaskForm):
