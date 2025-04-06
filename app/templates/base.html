@@ -23,10 +23,10 @@
 </head>
 <body class="d-flex flex-column min-vh-100">
     <!-- ヘッダー -->
-    <header class="header">
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <header class="header fixed-top">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <div class="container">
-                <a class="navbar-brand" href="{{ url_for('index') }}">
+                <a class="navbar-brand fw-bold" href="{{ url_for('index') }}">
                     <i class="fas fa-horse-head text-primary me-2"></i>馬メモ
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -35,22 +35,22 @@
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav me-auto">
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('races') }}">レース情報</a>
+                            <a class="nav-link fw-bold" href="{{ url_for('races') }}">レース情報</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('horses') }}">馬一覧</a>
+                            <a class="nav-link fw-bold" href="{{ url_for('horses') }}">馬一覧</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('jockeys') }}">騎手一覧</a>
+                            <a class="nav-link fw-bold" href="{{ url_for('jockeys') }}">騎手一覧</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('review_market') }}">回顧ノート</a>
+                            <a class="nav-link fw-bold" href="{{ url_for('review_market') }}">回顧ノート</a>
                         </li>
                     </ul>
                     <ul class="navbar-nav">
                         {% if current_user.is_authenticated %}
                         <li class="nav-item dropdown">
-                          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                          <a class="nav-link dropdown-toggle fw-bold" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="fas fa-user-circle me-1"></i>{{ current_user.username }}
                           </a>
                           <div class="dropdown-menu dropdown-menu-end">
@@ -68,10 +68,10 @@
                         </li>
                         {% else %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('login') }}">ログイン</a>
+                            <a class="nav-link fw-bold" href="{{ url_for('login') }}">ログイン</a>
                         </li>
                         <li class="nav-item">
-                            <a class="btn btn-primary" href="{{ url_for('register') }}">新規登録</a>
+                            <a class="btn btn-primary fw-bold" href="{{ url_for('register') }}">新規登録</a>
                         </li>
                         {% endif %}
                     </ul>
@@ -95,7 +95,7 @@
     {% endwith %}
     
     <!-- メインコンテンツ -->
-    <main class="main-content flex-grow-1">
+    <main class="main-content flex-grow-1" style="padding-top: 56px;">
         {% block content %}{% endblock %}
     </main>
     
