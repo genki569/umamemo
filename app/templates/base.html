@@ -220,7 +220,7 @@
 </head>
 <body class="d-flex flex-column min-vh-100">
     <!-- ヘッダー -->
-    <header class="header fixed-top">
+    <header class="header">
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <div class="container">
                 <a class="navbar-brand fw-bold" href="{{ url_for('index') }}">
@@ -292,7 +292,7 @@
     {% endwith %}
     
     <!-- メインコンテンツ -->
-    <main class="main-content flex-grow-1" style="padding-top: 56px;">
+    <main class="main-content flex-grow-1">
         {% block content %}{% endblock %}
     </main>
     

@@ -43,12 +43,12 @@
 
 {% block content %}
 <!-- ヒーローセクション -->
-<section style="background-color: #000; position: relative; height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+<section style="background-color: #000; position: relative; height: 80vh; display: flex; align-items: center; justify-content: center; overflow: hidden;">
     <!-- 背景画像 -->
-    <img src="{{ url_for('static', filename='images/gene-devine-U-yHjENTmMg-unsplash.jpg') }}" alt="馬メモ" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; filter: brightness(0.7) contrast(1.1);">
+    <img src="{{ url_for('static', filename='images/gene-devine-U-yHjENTmMg-unsplash.jpg') }}" alt="馬メモ" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; filter: brightness(0.8);">
     
     <!-- オーバーレイ -->
-    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, rgba(15, 23, 42, 0.8) 0%, rgba(30, 41, 59, 0.7) 100%);"></div>
+    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, rgba(15, 23, 42, 0.5) 0%, rgba(30, 41, 59, 0.4) 100%);"></div>
     
     <!-- コンテンツ -->
     <div class="container position-relative" style="z-index: 10;">
@@ -117,33 +117,63 @@
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="card h-100 border-0 shadow-sm rounded-3 hover-lift">
+                <div class="card h-100 border-0 shadow-sm rounded-4 hover-lift" style="border-radius: 16px; overflow: hidden;">
                     <div class="card-body text-center p-5">
-                        <div class="icon-wrapper mb-4">
-                            <i class="fas fa-sticky-note fa-3x text-primary"></i>
+                        <div class="icon-wrapper mb-4" style="background: linear-gradient(135deg, rgba(53, 99, 233, 0.1) 0%, rgba(79, 70, 229, 0.1) 100%);">
+                            <i class="fas fa-sticky-note fa-3x" style="color: #3563E9;"></i>
                         </div>
-                        <h3 class="card-title h4 mb-3">回顧ノート</h3>
-                        <p class="card-text mb-4">レースの分析や感想を記録して共有できます。</p>
+                        <h3 class="card-title h4 mb-3" style="font-weight: 700; color: #1E293B;">回顧ノート</h3>
+                        <p class="card-text mb-4 text-muted">レースの分析や感想を記録して共有できます。</p>
                         <ul class="list-unstyled text-start">
-                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>ペース分析</li>
-                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>レース展開の記録</li>
-                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>注目馬のチェック</li>
+                            <li class="mb-3 d-flex align-items-center">
+                                <span class="me-3 d-flex align-items-center justify-content-center" style="width: 24px; height: 24px; background-color: rgba(16, 185, 129, 0.1); border-radius: 50%;">
+                                    <i class="fas fa-check" style="font-size: 12px; color: #10B981;"></i>
+                                </span>
+                                <span>ペース分析</span>
+                            </li>
+                            <li class="mb-3 d-flex align-items-center">
+                                <span class="me-3 d-flex align-items-center justify-content-center" style="width: 24px; height: 24px; background-color: rgba(16, 185, 129, 0.1); border-radius: 50%;">
+                                    <i class="fas fa-check" style="font-size: 12px; color: #10B981;"></i>
+                                </span>
+                                <span>レース展開の記録</span>
+                            </li>
+                            <li class="mb-3 d-flex align-items-center">
+                                <span class="me-3 d-flex align-items-center justify-content-center" style="width: 24px; height: 24px; background-color: rgba(16, 185, 129, 0.1); border-radius: 50%;">
+                                    <i class="fas fa-check" style="font-size: 12px; color: #10B981;"></i>
+                                </span>
+                                <span>注目馬のチェック</span>
+                            </li>
                         </ul>
                     </div>
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="card h-100 border-0 shadow-sm rounded-3 hover-lift">
+                <div class="card h-100 border-0 shadow-sm rounded-4 hover-lift" style="border-radius: 16px; overflow: hidden;">
                     <div class="card-body text-center p-5">
-                        <div class="icon-wrapper mb-4">
-                            <i class="fas fa-chart-line fa-3x text-primary"></i>
+                        <div class="icon-wrapper mb-4" style="background: linear-gradient(135deg, rgba(53, 99, 233, 0.1) 0%, rgba(79, 70, 229, 0.1) 100%);">
+                            <i class="fas fa-chart-line fa-3x" style="color: #3563E9;"></i>
                         </div>
-                        <h3 class="card-title h4 mb-3">予想サポート</h3>
-                        <p class="card-text mb-4">データに基づいた予想をサポートします。</p>
+                        <h3 class="card-title h4 mb-3" style="font-weight: 700; color: #1E293B;">予想サポート</h3>
+                        <p class="card-text mb-4 text-muted">データに基づいた予想をサポートします。</p>
                         <ul class="list-unstyled text-start">
-                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>過去の成績分析</li>
-                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>血統データの確認</li>
-                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>条件適性をスコアで可視化</li>
+                            <li class="mb-3 d-flex align-items-center">
+                                <span class="me-3 d-flex align-items-center justify-content-center" style="width: 24px; height: 24px; background-color: rgba(16, 185, 129, 0.1); border-radius: 50%;">
+                                    <i class="fas fa-check" style="font-size: 12px; color: #10B981;"></i>
+                                </span>
+                                <span>過去の成績分析</span>
+                            </li>
+                            <li class="mb-3 d-flex align-items-center">
+                                <span class="me-3 d-flex align-items-center justify-content-center" style="width: 24px; height: 24px; background-color: rgba(16, 185, 129, 0.1); border-radius: 50%;">
+                                    <i class="fas fa-check" style="font-size: 12px; color: #10B981;"></i>
+                                </span>
+                                <span>血統データの確認</span>
+                            </li>
+                            <li class="mb-3 d-flex align-items-center">
+                                <span class="me-3 d-flex align-items-center justify-content-center" style="width: 24px; height: 24px; background-color: rgba(16, 185, 129, 0.1); border-radius: 50%;">
+                                    <i class="fas fa-check" style="font-size: 12px; color: #10B981;"></i>
+                                </span>
+                                <span>条件適性をスコアで可視化</span>
+                            </li>
                         </ul>
                     </div>
                 </div>
@@ -163,8 +193,52 @@
             </div>
         </div>
         
-        <!-- 使い方のステップカード -->
-        
+        <div class="row g-4">
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm rounded-4 text-center h-100">
+                    <div class="card-body p-4">
+                        <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto mb-4" style="width: 60px; height: 60px;">
+                            <span class="fw-bold">1</span>
+                        </div>
+                        <h5 class="fw-bold mb-3">会員登録</h5>
+                        <p class="text-muted mb-0">無料アカウントを作成して、馬メモの機能を利用開始します。</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm rounded-4 text-center h-100">
+                    <div class="card-body p-4">
+                        <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto mb-4" style="width: 60px; height: 60px;">
+                            <span class="fw-bold">2</span>
+                        </div>
+                        <h5 class="fw-bold mb-3">レース検索</h5>
+                        <p class="text-muted mb-0">日付や開催場所からレース情報を簡単に検索できます。</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm rounded-4 text-center h-100">
+                    <div class="card-body p-4">
+                        <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto mb-4" style="width: 60px; height: 60px;">
+                            <span class="fw-bold">3</span>
+                        </div>
+                        <h5 class="fw-bold mb-3">回顧作成</h5>
+                        <p class="text-muted mb-0">レース後の分析や感想を記録して、他のユーザーと共有します。</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm rounded-4 text-center h-100">
+                    <div class="card-body p-4">
+                        <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto mb-4" style="width: 60px; height: 60px;">
+                            <span class="fw-bold">4</span>
+                        </div>
+                        <h5 class="fw-bold mb-3">予想に活用</h5>
+                        <p class="text-muted mb-0">蓄積されたデータを次回の予想に活用して的中率を上げましょう。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </section>
 
@@ -179,8 +253,83 @@
             </div>
         </div>
         
-        <!-- 料金プランカード -->
-        
+        <div class="row g-4 justify-content-center">
+            <div class="col-lg-5">
+                <div class="card border-0 shadow-sm rounded-4 h-100">
+                    <div class="card-body p-5">
+                        <h5 class="text-center mb-4 fw-bold">無料プラン</h5>
+                        <div class="text-center mb-4">
+                            <span class="display-4 fw-bold">¥0</span>
+                            <span class="text-muted">/月</span>
+                        </div>
+                        <ul class="list-unstyled mb-5">
+                            <li class="mb-3 d-flex align-items-center">
+                                <i class="fas fa-check text-success me-3"></i>
+                                <span>レース情報の閲覧</span>
+                            </li>
+                            <li class="mb-3 d-flex align-items-center">
+                                <i class="fas fa-check text-success me-3"></i>
+                                <span>基本的な回顧ノート作成</span>
+                            </li>
+                            <li class="mb-3 d-flex align-items-center">
+                                <i class="fas fa-check text-success me-3"></i>
+                                <span>コミュニティへの参加</span>
+                            </li>
+                            <li class="mb-3 d-flex align-items-center text-muted">
+                                <i class="fas fa-times text-muted me-3"></i>
+                                <span>高度な分析ツール</span>
+                            </li>
+                            <li class="mb-3 d-flex align-items-center text-muted">
+                                <i class="fas fa-times text-muted me-3"></i>
+                                <span>広告非表示</span>
+                            </li>
+                        </ul>
+                        <div class="text-center">
+                            <a href="{{ url_for('register') }}" class="btn btn-outline-primary rounded-pill px-5 py-2 fw-bold">今すぐ始める</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-5">
+                <div class="card border-0 shadow-lg rounded-4 h-100" style="transform: scale(1.05);">
+                    <div class="card-header text-center py-3 bg-primary text-white border-0">
+                        <span class="badge bg-warning text-dark fw-bold px-3 py-2 rounded-pill">おすすめ</span>
+                    </div>
+                    <div class="card-body p-5">
+                        <h5 class="text-center mb-4 fw-bold">プレミアム</h5>
+                        <div class="text-center mb-4">
+                            <span class="display-4 fw-bold">¥980</span>
+                            <span class="text-muted">/月</span>
+                        </div>
+                        <ul class="list-unstyled mb-5">
+                            <li class="mb-3 d-flex align-items-center">
+                                <i class="fas fa-check text-success me-3"></i>
+                                <span>無料プランの全機能</span>
+                            </li>
+                            <li class="mb-3 d-flex align-items-center">
+                                <i class="fas fa-check text-success me-3"></i>
+                                <span>高度な分析ツール</span>
+                            </li>
+                            <li class="mb-3 d-flex align-items-center">
+                                <i class="fas fa-check text-success me-3"></i>
+                                <span>広告非表示</span>
+                            </li>
+                            <li class="mb-3 d-flex align-items-center">
+                                <i class="fas fa-check text-success me-3"></i>
+                                <span>優先サポート</span>
+                            </li>
+                            <li class="mb-3 d-flex align-items-center">
+                                <i class="fas fa-check text-success me-3"></i>
+                                <span>データのエクスポート</span>
+                            </li>
+                        </ul>
+                        <div class="text-center">
+                            <a href="{{ url_for('premium_signup') }}" class="btn btn-primary rounded-pill px-5 py-2 fw-bold">アップグレード</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </section>
 
