@@ -252,13 +252,16 @@ def process_shutuba_data(input_path):
                         # venue_nameをvenueとして使用
                         venue_name = row['venue_name']
                         
-                        # 日付情報を取得
-                        race_date = datetime.now().date()  # デフォルト値
-                        if 'date' in row and pd.notna(row['date']):
-                            try:
-                                race_date = datetime.strptime(str(row['date']), '%Y-%m-%d').date()
-                            except ValueError:
-                                pass
+                        # レースIDから日付を抽出
+                        race_date = None
+                        try:
+                            date_str = extract_date_from_race_id(race_id)
+                            race_date = datetime.strptime(date_str, '%Y-%m-%d').date()
+                            print(f"レースID {race_id} から日付を抽出: {race_date}")
+                        except Exception as e:
+                            print(f"日付抽出エラー: {e} - レースID: {race_id}")
+                            # エラーが発生した場合は現在の日付を使用
+                            race_date = datetime.now().date()
                         
                         # レース年を取得
                         race_year = race_date.year if race_date else datetime.now().year
