@@ -248,26 +248,25 @@ def process_shutuba_data(input_path):
                     # レースが既に存在するか確認
                     existing_race = Race.query.get(race_id)
                     
+                    # レースIDから日付を抽出して優先的に使用
+                    try:
+                        date_str = extract_date_from_race_id(race_id)
+                        race_date = datetime.strptime(date_str, '%Y-%m-%d').date()
+                        print(f"レースID {race_id} から日付を抽出: {race_date}")
+                    except Exception as e:
+                        print(f"日付抽出エラー: {e} - レースID: {race_id}")
+                        # CSVに日付カラムがあれば使用（バックアップ）
+                        if 'date' in row and pd.notna(row['date']):
+                            try:
+                                race_date = datetime.strptime(str(row['date']), '%Y-%m-%d').date()
+                            except ValueError:
+                                race_date = datetime.now().date()  # デフォルト値
+                        else:
+                            race_date = datetime.now().date()  # デフォルト値
+                    
                     if not existing_race:
                         # venue_nameをvenueとして使用
                         venue_name = row['venue_name']
-                        
-                        # 日付情報を取得する部分を修正
-                        race_date = datetime.now().date()  # デフォルト値（フォールバック用）
-
-                        # レースIDから日付を抽出して優先的に使用
-                        try:
-                            date_str = extract_date_from_race_id(race_id)
-                            race_date = datetime.strptime(date_str, '%Y-%m-%d').date()
-                            print(f"レースID {race_id} から日付を抽出: {race_date}")
-                        except Exception as e:
-                            print(f"日付抽出エラー: {e} - レースID: {race_id}")
-                            # CSVに日付カラムがあれば使用（バックアップ）
-                            if 'date' in row and pd.notna(row['date']):
-                                try:
-                                    race_date = datetime.strptime(str(row['date']), '%Y-%m-%d').date()
-                                except ValueError:
-                                    pass
                         
                         # レース年を取得
                         race_year = race_date.year if race_date else datetime.now().year
@@ -317,6 +316,13 @@ def process_shutuba_data(input_path):
                         )
                         db.session.add(race)
                         db.session.commit()  # レースを先にコミット
+                    
+                    else:
+                        # 既存のレースの日付を更新
+                        existing_race.date = race_date
+                        print(f"既存のレース {race_id} の日付を {race_date} に更新しました")
+                        db.session.add(existing_race)
+                        db.session.commit()
                     
                     # 出走表情報を更新
                     update_race_entry(race_id, entries)
