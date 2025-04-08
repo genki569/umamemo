@@ -220,66 +220,68 @@ def process_shutuba_data(input_path):
             
             for _, row in df.iterrows():
                 try:
-                    # entriesカラムをJSONとしてパース
-                    entries_json = row['entries']
-                    
-                    # 文字列の場合はJSONとしてパース
-                    if isinstance(entries_json, str):
-                        try:
-                            entries = json.loads(entries_json)
-                        except json.JSONDecodeError:
-                            print(f"警告: JSONデコードエラー: {entries_json[:100]}...")
-                            continue
-                    else:
-                        entries = entries_json
-                    
-                    # レースIDを取得
-                    try:
-                        race_id = int(row['race_id'])
-                    except (ValueError, TypeError):
-                        print(f"警告: 無効なレースID: {row['race_id']}")
+                    # レースIDの取得
+                    race_id = row['race_id']
+                    if pd.isna(race_id):
                         continue
                     
-                    # レースが既に存在するか確認
+                    race_id = int(race_id)
+                    
+                    # レース情報の取得
+                    race_name = row['race_name'] if 'race_name' in row and pd.notna(row['race_name']) else '不明'
+                    venue_name = row['venue'] if 'venue' in row and pd.notna(row['venue']) else '不明'
+                    
+                    # 出走馬情報の取得
+                    entries = []
+                    for i in range(1, 17):  # 最大16頭想定
+                        horse_key = f'horse_name_{i}'
+                        if horse_key in row and pd.notna(row[horse_key]):
+                            entry = {
+                                'horse_number': i,
+                                'horse_name': row[horse_key],
+                                'jockey_name': row.get(f'jockey_name_{i}', None),
+                                'sex_age': row.get(f'sex_age_{i}', None),
+                                'weight': row.get(f'weight_{i}', None),
+                                'odds': row.get(f'odds_{i}', None),
+                                'popularity': row.get(f'popularity_{i}', None)
+                            }
+                            entries.append(entry)
+                    
+                    # 馬情報がない場合はスキップ
+                    if not entries:
+                        continue
+                    
+                    # 既存のレースを確認
                     existing_race = Race.query.get(race_id)
                     
                     if not existing_race:
-                        # venue_nameをvenueとして使用
-                        venue_name = row['venue_name']
+                        # レース情報の詳細を取得
+                        distance = int(row['distance']) if 'distance' in row and pd.notna(row['distance']) else None
+                        track_type = row['track_type'] if 'track_type' in row and pd.notna(row['track_type']) else None
+                        direction = row.get('direction', None)
                         
                         # 日付情報を取得
-                        race_date = datetime.now().date()  # デフォルト値
+                        # レースIDから日付を抽出して優先的に使用
+                        race_date_from_id = None
+                        try:
+                            date_str = extract_date_from_race_id(str(race_id))
+                            race_date_from_id = datetime.strptime(date_str, '%Y-%m-%d').date()
+                        except ValueError:
+                            pass
+                        
+                        # CSVのdate列から日付を取得（バックアップ）
+                        race_date_from_csv = None
                         if 'date' in row and pd.notna(row['date']):
                             try:
-                                race_date = datetime.strptime(str(row['date']), '%Y-%m-%d').date()
+                                race_date_from_csv = datetime.strptime(str(row['date']), '%Y-%m-%d').date()
                             except ValueError:
                                 pass
                         
+                        # 日付の優先順位: レースIDから > CSVのdate列 > 現在の日付
+                        race_date = race_date_from_id or race_date_from_csv or datetime.now().date()
+                        
                         # レース年を取得
-                        race_year = race_date.year if race_date else datetime.now().year
-                        
-                        # コース情報を解析
-                        course_info = row.get('course_info', '')
-                        distance = None
-                        track_type = None
-                        direction = None
-                        
-                        # コース情報から距離とコース種別を抽出
-                        if course_info:
-                            # 例: "ダート1200m"
-                            distance_match = re.search(r'(\d+)m', course_info)
-                            if distance_match:
-                                distance = int(distance_match.group(1))
-                            
-                            if 'ダート' in course_info:
-                                track_type = 'ダート'
-                            elif '芝' in course_info:
-                                track_type = '芝'
-                            
-                            if '右' in course_info:
-                                direction = '右'
-                            elif '左' in course_info:
-                                direction = '左'
+                        race_year = race_date.year
                         
                         # レース情報を保存
                         race = Race(
