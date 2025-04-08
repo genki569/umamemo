@@ -68,10 +68,15 @@ def name_to_number(name):
     return abs(name_hash) % 999999999
 
 def extract_date_from_race_id(race_id):
-    """レースIDから日付を抽出 (例: 202442112001 -> 2024-11-19)"""
-    year = race_id[:4]
-    month = race_id[4:6]
-    day = race_id[6:8]
+    """
+    レースIDから日付を抽出
+    地方競馬のレースID形式: YYYY + 会場コード(2桁) + 月日(4桁) + レース番号(2桁)
+    例: 202545040801 -> 2025年4月8日の川崎競馬場(45)の1レース
+    """
+    race_id_str = str(race_id)
+    year = race_id_str[:4]  # 年
+    month = race_id_str[6:8]  # 月
+    day = race_id_str[8:10]  # 日
     return f"{year}-{month}-{day}"
 
 def generate_venue_code(venue_name):
