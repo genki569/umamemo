@@ -59,6 +59,9 @@
       position: relative;
       z-index: 9000 !important;
       padding: 0.5rem 0;
+      height: auto;
+      max-height: none;
+      overflow: visible;
     }
     
     /* ヘッダーにオレンジのアクセントラインを追加 */
@@ -77,6 +80,8 @@
       transition: var(--transition);
       position: relative;
       z-index: 9000 !important;
+      display: flex;
+      flex-wrap: wrap;
     }
 
     .umamemo-brand {
@@ -179,7 +184,7 @@
 
     /* ドロップダウンメニュー */
     .umamemo-dropdown {
-      position: relative;
+      position: relative !important;
       z-index: 10000 !important;
     }
 
@@ -202,7 +207,7 @@
       position: absolute !important;
       top: 100% !important;
       right: 0 !important;
-      z-index: 10001 !important;
+      z-index: 99999 !important;
       display: none;
       min-width: 10rem;
       padding: 0.5rem 0;
@@ -377,49 +382,29 @@
         top: 100%;
         left: 0;
         right: 0;
-        background: linear-gradient(135deg, #4F46E5 0%, #8B5CF6 100%);
+        background: white;
+        z-index: 9999;
         padding: 1rem;
-        display: none;
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        border-radius: 0 0 0.5rem 0.5rem;
       }
 
       .umamemo-navbar-collapse.show {
-        display: block;
+        display: block !important;
       }
 
       .umamemo-nav {
         flex-direction: column;
-        align-items: flex-start;
+        width: 100%;
       }
 
       .umamemo-nav-item {
         margin: 0.5rem 0;
-        width: 100%;
       }
 
       .umamemo-nav-link {
+        color: var(--secondary-color) !important;
         padding: 0.5rem 0;
-      }
-
-      .umamemo-dropdown-menu {
-        position: static;
-        box-shadow: none;
-        background: transparent;
-        border: none;
-        padding: 0.5rem 0 0.5rem 1rem;
-      }
-
-      .umamemo-dropdown-item {
-        color: rgba(255, 255, 255, 0.9);
-      }
-
-      .umamemo-dropdown-item:hover {
-        color: white;
-        background-color: rgba(255, 255, 255, 0.1);
-      }
-
-      .umamemo-dropdown-divider {
-        border-top-color: rgba(255, 255, 255, 0.1);
       }
     }
 
@@ -438,10 +423,25 @@
         opacity: 0;
         animation: fadeIn 0.5s ease forwards;
     }
+
+    /* ナビゲーションコラプスの修正 */
+    .umamemo-navbar-collapse {
+      flex-basis: 100%;
+      flex-grow: 1;
+      align-items: center;
+    }
+
+    @media (min-width: 992px) {
+      .umamemo-navbar-collapse {
+        display: flex !important;
+        flex-basis: auto;
+      }
+    }
     </style>
     {% endblock %}
 </head>
 <body>
+    <!-- 馬メモヘッダー -->
     <header class="umamemo-header">
         <div class="container">
             <nav class="umamemo-navbar">
@@ -450,31 +450,31 @@
                         <i class="fas fa-horse-head"></i>馬メモ
                     </a>
                     
-                    <button class="umamemo-navbar-toggler d-lg-none" type="button" id="umamemoNavbarToggler">
-                        <span class="umamemo-navbar-toggler-icon"></span>
-            </button>
-
-                    <div class="umamemo-navbar-collapse d-lg-flex" id="umamemoNavbarCollapse">
-                        <ul class="umamemo-nav me-auto">
-                            <li class="umamemo-nav-item">
-                                <a class="umamemo-nav-link" href="{{ url_for('races') }}">レース情報</a>
-                            </li>
-                            <li class="umamemo-nav-item">
-                                <a class="umamemo-nav-link" href="{{ url_for('shutuba_list') }}">出馬表</a>
-                            </li>
-                            <li class="umamemo-nav-item">
-                                <a class="umamemo-nav-link" href="{{ url_for('horses') }}">馬一覧</a>
-                            </li>
-                            <li class="umamemo-nav-item">
-                                <a class="umamemo-nav-link" href="{{ url_for('jockeys') }}">騎手一覧</a>
-                            </li>
-                            <li class="umamemo-nav-item">
-                                <a class="umamemo-nav-link" href="{{ url_for('review_market') }}">回顧ノート</a>
-                            </li>
-                        </ul>
-                        
+                    <!-- ハンバーガーメニューボタン -->
+                    <button class="umamemo-navbar-toggler d-md-none" type="button" aria-controls="umamemoNavbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"><i class="fas fa-bars"></i></span>
+                    </button>
+                    
+                    <!-- ナビゲーションメニュー -->
+                    <div class="umamemo-navbar-collapse collapse d-md-flex" id="umamemoNavbarCollapse">
                         <ul class="umamemo-nav">
-                    {% if current_user.is_authenticated %}
+                            <li class="umamemo-nav-item">
+                                <a href="{{ url_for('races') }}" class="umamemo-nav-link">レース情報</a>
+                            </li>
+                            <li class="umamemo-nav-item">
+                                <a href="{{ url_for('shutuba') }}" class="umamemo-nav-link">出馬表</a>
+                            </li>
+                            <li class="umamemo-nav-item">
+                                <a href="{{ url_for('horses') }}" class="umamemo-nav-link">馬一覧</a>
+                            </li>
+                            <li class="umamemo-nav-item">
+                                <a href="{{ url_for('jockeys') }}" class="umamemo-nav-link">騎手一覧</a>
+                            </li>
+                            <li class="umamemo-nav-item">
+                                <a href="{{ url_for('all_reviews') }}" class="umamemo-nav-link">回顧ノート</a>
+                            </li>
+                            
+                            {% if current_user.is_authenticated %}
                             <li class="umamemo-nav-item umamemo-dropdown">
                                 <a class="umamemo-nav-link umamemo-dropdown-toggle" id="userDropdown">
                                     <i class="fas fa-user-circle me-1"></i>{{ current_user.username }}
@@ -491,41 +491,42 @@
                                         <i class="fas fa-sign-out-alt me-2"></i>ログアウト
                                     </a>
                                 </div>
-                        </li>
-                    {% else %}
+                            </li>
+                            {% else %}
                             <li class="umamemo-nav-item">
-                                <a class="umamemo-nav-link" href="{{ url_for('login') }}">ログイン</a>
-                        </li>
+                                <a href="{{ url_for('login') }}" class="umamemo-nav-link">ログイン</a>
+                            </li>
                             <li class="umamemo-nav-item">
-                                <a class="umamemo-btn-light" href="{{ url_for('register') }}">新規登録</a>
-                        </li>
-                    {% endif %}
-                </ul>
-            </div>
-        </div>
-    </nav>
+                                <a href="{{ url_for('register') }}" class="umamemo-nav-link">新規登録</a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+            </nav>
         </div>
     </header>
     
-    <main class="umamemo-main">
-        <div class="container mt-3">
-            {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
+    <!-- フラッシュメッセージ -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="container mt-3">
                 {% for category, message in messages %}
-                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-                    {{ message }}
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
                 {% endfor %}
-            {% endif %}
-            {% endwith %}
-        </div>
-        
+            </div>
+        {% endif %}
+    {% endwith %}
+    
+    <!-- メインコンテンツ -->
+    <main class="umamemo-main">
         {% block content %}{% endblock %}
     </main>
 
+    <!-- 馬メモフッター -->
     <footer class="umamemo-footer">
         <div class="container">
             <div class="row">
@@ -579,13 +580,34 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
         // ハンバーガーメニューの開閉
-        const navbarToggler = document.getElementById('umamemoNavbarToggler');
-        const navbarCollapse = document.getElementById('umamemoNavbarCollapse');
+        const navbarToggler = document.querySelector('.navbar-toggler, .umamemo-navbar-toggler');
+        const navbarCollapse = document.querySelector('.navbar-collapse, .umamemo-navbar-collapse');
         
-        if (navbarToggler) {
-            navbarToggler.addEventListener('click', function() {
+        if (navbarToggler && navbarCollapse) {
+            console.log('ハンバーガーメニュー要素を検出:', navbarToggler, navbarCollapse);
+            
+            navbarToggler.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('ハンバーガーメニューがクリックされました');
                 navbarCollapse.classList.toggle('show');
+                
+                // アクセシビリティのために aria-expanded 属性を更新
+                const expanded = navbarCollapse.classList.contains('show');
+                navbarToggler.setAttribute('aria-expanded', expanded);
             });
+            
+            // 画面外をクリックしたときにメニューを閉じる
+            document.addEventListener('click', function(e) {
+                if (navbarCollapse.classList.contains('show') && 
+                    !navbarToggler.contains(e.target) && 
+                    !navbarCollapse.contains(e.target)) {
+                    navbarCollapse.classList.remove('show');
+                    navbarToggler.setAttribute('aria-expanded', 'false');
+                }
+            });
+        } else {
+            console.warn('ハンバーガーメニュー要素が見つかりません');
         }
         
         // ドロップダウンメニューの開閉
