@@ -58,7 +58,7 @@
       color: white;
       position: relative !important;
       z-index: 9000 !important;
-      overflow: visible !important; /* ヘッダーからはみ出すことを許可 */
+      overflow: visible !important;
       max-height: none !important;
       height: auto !important;
       padding: 0.5rem 0;
@@ -188,27 +188,17 @@
     /* ドロップダウンメニュー */
     .umamemo-dropdown {
       position: relative !important;
+      display: inline-block !important;
     }
 
     .umamemo-dropdown-toggle {
       cursor: pointer;
     }
 
-    .umamemo-dropdown-toggle::after {
-      display: inline-block;
-      margin-left: 0.255em;
-      vertical-align: 0.255em;
-      content: "";
-      border-top: 0.3em solid;
-      border-right: 0.3em solid transparent;
-      border-bottom: 0;
-      border-left: 0.3em solid transparent;
-    }
-
-    /* ドロップダウンメニューをヘッダーの下に表示するためのスタイル */
+    /* ドロップダウンメニュー - 完全に新しい定義 */
     .umamemo-dropdown-menu {
       position: absolute !important;
-      top: 100% !important; /* ヘッダーの下に表示 */
+      top: 100% !important;
       right: 0 !important;
       z-index: 99999 !important;
       min-width: 10rem !important;
@@ -223,43 +213,42 @@
       border: 1px solid rgba(0, 0, 0, 0.15) !important;
       border-radius: 0.25rem !important;
       box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.175) !important;
-      display: none !important; /* 初期状態は非表示 */
-      transform: none !important; /* 変形を無効化 */
-      transition: none !important; /* トランジションを無効化 */
-      max-height: none !important; /* 高さ制限を解除 */
-      overflow: visible !important; /* スクロールを無効化 */
+      display: none !important;
+      max-height: none !important;
+      overflow: visible !important;
+      transform: none !important;
+      transition: none !important;
     }
 
-    /* ドロップダウンメニューが表示されたときのスタイル */
     .umamemo-dropdown-menu.show {
       display: block !important;
     }
 
     .umamemo-dropdown-item {
-      display: block;
-      width: 100%;
-      padding: 0.5rem 1rem;
-      clear: both;
-      font-weight: 400;
-      color: #212529;
-      text-align: inherit;
-      text-decoration: none;
-      white-space: nowrap;
-      background-color: transparent;
-      border: 0;
+      display: block !important;
+      width: 100% !important;
+      padding: 0.5rem 1rem !important;
+      clear: both !important;
+      font-weight: 400 !important;
+      color: #212529 !important;
+      text-align: inherit !important;
+      text-decoration: none !important;
+      white-space: nowrap !important;
+      background-color: transparent !important;
+      border: 0 !important;
     }
 
     .umamemo-dropdown-item:hover, .umamemo-dropdown-item:focus {
-      color: #16181b;
-      text-decoration: none;
-      background-color: #f8f9fa;
+      color: #16181b !important;
+      text-decoration: none !important;
+      background-color: #f8f9fa !important;
     }
 
     .umamemo-dropdown-divider {
-      height: 0;
-      margin: 0.5rem 0;
-      overflow: hidden;
-      border-top: 1px solid #e9ecef;
+      height: 0 !important;
+      margin: 0.5rem 0 !important;
+      overflow: hidden !important;
+      border-top: 1px solid #e9ecef !important;
     }
 
     /* ナビゲーショントグルボタン */
@@ -388,14 +377,14 @@
 
       .umamemo-navbar-collapse {
         position: absolute !important;
-        top: 100% !important; /* ヘッダーの下に表示 */
+        top: 100% !important;
         left: 0 !important;
         right: 0 !important;
         background-color: #4F46E5 !important;
         padding: 1rem !important;
         z-index: 9999 !important;
-        max-height: 80vh !important; /* 画面の80%までの高さに制限 */
-        overflow-y: auto !important; /* 内容が多い場合はスクロール可能に */
+        max-height: 80vh !important;
+        overflow-y: auto !important;
         display: none !important;
       }
 
@@ -418,13 +407,21 @@
       }
       
       /* モバイル表示時のドロップダウンメニュー */
+      .umamemo-dropdown {
+        position: relative !important;
+        display: block !important;
+        width: 100% !important;
+      }
+      
       .umamemo-dropdown-menu {
-        position: static !important; /* モバイルでは位置を固定しない */
+        position: relative !important;
         width: 100% !important;
         margin-top: 0.5rem !important;
+        margin-bottom: 0.5rem !important;
         background-color: rgba(255, 255, 255, 0.1) !important;
         border: none !important;
-        max-height: none !important; /* 高さ制限なし */
+        box-shadow: none !important;
+        padding-left: 1rem !important;
       }
       
       .umamemo-dropdown-item {
@@ -458,13 +455,14 @@
         position: absolute !important;
         width: auto !important;
         min-width: 10rem !important;
-        float: none !important;
-        margin: 0 !important;
         background-color: #fff !important;
         border: 1px solid rgba(0, 0, 0, 0.15) !important;
         border-radius: 0.25rem !important;
         box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.175) !important;
-        z-index: 99999 !important;
+      }
+      
+      .umamemo-dropdown-item {
+        color: #212529 !important;
       }
     }
     </style>
