@@ -1370,7 +1370,9 @@ p, h1, h2, h3, h4, h5, h6, span, a, div {
   border: 1px solid rgba(0, 0, 0, 0.15) !important;
   border-radius: 0.25rem !important;
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.175) !important;
-  display: none; /* 初期状態は非表示 */
+  display: none !important;
+  transform: none !important;
+  transition: none !important;
 }
 
 .umamemo-dropdown-menu.show {
@@ -1379,18 +1381,37 @@ p, h1, h2, h3, h4, h5, h6, span, a, div {
 
 /* ヘッダーのz-indexを高くする */
 .umamemo-header {
-  z-index: 9000 !important;
   position: relative !important;
+  z-index: 9000 !important;
   overflow: visible !important;
+  max-height: none !important;
+  height: auto !important;
+  padding: 0.5rem 0 !important;
+  background: linear-gradient(135deg, #4F46E5 0%, #8B5CF6 100%) !important;
+  box-shadow: 0 4px 20px rgba(79, 70, 229, 0.2) !important;
+  color: white !important;
 }
 
-/* ドロップダウンの親要素のz-indexも高くする */
+/* ナビゲーションバーのスクロール問題を解決 */
+.umamemo-navbar {
+  overflow: visible !important;
+  max-height: none !important;
+  height: auto !important;
+  padding: 0.8rem 0 !important;
+  transition: all 0.3s ease !important;
+  position: relative !important;
+  z-index: 9000 !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
+}
+
+/* ドロップダウンメニューの表示問題を解決 */
 .umamemo-dropdown {
   position: relative !important;
   z-index: 10000 !important;
 }
 
-/* モバイル表示時のナビゲーション */
+/* モバイル表示時の特別な対応 */
 @media (max-width: 991.98px) {
   .umamemo-navbar-collapse {
     position: absolute !important;
@@ -1400,20 +1421,13 @@ p, h1, h2, h3, h4, h5, h6, span, a, div {
     background-color: #4F46E5 !important;
     padding: 1rem !important;
     z-index: 9999 !important;
+    max-height: 80vh !important; /* 画面の80%までの高さに制限 */
+    overflow-y: auto !important; /* 内容が多い場合はスクロール可能に */
     display: none !important;
   }
   
   .umamemo-navbar-collapse.show {
     display: block !important;
-  }
-  
-  .umamemo-nav {
-    flex-direction: column !important;
-    width: 100% !important;
-  }
-  
-  .umamemo-nav-item {
-    margin: 0.5rem 0 !important;
   }
   
   .umamemo-dropdown-menu {
@@ -1423,13 +1437,5 @@ p, h1, h2, h3, h4, h5, h6, span, a, div {
     margin-top: 0.5rem !important;
     background-color: rgba(255, 255, 255, 0.1) !important;
     border: none !important;
-  }
-  
-  .umamemo-dropdown-item {
-    color: white !important;
-  }
-  
-  .umamemo-dropdown-item:hover {
-    background-color: rgba(255, 255, 255, 0.2) !important;
   }
 }
