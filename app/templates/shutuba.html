@@ -64,7 +64,7 @@
                                 </thead>
                                 <tbody>
                                     {% for entry in entries %}
-                                    <tr>
+                                    <tr class="{% if entry.popularity == '1' %}bg-favorite-1{% elif entry.popularity == '2' %}bg-favorite-2{% elif entry.popularity == '3' %}bg-favorite-3{% endif %}">
                                         <td class="text-center horse-number">{{ entry.horse_number }}</td>
                                         <td>
                                             <a href="{{ url_for('horse_detail', horse_id=entry.horse.id) }}" class="horse-name">
@@ -362,6 +362,7 @@
 /* 出馬表テーブル */
 .shutuba-table {
     overflow-x: auto;
+    margin-top: 20px;
 }
 
 .shutuba-table table {
@@ -451,6 +452,17 @@
     .race-details span {
         margin: 2px 5px;
     }
+}
+
+/* 人気順の背景色 */
+.bg-favorite-1 {
+    background-color: rgba(255, 215, 0, 0.2); /* 金色（薄め） */
+}
+.bg-favorite-2 {
+    background-color: rgba(192, 192, 192, 0.2); /* 銀色（薄め） */
+}
+.bg-favorite-3 {
+    background-color: rgba(205, 127, 50, 0.2); /* 銅色（薄め） */
 }
 </style>
 
