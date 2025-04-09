@@ -1378,3 +1378,64 @@ p, h1, h2, h3, h4, h5, h6, span, a, div {
   position: relative !important;
   z-index: 10000 !important;
 }
+
+/* モバイルナビゲーション用のスタイル */
+@media (max-width: 767.98px) {
+    .umamemo-navbar {
+        padding: 0.5rem 0;
+    }
+    
+    .umamemo-navbar-toggler {
+        display: block;
+        background: transparent;
+        border: none;
+        color: white;
+        font-size: 1.5rem;
+        cursor: pointer;
+        padding: 0.25rem 0.75rem;
+        border-radius: 0.25rem;
+    }
+    
+    .umamemo-navbar-toggler:focus {
+        outline: none;
+    }
+    
+    .umamemo-navbar-collapse {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: white;
+        z-index: 9999;
+        padding: 1rem;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        border-radius: 0 0 0.5rem 0.5rem;
+        display: none;
+    }
+    
+    .umamemo-navbar-collapse.show {
+        display: block !important;
+    }
+    
+    .umamemo-nav {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .umamemo-nav-item {
+        margin: 0.5rem 0;
+    }
+    
+    .umamemo-nav-link {
+        color: var(--secondary-color) !important;
+        padding: 0.5rem 0;
+    }
+    
+    .umamemo-dropdown-menu {
+        position: static !important;
+        box-shadow: none;
+        border: 1px solid #eee;
+        margin-top: 0.5rem;
+        width: 100%;
+    }
+}

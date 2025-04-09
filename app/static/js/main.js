@@ -414,29 +414,35 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // モバイルナビゲーションの修正
     if (window.innerWidth <= 768) {
-        // ナビゲーションの開閉
-        const navbarToggler = document.querySelector('.navbar-toggler');
-        const navbarCollapse = document.querySelector('.navbar-collapse');
+        // ハンバーガーメニューの開閉
+        const navbarToggler = document.querySelector('.navbar-toggler, .umamemo-navbar-toggler');
+        const navbarCollapse = document.querySelector('.navbar-collapse, .umamemo-navbar-collapse');
         
         if (navbarToggler && navbarCollapse) {
-            navbarToggler.addEventListener('click', function() {
+            console.log('ハンバーガーメニュー要素を検出:', navbarToggler, navbarCollapse);
+            
+            navbarToggler.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('ハンバーガーメニューがクリックされました');
                 navbarCollapse.classList.toggle('show');
+                
+                // アクセシビリティのために aria-expanded 属性を更新
+                const expanded = navbarCollapse.classList.contains('show');
+                navbarToggler.setAttribute('aria-expanded', expanded);
             });
             
             // 画面外をクリックしたときにメニューを閉じる
             document.addEventListener('click', function(e) {
-                if (!navbarToggler.contains(e.target) && !navbarCollapse.contains(e.target)) {
+                if (navbarCollapse.classList.contains('show') && 
+                    !navbarToggler.contains(e.target) && 
+                    !navbarCollapse.contains(e.target)) {
                     navbarCollapse.classList.remove('show');
+                    navbarToggler.setAttribute('aria-expanded', 'false');
                 }
             });
-            
-            // ナビゲーションリンクをクリックしたときにメニューを閉じる
-            const navLinks = navbarCollapse.querySelectorAll('.nav-link');
-            navLinks.forEach(link => {
-                link.addEventListener('click', function() {
-                    navbarCollapse.classList.remove('show');
-                });
-            });
+        } else {
+            console.warn('ハンバーガーメニュー要素が見つかりません');
         }
         
         // ドロップダウンメニューの動作修正
