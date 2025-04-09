@@ -4,7 +4,7 @@
 <div class="container mt-4">
     <h2>プロフィール設定</h2>
 
-    <form method="POST" action="{{ url_for('mypage_settings') }}" enctype="multipart/form-data">
+    <form method="POST" action="{{ url_for('mypage_settings') }}" enctype="multipart/form-data" id="settings-form">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         
         <div class="card mb-4">
@@ -71,19 +71,19 @@
             </div>
             <div class="card-body">
                 <div class="mb-3 form-check">
-                    <input type="checkbox" class="form-check-input" id="notification_race" name="notification_race" {% if settings.notification_race %}checked{% endif %}>
+                    <input type="checkbox" class="form-check-input" id="notification_race" name="notification_race" {% if settings and settings.notification_race %}checked{% endif %}>
                     <label class="form-check-label" for="notification_race">レース通知</label>
                 </div>
                 <div class="mb-3 form-check">
-                    <input type="checkbox" class="form-check-input" id="notification_memo" name="notification_memo" {% if settings.notification_memo %}checked{% endif %}>
+                    <input type="checkbox" class="form-check-input" id="notification_memo" name="notification_memo" {% if settings and settings.notification_memo %}checked{% endif %}>
                     <label class="form-check-label" for="notification_memo">メモ通知</label>
                 </div>
                 <div class="mb-3">
                     <label for="items_per_page" class="form-label">ページあたりの表示件数</label>
                     <select class="form-select" id="items_per_page" name="items_per_page">
-                        <option value="10" {% if settings.items_per_page == 10 %}selected{% endif %}>10件</option>
-                        <option value="20" {% if settings.items_per_page == 20 %}selected{% endif %}>20件</option>
-                        <option value="50" {% if settings.items_per_page == 50 %}selected{% endif %}>50件</option>
+                        <option value="10" {% if settings and settings.items_per_page == 10 %}selected{% endif %}>10件</option>
+                        <option value="20" {% if settings and settings.items_per_page == 20 %}selected{% endif %}>20件</option>
+                        <option value="50" {% if settings and settings.items_per_page == 50 %}selected{% endif %}>50件</option>
                     </select>
                 </div>
             </div>
