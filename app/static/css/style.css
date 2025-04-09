@@ -1352,12 +1352,12 @@ p, h1, h2, h3, h4, h5, h6, span, a, div {
     }
 }
 
-/* ドロップダウンメニューを最前面に表示するためのスタイル */
+/* ドロップダウンメニューをヘッダーの下に表示するためのスタイル */
 .umamemo-dropdown-menu {
   position: absolute !important;
-  top: 100% !important;
+  top: 100% !important; /* ヘッダーの下に表示 */
   right: 0 !important;
-  z-index: 99999 !important; /* 非常に高い値 */
+  z-index: 99999 !important;
   min-width: 10rem !important;
   padding: 0.5rem 0 !important;
   margin: 0.125rem 0 0 !important;
@@ -1371,51 +1371,28 @@ p, h1, h2, h3, h4, h5, h6, span, a, div {
   border-radius: 0.25rem !important;
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.175) !important;
   display: none !important;
-  transform: none !important;
-  transition: none !important;
+  max-height: none !important; /* 高さ制限を解除 */
+  overflow: visible !important; /* スクロールを無効化 */
 }
 
-.umamemo-dropdown-menu.show {
-  display: block !important;
+/* ドロップダウンの親要素の位置を調整 */
+.umamemo-dropdown {
+  position: relative !important;
 }
 
-/* ヘッダーのz-indexを高くする */
+/* ヘッダー自体の設定 */
 .umamemo-header {
   position: relative !important;
   z-index: 9000 !important;
-  overflow: visible !important;
-  max-height: none !important;
+  overflow: visible !important; /* ヘッダーからはみ出すことを許可 */
   height: auto !important;
-  padding: 0.5rem 0 !important;
-  background: linear-gradient(135deg, #4F46E5 0%, #8B5CF6 100%) !important;
-  box-shadow: 0 4px 20px rgba(79, 70, 229, 0.2) !important;
-  color: white !important;
-}
-
-/* ナビゲーションバーのスクロール問題を解決 */
-.umamemo-navbar {
-  overflow: visible !important;
-  max-height: none !important;
-  height: auto !important;
-  padding: 0.8rem 0 !important;
-  transition: all 0.3s ease !important;
-  position: relative !important;
-  z-index: 9000 !important;
-  display: flex !important;
-  flex-wrap: wrap !important;
-}
-
-/* ドロップダウンメニューの表示問題を解決 */
-.umamemo-dropdown {
-  position: relative !important;
-  z-index: 10000 !important;
 }
 
 /* モバイル表示時の特別な対応 */
 @media (max-width: 991.98px) {
   .umamemo-navbar-collapse {
     position: absolute !important;
-    top: 100% !important;
+    top: 100% !important; /* ヘッダーの下に表示 */
     left: 0 !important;
     right: 0 !important;
     background-color: #4F46E5 !important;
@@ -1426,16 +1403,13 @@ p, h1, h2, h3, h4, h5, h6, span, a, div {
     display: none !important;
   }
   
-  .umamemo-navbar-collapse.show {
-    display: block !important;
-  }
-  
+  /* モバイル表示時のドロップダウンメニュー */
   .umamemo-dropdown-menu {
-    position: static !important;
-    float: none !important;
+    position: static !important; /* モバイルでは位置を固定しない */
     width: 100% !important;
     margin-top: 0.5rem !important;
     background-color: rgba(255, 255, 255, 0.1) !important;
     border: none !important;
+    max-height: none !important; /* 高さ制限なし */
   }
 }
