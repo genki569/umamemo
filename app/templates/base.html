@@ -180,6 +180,7 @@
     /* ドロップダウンメニュー */
     .umamemo-dropdown {
       position: relative;
+      z-index: 10000 !important;
     }
 
     .umamemo-dropdown-toggle {
@@ -198,36 +199,27 @@
     }
 
     .umamemo-dropdown-menu {
-      position: absolute;
-      top: 100%;
-      right: 0;
-      z-index: 9999 !important;
+      position: absolute !important;
+      top: 100% !important;
+      right: 0 !important;
+      z-index: 10001 !important;
       display: none;
       min-width: 10rem;
-      padding: 0.8rem 0;
+      padding: 0.5rem 0;
       margin: 0.125rem 0 0;
-      font-size: 1rem;
+      font-size: 0.9rem;
+      color: var(--secondary-color);
+      text-align: left;
+      list-style: none;
       background-color: #fff;
       background-clip: padding-box;
-      border: 1px solid rgba(0, 0, 0, 0.05);
-      border-radius: 0.5rem;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(0, 0, 0, 0.15);
+      border-radius: 0.25rem;
+      box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.175);
     }
 
     .umamemo-dropdown-menu.show {
-      display: block;
-      animation: fadeInDown 0.3s ease;
-    }
-
-    @keyframes fadeInDown {
-      from {
-        opacity: 0;
-        transform: translateY(-10px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      display: block !important;
     }
 
     .umamemo-dropdown-item {
@@ -281,6 +273,8 @@
     /* メインコンテンツ */
     .umamemo-main {
       flex: 1 0 auto;
+      position: relative;
+      z-index: 1 !important;
     }
 
     /* フッター */
@@ -444,12 +438,6 @@
         opacity: 0;
         animation: fadeIn 0.5s ease forwards;
     }
-    
-    /* ドロップダウンメニューのz-indexを高く設定 */
-    .umamemo-dropdown-menu {
-        z-index: 9999 !important;
-        position: absolute !important;
-    }
     </style>
     {% endblock %}
 </head>
@@ -607,20 +595,31 @@
         const userDropdownMenu = document.getElementById('userDropdownMenu');
         
         if (userDropdown && userDropdownMenu) {
-            // スタイルを追加して最前面に表示
-            userDropdownMenu.style.zIndex = '9999';
+            // インラインスタイルで最前面に表示するように設定
+            userDropdownMenu.style.zIndex = '10001';
             userDropdownMenu.style.position = 'absolute';
+            userDropdownMenu.style.top = '100%';
+            userDropdownMenu.style.right = '0';
             
             userDropdown.addEventListener('click', function(e) {
                 e.preventDefault();
                 e.stopPropagation(); // イベントの伝播を停止
-                userDropdownMenu.classList.toggle('show');
+                
+                // 表示/非表示を切り替え
+                if (userDropdownMenu.classList.contains('show')) {
+                    userDropdownMenu.classList.remove('show');
+                    userDropdownMenu.style.display = 'none';
+                } else {
+                    userDropdownMenu.classList.add('show');
+                    userDropdownMenu.style.display = 'block';
+                }
             });
             
             // ドロップダウン外クリックで閉じる
             document.addEventListener('click', function(e) {
                 if (!userDropdown.contains(e.target) && !userDropdownMenu.contains(e.target)) {
                     userDropdownMenu.classList.remove('show');
+                    userDropdownMenu.style.display = 'none';
                 }
             });
         }
