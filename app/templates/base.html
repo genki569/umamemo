@@ -651,17 +651,130 @@
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // ハンバーガーメニューの開閉
+        // ハンバーガーメニューの新しい実装
         const navbarToggler = document.getElementById('umamemoNavbarToggler');
-        const navbarCollapse = document.getElementById('umamemoNavbarCollapse');
         
-        if (navbarToggler && navbarCollapse) {
-            navbarToggler.addEventListener('click', function() {
-                navbarCollapse.classList.toggle('show');
+        if (navbarToggler) {
+            navbarToggler.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                // 既存のメニューを削除
+                const existingMenu = document.getElementById('mobileNavMenuPortal');
+                if (existingMenu) {
+                    document.body.removeChild(existingMenu);
+                    return;
+                }
+                
+                // ハンバーガーボタンの位置を取得
+                const rect = navbarToggler.getBoundingClientRect();
+                
+                // 新しいメニュー要素を作成
+                const menu = document.createElement('div');
+                menu.id = 'mobileNavMenuPortal';
+                menu.className = 'portal-mobile-menu';
+                menu.style.position = 'absolute';
+                menu.style.top = (rect.bottom + window.scrollY) + 'px';
+                menu.style.left = '0';
+                menu.style.right = '0';
+                menu.style.zIndex = '99999';
+                menu.style.padding = '1rem';
+                menu.style.backgroundColor = '#4F46E5';
+                menu.style.color = 'white';
+                menu.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.2)';
+                
+                // メニュー項目を追加
+                menu.innerHTML = `
+                    <ul class="portal-mobile-nav">
+                        <li class="portal-mobile-nav-item">
+                            <a href="{{ url_for('index') }}" class="portal-mobile-nav-link">
+                                <i class="fas fa-home me-2"></i>ホーム
+                            </a>
+                        </li>
+                        <li class="portal-mobile-nav-item">
+                            <a href="{{ url_for('races') }}" class="portal-mobile-nav-link">
+                                <i class="fas fa-horse me-2"></i>レース一覧
+                            </a>
+                        </li>
+                        <li class="portal-mobile-nav-item">
+                            <a href="{{ url_for('reviews') }}" class="portal-mobile-nav-link">
+                                <i class="fas fa-comment me-2"></i>レビュー一覧
+                            </a>
+                        </li>
+                        {% if current_user.is_authenticated %}
+                        <li class="portal-mobile-nav-item">
+                            <a href="{{ url_for('mypage_home') }}" class="portal-mobile-nav-link">
+                                <i class="fas fa-user me-2"></i>マイページ
+                            </a>
+                        </li>
+                        <li class="portal-mobile-nav-item">
+                            <a href="{{ url_for('user_settings') }}" class="portal-mobile-nav-link">
+                                <i class="fas fa-cog me-2"></i>設定
+                            </a>
+                        </li>
+                        <li class="portal-mobile-nav-item">
+                            <a href="{{ url_for('logout') }}" class="portal-mobile-nav-link">
+                                <i class="fas fa-sign-out-alt me-2"></i>ログアウト
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="portal-mobile-nav-item">
+                            <a href="{{ url_for('login') }}" class="portal-mobile-nav-link">
+                                <i class="fas fa-sign-in-alt me-2"></i>ログイン
+                            </a>
+                        </li>
+                        <li class="portal-mobile-nav-item">
+                            <a href="{{ url_for('register') }}" class="portal-mobile-nav-link">
+                                <i class="fas fa-user-plus me-2"></i>新規登録
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                `;
+                
+                // スタイルを追加
+                const style = document.createElement('style');
+                style.textContent = `
+                    .portal-mobile-nav {
+                        list-style: none;
+                        padding: 0;
+                        margin: 0;
+                    }
+                    
+                    .portal-mobile-nav-item {
+                        margin: 0.5rem 0;
+                    }
+                    
+                    .portal-mobile-nav-link {
+                        display: block;
+                        padding: 0.8rem 1rem;
+                        color: white;
+                        text-decoration: none;
+                        border-radius: 0.25rem;
+                        transition: background-color 0.2s;
+                    }
+                    
+                    .portal-mobile-nav-link:hover {
+                        background-color: rgba(255, 255, 255, 0.1);
+                        color: white;
+                    }
+                `;
+                
+                // body直下に追加
+                document.body.appendChild(menu);
+                document.head.appendChild(style);
+                
+                // ドキュメントクリックでメニューを閉じる
+                document.addEventListener('click', function closeMenu(e) {
+                    if (!navbarToggler.contains(e.target) && !menu.contains(e.target)) {
+                        document.body.removeChild(menu);
+                        document.removeEventListener('click', closeMenu);
+                    }
+                });
             });
         }
         
-        // 新しいドロップダウン実装
+        // 新しいドロップダウン実装（既存のコード）
         const userDropdown = document.getElementById('userDropdown');
         
         if (userDropdown) {
@@ -714,40 +827,8 @@
                     </a>
                 `;
                 
-                // スタイルを追加
-                const style = document.createElement('style');
-                style.textContent = `
-                    .portal-dropdown-item {
-                        display: block;
-                        width: 100%;
-                        padding: 0.5rem 1rem;
-                        clear: both;
-                        font-weight: 400;
-                        color: #212529;
-                        text-align: inherit;
-                        text-decoration: none;
-                        white-space: nowrap;
-                        background-color: transparent;
-                        border: 0;
-                    }
-                    
-                    .portal-dropdown-item:hover {
-                        color: #16181b;
-                        text-decoration: none;
-                        background-color: #f8f9fa;
-                    }
-                    
-                    .portal-dropdown-divider {
-                        height: 0;
-                        margin: 0.5rem 0;
-                        overflow: hidden;
-                        border-top: 1px solid #e9ecef;
-                    }
-                `;
-                
                 // body直下に追加
                 document.body.appendChild(menu);
-                document.head.appendChild(style);
                 
                 // ドキュメントクリックでメニューを閉じる
                 document.addEventListener('click', function closeMenu(e) {
