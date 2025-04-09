@@ -1,7 +1,3 @@
-// グローバル変数として一度だけ宣言
-var observer;
-var csrfToken;
-
 document.addEventListener('DOMContentLoaded', function() {
     console.log('main.js loaded');
     
