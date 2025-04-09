@@ -3745,65 +3745,49 @@ def user_settings():
         if request.method == 'POST':
             data = request.get_json()
             
-            # 設定を一括更新
-            settings = db.session.query(UserSettings)\
-                .filter_by(user_id=current_user.id)\
-                .first()
-                
-            if not settings:
-                settings = UserSettings(user_id=current_user.id)
-                db.session.add(settings)
+            # ユーザー設定を取得または作成
+            user_settings = UserSettings.query.filter_by(user_id=current_user.id).first()
+            if not user_settings:
+                user_settings = UserSettings(user_id=current_user.id)
+                db.session.add(user_settings)
             
-            # 通知設定の更新
-            settings.email_notifications = data.get('email_notifications', False)
-            settings.push_notifications = data.get('push_notifications', False)
-            settings.notification_types = data.get('notification_types', [])
-            
-            # 表示設定の更新
-            settings.theme = data.get('theme', 'light')
-            settings.display_odds = data.get('display_odds', True)
-            settings.language = data.get('language', 'ja')
+            # 設定を更新
+            if 'notification_enabled' in data:
+                user_settings.notification_enabled = data['notification_enabled']
+            if 'email_notification' in data:
+                user_settings.email_notification = data['email_notification']
+            if 'theme' in data:
+                user_settings.theme = data['theme']
             
             db.session.commit()
-            return jsonify({'status': 'success'})
             
+            return jsonify({
+                'status': 'success',
+                'message': '設定が更新されました'
+            })
         else:
             # 設定を取得
-            settings = db.session.query(UserSettings)\
-                .filter_by(user_id=current_user.id)\
-                .options(load_only(
-                    'email_notifications',
-                    'push_notifications',
-                    'notification_types',
-                    'theme',
-                    'display_odds',
-                    'language'
-                ))\
-                .first()
+            user_settings = UserSettings.query.filter_by(user_id=current_user.id).first()
             
-            if not settings:
+            if not user_settings:
+                # デフォルト設定を返す
                 return jsonify({
-                    'email_notifications': False,
-                    'push_notifications': False,
-                    'notification_types': [],
-                    'theme': 'light',
-                    'display_odds': True,
-                    'language': 'ja'
+                    'notification_enabled': True,
+                    'email_notification': True,
+                    'theme': 'light'
                 })
             
             return jsonify({
-                'email_notifications': settings.email_notifications,
-                'push_notifications': settings.push_notifications,
-                'notification_types': settings.notification_types,
-                'theme': settings.theme,
-                'display_odds': settings.display_odds,
-                'language': settings.language
+                'notification_enabled': user_settings.notification_enabled,
+                'email_notification': user_settings.email_notification,
+                'theme': user_settings.theme
             })
-            
     except Exception as e:
-        db.session.rollback()
-        current_app.logger.error(f"Error in user settings: {str(e)}")
-        return jsonify({'error': '設定の処理中にエラーが発生しました'}), 500
+        app.logger.error(f"Error in user settings: {str(e)}")
+        return jsonify({
+            'status': 'error',
+            'message': 'エラーが発生しました'
+        }), 500
 
 @app.route('/api/user/favorites', methods=['GET', 'POST', 'DELETE'])
 @login_required
