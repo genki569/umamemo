@@ -81,7 +81,7 @@
         <div class="race-header" data-venue="{{ race.venue }}">
             <div class="d-flex justify-content-between align-items-center">
                 {% if prev_race %}
-                    <a href="{{ url_for('race_detail', race_id=prev_race.id) }}" class="nav-btn">
+                    <a href="{{ url_for('race', race_id=prev_race.id) }}" class="nav-btn">
                         <i class="fas fa-chevron-left"></i> 前のレース
                     </a>
                 {% else %}
@@ -99,7 +99,7 @@
                 </div>
 
                 {% if next_race %}
-                    <a href="{{ url_for('race_detail', race_id=next_race.id) }}" class="nav-btn">
+                    <a href="{{ url_for('race', race_id=next_race.id) }}" class="nav-btn">
                         次のレース <i class="fas fa-chevron-right"></i>
                     </a>
                 {% else %}
