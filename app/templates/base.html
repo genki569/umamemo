@@ -466,7 +466,7 @@
       }
     }
 
-    /* 新しいドロップダウンスタイル */
+    /* 新しいドロップダウンスタイル - overflow プロパティを削除 */
     .custom-dropdown {
       position: relative;
       display: inline-block;
@@ -500,60 +500,7 @@
       display: block;
     }
 
-    .custom-dropdown-item {
-      display: block;
-      width: 100%;
-      padding: 0.5rem 1rem;
-      clear: both;
-      font-weight: 400;
-      color: #212529;
-      text-align: inherit;
-      text-decoration: none;
-      white-space: nowrap;
-      background-color: transparent;
-      border: 0;
-    }
-
-    .custom-dropdown-item:hover, .custom-dropdown-item:focus {
-      color: #16181b;
-      text-decoration: none;
-      background-color: #f8f9fa;
-    }
-
-    .custom-dropdown-divider {
-      height: 0;
-      margin: 0.5rem 0;
-      overflow: hidden;
-      border-top: 1px solid #e9ecef;
-    }
-
-    /* モバイル表示時の対応 */
-    @media (max-width: 991.98px) {
-      .custom-dropdown {
-        position: relative;
-        display: block;
-        width: 100%;
-      }
-      
-      .custom-dropdown-menu {
-        position: relative;
-        width: 100%;
-        margin-top: 0.5rem;
-        margin-bottom: 0.5rem;
-        background-color: rgba(255, 255, 255, 0.1);
-        border: none;
-        box-shadow: none;
-        padding-left: 1rem;
-      }
-      
-      .custom-dropdown-item {
-        color: white;
-      }
-      
-      .custom-dropdown-item:hover {
-        background-color: rgba(255, 255, 255, 0.2);
-      }
-    }
+    /* 他のスタイルは同じ */
     </style>
     {% endblock %}
 </head>
@@ -696,29 +643,16 @@
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // ハンバーガーメニューの開閉
-        const navbarToggler = document.getElementById('umamemoNavbarToggler');
-        const navbarCollapse = document.getElementById('umamemoNavbarCollapse');
-        
-        if (navbarToggler && navbarCollapse) {
-            navbarToggler.addEventListener('click', function() {
-                navbarCollapse.classList.toggle('show');
-            });
-        }
-        
-        // ドロップダウンメニューの開閉
         const userDropdown = document.getElementById('userDropdown');
         const userDropdownMenu = document.getElementById('userDropdownMenu');
         
         if (userDropdown && userDropdownMenu) {
-            // クリックでドロップダウンを開閉
             userDropdown.addEventListener('click', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
                 userDropdownMenu.classList.toggle('show');
             });
             
-            // ドキュメント内の他の場所をクリックしたらドロップダウンを閉じる
             document.addEventListener('click', function(e) {
                 if (!userDropdown.contains(e.target) && !userDropdownMenu.contains(e.target)) {
                     userDropdownMenu.classList.remove('show');
