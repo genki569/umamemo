@@ -587,7 +587,7 @@
         const navbarToggler = document.getElementById('umamemoNavbarToggler');
         const navbarCollapse = document.getElementById('umamemoNavbarCollapse');
         
-        if (navbarToggler) {
+        if (navbarToggler && navbarCollapse) {
             navbarToggler.addEventListener('click', function() {
                 navbarCollapse.classList.toggle('show');
             });

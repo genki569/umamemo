@@ -522,7 +522,7 @@
     }
 }
 
-/* 天候アイコンのスイル */
+/* 天候アイコンのスタイル */
 .weather-icon {
     display: inline-flex;
     align-items: center;
@@ -1370,6 +1370,7 @@ p, h1, h2, h3, h4, h5, h6, span, a, div {
   border: 1px solid rgba(0, 0, 0, 0.15) !important;
   border-radius: 0.25rem !important;
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.175) !important;
+  display: none; /* 初期状態は非表示 */
 }
 
 .umamemo-dropdown-menu.show {
@@ -1420,5 +1421,15 @@ p, h1, h2, h3, h4, h5, h6, span, a, div {
     float: none !important;
     width: 100% !important;
     margin-top: 0.5rem !important;
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    border: none !important;
+  }
+  
+  .umamemo-dropdown-item {
+    color: white !important;
+  }
+  
+  .umamemo-dropdown-item:hover {
+    background-color: rgba(255, 255, 255, 0.2) !important;
   }
 }
