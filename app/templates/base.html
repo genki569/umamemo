@@ -651,20 +651,111 @@
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const userDropdown = document.getElementById('userDropdown');
-        const userDropdownMenu = document.getElementById('userDropdownMenu');
+        // ハンバーガーメニューの開閉
+        const navbarToggler = document.getElementById('umamemoNavbarToggler');
+        const navbarCollapse = document.getElementById('umamemoNavbarCollapse');
         
-        if (userDropdown && userDropdownMenu) {
+        if (navbarToggler && navbarCollapse) {
+            navbarToggler.addEventListener('click', function() {
+                navbarCollapse.classList.toggle('show');
+            });
+        }
+        
+        // 新しいドロップダウン実装
+        const userDropdown = document.getElementById('userDropdown');
+        
+        if (userDropdown) {
+            // クリックイベントを追加
             userDropdown.addEventListener('click', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
-                userDropdownMenu.classList.toggle('show');
-            });
-            
-            document.addEventListener('click', function(e) {
-                if (!userDropdown.contains(e.target) && !userDropdownMenu.contains(e.target)) {
-                    userDropdownMenu.classList.remove('show');
+                
+                // 既存のメニューを削除
+                const existingMenu = document.getElementById('userDropdownMenuPortal');
+                if (existingMenu) {
+                    document.body.removeChild(existingMenu);
+                    return;
                 }
+                
+                // ドロップダウンボタンの位置を取得
+                const rect = userDropdown.getBoundingClientRect();
+                
+                // 新しいメニュー要素を作成
+                const menu = document.createElement('div');
+                menu.id = 'userDropdownMenuPortal';
+                menu.className = 'portal-dropdown-menu';
+                menu.style.position = 'absolute';
+                menu.style.top = (rect.bottom + window.scrollY) + 'px';
+                menu.style.right = (window.innerWidth - rect.right) + 'px';
+                menu.style.zIndex = '99999';
+                menu.style.minWidth = '10rem';
+                menu.style.padding = '0.5rem 0';
+                menu.style.margin = '0.125rem 0 0';
+                menu.style.fontSize = '0.9rem';
+                menu.style.color = '#333';
+                menu.style.textAlign = 'left';
+                menu.style.backgroundColor = '#fff';
+                menu.style.backgroundClip = 'padding-box';
+                menu.style.border = '1px solid rgba(0, 0, 0, 0.15)';
+                menu.style.borderRadius = '0.25rem';
+                menu.style.boxShadow = '0 0.5rem 1rem rgba(0, 0, 0, 0.175)';
+                
+                // メニュー項目を追加
+                menu.innerHTML = `
+                    <a class="portal-dropdown-item" href="{{ url_for('mypage_home') }}">
+                        <i class="fas fa-user me-2"></i>マイページ
+                    </a>
+                    <a class="portal-dropdown-item" href="{{ url_for('user_settings') }}">
+                        <i class="fas fa-cog me-2"></i>設定
+                    </a>
+                    <div class="portal-dropdown-divider"></div>
+                    <a class="portal-dropdown-item" href="{{ url_for('logout') }}">
+                        <i class="fas fa-sign-out-alt me-2"></i>ログアウト
+                    </a>
+                `;
+                
+                // スタイルを追加
+                const style = document.createElement('style');
+                style.textContent = `
+                    .portal-dropdown-item {
+                        display: block;
+                        width: 100%;
+                        padding: 0.5rem 1rem;
+                        clear: both;
+                        font-weight: 400;
+                        color: #212529;
+                        text-align: inherit;
+                        text-decoration: none;
+                        white-space: nowrap;
+                        background-color: transparent;
+                        border: 0;
+                    }
+                    
+                    .portal-dropdown-item:hover {
+                        color: #16181b;
+                        text-decoration: none;
+                        background-color: #f8f9fa;
+                    }
+                    
+                    .portal-dropdown-divider {
+                        height: 0;
+                        margin: 0.5rem 0;
+                        overflow: hidden;
+                        border-top: 1px solid #e9ecef;
+                    }
+                `;
+                
+                // body直下に追加
+                document.body.appendChild(menu);
+                document.head.appendChild(style);
+                
+                // ドキュメントクリックでメニューを閉じる
+                document.addEventListener('click', function closeMenu(e) {
+                    if (!userDropdown.contains(e.target) && !menu.contains(e.target)) {
+                        document.body.removeChild(menu);
+                        document.removeEventListener('click', closeMenu);
+                    }
+                });
             });
         }
     });
