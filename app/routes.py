@@ -1687,12 +1687,17 @@ def mypage_settings():
             current_user.specialties = request.form.get('specialties', '')
             current_user.analysis_style = request.form.get('analysis_style', '')
             
+            # 通知設定の更新
+            user_settings.notification_race = 'notification_race' in request.form
+            user_settings.notification_memo = 'notification_memo' in request.form
+            user_settings.items_per_page = int(request.form.get('items_per_page', 10))
+            
             # プロフィール画像の処理
             if 'profile_image' in request.files and request.files['profile_image'].filename:
                 file = request.files['profile_image']
                 filename = secure_filename(file.filename)
                 # ファイル名にユーザーIDと現在時刻を追加して一意にする
-                unique_filename = f"{current_user.id}_{int(time.time())}_{filename}"
+                unique_filename = f"{current_user.id}_{int(datetime.utcnow().timestamp())}_{filename}"
                 file_path = os.path.join(app.config['UPLOAD_FOLDER'], 'profiles', unique_filename)
                 
                 # ディレクトリが存在しない場合は作成

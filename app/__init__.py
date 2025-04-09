@@ -12,6 +12,7 @@ import os
 app = Flask(__name__)
 app.config.from_object(Config)
 app.config['DEBUG'] = True
+app.config['UPLOAD_FOLDER'] = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static', 'uploads')
 
 # CSRF保護を最初に初期化
 csrf = CSRFProtect()
