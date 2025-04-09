@@ -1351,3 +1351,30 @@ p, h1, h2, h3, h4, h5, h6, span, a, div {
         padding: 1.5rem;
     }
 }
+
+/* ドロップダウンメニューを最前面に表示するためのスタイル */
+.umamemo-dropdown-menu {
+  position: absolute !important;
+  z-index: 99999 !important; /* 非常に高い値 */
+}
+
+.umamemo-dropdown-menu.show {
+  display: block !important;
+}
+
+/* メインコンテンツのz-indexを下げる */
+.container, .container-fluid, main, .umamemo-main {
+  z-index: 1 !important;
+}
+
+/* ヘッダーのz-indexを高くする */
+.umamemo-header {
+  z-index: 9000 !important;
+  position: relative !important;
+}
+
+/* ドロップダウンの親要素のz-indexも高くする */
+.umamemo-dropdown {
+  position: relative !important;
+  z-index: 10000 !important;
+}
