@@ -80,22 +80,31 @@ log "スクレイピングが完了しました"
 
 # CSVファイルの存在確認
 CSV_DIR="$APP_DIR/data/race_entries"
-# スクレイピングで生成された最新のCSVファイルを使用
-LATEST_CSV=$(ls -t "$CSV_DIR"/nar_race_entries_*.csv 2>/dev/null | head -1)
 
-if [ -z "$LATEST_CSV" ]; then
-    handle_error "CSVファイルが見つかりません"
-fi
+# 3日分の日付を計算
+TODAY=$(date '+%Y%m%d')
+YESTERDAY=$(date -d "yesterday" '+%Y%m%d')
+TOMORROW=$(date -d "tomorrow" '+%Y%m%d')
 
-log "最新のCSVファイルを使用します: $LATEST_CSV"
-
-# 2. CSVからデータベースへの保存
-log "データベースへの保存を開始します... ($LATEST_CSV)"
-python -m scripts.csv_shutuba "$LATEST_CSV"
-
-if [ $? -ne 0 ]; then
-    handle_error "データベースへの保存に失敗しました"
-fi
+# 3日分のCSVファイルを処理
+for DATE in $YESTERDAY $TODAY $TOMORROW
+do
+    CSV_FILE="$CSV_DIR/nar_race_entries_${DATE}.csv"
+    
+    # ファイルが存在するか確認
+    if [ -f "$CSV_FILE" ]; then
+        log "${DATE}のデータをデータベースに保存します..."
+        python -m scripts.csv_shutuba "$CSV_FILE"
+        
+        if [ $? -eq 0 ]; then
+            log "${DATE}のデータの保存が完了しました"
+        else
+            log "${DATE}のデータの保存でエラーが発生しました"
+        fi
+    else
+        log "${DATE}のCSVファイルが見つかりません: $CSV_FILE"
+    fi
+done
 
 # タイムアウトプロセスを終了
 kill $TIMEOUT_PID 2>/dev/null
@@ -103,6 +112,5 @@ kill $TIMEOUT_PID 2>/dev/null
 # ロックファイルを削除
 rm -f "$LOCK_FILE"
 
-log "データベースへの保存が完了しました"
 log "出走表データの更新が完了しました"
 exit 0 
