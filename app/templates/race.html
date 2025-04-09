@@ -78,7 +78,7 @@
         <a href="{{ url_for('race_review', race_id=race.id) }}" class="btn btn-primary">
             <i class="fas fa-edit"></i> レース回顧を書く
         </a>
-        <a href="{{ url_for('mypage_reviews') }}" class="btn btn-info">
+        <a href="{{ url_for('race_reviews', race_id=race.id) }}" class="btn btn-info">
             <i class="fas fa-list"></i> 回顧一覧を見る
         </a>
     </div>
