@@ -1,11 +1,157 @@
 {% extends "base.html" %}
 
-{% block title %}マイページ - {{ current_user.username }} - 馬メモ{% endblock %}
+{% block content %}
+<div class="container mypage-container">
+    <div class="row mypage-header">
+        <div class="col-md-12">
+            <h1 class="mypage-username">{{ current_user.username }}</h1>
+            <p class="mypage-email">{{ current_user.email }}</p>
+            <div class="mypage-stats">
+                <div class="mypage-stat">
+                    <i class="fas fa-star"></i>
+                    <span>{{ reviews_count if reviews_count is defined else 0 }} レビュー</span>
+                </div>
+                <div class="mypage-stat">
+                    <i class="fas fa-heart"></i>
+                    <span>{{ favorites_count if favorites_count is defined else 0 }} お気に入り馬</span>
+                </div>
+                <div class="mypage-stat">
+                    <i class="fas fa-trophy"></i>
+                    <span>{{ current_user.points if current_user.points is defined else 0 }} ポイント</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mypage-section">
+        <div class="col-md-12 mypage-section-header">
+            <h2 class="mypage-section-title">
+                <i class="fas fa-bell"></i> 通知
+            </h2>
+            <a href="{{ url_for('view_all_notifications') }}" class="mypage-list-action">すべて見る</a>
+        </div>
+        
+        {% if notifications %}
+        <div class="col-md-12 mypage-card">
+            <ul class="list-group mypage-list">
+                {% for notification in notifications %}
+                <li class="list-group-item mypage-list-item">
+                    <div class="mypage-list-icon">
+                        <i class="fas fa-bell"></i>
+                    </div>
+                    <div class="mypage-list-content">
+                        <div class="mypage-list-title">{{ notification.title }}</div>
+                        <div class="mypage-list-subtitle">{{ notification.created_at.strftime('%Y年%m月%d日 %H:%M') }}</div>
+                    </div>
+                    <a href="{{ url_for('notification_detail', notification_id=notification.id) }}" class="mypage-list-action">
+                        詳細
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% else %}
+        <div class="col-md-12 mypage-empty">
+            <i class="fas fa-bell-slash"></i>
+            <p>新しい通知はありません</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="row mypage-section">
+        <div class="col-md-12 mypage-section-header">
+            <h2 class="mypage-section-title">
+                <i class="fas fa-comment"></i> 最近のレビュー
+            </h2>
+            <span class="mypage-list-action">すべて見る</span>
+        </div>
+        
+        {% if recent_reviews %}
+        <div class="row mypage-grid">
+            {% for review in recent_reviews %}
+            <div class="col-md-4 mb-4">
+                <div class="card mypage-card">
+                    <div class="card-header mypage-card-header">
+                        <h3 class="card-title mypage-card-title">
+                            <i class="fas fa-horse"></i> {{ review.race.name }}
+                        </h3>
+                        <span class="mypage-list-subtitle">{{ review.created_at.strftime('%Y年%m月%d日') }}</span>
+                    </div>
+                    <div class="card-body mypage-card-body">
+                        <p>{{ review.content|truncate(100) }}</p>
+                    </div>
+                    <div class="card-footer mypage-card-footer">
+                        <a href="{{ url_for('review_detail', review_id=review.id) }}" class="mypage-list-action">
+                            詳細を見る
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="col-md-12 mypage-empty">
+            <i class="fas fa-comment-slash"></i>
+            <p>レビューはまだありません</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="row mypage-section">
+        <div class="col-md-12 mypage-section-header">
+            <h2 class="mypage-section-title">
+                <i class="fas fa-heart"></i> お気に入り馬
+            </h2>
+            <span class="mypage-list-action">すべて見る</span>
+        </div>
+        
+        {% if favorite_horses %}
+        <div class="row mypage-grid">
+            {% for horse in favorite_horses %}
+            <div class="col-md-4 mb-4">
+                <div class="card mypage-card">
+                    <div class="card-header mypage-card-header">
+                        <h3 class="card-title mypage-card-title">
+                            <i class="fas fa-horse"></i> {{ horse.name }}
+                        </h3>
+                    </div>
+                    <div class="card-body mypage-card-body">
+                        <div class="mypage-list-item">
+                            <div class="mypage-list-content">
+                                <div class="mypage-list-title">性別・年齢</div>
+                                <div class="mypage-list-subtitle">{{ horse.sex }} {{ horse.age }}歳</div>
+                            </div>
+                        </div>
+                        <div class="mypage-list-item">
+                            <div class="mypage-list-content">
+                                <div class="mypage-list-title">調教師</div>
+                                <div class="mypage-list-subtitle">{{ horse.trainer }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer mypage-card-footer">
+                        <a href="{{ url_for('horse_detail', horse_id=horse.id) }}" class="mypage-list-action">
+                            詳細を見る
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="col-md-12 mypage-empty">
+            <i class="fas fa-heart-broken"></i>
+            <p>お気に入りの馬はまだありません</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
 
 {% block styles %}
 {{ super() }}
 <style>
-/* マイページ専用スタイル - 既存の構造を維持しつつおしゃれに */
+/* マイページ専用スタイル */
 .mypage-container {
   max-width: 1200px;
   margin: 0 auto;
@@ -13,8 +159,6 @@
 }
 
 .mypage-header {
-  display: flex;
-  align-items: center;
   margin-bottom: 2.5rem;
   padding-bottom: 1.5rem;
   border-bottom: 1px solid rgba(79, 70, 229, 0.2);
@@ -22,24 +166,6 @@
   border-radius: 1rem;
   padding: 1.5rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-}
-
-.mypage-avatar {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  background-color: #4F46E5;
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 2.5rem;
-  margin-right: 1.5rem;
-  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
-}
-
-.mypage-user-info {
-  flex: 1;
 }
 
 .mypage-username {
@@ -59,6 +185,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 1.5rem;
+  margin-top: 1rem;
 }
 
 .mypage-stat {
@@ -112,6 +239,7 @@
   overflow: hidden;
   transition: transform 0.3s, box-shadow 0.3s;
   margin-bottom: 1rem;
+  border: none;
 }
 
 .mypage-card:hover {
@@ -125,6 +253,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  background-color: white;
 }
 
 .mypage-card-title {
@@ -143,6 +272,7 @@
   background-color: #F8FAFC;
   display: flex;
   justify-content: flex-end;
+  border-top: none;
 }
 
 .mypage-list {
@@ -205,6 +335,9 @@
   text-align: center;
   padding: 3rem 1rem;
   color: #94A3B8;
+  background-color: white;
+  border-radius: 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 .mypage-empty i {
@@ -214,217 +347,16 @@
 }
 
 .mypage-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1.5rem;
+  margin-left: 0;
+  margin-right: 0;
 }
 
 /* レスポンシブ対応 */
 @media (max-width: 768px) {
-  .mypage-header {
-    flex-direction: column;
-    text-align: center;
-  }
-  
-  .mypage-avatar {
-    margin-right: 0;
-    margin-bottom: 1rem;
-  }
-  
   .mypage-stats {
-    justify-content: center;
-  }
-  
-  .mypage-grid {
-    grid-template-columns: 1fr;
+    flex-direction: column;
+    gap: 0.5rem;
   }
 }
 </style>
-{% endblock %}
-
-{% block content %}
-<div class="dashboard-container mypage-container">
-    <!-- メインビジュアル -->
-    <div class="main-visual mypage-header" data-aos="fade-down">
-        <div class="profile-banner">
-            <div class="profile-info">
-                <div class="profile-image-wrapper mypage-avatar">
-                    {% if current_user.profile_image %}
-                        <img src="{{ current_user.profile_image }}" alt="プロフィール" class="profile-image">
-                    {% else %}
-                        <div class="profile-image-placeholder">
-                            <i class="fas fa-user"></i>
-                        </div>
-                    {% endif %}
-                </div>
-                <div class="profile-text mypage-user-info">
-                    <h1 class="mypage-username">{{ current_user.username }}</h1>
-                    {% if current_user.is_premium %}
-                        <div class="premium-badge">
-                            <i class="fas fa-crown"></i> Premium Member
-                        </div>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- クイックステータス -->
-    <div class="quick-stats" data-aos="fade-up">
-        <div class="stat-card points">
-            <div class="stat-icon">
-                <i class="fas fa-coins"></i>
-            </div>
-            <div class="stat-content">
-                <h3>{{ current_user.point_balance }}</h3>
-                <p>ポイント</p>
-            </div>
-        </div>
-        <div class="stat-card reviews">
-            <div class="stat-icon">
-                <i class="fas fa-star"></i>
-            </div>
-            <div class="stat-content">
-                <h3>{{ current_user.reviews.count() }}</h3>
-                <p>レビュー</p>
-            </div>
-        </div>
-        <div class="stat-card favorites">
-            <div class="stat-icon">
-                <i class="fas fa-heart"></i>
-            </div>
-            <div class="stat-content">
-                <h3>{{ current_user.favorite_horses.count() }}</h3>
-                <p>お気に入り馬</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- メインコンテンツ -->
-    <div class="dashboard-grid">
-        <!-- 通知セクション -->
-        <div class="notification-section mypage-section">
-            <div class="section-header mypage-section-header">
-                <h2 class="section-title mypage-section-title">
-                    <i class="fas fa-bell"></i> 通知
-                </h2>
-                <a href="{{ url_for('view_all_notifications') }}" class="view-all mypage-list-action">すべて見る</a>
-            </div>
-            
-            {% if notifications %}
-            <div class="notification-list mypage-card">
-                <div class="card-body mypage-card-body">
-                    <ul class="list-group">
-                        {% for notification in notifications %}
-                        <li class="list-group-item mypage-list-item">
-                            <div class="notification-icon mypage-list-icon">
-                                <i class="fas fa-bell"></i>
-                            </div>
-                            <div class="notification-content mypage-list-content">
-                                <div class="notification-title mypage-list-title">{{ notification.title }}</div>
-                                <div class="notification-date mypage-list-subtitle">{{ notification.created_at.strftime('%Y年%m月%d日 %H:%M') }}</div>
-                            </div>
-                            <a href="{{ url_for('notification_detail', notification_id=notification.id) }}" class="btn btn-sm btn-primary mypage-list-action">
-                                詳細
-                            </a>
-                        </li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            </div>
-            {% else %}
-            <div class="empty-state mypage-empty">
-                <i class="fas fa-bell-slash"></i>
-                <p>新しい通知はありません</p>
-            </div>
-            {% endif %}
-        </div>
-
-        <!-- 最近のレビューセクション -->
-        <div class="reviews-section mypage-section">
-            <div class="section-header mypage-section-header">
-                <h2 class="section-title mypage-section-title">
-                    <i class="fas fa-comment"></i> 最近のレビュー
-                </h2>
-                <span class="view-all mypage-list-action">すべて見る</span>
-            </div>
-            
-            {% if recent_reviews %}
-            <div class="row mypage-grid">
-                {% for review in recent_reviews %}
-                <div class="col-md-6 col-lg-4 mb-4">
-                    <div class="card mypage-card">
-                        <div class="card-header mypage-card-header">
-                            <h3 class="card-title mypage-card-title">
-                                <i class="fas fa-horse"></i> {{ review.race.name }}
-                            </h3>
-                            <span class="review-date mypage-list-subtitle">{{ review.created_at.strftime('%Y年%m月%d日') }}</span>
-                        </div>
-                        <div class="card-body mypage-card-body">
-                            <p>{{ review.content|truncate(100) }}</p>
-                        </div>
-                        <div class="card-footer mypage-card-footer">
-                            <a href="{{ url_for('review_detail', review_id=review.id) }}" class="btn btn-sm btn-outline-primary mypage-list-action">
-                                詳細を見る
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-            {% else %}
-            <div class="empty-state mypage-empty">
-                <i class="fas fa-comment-slash"></i>
-                <p>レビューはまだありません</p>
-            </div>
-            {% endif %}
-        </div>
-
-        <!-- お気に入り馬セクション -->
-        <div class="favorites-section mypage-section">
-            <div class="section-header mypage-section-header">
-                <h2 class="section-title mypage-section-title">
-                    <i class="fas fa-heart"></i> お気に入り馬
-                </h2>
-                <span class="view-all mypage-list-action">すべて見る</span>
-            </div>
-            
-            {% if favorite_horses %}
-            <div class="row mypage-grid">
-                {% for horse in favorite_horses %}
-                <div class="col-md-6 col-lg-4 mb-4">
-                    <div class="card mypage-card">
-                        <div class="card-header mypage-card-header">
-                            <h3 class="card-title mypage-card-title">
-                                <i class="fas fa-horse"></i> {{ horse.name }}
-                            </h3>
-                        </div>
-                        <div class="card-body mypage-card-body">
-                            <div class="horse-detail mypage-list-item">
-                                <div class="detail-label mypage-list-title">性別・年齢</div>
-                                <div class="detail-value mypage-list-subtitle">{{ horse.sex }} {{ horse.age }}歳</div>
-                            </div>
-                            <div class="horse-detail mypage-list-item">
-                                <div class="detail-label mypage-list-title">調教師</div>
-                                <div class="detail-value mypage-list-subtitle">{{ horse.trainer }}</div>
-                            </div>
-                        </div>
-                        <div class="card-footer mypage-card-footer">
-                            <a href="{{ url_for('horse_detail', horse_id=horse.id) }}" class="btn btn-sm btn-outline-primary mypage-list-action">
-                                詳細を見る
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-            {% else %}
-            <div class="empty-state mypage-empty">
-                <i class="fas fa-heart-broken"></i>
-                <p>お気に入りの馬はまだありません</p>
-            </div>
-            {% endif %}
-        </div>
-    </div>
-</div>
 {% endblock %} 
