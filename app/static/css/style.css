@@ -1369,12 +1369,94 @@ p, h1, h2, h3, h4, h5, h6, span, a, div {
 
 /* ヘッダーのz-indexを高くする */
 .umamemo-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
   z-index: 9000 !important;
-  position: relative !important;
+  background: linear-gradient(135deg, #4F46E5 0%, #8B5CF6 100%);
+  box-shadow: 0 4px 20px rgba(79, 70, 229, 0.2);
+  max-height: 60px; /* ヘッダーの高さを固定 */
+  overflow: visible; /* ドロップダウンメニューを表示するため */
 }
 
-/* ドロップダウンの親要素のz-indexも高くする */
-.umamemo-dropdown {
-  position: relative !important;
-  z-index: 10000 !important;
+/* ナビゲーションの修正 */
+.umamemo-navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  height: 60px; /* ヘッダーと同じ高さ */
+}
+
+/* メインコンテンツの修正 */
+.umamemo-main, main, .container, .container-fluid {
+  margin-top: 60px; /* ヘッダーの高さ分だけ上部にマージンを追加 */
+  padding-top: 1rem;
+}
+
+/* ドロップダウンメニューの修正 */
+.umamemo-dropdown-menu {
+  position: absolute !important;
+  top: 100% !important;
+  right: 0 !important;
+  z-index: 99999 !important;
+  max-height: calc(100vh - 70px); /* ビューポートの高さからヘッダー+余白を引いた高さ */
+  overflow-y: auto; /* 必要に応じてスクロール */
+}
+
+/* ヘッダー内のナビゲーションリンク */
+.umamemo-nav {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.umamemo-nav-item {
+  margin: 0 0.5rem;
+}
+
+.umamemo-nav-link {
+  color: white;
+  text-decoration: none;
+  padding: 0.5rem;
+  display: block;
+  white-space: nowrap;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 991.98px) {
+  .umamemo-navbar-collapse {
+    position: absolute;
+    top: 60px; /* ヘッダーの高さ */
+    left: 0;
+    right: 0;
+    background: white;
+    z-index: 9999;
+    padding: 1rem;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    max-height: calc(100vh - 60px);
+    overflow-y: auto;
+    display: none;
+  }
+  
+  .umamemo-navbar-collapse.show {
+    display: block !important;
+  }
+  
+  .umamemo-nav {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .umamemo-nav-item {
+    margin: 0.5rem 0;
+  }
+  
+  .umamemo-nav-link {
+    color: var(--secondary-color) !important;
+    padding: 0.5rem 0;
+  }
 }
