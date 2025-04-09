@@ -465,6 +465,95 @@
         color: #212529 !important;
       }
     }
+
+    /* 新しいドロップダウンスタイル */
+    .custom-dropdown {
+      position: relative;
+      display: inline-block;
+    }
+
+    .custom-dropdown-toggle {
+      cursor: pointer;
+    }
+
+    .custom-dropdown-menu {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      z-index: 99999;
+      min-width: 10rem;
+      padding: 0.5rem 0;
+      margin: 0.125rem 0 0;
+      font-size: 0.9rem;
+      color: #333;
+      text-align: left;
+      list-style: none;
+      background-color: #fff;
+      background-clip: padding-box;
+      border: 1px solid rgba(0, 0, 0, 0.15);
+      border-radius: 0.25rem;
+      box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.175);
+      display: none;
+    }
+
+    .custom-dropdown-menu.show {
+      display: block;
+    }
+
+    .custom-dropdown-item {
+      display: block;
+      width: 100%;
+      padding: 0.5rem 1rem;
+      clear: both;
+      font-weight: 400;
+      color: #212529;
+      text-align: inherit;
+      text-decoration: none;
+      white-space: nowrap;
+      background-color: transparent;
+      border: 0;
+    }
+
+    .custom-dropdown-item:hover, .custom-dropdown-item:focus {
+      color: #16181b;
+      text-decoration: none;
+      background-color: #f8f9fa;
+    }
+
+    .custom-dropdown-divider {
+      height: 0;
+      margin: 0.5rem 0;
+      overflow: hidden;
+      border-top: 1px solid #e9ecef;
+    }
+
+    /* モバイル表示時の対応 */
+    @media (max-width: 991.98px) {
+      .custom-dropdown {
+        position: relative;
+        display: block;
+        width: 100%;
+      }
+      
+      .custom-dropdown-menu {
+        position: relative;
+        width: 100%;
+        margin-top: 0.5rem;
+        margin-bottom: 0.5rem;
+        background-color: rgba(255, 255, 255, 0.1);
+        border: none;
+        box-shadow: none;
+        padding-left: 1rem;
+      }
+      
+      .custom-dropdown-item {
+        color: white;
+      }
+      
+      .custom-dropdown-item:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+      }
+    }
     </style>
     {% endblock %}
 </head>
@@ -503,19 +592,19 @@
                         
                         <ul class="umamemo-nav">
                     {% if current_user.is_authenticated %}
-                            <li class="umamemo-nav-item umamemo-dropdown">
-                                <a href="#" class="umamemo-nav-link umamemo-dropdown-toggle" id="userDropdown">
+                            <li class="umamemo-nav-item custom-dropdown">
+                                <a href="#" class="umamemo-nav-link custom-dropdown-toggle" id="userDropdown">
                                     <i class="fas fa-user-circle me-1"></i>{{ current_user.username }}
                                 </a>
-                                <div class="umamemo-dropdown-menu" id="userDropdownMenu">
-                                    <a class="umamemo-dropdown-item" href="{{ url_for('mypage_home') }}">
+                                <div class="custom-dropdown-menu" id="userDropdownMenu">
+                                    <a class="custom-dropdown-item" href="{{ url_for('mypage_home') }}">
                                         <i class="fas fa-user me-2"></i>マイページ
                                     </a>
-                                    <a class="umamemo-dropdown-item" href="{{ url_for('user_settings') }}">
+                                    <a class="custom-dropdown-item" href="{{ url_for('user_settings') }}">
                                         <i class="fas fa-cog me-2"></i>設定
                                     </a>
-                                    <div class="umamemo-dropdown-divider"></div>
-                                    <a class="umamemo-dropdown-item" href="{{ url_for('logout') }}">
+                                    <div class="custom-dropdown-divider"></div>
+                                    <a class="custom-dropdown-item" href="{{ url_for('logout') }}">
                                         <i class="fas fa-sign-out-alt me-2"></i>ログアウト
                                     </a>
                                 </div>
@@ -626,14 +715,6 @@
             userDropdown.addEventListener('click', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
-                
-                // 他のすべてのドロップダウンを閉じる
-                document.querySelectorAll('.umamemo-dropdown-menu.show').forEach(function(menu) {
-                    if (menu !== userDropdownMenu) {
-                        menu.classList.remove('show');
-                    }
-                });
-                
                 userDropdownMenu.classList.toggle('show');
             });
             
