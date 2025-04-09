@@ -4,8 +4,7 @@
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     background: #ffffff !important;
     border-bottom: 1px solid rgba(229, 231, 235, 0.5);
-    z-index: 1000;
-    position: relative;
+    z-index: 1030;
 }
 
 .navbar.scrolled {
@@ -245,7 +244,7 @@
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     border-radius: 12px;
     padding: 1rem 0;
-    z-index: 1001;
+    z-index: 1031;
 }
 
 /* フッターのレイアウト修正 */
@@ -948,8 +947,6 @@ html, body {
     padding-left: 15px;
     padding-right: 15px;
     overflow-x: hidden;
-    position: relative;
-    z-index: 1;
 }
 
 /* すべての要素が画面幅を超えないようにする */

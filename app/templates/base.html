@@ -436,14 +436,6 @@
     .umamemo-fade-in {
       animation: fadeIn 0.5s ease forwards;
     }
-
-    .dropdown-menu {
-        z-index: 1001 !important;
-    }
-    .container, .container-fluid {
-        position: relative;
-        z-index: 1;
-    }
     </style>
     {% endblock %}
 </head>
@@ -451,15 +443,15 @@
     <!-- 馬メモヘッダー -->
     <header class="umamemo-header">
         <div class="container">
-            <nav class="navbar navbar-expand-lg navbar-dark bg-primary" style="position: relative; z-index: 1000;">
-                <div class="container-fluid">
+            <nav class="umamemo-navbar">
+                <div class="d-flex justify-content-between align-items-center w-100">
                     <a class="umamemo-brand" href="{{ url_for('index') }}">
                         <i class="fas fa-horse-head"></i>馬メモ
                     </a>
                     
                     <button class="umamemo-navbar-toggler d-lg-none" type="button" id="umamemoNavbarToggler">
                         <span class="umamemo-navbar-toggler-icon"></span>
-                    </button>
+            </button>
 
                     <div class="umamemo-navbar-collapse d-lg-flex" id="umamemoNavbarCollapse">
                         <ul class="umamemo-nav me-auto">
