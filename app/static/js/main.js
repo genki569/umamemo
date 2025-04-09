@@ -485,6 +485,48 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('Document height:', document.body.offsetHeight);
     console.log('Window height:', window.innerHeight);
     console.log('Visible elements:', document.querySelectorAll('*:not([style*="display: none"])').length);
+
+    // ユーザーメニューをモーダルとして表示
+    const userDropdown = document.getElementById('userDropdown');
+    const userDropdownMenu = document.getElementById('userDropdownMenu');
+    
+    if (userDropdown && userDropdownMenu) {
+        // モーダルスタイルを適用
+        userDropdownMenu.style.position = 'fixed';
+        userDropdownMenu.style.zIndex = '99999';
+        userDropdownMenu.style.backgroundColor = '#fff';
+        userDropdownMenu.style.boxShadow = '0 0 10px rgba(0,0,0,0.2)';
+        userDropdownMenu.style.borderRadius = '5px';
+        userDropdownMenu.style.padding = '10px';
+        
+        userDropdown.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // ドロップダウンボタンの位置を取得
+            const rect = userDropdown.getBoundingClientRect();
+            
+            // モーダルの位置を設定
+            userDropdownMenu.style.top = (rect.bottom + window.scrollY) + 'px';
+            userDropdownMenu.style.right = (window.innerWidth - rect.right) + 'px';
+            
+            // 表示/非表示を切り替え
+            if (userDropdownMenu.classList.contains('show')) {
+                userDropdownMenu.classList.remove('show');
+                userDropdownMenu.style.display = 'none';
+            } else {
+                userDropdownMenu.classList.add('show');
+                userDropdownMenu.style.display = 'block';
+            }
+        });
+        
+        // ドロップダウン外クリックで閉じる
+        document.addEventListener('click', function(e) {
+            if (!userDropdown.contains(e.target) && !userDropdownMenu.contains(e.target)) {
+                userDropdownMenu.classList.remove('show');
+                userDropdownMenu.style.display = 'none';
+            }
+        });
+    }
 });
 
 // 日付ナビゲーション関数
