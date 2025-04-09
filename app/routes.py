@@ -27,6 +27,8 @@ import stripe
 import shutil
 from calendar import monthrange
 import logging
+import time
+import os
 
 # カスタムコレータの定義（ファイルの先頭付近に配置）
 def custom_login_required(f):
@@ -1664,26 +1666,19 @@ def remove_favorite(horse_id):
 @app.route('/mypage/settings', methods=['GET', 'POST'])
 @login_required
 def mypage_settings():
-    if request.method == 'POST':
-        try:
-            # デバッグ出力を追加
-            app.logger.info(f"Form data: {request.form}")
-            app.logger.info(f"Files: {request.files}")
-
-            # プロフィール画像の処理
-            if 'profile_image' in request.files:
-                file = request.files['profile_image']
-                if file and file.filename:
-                    try:
-                        filename = secure_filename(file.filename)
-                        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-                        file.save(filepath)
-                        current_user.profile_image = url_for('static', filename=f'uploads/{filename}')
-                        app.logger.info(f"Image saved: {filepath}")
-                    except Exception as e:
-                        app.logger.error(f"Error saving image: {str(e)}")
-
-            # プロフィー情報の更新
+    """ユーザー設定ページを表示"""
+    try:
+        # ユーザー設定を取得
+        user_settings = UserSettings.query.filter_by(user_id=current_user.id).first()
+        
+        # 設定が存在しない場合は作成
+        if not user_settings:
+            user_settings = UserSettings(user_id=current_user.id)
+            db.session.add(user_settings)
+            db.session.commit()
+            
+        if request.method == 'POST':
+            # フォームからデータを取得
             current_user.introduction = request.form.get('introduction', '')
             current_user.twitter = request.form.get('twitter', '')
             current_user.note = request.form.get('note', '')
@@ -1691,30 +1686,35 @@ def mypage_settings():
             current_user.youtube = request.form.get('youtube', '')
             current_user.specialties = request.form.get('specialties', '')
             current_user.analysis_style = request.form.get('analysis_style', '')
-
-            # 変更を確認
-            app.logger.info(f"Updated user data: {current_user.__dict__}")
-
-            db.session.add(current_user)  # 明示的にセッションに追加
+            
+            # プロフィール画像の処理
+            if 'profile_image' in request.files and request.files['profile_image'].filename:
+                file = request.files['profile_image']
+                filename = secure_filename(file.filename)
+                # ファイル名にユーザーIDと現在時刻を追加して一意にする
+                unique_filename = f"{current_user.id}_{int(time.time())}_{filename}"
+                file_path = os.path.join(app.config['UPLOAD_FOLDER'], 'profiles', unique_filename)
+                
+                # ディレクトリが存在しない場合は作成
+                os.makedirs(os.path.dirname(file_path), exist_ok=True)
+                
+                # ファイルを保存
+                file.save(file_path)
+                
+                # データベースに保存するパスを設定
+                current_user.profile_image = f"/static/uploads/profiles/{unique_filename}"
+            
+            # 変更を保存
             db.session.commit()
-            app.logger.info("Database committed successfully")
-            flash('プロールを更しました', 'success')
             
-            # 更新後のデータを確認
-            app.logger.info(f"Saved user data: {current_user.introduction}, {current_user.twitter}, {current_user.note}")
-            
-        except Exception as e:
-            db.session.rollback()
-            app.logger.error(f"Error saving settings: {str(e)}")
-            flash('設定の保存に失しました', 'error')
+            flash('プロフィールを更新しました', 'success')
+            return redirect(url_for('mypage_settings'))
         
-        return redirect(url_for('mypage_settings'))
-
-    # GETリクエスト時のデータを確認
-    app.logger.info(f"Current user data: {current_user.introduction}, {current_user.twitter}, {current_user.note}")
-    return render_template('mypage/settings.html', 
-                         title='設定',
-                         user=current_user)
+        return render_template('mypage/settings.html', settings=user_settings)
+    except Exception as e:
+        app.logger.error(f"Error in mypage_settings: {str(e)}")
+        flash('設定の取得中にエラーが発生しました', 'error')
+        return redirect(url_for('mypage_home'))
 
 
 # プレミアム機能へのリダイレト
