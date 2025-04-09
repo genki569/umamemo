@@ -3745,19 +3745,28 @@ def user_settings():
         if request.method == 'POST':
             data = request.get_json()
             
-            # ユーザー設定を取得または作成
-            user_settings = UserSettings.query.filter_by(user_id=current_user.id).first()
-            if not user_settings:
-                user_settings = UserSettings(user_id=current_user.id)
-                db.session.add(user_settings)
-            
-            # 設定を更新
+            # 設定をJSONとして保存
+            settings_json = {}
             if 'notification_enabled' in data:
-                user_settings.notification_enabled = data['notification_enabled']
+                settings_json['notification_enabled'] = data['notification_enabled']
             if 'email_notification' in data:
-                user_settings.email_notification = data['email_notification']
+                settings_json['email_notification'] = data['email_notification']
             if 'theme' in data:
-                user_settings.theme = data['theme']
+                settings_json['theme'] = data['theme']
+            
+            # ユーザーの設定を更新
+            user = User.query.get(current_user.id)
+            if not hasattr(user, 'preferences') or user.preferences is None:
+                user.preferences = json.dumps(settings_json)
+            else:
+                # 既存の設定をマージ
+                try:
+                    existing_settings = json.loads(user.preferences)
+                    existing_settings.update(settings_json)
+                    user.preferences = json.dumps(existing_settings)
+                except (json.JSONDecodeError, TypeError):
+                    # 既存の設定が無効な場合は上書き
+                    user.preferences = json.dumps(settings_json)
             
             db.session.commit()
             
@@ -3766,22 +3775,27 @@ def user_settings():
                 'message': '設定が更新されました'
             })
         else:
-            # 設定を取得
-            user_settings = UserSettings.query.filter_by(user_id=current_user.id).first()
+            # ユーザーの設定を取得
+            user = User.query.get(current_user.id)
+            default_settings = {
+                'notification_enabled': True,
+                'email_notification': True,
+                'theme': 'light'
+            }
             
-            if not user_settings:
-                # デフォルト設定を返す
-                return jsonify({
-                    'notification_enabled': True,
-                    'email_notification': True,
-                    'theme': 'light'
-                })
+            if not hasattr(user, 'preferences') or user.preferences is None:
+                return jsonify(default_settings)
             
-            return jsonify({
-                'notification_enabled': user_settings.notification_enabled,
-                'email_notification': user_settings.email_notification,
-                'theme': user_settings.theme
-            })
+            try:
+                user_settings = json.loads(user.preferences)
+                # デフォルト設定とマージ
+                for key, value in default_settings.items():
+                    if key not in user_settings:
+                        user_settings[key] = value
+                return jsonify(user_settings)
+            except (json.JSONDecodeError, TypeError):
+                return jsonify(default_settings)
+            
     except Exception as e:
         app.logger.error(f"Error in user settings: {str(e)}")
         return jsonify({
