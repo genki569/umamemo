@@ -56,9 +56,9 @@
       background: linear-gradient(135deg, #4F46E5 0%, #8B5CF6 100%);
       box-shadow: 0 4px 20px rgba(79, 70, 229, 0.2);
       color: white;
-      position: relative;
-      z-index: 9000;
-      overflow: visible !important;
+      position: relative !important;
+      z-index: 9000 !important;
+      overflow: visible !important; /* ヘッダーからはみ出すことを許可 */
       max-height: none !important;
       height: auto !important;
       padding: 0.5rem 0;
@@ -188,8 +188,6 @@
     /* ドロップダウンメニュー */
     .umamemo-dropdown {
       position: relative !important;
-      display: inline-block;
-      z-index: 10000 !important;
     }
 
     .umamemo-dropdown-toggle {
@@ -225,13 +223,14 @@
       border: 1px solid rgba(0, 0, 0, 0.15) !important;
       border-radius: 0.25rem !important;
       box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.175) !important;
-      display: none !important;
+      display: none !important; /* 初期状態は非表示 */
+      transform: none !important; /* 変形を無効化 */
+      transition: none !important; /* トランジションを無効化 */
       max-height: none !important; /* 高さ制限を解除 */
       overflow: visible !important; /* スクロールを無効化 */
-      transform: none !important;
-      transition: none !important;
     }
 
+    /* ドロップダウンメニューが表示されたときのスタイル */
     .umamemo-dropdown-menu.show {
       display: block !important;
     }
@@ -620,21 +619,19 @@
             });
         }
         
-        // ドロップダウンメニューの処理
+        // ドロップダウンメニューの開閉
         const userDropdown = document.getElementById('userDropdown');
         const userDropdownMenu = document.getElementById('userDropdownMenu');
         
         if (userDropdown && userDropdownMenu) {
-            // クリックイベントの処理
+            // クリックでドロップダウンを開閉
             userDropdown.addEventListener('click', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
-                
-                // 表示/非表示を切り替え
                 userDropdownMenu.classList.toggle('show');
             });
             
-            // 画面上の他の場所をクリックしたときにドロップダウンを閉じる
+            // ドキュメント内の他の場所をクリックしたらドロップダウンを閉じる
             document.addEventListener('click', function(e) {
                 if (!userDropdown.contains(e.target) && !userDropdownMenu.contains(e.target)) {
                     userDropdownMenu.classList.remove('show');
