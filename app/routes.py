@@ -1411,10 +1411,22 @@ def race_review(race_id):
         
     return render_template('race_review.html', race=race, review=review)
 
-@app.route('/races/<int:race_id>/reviews')
+@app.route('/races/<race_id>/reviews')
 def race_reviews(race_id):
     race = Race.query.get_or_404(race_id)
-    reviews = RaceReview.query.filter_by(race_id=race_id).order_by(RaceReview.created_at.desc()).all()
+    
+    # race_idを整数型に変換
+    race_id_int = int(race_id)
+    
+    # デバッグログを追加
+    app.logger.info(f"Fetching reviews for race {race_id_int}")
+    
+    # レビューを取得 - 整数型のrace_idを使用
+    reviews = RaceReview.query.filter_by(race_id=race_id_int).all()
+    
+    # デバッグ用にレビュー数をログに出力
+    app.logger.info(f"Found {len(reviews)} reviews for race {race_id_int}")
+    
     return render_template('race_reviews.html', race=race, reviews=reviews)
 
 @app.route('/reviews', methods=['GET'])
