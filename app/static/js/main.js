@@ -442,25 +442,35 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         // ドロップダウンメニューの動作修正
-        const dropdownToggles = document.querySelectorAll('.dropdown-toggle');
-        dropdownToggles.forEach(toggle => {
+        const dropdownToggles = document.querySelectorAll('.umamemo-dropdown-toggle');
+        dropdownToggles.forEach(function(toggle) {
             toggle.addEventListener('click', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
                 
-                const dropdownMenu = this.nextElementSibling;
-                if (dropdownMenu) {
-                    // 他のドロップダウンを閉じる
-                    document.querySelectorAll('.dropdown-menu.show').forEach(menu => {
-                        if (menu !== dropdownMenu) {
-                            menu.classList.remove('show');
-                        }
-                    });
-                    
-                    // このドロップダウンをトグル
-                    dropdownMenu.classList.toggle('show');
-                }
+                // 対応するドロップダウンメニューを取得
+                const parent = this.closest('.umamemo-dropdown');
+                const menu = parent.querySelector('.umamemo-dropdown-menu');
+                
+                // 他のすべてのドロップダウンを閉じる
+                document.querySelectorAll('.umamemo-dropdown-menu.show').forEach(function(openMenu) {
+                    if (openMenu !== menu) {
+                        openMenu.classList.remove('show');
+                    }
+                });
+                
+                // このドロップダウンの表示を切り替え
+                menu.classList.toggle('show');
             });
+        });
+        
+        // ドキュメント内の他の場所をクリックしたらすべてのドロップダウンを閉じる
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.umamemo-dropdown')) {
+                document.querySelectorAll('.umamemo-dropdown-menu.show').forEach(function(menu) {
+                    menu.classList.remove('show');
+                });
+            }
         });
     }
 

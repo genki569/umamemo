@@ -78,8 +78,8 @@
     .umamemo-navbar {
       padding: 0.8rem 0;
       transition: var(--transition);
-      position: relative;
-      z-index: 9000;
+      position: relative !important;
+      z-index: 9000 !important;
       overflow: visible !important;
       max-height: none !important;
       height: auto !important;
@@ -506,7 +506,7 @@
                         <ul class="umamemo-nav">
                     {% if current_user.is_authenticated %}
                             <li class="umamemo-nav-item umamemo-dropdown">
-                                <a class="umamemo-nav-link umamemo-dropdown-toggle" id="userDropdown">
+                                <a href="#" class="umamemo-nav-link umamemo-dropdown-toggle" id="userDropdown">
                                     <i class="fas fa-user-circle me-1"></i>{{ current_user.username }}
                                 </a>
                                 <div class="umamemo-dropdown-menu" id="userDropdownMenu">
@@ -628,6 +628,14 @@
             userDropdown.addEventListener('click', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
+                
+                // 他のすべてのドロップダウンを閉じる
+                document.querySelectorAll('.umamemo-dropdown-menu.show').forEach(function(menu) {
+                    if (menu !== userDropdownMenu) {
+                        menu.classList.remove('show');
+                    }
+                });
+                
                 userDropdownMenu.classList.toggle('show');
             });
             
