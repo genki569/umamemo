@@ -200,7 +200,7 @@
       position: absolute !important;
       top: 100% !important;
       right: 0 !important;
-      z-index: 1035 !important;
+      z-index: 9999 !important;
       min-width: 10rem !important;
       padding: 0.5rem 0 !important;
       margin: 0.125rem 0 0 !important;
@@ -214,9 +214,6 @@
       border-radius: 0.25rem !important;
       box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.175) !important;
       display: none !important;
-      max-height: none !important;
-      transform: none !important;
-      transition: none !important;
     }
 
     .umamemo-dropdown-menu.show {
@@ -429,6 +426,18 @@
       
       .umamemo-dropdown-item:hover {
         background-color: rgba(255, 255, 255, 0.2) !important;
+      }
+    }
+
+    @media (min-width: 992px) {
+      /* デスクトップ表示時のスタイル - これが最後に来るようにする */
+      .umamemo-dropdown-menu {
+        position: absolute !important;
+        top: 100% !important;
+        right: 0 !important;
+        z-index: 9999 !important;
+        background-color: #fff !important;
+        display: none !important;
       }
     }
 
