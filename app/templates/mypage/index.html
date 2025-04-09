@@ -1,184 +1,434 @@
 {% extends "base.html" %}
 
+{% block title %}マイページ - {{ current_user.username }} - 馬メモ{% endblock %}
+
+{% block styles %}
+{{ super() }}
+<style>
+/* マイページ専用スタイル */
+.mp-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.mp-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(79, 70, 229, 0.2);
+}
+
+.mp-avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background-color: #4F46E5;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  margin-right: 1.5rem;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+}
+
+.mp-user-info {
+  flex: 1;
+}
+
+.mp-username {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #1E293B;
+  margin-bottom: 0.5rem;
+}
+
+.mp-email {
+  font-size: 1rem;
+  color: #64748B;
+  margin-bottom: 1rem;
+}
+
+.mp-stats {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.mp-stat {
+  display: flex;
+  align-items: center;
+  color: #64748B;
+}
+
+.mp-stat i {
+  margin-right: 0.5rem;
+  color: #4F46E5;
+}
+
+.mp-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.mp-btn {
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.mp-btn-primary {
+  background-color: #4F46E5;
+  color: white;
+}
+
+.mp-btn-primary:hover {
+  background-color: #4338CA;
+  color: white;
+}
+
+.mp-btn-outline {
+  border: 1px solid #4F46E5;
+  color: #4F46E5;
+}
+
+.mp-btn-outline:hover {
+  background-color: #EEF2FF;
+}
+
+.mp-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+.mp-card {
+  background-color: white;
+  border-radius: 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.mp-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.mp-card-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid #F1F5F9;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.mp-card-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #1E293B;
+  margin: 0;
+  display: flex;
+  align-items: center;
+}
+
+.mp-card-title i {
+  margin-right: 0.75rem;
+  color: #4F46E5;
+  font-size: 1.4rem;
+}
+
+.mp-card-body {
+  padding: 1.5rem;
+}
+
+.mp-card-footer {
+  padding: 1rem 1.5rem;
+  background-color: #F8FAFC;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.mp-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.mp-list-item {
+  padding: 1rem 0;
+  border-bottom: 1px solid #F1F5F9;
+  display: flex;
+  align-items: center;
+}
+
+.mp-list-item:last-child {
+  border-bottom: none;
+}
+
+.mp-list-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #EEF2FF;
+  color: #4F46E5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 1rem;
+}
+
+.mp-list-content {
+  flex: 1;
+}
+
+.mp-list-title {
+  font-weight: 500;
+  color: #1E293B;
+  margin-bottom: 0.25rem;
+}
+
+.mp-list-subtitle {
+  font-size: 0.875rem;
+  color: #64748B;
+}
+
+.mp-list-action {
+  color: #4F46E5;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.mp-list-action:hover {
+  text-decoration: underline;
+}
+
+.mp-section {
+  margin-bottom: 3rem;
+}
+
+.mp-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.mp-section-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1E293B;
+  margin: 0;
+  display: flex;
+  align-items: center;
+}
+
+.mp-section-title i {
+  margin-right: 0.75rem;
+  color: #4F46E5;
+}
+
+.mp-empty {
+  text-align: center;
+  padding: 3rem 0;
+  color: #64748B;
+}
+
+.mp-empty i {
+  font-size: 3rem;
+  color: #CBD5E1;
+  margin-bottom: 1rem;
+  display: block;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+  .mp-header {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .mp-avatar {
+    margin-right: 0;
+    margin-bottom: 1rem;
+  }
+  
+  .mp-stats {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  
+  .mp-actions {
+    margin-top: 1rem;
+    justify-content: center;
+  }
+  
+  .mp-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="dashboard-container">
-    <!-- メインビジュアル -->
-    <div class="main-visual" data-aos="fade-down">
-        <div class="profile-banner">
-            <div class="profile-info">
-                <div class="profile-image-wrapper">
-                    {% if current_user.profile_image %}
-                        <img src="{{ current_user.profile_image }}" alt="プロフィール" class="profile-image">
-                    {% else %}
-                        <div class="profile-image-placeholder">
-                            <i class="fas fa-user"></i>
-                        </div>
-                    {% endif %}
-                </div>
-                <div class="profile-text">
-                    <h1>{{ current_user.username }}</h1>
-                    {% if current_user.is_premium %}
-                        <div class="premium-badge">
-                            <i class="fas fa-crown"></i> Premium Member
-                        </div>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
+<div class="mp-container">
+  <!-- ユーザーヘッダー -->
+  <div class="mp-header">
+    <div class="mp-avatar">
+      <i class="fas fa-user"></i>
     </div>
-
-    <!-- クイックステータス -->
-    <div class="quick-stats" data-aos="fade-up">
-        <div class="stat-card points">
-            <div class="stat-icon">
-                <i class="fas fa-coins"></i>
-            </div>
-            <div class="stat-content">
-                <h3>{{ current_user.point_balance }}</h3>
-                <p>ポイント</p>
-            </div>
+    <div class="mp-user-info">
+      <h1 class="mp-username">{{ current_user.username }}</h1>
+      <div class="mp-email">{{ current_user.email }}</div>
+      <div class="mp-stats">
+        <div class="mp-stat">
+          <i class="fas fa-star"></i>
+          <span>{{ reviews_count if reviews_count is defined else 0 }} レビュー</span>
         </div>
-        <div class="stat-card reviews">
-            <div class="stat-icon">
-                <i class="fas fa-star"></i>
-            </div>
-            <div class="stat-content">
-                <h3>{{ current_user.reviews.count() }}</h3>
-                <p>レビュー</p>
-            </div>
+        <div class="mp-stat">
+          <i class="fas fa-heart"></i>
+          <span>{{ favorites_count if favorites_count is defined else 0 }} お気に入り馬</span>
         </div>
-        <div class="stat-card favorites">
-            <div class="stat-icon">
-                <i class="fas fa-heart"></i>
-            </div>
-            <div class="stat-content">
-                <h3>{{ current_user.favorite_horses.count() }}</h3>
-                <p>お気に入り馬</p>
-            </div>
+        <div class="mp-stat">
+          <i class="fas fa-trophy"></i>
+          <span>{{ current_user.points if current_user.points is defined else 0 }} ポイント</span>
         </div>
+      </div>
     </div>
-
-    <!-- メインコンテンツ -->
-    <div class="dashboard-grid">
-        <!-- 通知セクション -->
-        <div class="dashboard-card notifications-card" data-aos="fade-up" data-aos-delay="50">
-            <div class="card-header">
-                <h3><i class="fas fa-bell"></i> 通知</h3>
-                <a href="{{ url_for('view_all_notifications') }}" class="view-all">すべて見る</a>
-            </div>
-            <div class="card-content">
-                <div class="notification-list" id="dashboard-notifications">
-                    {% if notifications %}
-                        {% for notification in notifications[:5] %}
-                            <div class="notification-item {% if not notification.read %}unread{% endif %}"
-                                 data-id="{{ notification.id }}">
-                                <div class="notification-icon">
-                                    <i class="fas {{ notification.icon_class }}"></i>
-                                </div>
-                                <div class="notification-content">
-                                    <p class="notification-text">{{ notification.message }}</p>
-                                    <span class="notification-time">{{ notification.created_at|timeago }}</span>
-                                </div>
-                            </div>
-                        {% endfor %}
-                    {% else %}
-                        <p class="no-content">新しい通知はありません</p>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-
-        <!-- 最近のレビュー -->
-        <div class="dashboard-card reviews-card">
-            <div class="card-header">
-                <h3><i class="fas fa-pen"></i> 最近のレビュー</h3>
-                <a href="{{ url_for('mypage_reviews') }}" class="view-all">すべて見る</a>
-            </div>
-            <div class="card-content">
-                {% if recent_reviews %}
-                    {% for review in recent_reviews[:3] %}
-                        <div class="review-item">
-                            <div class="review-meta">
-                                <span class="review-date">{{ review.created_at.strftime('%Y/%m/%d') }}</span>
-                                <span class="review-race">{{ review.race.name }}</span>
-                            </div>
-                            <p class="review-text">{{ review.content|truncate(100) }}</p>
-                        </div>
-                    {% endfor %}
-                {% else %}
-                    <p class="no-content">レビューはまだありません</p>
-                {% endif %}
-            </div>
-        </div>
-
-        <!-- お気に入り馬 -->
-        <div class="dashboard-card favorites-card" data-aos="fade-up" data-aos-delay="200">
-            <div class="card-header">
-                <h3><i class="fas fa-horse"></i> お気に入り馬</h3>
-                <a href="{{ url_for('mypage_favorites') }}" class="view-all">すべて見る</a>
-            </div>
-            <div class="card-content">
-                <div class="favorite-horses-grid">
-                    {% if current_user.favorite_horses %}
-                        {% for horse in current_user.favorite_horses[:6] %}
-                            <div class="horse-item">
-                                <a href="{{ url_for('horse_detail', horse_id=horse.id) }}" class="horse-link">
-                                    <div class="horse-icon">🐎</div>
-                                    <h4>{{ horse.name }}</h4>
-                                </a>
-                            </div>
-                        {% endfor %}
-                    {% else %}
-                        <p class="no-content">お気に入りの馬はまだいません</p>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-
-        <!-- 最近のメモ -->
-        <div class="dashboard-card memos-card" data-aos="fade-up" data-aos-delay="300">
-            <div class="card-header">
-                <h3><i class="fas fa-sticky-note"></i> メモ</h3>
-                <a href="{{ url_for('mypage_memos') }}" class="view-all">すべて見る</a>
-            </div>
-            <div class="card-content memo-grid">
-                {% if race_memos or horse_memos %}
-                    <!-- レースメモ -->
-                    {% for memo, race in race_memos[:2] %}
-                        <div class="memo-item">
-                            <div class="memo-content">
-                                <div class="d-flex justify-content-between">
-                                    <h4>
-                                        <i class="fas fa-flag-checkered me-2"></i>
-                                        <a href="/races/{{ race.id }}" class="text-decoration-none">{{ race.name }}</a>
-                                    </h4>
-                                </div>
-                                <p>{{ memo.content|truncate(50) }}</p>
-                                <span class="memo-date">{{ memo.created_at.strftime('%Y/%m/%d') }}</span>
-                            </div>
-                        </div>
-                    {% endfor %}
-
-                    <!-- 馬メモ -->
-                    {% for horse in horse_memos[:2] %}
-                        <div class="memo-item">
-                            <div class="memo-content">
-                                <div class="d-flex justify-content-between">
-                                    <h4>
-                                        <i class="fas fa-horse me-2"></i>
-                                        <a href="{{ url_for('horse_detail', horse_id=horse.id) }}" class="text-decoration-none">{{ horse.name }}</a>
-                                    </h4>
-                                </div>
-                                <p>{{ horse.memo|truncate(50) }}</p>
-                                <span class="memo-date">{{ horse.updated_at.strftime('%Y/%m/%d') }}</span>
-                            </div>
-                        </div>
-                    {% endfor %}
-                {% else %}
-                    <p class="no-content">メモはまだありません</p>
-                {% endif %}
-            </div>
-        </div>
+    <div class="mp-actions">
+      <a href="{{ url_for('user_settings') }}" class="mp-btn mp-btn-outline">
+        <i class="fas fa-cog"></i> 設定
+      </a>
     </div>
+  </div>
+
+  <!-- 通知セクション -->
+  <div class="mp-section">
+    <div class="mp-section-header">
+      <h2 class="mp-section-title">
+        <i class="fas fa-bell"></i> 通知
+      </h2>
+      <a href="{{ url_for('notifications') }}" class="mp-list-action">すべて見る</a>
+    </div>
+    
+    {% if notifications %}
+    <div class="mp-card">
+      <div class="mp-card-body">
+        <ul class="mp-list">
+          {% for notification in notifications %}
+          <li class="mp-list-item">
+            <div class="mp-list-icon">
+              <i class="fas fa-bell"></i>
+            </div>
+            <div class="mp-list-content">
+              <div class="mp-list-title">{{ notification.title }}</div>
+              <div class="mp-list-subtitle">{{ notification.created_at.strftime('%Y年%m月%d日 %H:%M') }}</div>
+            </div>
+            <a href="{{ url_for('notification_detail', notification_id=notification.id) }}" class="mp-list-action">
+              詳細
+            </a>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+    {% else %}
+    <div class="mp-empty">
+      <i class="fas fa-bell-slash"></i>
+      <p>新しい通知はありません</p>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- 最近のレビューセクション -->
+  <div class="mp-section">
+    <div class="mp-section-header">
+      <h2 class="mp-section-title">
+        <i class="fas fa-comment"></i> 最近のレビュー
+      </h2>
+      <a href="{{ url_for('user_reviews') }}" class="mp-list-action">すべて見る</a>
+    </div>
+    
+    {% if recent_reviews %}
+    <div class="mp-grid">
+      {% for review in recent_reviews %}
+      <div class="mp-card">
+        <div class="mp-card-header">
+          <h3 class="mp-card-title">
+            <i class="fas fa-horse"></i> {{ review.race.name }}
+          </h3>
+          <span class="mp-list-subtitle">{{ review.created_at.strftime('%Y年%m月%d日') }}</span>
+        </div>
+        <div class="mp-card-body">
+          <p>{{ review.content|truncate(100) }}</p>
+        </div>
+        <div class="mp-card-footer">
+          <a href="{{ url_for('review_detail', review_id=review.id) }}" class="mp-list-action">
+            詳細を見る
+          </a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="mp-empty">
+      <i class="fas fa-comment-slash"></i>
+      <p>レビューはまだありません</p>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- お気に入り馬セクション -->
+  <div class="mp-section">
+    <div class="mp-section-header">
+      <h2 class="mp-section-title">
+        <i class="fas fa-heart"></i> お気に入り馬
+      </h2>
+      <a href="{{ url_for('favorite_horses') }}" class="mp-list-action">すべて見る</a>
+    </div>
+    
+    {% if favorite_horses %}
+    <div class="mp-grid">
+      {% for horse in favorite_horses %}
+      <div class="mp-card">
+        <div class="mp-card-header">
+          <h3 class="mp-card-title">
+            <i class="fas fa-horse"></i> {{ horse.name }}
+          </h3>
+        </div>
+        <div class="mp-card-body">
+          <div class="mp-list-item">
+            <div class="mp-list-content">
+              <div class="mp-list-title">性別・年齢</div>
+              <div class="mp-list-subtitle">{{ horse.sex }} {{ horse.age }}歳</div>
+            </div>
+          </div>
+          <div class="mp-list-item">
+            <div class="mp-list-content">
+              <div class="mp-list-title">調教師</div>
+              <div class="mp-list-subtitle">{{ horse.trainer }}</div>
+            </div>
+          </div>
+        </div>
+        <div class="mp-card-footer">
+          <a href="{{ url_for('horse_detail', horse_id=horse.id) }}" class="mp-list-action">
+            詳細を見る
+          </a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="mp-empty">
+      <i class="fas fa-heart-broken"></i>
+      <p>お気に入りの馬はまだありません</p>
+    </div>
+    {% endif %}
+  </div>
 </div>
 {% endblock %} 
