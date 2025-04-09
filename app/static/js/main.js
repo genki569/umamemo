@@ -493,7 +493,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const userDropdownMenu = document.getElementById('userDropdownMenu');
     
     // ドロップダウンメニューの処理を削除または無効化
-    // 以下のコードをコメントアウトまたは削除
     /*
     if (userDropdown && userDropdownMenu) {
         // モーダルスタイルを適用
