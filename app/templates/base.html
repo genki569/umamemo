@@ -555,7 +555,7 @@
                                     <a class="custom-dropdown-item" href="{{ url_for('mypage_home') }}">
                                         <i class="fas fa-user me-2"></i>マイページ
                                     </a>
-                                    <a class="custom-dropdown-item" href="{{ url_for('user_settings') }}">
+                                    <a class="custom-dropdown-item" href="{{ url_for('mypage_settings') }}">
                                         <i class="fas fa-cog me-2"></i>設定
                                     </a>
                                     <div class="custom-dropdown-divider"></div>
@@ -626,7 +626,7 @@
                     <ul class="list-unstyled">
                         {% if current_user.is_authenticated %}
                             <li><a class="umamemo-footer-link" href="{{ url_for('mypage_home') }}"><i class="fas fa-user me-2"></i>マイページ</a></li>
-                            <li><a class="umamemo-footer-link" href="{{ url_for('user_settings') }}"><i class="fas fa-cog me-2"></i>設定</a></li>
+                            <li><a class="umamemo-footer-link" href="{{ url_for('mypage_settings') }}"><i class="fas fa-cog me-2"></i>設定</a></li>
                             <li><a class="umamemo-footer-link" href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt me-2"></i>ログアウト</a></li>
                         {% else %}
                             <li><a class="umamemo-footer-link" href="{{ url_for('login') }}"><i class="fas fa-sign-in-alt me-2"></i>ログイン</a></li>
@@ -705,7 +705,7 @@
                     <a class="portal-dropdown-item" href="{{ url_for('mypage_home') }}">
                         <i class="fas fa-user me-2"></i>マイページ
                     </a>
-                    <a class="portal-dropdown-item" href="{{ url_for('user_settings') }}">
+                    <a class="portal-dropdown-item" href="{{ url_for('mypage_settings') }}">
                         <i class="fas fa-cog me-2"></i>設定
                     </a>
                     <div class="portal-dropdown-divider"></div>

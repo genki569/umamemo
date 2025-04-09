@@ -4,7 +4,7 @@
 <div class="container mt-4">
     <h2>プロフィール設定</h2>
 
-    <form method="POST" action="{{ url_for('mypage_settings') }}" enctype="multipart/form-data">
+    <form id="settings-form" method="POST" action="{{ url_for('user_settings') }}" enctype="multipart/form-data">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         
         <div class="card mb-4">
@@ -74,30 +74,39 @@
 {% block scripts %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const form = document.querySelector('form');
-    if (form) {
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const formData = new FormData(this);
-            
-            fetch("{{ url_for('mypage_settings') }}", {
-                method: 'POST',
-                body: formData,
-                credentials: 'same-origin'
-            })
-            .then(response => {
-                if (response.ok) {
-                    window.location.href = "{{ url_for('mypage_settings') }}";
-                } else {
-                    throw new Error('Network response was not ok');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('エラーが発生しました');
-            });
+    const settingsForm = document.getElementById('settings-form');
+    
+    settingsForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(settingsForm);
+        const settings = {
+            notification_race: formData.get('notification_race') === 'on',
+            notification_memo: formData.get('notification_memo') === 'on',
+            items_per_page: parseInt(formData.get('items_per_page') || 10)
+        };
+        
+        fetch('/api/user/settings', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify(settings)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                alert('設定を保存しました');
+            } else {
+                alert('設定の保存に失敗しました: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('設定の保存中にエラーが発生しました');
         });
-    }
+    });
 });
 </script>
 {% endblock %} 

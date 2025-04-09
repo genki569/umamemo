@@ -3973,3 +3973,23 @@ def race_reviews_section(race_id):
     except Exception as e:
         current_app.logger.error(f"Error in race_reviews_section: {str(e)}")
         return "<div class='alert alert-danger'>回顧ノートの読み込み中にエラーが発生しました</div>"
+
+@app.route('/mypage/settings')
+@login_required
+def mypage_settings():
+    """ユーザー設定ページを表示"""
+    try:
+        # ユーザー設定を取得
+        user_settings = UserSettings.query.filter_by(user_id=current_user.id).first()
+        
+        # 設定が存在しない場合は作成
+        if not user_settings:
+            user_settings = UserSettings(user_id=current_user.id)
+            db.session.add(user_settings)
+            db.session.commit()
+        
+        return render_template('mypage/settings.html', settings=user_settings)
+    except Exception as e:
+        app.logger.error(f"Error in mypage_settings: {str(e)}")
+        flash('設定の取得中にエラーが発生しました', 'error')
+        return redirect(url_for('mypage_home'))
