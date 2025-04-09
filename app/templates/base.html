@@ -57,7 +57,7 @@
       box-shadow: 0 4px 20px rgba(79, 70, 229, 0.2);
       color: white;
       position: relative;
-      z-index: 1000;
+      z-index: 9000 !important;
       padding: 0.5rem 0;
     }
     
@@ -75,6 +75,8 @@
     .umamemo-navbar {
       padding: 0.8rem 0;
       transition: var(--transition);
+      position: relative;
+      z-index: 9000 !important;
     }
 
     .umamemo-brand {
@@ -199,7 +201,7 @@
       position: absolute;
       top: 100%;
       right: 0;
-      z-index: 1000;
+      z-index: 9999 !important;
       display: none;
       min-width: 10rem;
       padding: 0.8rem 0;
@@ -444,8 +446,9 @@
     }
     
     /* ドロップダウンメニューのz-indexを高く設定 */
-    .dropdown-menu {
+    .umamemo-dropdown-menu {
         z-index: 9999 !important;
+        position: absolute !important;
     }
     </style>
     {% endblock %}
@@ -604,8 +607,13 @@
         const userDropdownMenu = document.getElementById('userDropdownMenu');
         
         if (userDropdown && userDropdownMenu) {
+            // スタイルを追加して最前面に表示
+            userDropdownMenu.style.zIndex = '9999';
+            userDropdownMenu.style.position = 'absolute';
+            
             userDropdown.addEventListener('click', function(e) {
                 e.preventDefault();
+                e.stopPropagation(); // イベントの伝播を停止
                 userDropdownMenu.classList.toggle('show');
             });
             
