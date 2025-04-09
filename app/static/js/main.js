@@ -492,6 +492,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const userDropdown = document.getElementById('userDropdown');
     const userDropdownMenu = document.getElementById('userDropdownMenu');
     
+    // ドロップダウンメニューの処理を削除または無効化
+    // 以下のコードをコメントアウトまたは削除
+    /*
     if (userDropdown && userDropdownMenu) {
         // モーダルスタイルを適用
         userDropdownMenu.style.position = 'fixed';
@@ -529,6 +532,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+    */
 });
 
 // 日付ナビゲーション関数

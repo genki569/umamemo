@@ -57,11 +57,10 @@
       box-shadow: 0 4px 20px rgba(79, 70, 229, 0.2);
       color: white;
       position: relative;
-      z-index: 9000 !important;
+      z-index: 9000;
+      overflow: visible !important;
+      max-height: none !important;
       padding: 0.5rem 0;
-      height: auto;
-      max-height: none;
-      overflow: visible;
     }
     
     /* ヘッダーにオレンジのアクセントラインを追加 */
@@ -79,7 +78,8 @@
       padding: 0.8rem 0;
       transition: var(--transition);
       position: relative;
-      z-index: 9000 !important;
+      z-index: 9000;
+      overflow: visible !important;
       display: flex;
       flex-wrap: wrap;
     }
@@ -184,8 +184,9 @@
 
     /* ドロップダウンメニュー */
     .umamemo-dropdown {
-      position: relative;
+      position: relative !important;
       display: inline-block;
+      z-index: 10000 !important;
     }
 
     .umamemo-dropdown-toggle {
@@ -220,6 +221,7 @@
       border: 1px solid rgba(0, 0, 0, 0.15);
       border-radius: 0.25rem;
       box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.175);
+      display: none;
     }
 
     .umamemo-dropdown-menu.show {
@@ -423,6 +425,22 @@
         opacity: 0;
         animation: fadeIn 0.5s ease forwards;
     }
+
+    /* モバイル対応 */
+    @media (max-width: 767.98px) {
+      .umamemo-dropdown-menu {
+        position: absolute !important;
+        width: auto !important;
+        min-width: 10rem !important;
+        float: none !important;
+        margin: 0 !important;
+        background-color: #fff !important;
+        border: 1px solid rgba(0, 0, 0, 0.15) !important;
+        border-radius: 0.25rem !important;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.175) !important;
+        z-index: 99999 !important;
+      }
+    }
     </style>
     {% endblock %}
 </head>
@@ -465,7 +483,7 @@
                                 <a class="umamemo-nav-link umamemo-dropdown-toggle" id="userDropdown">
                                     <i class="fas fa-user-circle me-1"></i>{{ current_user.username }}
                                 </a>
-                                <div class="umamemo-dropdown-menu" id="userDropdownMenu" style="display: none; position: absolute; z-index: 99999;">
+                                <div class="umamemo-dropdown-menu" id="userDropdownMenu">
                                     <a class="umamemo-dropdown-item" href="{{ url_for('mypage_home') }}">
                                         <i class="fas fa-user me-2"></i>マイページ
                                     </a>
@@ -564,7 +582,7 @@
     <!-- Custom JS -->
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function() {
         // ハンバーガーメニューの開閉
         const navbarToggler = document.getElementById('umamemoNavbarToggler');
         const navbarCollapse = document.getElementById('umamemoNavbarCollapse');
@@ -580,36 +598,23 @@
         const userDropdownMenu = document.getElementById('userDropdownMenu');
         
         if (userDropdown && userDropdownMenu) {
-            // 絶対配置とz-indexを設定
-            userDropdownMenu.style.position = 'absolute';
-            userDropdownMenu.style.zIndex = '99999';
-            userDropdownMenu.style.top = '100%';
-            userDropdownMenu.style.right = '0';
-            userDropdownMenu.style.display = 'none';
-            
             // クリックイベントの処理
             userDropdown.addEventListener('click', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
                 
                 // 表示/非表示を切り替え
-                if (userDropdownMenu.style.display === 'none') {
-                    userDropdownMenu.style.display = 'block';
-                } else {
-                    userDropdownMenu.style.display = 'none';
-                }
+                userDropdownMenu.classList.toggle('show');
             });
             
             // 画面上の他の場所をクリックしたときにドロップダウンを閉じる
             document.addEventListener('click', function(e) {
-                if (userDropdownMenu.style.display === 'block' && 
-                    !userDropdown.contains(e.target) && 
-                    !userDropdownMenu.contains(e.target)) {
-                    userDropdownMenu.style.display = 'none';
+                if (!userDropdown.contains(e.target) && !userDropdownMenu.contains(e.target)) {
+                    userDropdownMenu.classList.remove('show');
                 }
             });
         }
-        });
+    });
     </script>
     {% endblock %}
 </body>
