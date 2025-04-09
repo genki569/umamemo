@@ -52,7 +52,6 @@
                             <table class="table">
                                 <thead>
                                     <tr>
-                                        <th>枠番</th>
                                         <th>馬番</th>
                                         <th>馬名</th>
                                         <th>性齢</th>
@@ -66,11 +65,6 @@
                                 <tbody>
                                     {% for entry in entries %}
                                     <tr>
-                                        <td class="text-center">
-                                            <span class="badge bg-bracket-{{ entry.bracket_number }}">
-                                                {{ entry.bracket_number }}
-                                            </span>
-                                        </td>
                                         <td class="text-center horse-number">{{ entry.horse_number }}</td>
                                         <td>
                                             <a href="{{ url_for('horse_detail', horse_id=entry.horse.id) }}" class="horse-name">
