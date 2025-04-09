@@ -580,11 +580,8 @@
         const userDropdownMenu = document.getElementById('userDropdownMenu');
         
         if (userDropdown && userDropdownMenu) {
-            // インラインスタイルで最前面に表示するように設定
-            userDropdownMenu.style.zIndex = '10001';
-            userDropdownMenu.style.position = 'absolute';
-            userDropdownMenu.style.top = '100%';
-            userDropdownMenu.style.right = '0';
+            // z-indexを高く設定
+            userDropdownMenu.style.zIndex = '99999';
             
             userDropdown.addEventListener('click', function(e) {
                 e.preventDefault();
