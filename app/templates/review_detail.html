@@ -25,42 +25,42 @@
         <div class="card-body">
             {% if review.pace_analysis %}
                 <h5>ペース分析</h5>
-                <p>{{ review.pace_analysis|nl2br }}</p>
+                <p>{{ review.pace_analysis }}</p>
             {% endif %}
             
             {% if review.track_condition_note %}
                 <h5>馬場状態</h5>
-                <p>{{ review.track_condition_note|nl2br }}</p>
+                <p>{{ review.track_condition_note }}</p>
             {% endif %}
             
             {% if review.race_flow %}
                 <h5>レース展開</h5>
-                <p>{{ review.race_flow|nl2br }}</p>
+                <p>{{ review.race_flow }}</p>
             {% endif %}
             
             {% if review.overall_impression %}
                 <h5>総評</h5>
-                <p>{{ review.overall_impression|nl2br }}</p>
+                <p>{{ review.overall_impression }}</p>
             {% endif %}
             
             {% if review.winner_analysis %}
                 <h5>勝ち馬分析</h5>
-                <p>{{ review.winner_analysis|nl2br }}</p>
+                <p>{{ review.winner_analysis }}</p>
             {% endif %}
             
             {% if review.placed_horses_analysis %}
                 <h5>上位馬分析</h5>
-                <p>{{ review.placed_horses_analysis|nl2br }}</p>
+                <p>{{ review.placed_horses_analysis }}</p>
             {% endif %}
             
             {% if review.notable_performances %}
                 <h5>注目すべき競走馬</h5>
-                <p>{{ review.notable_performances|nl2br }}</p>
+                <p>{{ review.notable_performances }}</p>
             {% endif %}
             
             {% if review.future_prospects %}
                 <h5>今後の展望</h5>
-                <p>{{ review.future_prospects|nl2br }}</p>
+                <p>{{ review.future_prospects }}</p>
             {% endif %}
         </div>
         <div class="card-footer text-muted">
