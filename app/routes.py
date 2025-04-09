@@ -1356,49 +1356,59 @@ def debug_db_check():
 @login_required
 def race_review(race_id):
     race = Race.query.get_or_404(race_id)
-    review = RaceReview.query.filter_by(user_id=current_user.id, race_id=race_id).first()
+    review = RaceReview.query.filter_by(race_id=race_id, user_id=current_user.id).first()
     
     if request.method == 'POST':
-        try:
-            # フォームからデータを取得
-            content = request.form.get('content', '')
-            summary = request.form.get('summary', '')
-            is_premium = 'is_premium' in request.form
-            price = int(request.form.get('price', 0)) if is_premium else 0
+        # 'content' ではなく、RaceReviewモデルの実際のフィールド名を使用
+        # 例: pace_analysis, track_condition_note, race_flow, overall_impression など
+        pace_analysis = request.form.get('pace_analysis', '')
+        track_condition_note = request.form.get('track_condition_note', '')
+        race_flow = request.form.get('race_flow', '')
+        overall_impression = request.form.get('overall_impression', '')
+        winner_analysis = request.form.get('winner_analysis', '')
+        placed_horses_analysis = request.form.get('placed_horses_analysis', '')
+        notable_performances = request.form.get('notable_performances', '')
+        future_prospects = request.form.get('future_prospects', '')
+        
+        # 有料コンテンツの設定
+        is_premium = 'is_premium' in request.form
+        price = int(request.form.get('price', 0)) if is_premium else 0
+        
+        if review:
+            # 既存のレビューを更新
+            review.pace_analysis = pace_analysis
+            review.track_condition_note = track_condition_note
+            review.race_flow = race_flow
+            review.overall_impression = overall_impression
+            review.winner_analysis = winner_analysis
+            review.placed_horses_analysis = placed_horses_analysis
+            review.notable_performances = notable_performances
+            review.future_prospects = future_prospects
+            review.is_premium = is_premium
+            review.price = price
+            review.updated_at = datetime.utcnow()
+        else:
+            # 新しいレビューを作成
+            review = RaceReview(
+                race_id=race_id,
+                user_id=current_user.id,
+                pace_analysis=pace_analysis,
+                track_condition_note=track_condition_note,
+                race_flow=race_flow,
+                overall_impression=overall_impression,
+                winner_analysis=winner_analysis,
+                placed_horses_analysis=placed_horses_analysis,
+                notable_performances=notable_performances,
+                future_prospects=future_prospects,
+                is_premium=is_premium,
+                price=price
+            )
+            db.session.add(review)
             
-            # デバッグログを追加
-            current_app.logger.info(f"Saving review for race {race_id}: content={content[:20]}..., summary={summary}, premium={is_premium}, price={price}")
-            
-            if review:
-                # 既存のレビューを更新
-                review.content = content
-                review.summary = summary
-                review.is_premium = is_premium
-                review.price = price
-                review.updated_at = datetime.utcnow()
-                db.session.commit()
-                flash('レビューを更新しました', 'success')
-            else:
-                # 新しいレビューを作成
-                new_review = RaceReview(
-                    user_id=current_user.id,
-                    race_id=race_id,
-                    content=content,
-                    summary=summary,
-                    is_premium=is_premium,
-                    price=price
-                )
-                db.session.add(new_review)
-                db.session.commit()
-                flash('レビューを保存しました', 'success')
-            
-            return redirect(url_for('race', race_id=race_id))
-        except Exception as e:
-            db.session.rollback()
-            current_app.logger.error(f"Error saving review: {str(e)}")
-            current_app.logger.error(traceback.format_exc())
-            flash('レビューの保存中にエラーが発生しました', 'danger')
-    
+        db.session.commit()
+        flash('レース回顧を保存しました', 'success')
+        return redirect(url_for('review_detail', review_id=review.id))
+        
     return render_template('race_review.html', race=race, review=review)
 
 @app.route('/races/<int:race_id>/reviews')
