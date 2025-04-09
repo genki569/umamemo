@@ -563,7 +563,7 @@
                                         <i class="fas fa-sign-out-alt me-2"></i>ログアウト
                                     </a>
                                 </div>
-                            </li>
+                        </li>
                     {% else %}
                             <li class="umamemo-nav-item">
                                 <a class="umamemo-nav-link" href="{{ url_for('login') }}">ログイン</a>
@@ -650,7 +650,7 @@
     <!-- Custom JS -->
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function() {
         // ハンバーガーメニューの開閉
         const navbarToggler = document.getElementById('umamemoNavbarToggler');
         const navbarCollapse = document.getElementById('umamemoNavbarCollapse');
@@ -758,7 +758,7 @@
                 });
             });
         }
-    });
+        });
     </script>
     {% endblock %}
 </body>
