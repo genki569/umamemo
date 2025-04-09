@@ -3959,3 +3959,23 @@ def review_detail(review_id):
             return redirect(url_for('purchase_review', review_id=review_id))
     
     return render_template('review_detail.html', review=review)
+
+@app.route('/races/<int:race_id>/reviews_section')
+def race_reviews_section(race_id):
+    """レース詳細ページに表示する回顧ノートセクションを取得するAPI"""
+    try:
+        # レースの回顧ノートを取得
+        reviews = RaceReview.query.filter_by(race_id=race_id).all()
+        
+        # デバッグログを追加
+        current_app.logger.info(f"Found {len(reviews)} reviews for race {race_id}")
+        
+        # テンプレートをレンダリングしてHTMLを返す
+        html = render_template('race_reviews_section.html', 
+                              race_id=race_id, 
+                              reviews=reviews)
+        
+        return html
+    except Exception as e:
+        current_app.logger.error(f"Error in race_reviews_section: {str(e)}")
+        return "<div class='alert alert-danger'>回顧ノートの読み込み中にエラーが発生しました</div>"
