@@ -466,8 +466,9 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // ドキュメント内の他の場所をクリックしたらすべてのドロップダウンを閉じる
         document.addEventListener('click', function(e) {
-            if (!e.target.closest('.umamemo-dropdown')) {
-                document.querySelectorAll('.umamemo-dropdown-menu.show').forEach(function(menu) {
+            const dropdowns = document.querySelectorAll('.umamemo-dropdown-menu.show');
+            if (dropdowns.length > 0 && !e.target.closest('.umamemo-dropdown')) {
+                dropdowns.forEach(function(menu) {
                     menu.classList.remove('show');
                 });
             }
