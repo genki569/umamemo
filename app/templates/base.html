@@ -184,8 +184,8 @@
 
     /* ドロップダウンメニュー */
     .umamemo-dropdown {
-      position: relative !important;
-      z-index: 10000 !important;
+      position: relative;
+      display: inline-block;
     }
 
     .umamemo-dropdown-toggle {
@@ -208,12 +208,11 @@
       top: 100% !important;
       right: 0 !important;
       z-index: 99999 !important;
-      display: none;
       min-width: 10rem;
       padding: 0.5rem 0;
       margin: 0.125rem 0 0;
       font-size: 0.9rem;
-      color: var(--secondary-color);
+      color: #333;
       text-align: left;
       list-style: none;
       background-color: #fff;
@@ -230,27 +229,28 @@
     .umamemo-dropdown-item {
       display: block;
       width: 100%;
-      padding: 0.5rem 1.5rem;
+      padding: 0.5rem 1rem;
       clear: both;
       font-weight: 400;
-      color: var(--secondary-color);
+      color: #212529;
       text-align: inherit;
+      text-decoration: none;
       white-space: nowrap;
       background-color: transparent;
       border: 0;
-      transition: var(--transition);
     }
 
     .umamemo-dropdown-item:hover, .umamemo-dropdown-item:focus {
-      color: var(--primary-blue);
-      background-color: rgba(79, 70, 229, 0.05);
+      color: #16181b;
+      text-decoration: none;
+      background-color: #f8f9fa;
     }
 
     .umamemo-dropdown-divider {
       height: 0;
       margin: 0.5rem 0;
       overflow: hidden;
-      border-top: 1px solid rgba(0, 0, 0, 0.05);
+      border-top: 1px solid #e9ecef;
     }
 
     /* ナビゲーショントグルボタン */
@@ -465,7 +465,7 @@
                                 <a class="umamemo-nav-link umamemo-dropdown-toggle" id="userDropdown">
                                     <i class="fas fa-user-circle me-1"></i>{{ current_user.username }}
                                 </a>
-                                <div class="umamemo-dropdown-menu" id="userDropdownMenu">
+                                <div class="umamemo-dropdown-menu" id="userDropdownMenu" style="display: none; position: absolute; z-index: 99999;">
                                     <a class="umamemo-dropdown-item" href="{{ url_for('mypage_home') }}">
                                         <i class="fas fa-user me-2"></i>マイページ
                                     </a>
@@ -477,7 +477,7 @@
                                         <i class="fas fa-sign-out-alt me-2"></i>ログアウト
                                     </a>
                                 </div>
-                        </li>
+                            </li>
                     {% else %}
                             <li class="umamemo-nav-item">
                                 <a class="umamemo-nav-link" href="{{ url_for('login') }}">ログイン</a>
@@ -575,32 +575,36 @@
             });
         }
         
-        // ドロップダウンメニューの開閉
+        // ドロップダウンメニューの処理
         const userDropdown = document.getElementById('userDropdown');
         const userDropdownMenu = document.getElementById('userDropdownMenu');
         
         if (userDropdown && userDropdownMenu) {
-            // z-indexを高く設定
+            // 絶対配置とz-indexを設定
+            userDropdownMenu.style.position = 'absolute';
             userDropdownMenu.style.zIndex = '99999';
+            userDropdownMenu.style.top = '100%';
+            userDropdownMenu.style.right = '0';
+            userDropdownMenu.style.display = 'none';
             
+            // クリックイベントの処理
             userDropdown.addEventListener('click', function(e) {
                 e.preventDefault();
-                e.stopPropagation(); // イベントの伝播を停止
+                e.stopPropagation();
                 
                 // 表示/非表示を切り替え
-                if (userDropdownMenu.classList.contains('show')) {
-                    userDropdownMenu.classList.remove('show');
-                    userDropdownMenu.style.display = 'none';
-                } else {
-                    userDropdownMenu.classList.add('show');
+                if (userDropdownMenu.style.display === 'none') {
                     userDropdownMenu.style.display = 'block';
+                } else {
+                    userDropdownMenu.style.display = 'none';
                 }
             });
             
-            // ドロップダウン外クリックで閉じる
+            // 画面上の他の場所をクリックしたときにドロップダウンを閉じる
             document.addEventListener('click', function(e) {
-                if (!userDropdown.contains(e.target) && !userDropdownMenu.contains(e.target)) {
-                    userDropdownMenu.classList.remove('show');
+                if (userDropdownMenu.style.display === 'block' && 
+                    !userDropdown.contains(e.target) && 
+                    !userDropdownMenu.contains(e.target)) {
                     userDropdownMenu.style.display = 'none';
                 }
             });
