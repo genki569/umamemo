@@ -455,30 +455,22 @@
                     </a>
                     
                     <button class="umamemo-navbar-toggler d-lg-none" type="button" id="umamemoNavbarToggler">
-                        <span class="umamemo-navbar-toggler-icon"></span>
-            </button>
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
 
-                    <div class="umamemo-navbar-collapse d-lg-flex" id="umamemoNavbarCollapse">
-                        <ul class="umamemo-nav me-auto">
+                    <div class="umamemo-navbar-collapse" id="umamemoNavbarCollapse">
+                        <ul class="umamemo-nav ms-auto">
                             <li class="umamemo-nav-item">
-                                <a class="umamemo-nav-link" href="{{ url_for('races') }}">レース情報</a>
+                                <a class="umamemo-nav-link" href="{{ url_for('races') }}">レース一覧</a>
                             </li>
                             <li class="umamemo-nav-item">
-                                <a class="umamemo-nav-link" href="{{ url_for('shutuba_list') }}">出馬表</a>
+                                <a class="umamemo-nav-link" href="{{ url_for('reviews') }}">回顧ノート</a>
                             </li>
                             <li class="umamemo-nav-item">
-                                <a class="umamemo-nav-link" href="{{ url_for('horses') }}">馬一覧</a>
+                                <a class="umamemo-nav-link" href="{{ url_for('about') }}">馬メモについて</a>
                             </li>
-                            <li class="umamemo-nav-item">
-                                <a class="umamemo-nav-link" href="{{ url_for('jockeys') }}">騎手一覧</a>
-                            </li>
-                            <li class="umamemo-nav-item">
-                                <a class="umamemo-nav-link" href="{{ url_for('review_market') }}">回顧ノート</a>
-                            </li>
-                        </ul>
-                        
-                        <ul class="umamemo-nav">
-                    {% if current_user.is_authenticated %}
+                            
+                            {% if current_user.is_authenticated %}
                             <li class="umamemo-nav-item umamemo-dropdown">
                                 <a class="umamemo-nav-link umamemo-dropdown-toggle" id="userDropdown">
                                     <i class="fas fa-user-circle me-1"></i>{{ current_user.username }}
@@ -496,18 +488,13 @@
                                     </a>
                                 </div>
                             </li>
-                    {% else %}
-                            <li class="umamemo-nav-item">
-                                <a class="umamemo-nav-link" href="{{ url_for('login') }}">ログイン</a>
-                        </li>
-                            <li class="umamemo-nav-item">
-                                <a class="umamemo-btn-light" href="{{ url_for('register') }}">新規登録</a>
-                        </li>
-                    {% endif %}
-                </ul>
-            </div>
-        </div>
-    </nav>
+                            {% else %}
+                            <!-- ログインしていない場合の表示 -->
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+            </nav>
         </div>
     </header>
     
