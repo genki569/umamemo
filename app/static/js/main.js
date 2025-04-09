@@ -130,16 +130,16 @@ document.addEventListener('DOMContentLoaded', function() {
     // Intersection Observerの設定
     if (!observer) {
         observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
                     console.log('Element is now visible:', entry.target);
-                }
-            });
-        }, {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
+            }
         });
+    }, {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    });
     }
 
     // アニメーション対象の要素を監視
@@ -318,9 +318,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 row.addEventListener('click', function(e) {
                     // ボタンをクリックした場合は何もしない
                     if (e.target.tagName === 'BUTTON' || e.target.tagName === 'A' || e.target.tagName === 'I') {
-                        return;
-                    }
-                    
+        return;
+    }
+
                     // 行の選択状態をトグル
                     this.classList.toggle('selected-row');
                     
@@ -515,7 +515,7 @@ document.addEventListener('DOMContentLoaded', function() {
         userDropdownMenu.style.padding = '10px';
         
         userDropdown.addEventListener('click', function(e) {
-            e.preventDefault();
+                        e.preventDefault();
             
             // ドロップダウンボタンの位置を取得
             const rect = userDropdown.getBoundingClientRect();

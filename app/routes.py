@@ -1502,13 +1502,22 @@ def mypage_home():
             .order_by(Notification.created_at.desc())\
             .limit(5)\
             .all()
+            
+        # レビューを取得（最新5件）
+        recent_reviews = RaceReview.query\
+            .filter_by(user_id=current_user.id)\
+            .join(Race, RaceReview.race_id == Race.id)\
+            .order_by(RaceReview.created_at.desc())\
+            .limit(5)\
+            .all()
 
-        app.logger.info(f"Found {len(race_memos)} race memos and {len(horse_memos)} horse memos for user {current_user.id}")
+        app.logger.info(f"Found {len(race_memos)} race memos, {len(horse_memos)} horse memos, and {len(recent_reviews)} reviews for user {current_user.id}")
 
         return render_template('mypage/index.html',
                             notifications=notifications,
                             race_memos=race_memos,
-                            horse_memos=horse_memos)
+                            horse_memos=horse_memos,
+                            recent_reviews=recent_reviews)
 
     except Exception as e:
         app.logger.error(f"Error in mypage_home: {str(e)}")
@@ -1516,7 +1525,8 @@ def mypage_home():
         return render_template('mypage/index.html',
                             notifications=[],
                             race_memos=[],
-                            horse_memos=[])
+                            horse_memos=[],
+                            recent_reviews=[])
 
 @app.route('/mypage/reviews')
 @login_required
