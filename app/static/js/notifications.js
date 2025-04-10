@@ -64,6 +64,26 @@ document.addEventListener('DOMContentLoaded', function() {
         return item;
     }
     
+    // 通知カウントを取得して表示する
+    function updateNotificationCount() {
+        const badge = document.getElementById('notification-badge');
+        if (!badge) return;
+        
+        fetch('/api/notifications/count')
+            .then(response => response.json())
+            .then(data => {
+                const count = data.count;
+                
+                if (count > 0) {
+                    badge.textContent = count;
+                    badge.classList.remove('d-none');
+                } else {
+                    badge.classList.add('d-none');
+                }
+            })
+            .catch(error => console.error('Error fetching notification count:', error));
+    }
+    
     // 要素が存在する場合のみ通知更新を設定
     if (notificationList || notificationBadge) {
         // 初回読み込み
@@ -77,5 +97,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.warn('通知の更新中にエラーが発生しました:', e);
             }
         }, 60000); // 1分ごとに更新
+    }
+    
+    // ページ読み込み時と定期的に通知カウントを更新
+    if (document.getElementById('notification-badge')) {
+        updateNotificationCount();
+        // 1分ごとに更新
+        setInterval(updateNotificationCount, 60000);
     }
 }); 

@@ -549,11 +549,20 @@
                     {% if current_user.is_authenticated %}
                             <li class="umamemo-nav-item custom-dropdown">
                                 <a href="#" class="umamemo-nav-link custom-dropdown-toggle" id="userDropdown">
-                                    <i class="fas fa-user-circle me-1"></i>{{ current_user.username }}
+                                    {% if current_user.profile_image %}
+                                        <img src="{{ current_user.profile_image }}" alt="{{ current_user.username }}" class="rounded-circle me-1" style="width: 24px; height: 24px; object-fit: cover;">
+                                    {% else %}
+                                        <i class="fas fa-user-circle me-1"></i>
+                                    {% endif %}
+                                    {{ current_user.username }}
+                                    <span id="notification-badge" class="badge bg-danger rounded-pill ms-1 d-none">0</span>
                                 </a>
                                 <div class="custom-dropdown-menu" id="userDropdownMenu">
                                     <a class="custom-dropdown-item" href="{{ url_for('mypage_home') }}">
                                         <i class="fas fa-user me-2"></i>マイページ
+                                    </a>
+                                    <a class="custom-dropdown-item" href="{{ url_for('mypage_notifications') }}">
+                                        通知 <span id="notification-dropdown-badge" class="badge bg-danger rounded-pill ms-1 d-none">0</span>
                                     </a>
                                     <a class="custom-dropdown-item" href="{{ url_for('mypage_settings') }}">
                                         <i class="fas fa-cog me-2"></i>設定
@@ -649,6 +658,8 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Custom JS -->
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <!-- 通知スクリプトを追加 -->
+    <script src="{{ url_for('static', filename='js/notifications.js') }}"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
         // ハンバーガーメニューの開閉
@@ -704,6 +715,9 @@
                 menu.innerHTML = `
                     <a class="portal-dropdown-item" href="{{ url_for('mypage_home') }}">
                         <i class="fas fa-user me-2"></i>マイページ
+                    </a>
+                    <a class="portal-dropdown-item" href="{{ url_for('mypage_notifications') }}">
+                        通知 <span id="notification-dropdown-badge" class="badge bg-danger rounded-pill ms-1 d-none">0</span>
                     </a>
                     <a class="portal-dropdown-item" href="{{ url_for('mypage_settings') }}">
                         <i class="fas fa-cog me-2"></i>設定

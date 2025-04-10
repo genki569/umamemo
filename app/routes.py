@@ -5,7 +5,7 @@ from app.models import (
     RaceReview, RaceMemo, UserSettings, ReviewPurchase, 
     Notification, LoginHistory, SupportTicket, 
     MembershipChangeLog, PaymentLog, ShutubaEntry,
-    HorseMemo
+    HorseMemo, FavoriteHorse
 )
 from datetime import datetime, timedelta
 from flask_wtf import FlaskForm
@@ -3637,7 +3637,7 @@ def get_race_statistics(race_id):
         current_app.logger.error(f"Error getting race statistics: {str(e)}")
         return None
 
-def create_favorite_horse_entry_notifications(race_id, horse_id):
+def create_favorite_horse_notifications(race_id, horse_id):
     """お気に入り馬の出走通知を作成"""
     try:
         # お気に入りユーザーと必要な情報を一括取得
@@ -3704,13 +3704,13 @@ def register_race_entry(race_id):
         db.session.commit()
         
         # お気に入り馬の通知を作成
-        create_favorite_horse_entry_notifications(race_id, horse_id)
+        create_favorite_horse_notifications(race_id, horse_id)
         
         return jsonify({'status': 'success', 'message': '出走登録が完了しました'})
         
     except Exception as e:
         db.session.rollback()
-        current_app.logger.error(f"Error in register_race_entry: {str(e)}")
+        app.logger.error(f"Error in register_race_entry: {str(e)}")
         return jsonify({'status': 'error', 'message': 'エラーが発生しました'}), 500
 
 @app.route('/api/notifications/read', methods=['POST'])
@@ -4094,3 +4094,118 @@ def debug_models():
         return jsonify({
             'error': str(e)
         }), 500
+
+# 出馬表更新時の通知処理を追加
+def create_favorite_horse_notifications(race_id, entry_horse_ids):
+    """お気に入り馬の出走通知を作成する"""
+    try:
+        # レース情報を取得
+        race = Race.query.get(race_id)
+        if not race:
+            app.logger.error(f"Race not found: {race_id}")
+            return
+            
+        # お気に入りに登録しているユーザーを取得
+        favorites = FavoriteHorse.query.filter(FavoriteHorse.horse_id.in_(entry_horse_ids)).all()
+        
+        # ユーザーごとにグループ化
+        user_favorites = {}
+        for fav in favorites:
+            if fav.user_id not in user_favorites:
+                user_favorites[fav.user_id] = []
+            user_favorites[fav.user_id].append(fav.horse_id)
+        
+        # 通知設定がオンのユーザーにのみ通知
+        for user_id, horse_ids in user_favorites.items():
+            # ユーザーの通知設定を確認
+            settings = UserSettings.query.filter_by(user_id=user_id).first()
+            if not settings or not settings.notification_race:
+                continue
+                
+            # 各馬ごとに通知を作成
+            for horse_id in horse_ids:
+                horse = Horse.query.get(horse_id)
+                if not horse:
+                    continue
+                    
+                # 通知内容を作成
+                content = f"お気に入りの馬「{horse.name}」が{race.date.strftime('%Y年%m月%d日')}の{race.name}に出走予定です。"
+                link = url_for('race_detail', race_id=race_id)
+                
+                # 通知を保存
+                notification = Notification(
+                    user_id=user_id,
+                    type='favorite_horse_entry',
+                    content=content,
+                    link=link,
+                    horse_id=horse_id,
+                    race_id=race_id
+                )
+                db.session.add(notification)
+        
+        db.session.commit()
+        app.logger.info(f"Created favorite horse notifications for race: {race_id}")
+    except Exception as e:
+        db.session.rollback()
+        app.logger.error(f"Error creating notifications: {str(e)}")
+
+@app.route('/mypage/notifications')
+@login_required
+def mypage_notifications():
+    """通知一覧ページを表示"""
+    try:
+        page = request.args.get('page', 1, type=int)
+        
+        # ユーザー設定からページあたりの表示数を取得
+        user_settings = UserSettings.query.filter_by(user_id=current_user.id).first()
+        per_page = user_settings.items_per_page if user_settings else 10
+        
+        # 通知を取得（未読を先頭に、作成日時の降順）
+        notifications = Notification.query.filter_by(user_id=current_user.id).order_by(
+            Notification.is_read.asc(),
+            Notification.created_at.desc()
+        ).paginate(page=page, per_page=per_page)
+        
+        return render_template('mypage/notifications.html', notifications=notifications)
+    except Exception as e:
+        app.logger.error(f"Error in mypage_notifications: {str(e)}")
+        flash('通知の読み込み中にエラーが発生しました', 'error')
+        return redirect(url_for('mypage_home'))
+
+@app.route('/api/notifications/count')
+@login_required
+def notification_count():
+    """未読通知の数を返すAPI"""
+    try:
+        count = Notification.query.filter_by(user_id=current_user.id, is_read=False).count()
+        return jsonify({'count': count})
+    except Exception as e:
+        app.logger.error(f"Error in notification_count: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/notifications/mark-read', methods=['POST'])
+@login_required
+def mark_notifications_read():
+    """通知を既読にするAPI"""
+    try:
+        data = request.get_json()
+        notification_ids = data.get('notification_ids', [])
+        
+        if notification_ids:
+            # 指定された通知を既読に
+            Notification.query.filter(
+                Notification.id.in_(notification_ids),
+                Notification.user_id == current_user.id
+            ).update({Notification.is_read: True}, synchronize_session=False)
+        else:
+            # 全ての通知を既読に
+            Notification.query.filter_by(user_id=current_user.id).update(
+                {Notification.is_read: True}, synchronize_session=False
+            )
+            
+        db.session.commit()
+        return jsonify({'status': 'success'})
+    except Exception as e:
+        db.session.rollback()
+        app.logger.error(f"Error marking notifications as read: {str(e)}")
+        return jsonify({'status': 'error', 'message': str(e)}), 500

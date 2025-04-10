@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% from "_macros.html" import render_pagination %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>通知</h2>
+        <div>
+            <a href="{{ url_for('mypage_home') }}" class="btn btn-outline-secondary me-2">
+                <i class="fas fa-arrow-left me-2"></i>マイページに戻る
+            </a>
+            <button id="mark-all-read" class="btn btn-outline-primary">
+                <i class="fas fa-check-double me-2"></i>すべて既読にする
+            </button>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-body">
+            {% if notifications.items %}
+                <div class="list-group">
+                    {% for notification in notifications.items %}
+                        <a href="{{ notification.link }}" 
+                           class="list-group-item list-group-item-action notification-item {% if not notification.is_read %}unread{% endif %}"
+                           data-notification-id="{{ notification.id }}">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">
+                                    {% if not notification.is_read %}
+                                        <span class="badge bg-primary me-2">新着</span>
+                                    {% endif %}
+                                    {% if notification.type == 'favorite_horse_entry' %}
+                                        <i class="fas fa-horse me-2 text-success"></i>
+                                    {% elif notification.type == 'memo_comment' %}
+                                        <i class="fas fa-comment me-2 text-info"></i>
+                                    {% else %}
+                                        <i class="fas fa-bell me-2"></i>
+                                    {% endif %}
+                                    {{ notification.message }}
+                                </h6>
+                                <small class="text-muted">{{ notification.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+                            </div>
+                        </a>
+                    {% endfor %}
+                </div>
+                
+                <div class="mt-4">
+                    {{ render_pagination(notifications, 'mypage_notifications') }}
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-bell fa-3x text-muted mb-3"></i>
+                    <p class="lead">通知はありません</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 通知をクリックしたときの処理
+    document.querySelectorAll('.notification-item').forEach(item => {
+        item.addEventListener('click', function(e) {
+            const notificationId = this.dataset.notificationId;
+            
+            // 既読にする
+            fetch('/api/notifications/mark-read', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({
+                    notification_ids: [notificationId]
+                })
+            });
+            
+            // 未読表示を消す
+            this.classList.remove('unread');
+            const badge = this.querySelector('.badge.bg-primary');
+            if (badge) badge.remove();
+        });
+    });
+    
+    // すべて既読にするボタン
+    document.getElementById('mark-all-read').addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        fetch('/api/notifications/mark-read', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({})
+        }).then(response => response.json())
+          .then(data => {
+              if (data.status === 'success') {
+                  // ページをリロード
+                  location.reload();
+              }
+          });
+    });
+});
+</script>
+
+<style>
+.notification-item.unread {
+    background-color: #f8f9fa;
+    border-left: 3px solid #007bff;
+}
+</style>
+{% endblock %} 
