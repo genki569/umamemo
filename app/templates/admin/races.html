@@ -29,15 +29,15 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for race, entry_count, review_count in races %}
+                        {% for race in races.items %}
                         <tr>
                             <td>{{ race.id }}</td>
                             <td>{{ race.date.strftime('%Y/%m/%d') }}</td>
                             <td>{{ VENUE_NAMES.get(race.venue_id, '不明') }}</td>
                             <td>{{ race.name }}</td>
                             <td>{{ race.grade or '-' }}</td>
-                            <td>{{ entry_count }}</td>
-                            <td>{{ review_count }}</td>
+                            <td>{{ race.entries_count }}</td>
+                            <td>{{ race.review_count }}</td>
                             <td>
                                 <div class="btn-group btn-group-sm">
                                     <a href="{{ url_for('race_detail', race_id=race.id) }}" 

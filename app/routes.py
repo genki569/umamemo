@@ -5,7 +5,7 @@ from app.models import (
     RaceReview, RaceMemo, UserSettings, ReviewPurchase, 
     Notification, LoginHistory, SupportTicket, 
     MembershipChangeLog, PaymentLog, ShutubaEntry,
-    HorseMemo, 
+    HorseMemo, AccessLog  # AccessLog を追加
 )
 from datetime import datetime, timedelta
 from flask_wtf import FlaskForm
@@ -2181,36 +2181,20 @@ def admin_users():
 @login_required
 @admin_required
 def admin_races():
+    """管理者用レース一覧"""
     try:
         page = request.args.get('page', 1, type=int)
-        date_str = request.args.get('date')
         
-        # クエリの構築
-        query = Race.query
+        # レース一覧を取得
+        races = Race.query.order_by(Race.date.desc()).paginate(
+            page=page, per_page=20, error_out=False
+        )
         
-        if date_str:
-            try:
-                target_date = datetime.strptime(date_str, '%Y-%m-%d').date()
-                # start_timeではなくdateカラムでフィルタリング
-                query = query.filter(Race.date == target_date)
-            except ValueError:
-                flash('無効な日付形式です', 'error')
-                return redirect(url_for('admin.races'))
-        
-        # ページネーション
-        pagination = query.order_by(Race.date.desc(), Race.race_number.asc()).paginate(
-            page=page, per_page=20, error_out=False)
-        
-        return render_template('admin/races.html',
-                          races=pagination.items,
-                          pagination=pagination,
-                          selected_date=date_str,
-                          VENUE_NAMES=VENUE_NAMES)
-                        
+        return render_template('admin/races.html', races=races)
     except Exception as e:
-        current_app.logger.error(f"Error in admin races: {str(e)}")
-        flash('レース一覧の読み込み中にエラーが発生しました', 'error')
-        return redirect(url_for('admin.dashboard'))
+        app.logger.error(f"Error in admin races: {str(e)}")
+        flash('レース一覧の読み込み中にエラーが発生しました', 'danger')
+        return render_template('admin/races.html')
 
 @app.route('/admin/races/add', methods=['POST'])
 @login_required
