@@ -101,9 +101,8 @@
 document.addEventListener('DOMContentLoaded', function() {
     const settingsForm = document.getElementById('settings-form');
     
-    settingsForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
+    // 通知設定のみをAPIで処理
+    const saveNotificationSettings = function() {
         const formData = new FormData(settingsForm);
         const settings = {
             notification_race: formData.get('notification_race') === 'on',
@@ -122,16 +121,22 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             if (data.status === 'success') {
-                alert('設定を保存しました');
+                console.log('通知設定を保存しました');
             } else {
-                alert('設定の保存に失敗しました: ' + data.message);
+                console.error('通知設定の保存に失敗しました: ' + data.message);
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('設定の保存中にエラーが発生しました');
         });
-    });
+    };
+    
+    // 通知設定の変更を検知して保存
+    document.getElementById('notification_race').addEventListener('change', saveNotificationSettings);
+    document.getElementById('notification_memo').addEventListener('change', saveNotificationSettings);
+    document.getElementById('items_per_page').addEventListener('change', saveNotificationSettings);
+    
+    // フォーム送信はそのまま処理（プロフィール情報の更新）
 });
 </script>
 {% endblock %} 

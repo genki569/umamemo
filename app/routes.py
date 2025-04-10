@@ -3978,3 +3978,18 @@ def race_reviews_section(race_id):
     except Exception as e:
         current_app.logger.error(f"Error in race_reviews_section: {str(e)}")
         return "<div class='alert alert-danger'>回顧ノートの読み込み中にエラーが発生しました</div>"
+
+@app.route('/user/<int:user_id>')
+def user_profile(user_id):
+    """ユーザープロフィールページを表示"""
+    try:
+        user = User.query.get_or_404(user_id)
+        
+        # ユーザーの最近のレビューを取得
+        reviews = RaceReview.query.filter_by(user_id=user.id, is_public=True).order_by(RaceReview.created_at.desc()).limit(5).all()
+        
+        return render_template('user_profile.html', user=user, reviews=reviews)
+    except Exception as e:
+        app.logger.error(f"Error in user_profile: {str(e)}")
+        flash('ユーザー情報の取得中にエラーが発生しました', 'error')
+        return redirect(url_for('index'))
