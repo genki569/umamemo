@@ -61,14 +61,19 @@
                 </div>
                 <div class="card-body">
                     <div class="list-group">
-                        {% for review in recent_reviews %}
+                        {% for review_tuple in recent_reviews %}
+                        {% set review = review_tuple[0] %}
+                        {% set user = review_tuple[1] %}
+                        {% set race = review_tuple[2] %}
                         <div class="list-group-item">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
-                                    <h6 class="mb-0">{{ review.race.name }}</h6>
-                                    <small class="text-muted">by {{ review.user.username }}</small>
+                                    <h6 class="mb-0">{{ race.name }}</h6>
+                                    <small class="text-muted">{{ user.username }}</small>
                                 </div>
-                                <small class="text-muted">{{ review.created_at.strftime('%Y/%m/%d %H:%M') }}</small>
+                                <div class="text-end">
+                                    <small class="text-muted">{{ review.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+                                </div>
                             </div>
                         </div>
                         {% endfor %}
