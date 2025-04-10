@@ -2069,7 +2069,7 @@ def admin_dashboard():
         ).join(
             User, PaymentLog.user_id == User.id
         ).order_by(
-            PaymentLog.created_at.desc()  # payment_date の代わりに created_at を使用
+            PaymentLog.created_at.desc()
         ).limit(5).all()
         
         # 最近のレビュー
