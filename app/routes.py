@@ -3647,7 +3647,7 @@ def create_favorite_horse_notifications(race_id, horse_id):
             Race.name,
             Race.date
         ).join(
-            Favorite, User.id == Favorite.user_id
+            Favorite, User.id == Favorite.user_id  # FavoriteHorseではなくFavoriteを使用
         ).join(
             Horse, Favorite.horse_id == Horse.id
         ).join(
@@ -3661,7 +3661,7 @@ def create_favorite_horse_notifications(race_id, horse_id):
             Notification(
                 user_id=user_id,
                 type='favorite_horse_entry',
-                content=f'お気に入りの{horse_name}が{race_name}({race_date.strftime("%Y/%m/%d")})に出走予定です',
+                message=f'お気に入りの{horse_name}が{race_name}({race_date.strftime("%Y/%m/%d")})に出走予定です',  # contentではなくmessage
                 related_id=race_id,
                 is_read=False
             )
@@ -4106,7 +4106,7 @@ def create_favorite_horse_notifications(race_id, entry_horse_ids):
             return
             
         # お気に入りに登録しているユーザーを取得
-        favorites = FavoriteHorse.query.filter(FavoriteHorse.horse_id.in_(entry_horse_ids)).all()
+        favorites = Favorite.query.filter(Favorite.horse_id.in_(entry_horse_ids)).all()
         
         # ユーザーごとにグループ化
         user_favorites = {}
