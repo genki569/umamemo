@@ -43,9 +43,8 @@
                 <hr class="bg-light">
                 <ul class="nav flex-column">
                     <li class="nav-item">
-                        <a class="nav-link {% if request.endpoint == 'admin_dashboard' %}active{% endif %}" 
-                           href="{{ url_for('admin_dashboard') }}">
-                            <i class="fas fa-tachometer-alt me-2"></i>ダッシュボード
+                        <a href="{{ url_for('admin_dashboard') }}" class="nav-link {% if request.endpoint == 'admin_dashboard' %}active{% endif %}">
+                            <i class="fas fa-tachometer-alt"></i> ダッシュボード
                         </a>
                     </li>
                     <li class="nav-item">

@@ -2184,13 +2184,35 @@ def admin_races():
     """管理者用レース一覧"""
     try:
         page = request.args.get('page', 1, type=int)
+        selected_date = request.args.get('date', None)
+        
+        # クエリの作成
+        query = Race.query
+        
+        # 日付による絞り込み
+        if selected_date:
+            date_obj = datetime.strptime(selected_date, '%Y-%m-%d')
+            query = query.filter(Race.date == date_obj)
         
         # レース一覧を取得
-        races = Race.query.order_by(Race.date.desc()).paginate(
+        races = query.order_by(Race.date.desc()).paginate(
             page=page, per_page=20, error_out=False
         )
         
-        return render_template('admin/races.html', races=races)
+        # 各レースのエントリー数とレビュー数を計算
+        for race in races.items:
+            race.entries_count = Entry.query.filter_by(race_id=race.id).count()
+            race.review_count = RaceReview.query.filter_by(race_id=race.id).count()
+        
+        # 総ページ数を計算
+        total_pages = races.pages
+        
+        return render_template('admin/races.html', 
+                              races=races, 
+                              page=page, 
+                              total_pages=total_pages,
+                              selected_date=selected_date,
+                              VENUE_NAMES=VENUE_NAMES)
     except Exception as e:
         app.logger.error(f"Error in admin races: {str(e)}")
         flash('レース一覧の読み込み中にエラーが発生しました', 'danger')
