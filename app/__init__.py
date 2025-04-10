@@ -58,3 +58,9 @@ from app import routes
 app.logger.info('Routes registered:')
 for rule in app.url_map.iter_rules():
     app.logger.info(f'Route: {rule.endpoint} -> {rule.rule}')
+
+# アップロードディレクトリの作成
+upload_dir = app.config['UPLOAD_FOLDER']
+profiles_dir = os.path.join(upload_dir, 'profiles')
+if not os.path.exists(profiles_dir):
+    os.makedirs(profiles_dir, exist_ok=True)
