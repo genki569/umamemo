@@ -385,7 +385,7 @@ class Entry(db.Model):
 class Jockey(db.Model):
     __tablename__ = 'jockeys'
     
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.BigInteger, primary_key=True)  # BigIntegerのままにする
     name = db.Column(db.String(100), nullable=False)
     
     entries = db.relationship('Entry',

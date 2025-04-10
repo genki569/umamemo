@@ -3044,50 +3044,67 @@ def commercial_transactions():
 def admin_analytics():
     """管理者用アクセス分析ページ"""
     try:
+        # 基本統計情報
+        stats = {
+            'total_users': User.query.count(),
+            'total_reviews': RaceReview.query.count(),
+            'total_horses': Horse.query.count()
+        }
+        
         # 直近7日間のアクセス統計
         end_date = datetime.utcnow()
         start_date = end_date - timedelta(days=7)
         
-        # 日別アクセス数
-        daily_access = db.session.query(
-            func.date(AccessLog.timestamp).label('date'),
-            func.count().label('count')
-        ).filter(
-            AccessLog.timestamp.between(start_date, end_date)
-        ).group_by(
-            func.date(AccessLog.timestamp)
-        ).order_by(
-            func.date(AccessLog.timestamp)
-        ).all()
+        # 日別アクセス数（テーブルが存在する場合のみ）
+        daily_access = []
+        page_access = []
+        user_access = []
         
-        # ページ別アクセス数
-        page_access = db.session.query(
-            AccessLog.path,
-            func.count().label('count')
-        ).filter(
-            AccessLog.timestamp.between(start_date, end_date)
-        ).group_by(
-            AccessLog.path
-        ).order_by(
-            func.count().desc()
-        ).limit(10).all()
-        
-        # ユーザー別アクセス数
-        user_access = db.session.query(
-            User.username,
-            func.count().label('count')
-        ).join(
-            AccessLog, User.id == AccessLog.user_id
-        ).filter(
-            AccessLog.timestamp.between(start_date, end_date),
-            AccessLog.user_id.isnot(None)
-        ).group_by(
-            User.username
-        ).order_by(
-            func.count().desc()
-        ).limit(10).all()
+        try:
+            # 日別アクセス数
+            daily_access = db.session.query(
+                func.date(AccessLog.timestamp).label('date'),
+                func.count().label('count')
+            ).filter(
+                AccessLog.timestamp.between(start_date, end_date)
+            ).group_by(
+                func.date(AccessLog.timestamp)
+            ).order_by(
+                func.date(AccessLog.timestamp)
+            ).all()
+            
+            # ページ別アクセス数
+            page_access = db.session.query(
+                AccessLog.path,
+                func.count().label('count')
+            ).filter(
+                AccessLog.timestamp.between(start_date, end_date)
+            ).group_by(
+                AccessLog.path
+            ).order_by(
+                func.count().desc()
+            ).limit(10).all()
+            
+            # ユーザー別アクセス数
+            user_access = db.session.query(
+                User.username,
+                func.count().label('count')
+            ).join(
+                AccessLog, User.id == AccessLog.user_id
+            ).filter(
+                AccessLog.timestamp.between(start_date, end_date),
+                AccessLog.user_id.isnot(None)
+            ).group_by(
+                User.username
+            ).order_by(
+                func.count().desc()
+            ).limit(10).all()
+        except Exception as e:
+            app.logger.warning(f"アクセスログの取得中にエラーが発生しました: {str(e)}")
+            # エラーが発生しても処理を続行
         
         return render_template('admin/analytics.html',
+                              stats=stats,
                               daily_access=daily_access,
                               page_access=page_access,
                               user_access=user_access,
