@@ -786,6 +786,11 @@ class ShutubaEntry(db.Model):
         ).limit(limit).all()
 
 class AccessLog(db.Model):
+    """
+    アクセスログを記録するモデル
+    
+    ユーザーのアクセス履歴を追跡し、アナリティクスに使用します。
+    """
     __tablename__ = 'access_logs'
     
     id = db.Column(db.Integer, primary_key=True)
