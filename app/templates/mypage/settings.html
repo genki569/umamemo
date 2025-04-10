@@ -2,6 +2,13 @@
 
 {% block content %}
 <div class="container mt-4">
+    <!-- 戻るボタンを追加 -->
+    <div class="mb-4">
+        <a href="{{ url_for('mypage_home') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i>マイページに戻る
+        </a>
+    </div>
+
     <h2>プロフィール設定</h2>
 
     <form method="POST" action="{{ url_for('mypage_settings') }}" enctype="multipart/form-data" id="settings-form">
@@ -89,8 +96,14 @@
             </div>
         </div>
 
-        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-            <button type="submit" class="btn btn-primary">保存する</button>
+        <!-- 送信ボタンの上にも戻るボタンを追加 -->
+        <div class="d-flex justify-content-between mb-4">
+            <a href="{{ url_for('mypage_home') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-times me-2"></i>キャンセル
+            </a>
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save me-2"></i>設定を保存
+            </button>
         </div>
     </form>
 </div>
@@ -139,4 +152,35 @@ document.addEventListener('DOMContentLoaded', function() {
     // フォーム送信はそのまま処理（プロフィール情報の更新）
 });
 </script>
+{% endblock %}
+
+{% block styles %}
+{{ super() }}
+<style>
+    .btn-outline-secondary {
+        border-color: #e0e0e0;
+        color: #666;
+    }
+    .btn-outline-secondary:hover {
+        background-color: #f8f9fa;
+        color: #333;
+    }
+    
+    /* ボタングループのスタイル */
+    .action-buttons {
+        display: flex;
+        gap: 10px;
+    }
+    
+    /* モバイル対応 */
+    @media (max-width: 576px) {
+        .action-buttons {
+            flex-direction: column;
+            width: 100%;
+        }
+        .action-buttons .btn {
+            margin-bottom: 10px;
+        }
+    }
+</style>
 {% endblock %} 
