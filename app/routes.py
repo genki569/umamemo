@@ -1471,64 +1471,41 @@ def delete_race_memo(race_id, memo_id):
 @app.route('/mypage')
 @login_required
 def mypage_home():
+    """マイページのホーム画面を表示"""
     try:
-        # レースメモを取得（最新5件）
-        race_memos = db.session.query(RaceMemo, Race)\
-            .join(Race, RaceMemo.race_id == Race.id)\
-            .filter(RaceMemo.user_id == current_user.id)\
-            .order_by(RaceMemo.created_at.desc())\
-            .limit(5)\
-            .all()
-
-        # 馬メモを取得（最新5件）
-        horse_memos = db.session.query(Horse)\
-            .filter(Horse.memo.isnot(None))\
-            .order_by(Horse.updated_at.desc())\
-            .limit(5)\
-            .all()
-
-        # 馬メモのJSONをパース
-        for horse in horse_memos:
-            if horse.memo:
-                try:
-                    memos = json.loads(horse.memo)
-                    # 最新のメモ内容を取得
-                    if memos and isinstance(memos, list) and len(memos) > 0:
-                        horse.memo = memos[-1].get('content', '')
-                except json.JSONDecodeError:
-                    horse.memo = ''
-
-        # 通知を取得
-        notifications = Notification.query\
-            .filter_by(user_id=current_user.id)\
-            .order_by(Notification.created_at.desc())\
-            .limit(5)\
-            .all()
-            
-        # レビューを取得（最新5件）
-        recent_reviews = RaceReview.query\
-            .filter_by(user_id=current_user.id)\
-            .join(Race, RaceReview.race_id == Race.id)\
-            .order_by(RaceReview.created_at.desc())\
-            .limit(5)\
-            .all()
-
-        app.logger.info(f"Found {len(race_memos)} race memos, {len(horse_memos)} horse memos, and {len(recent_reviews)} reviews for user {current_user.id}")
-
-        return render_template('mypage/index.html',
-                            notifications=notifications,
-                            race_memos=race_memos,
-                            horse_memos=horse_memos,
-                            recent_reviews=recent_reviews)
-
+        # ユーザー設定を取得
+        user_settings = UserSettings.query.filter_by(user_id=current_user.id).first()
+        
+        # 設定が存在しない場合は作成
+        if not user_settings:
+            user_settings = UserSettings(user_id=current_user.id)
+            db.session.add(user_settings)
+            db.session.commit()
+        
+        # ユーザーの最近のレースメモを取得
+        race_memos = RaceMemo.query.filter_by(user_id=current_user.id).order_by(RaceMemo.created_at.desc()).limit(5).all()
+        
+        # ユーザーの最近の馬メモを取得
+        horse_memos = HorseMemo.query.filter_by(user_id=current_user.id).order_by(HorseMemo.created_at.desc()).limit(5).all()
+        
+        # ユーザーの最近のレビューを取得
+        reviews = RaceReview.query.filter_by(user_id=current_user.id).order_by(RaceReview.created_at.desc()).limit(5).all()
+        
+        # お気に入り馬を取得
+        favorites = Favorite.query.filter_by(user_id=current_user.id).order_by(Favorite.created_at.desc()).limit(5).all()
+        
+        app.logger.info(f"Found {len(race_memos)} race memos, {len(horse_memos)} horse memos, and {len(reviews)} reviews for user {current_user.id}")
+        
+        return render_template('mypage/index.html', 
+                              race_memos=race_memos,
+                              horse_memos=horse_memos,
+                              reviews=reviews,
+                              favorites=favorites,
+                              settings=user_settings)
     except Exception as e:
         app.logger.error(f"Error in mypage_home: {str(e)}")
-        flash('データの取得中にエラーが発生しました', 'error')
-        return render_template('mypage/index.html',
-                            notifications=[],
-                            race_memos=[],
-                            horse_memos=[],
-                            recent_reviews=[])
+        flash('マイページの読み込み中にエラーが発生しました', 'error')
+        return redirect(url_for('index'))
 
 @app.route('/mypage/reviews')
 @login_required
@@ -3985,7 +3962,7 @@ def user_profile(user_id):
     try:
         user = User.query.get_or_404(user_id)
         
-        # ユーザーの最近のレビューを取得
+        # ユーザーの公開レビューを取得
         reviews = RaceReview.query.filter_by(user_id=user.id, is_public=True).order_by(RaceReview.created_at.desc()).limit(5).all()
         
         return render_template('user_profile.html', user=user, reviews=reviews)
@@ -3993,3 +3970,47 @@ def user_profile(user_id):
         app.logger.error(f"Error in user_profile: {str(e)}")
         flash('ユーザー情報の取得中にエラーが発生しました', 'error')
         return redirect(url_for('index'))
+
+@app.route('/debug/user_settings')
+@login_required
+def debug_user_settings():
+    """ユーザー設定のデバッグ情報を表示"""
+    try:
+        # ユーザー設定を取得
+        user_settings = UserSettings.query.filter_by(user_id=current_user.id).first()
+        
+        # ユーザー情報
+        user_info = {
+            'id': current_user.id,
+            'username': current_user.username,
+            'email': current_user.email,
+            'profile_image': current_user.profile_image,
+            'introduction': current_user.introduction,
+            'twitter': current_user.twitter,
+            'note': current_user.note,
+            'blog': current_user.blog,
+            'youtube': current_user.youtube,
+            'specialties': current_user.specialties,
+            'analysis_style': current_user.analysis_style
+        }
+        
+        # 設定情報
+        settings_info = None
+        if user_settings:
+            settings_info = {
+                'id': user_settings.id,
+                'user_id': user_settings.user_id,
+                'notification_race': user_settings.notification_race,
+                'notification_memo': user_settings.notification_memo,
+                'items_per_page': user_settings.items_per_page
+            }
+        
+        return jsonify({
+            'user': user_info,
+            'settings': settings_info
+        })
+    except Exception as e:
+        app.logger.error(f"Error in debug_user_settings: {str(e)}")
+        return jsonify({
+            'error': str(e)
+        }), 500

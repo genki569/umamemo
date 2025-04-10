@@ -112,6 +112,31 @@
                     {% endif %}
                 </div>
             </div>
+            
+            {% if settings %}
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">設定情報</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <strong>レース通知:</strong> 
+                        <span class="badge {% if settings.notification_race %}bg-success{% else %}bg-secondary{% endif %}">
+                            {{ '有効' if settings.notification_race else '無効' }}
+                        </span>
+                    </div>
+                    <div class="mb-3">
+                        <strong>メモ通知:</strong> 
+                        <span class="badge {% if settings.notification_memo %}bg-success{% else %}bg-secondary{% endif %}">
+                            {{ '有効' if settings.notification_memo else '無効' }}
+                        </span>
+                    </div>
+                    <div class="mb-3">
+                        <strong>ページあたりの表示件数:</strong> {{ settings.items_per_page }}件
+                    </div>
+                </div>
+            </div>
+            {% endif %}
         </div>
     </div>
 </div>
