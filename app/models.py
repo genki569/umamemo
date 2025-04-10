@@ -710,11 +710,11 @@ class PaymentLog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     amount = db.Column(db.Integer, nullable=False)
-    payment_type = db.Column(db.String(50), nullable=False)
-    status = db.Column(db.String(20), nullable=False)
-    transaction_id = db.Column(db.String(100))
+    plan_type = db.Column(db.String(20), nullable=False)
+    duration_days = db.Column(db.Integer, nullable=False)
+    payment_date = db.Column(db.DateTime)
+    status = db.Column(db.String(20))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    payment_date = db.Column(db.DateTime, default=datetime.utcnow)
     
     user = db.relationship('User', backref=db.backref('payment_logs', lazy='dynamic'))
 
