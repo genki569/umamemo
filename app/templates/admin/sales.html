@@ -99,25 +99,27 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for log in payment_logs %}
-                        <tr>
-                            <td>{{ log.created_at.strftime('%Y/%m/%d %H:%M') }}</td>
-                            <td>{{ log.user.username }}</td>
-                            <td>{{ log.type_display }}</td>
-                            <td>{{ log.amount|format_yen }}</td>
-                            <td>{{ log.points|format_number if log.points else '-' }}</td>
-                            <td>
-                                <span class="badge bg-{{ log.status_color }}">
-                                    {{ log.status_display }}
-                                </span>
-                            </td>
-                            <td>
-                                <button type="button" class="btn btn-sm btn-outline-primary"
-                                        onclick="viewTransaction({{ log.id }})">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                            </td>
-                        </tr>
+                        {% for sale_tuple in sales.items %}
+                            {% set sale = sale_tuple[0] %}
+                            {% set user = sale_tuple[1] %}
+                            <tr>
+                                <td>{{ sale.created_at.strftime('%Y/%m/%d %H:%M') }}</td>
+                                <td>{{ user.username }}</td>
+                                <td>{{ sale.plan_type }}</td>
+                                <td>{{ sale.amount|format_yen }}</td>
+                                <td>{{ sale.points|format_number if sale.points else '-' }}</td>
+                                <td>
+                                    <span class="badge bg-{{ sale.status_color }}">
+                                        {{ sale.status_display }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-sm btn-outline-primary"
+                                            onclick="viewTransaction({{ sale.id }})">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </td>
+                            </tr>
                         {% endfor %}
                     </tbody>
                 </table>

@@ -3210,27 +3210,28 @@ def api_review_stats():
 
 @app.route('/admin/reviews')
 @login_required
+@admin_required
 def admin_reviews():
-    """管理者用レビュー管理ページ"""
-    if not current_user.is_admin:
-        flash('管理者権限が必要です', 'danger')
-        return redirect(url_for('index'))
-        
+    """管理者用レビュー一覧"""
     try:
         page = request.args.get('page', 1, type=int)
-        reviews = RaceReview.query.order_by(RaceReview.created_at.desc()).paginate(
-            page=page, per_page=10, error_out=False)
-            
-        # AppenderQueryをリストに変換
-        reviews_count = RaceReview.query.count()  # len()の代わりにcount()を使用
         
-        return render_template('admin/reviews.html', 
-                              reviews=reviews, 
-                              reviews_count=reviews_count)
+        # レビュー一覧を取得
+        reviews = db.session.query(
+            RaceReview, User, Race
+        ).join(
+            User, RaceReview.user_id == User.id
+        ).join(
+            Race, RaceReview.race_id == Race.id
+        ).order_by(
+            RaceReview.created_at.desc()
+        ).paginate(page=page, per_page=20, error_out=False)
+        
+        return render_template('admin/reviews.html', reviews=reviews, page=page)
     except Exception as e:
         app.logger.error(f"Error in admin reviews: {str(e)}")
-        flash('レビュー情報の取得中にエラーが発生しました', 'danger')
-        return redirect(url_for('admin_dashboard'))
+        flash('レビュー一覧の読み込み中にエラーが発生しました', 'danger')
+        return render_template('admin/reviews.html')
 
 @app.route('/admin/api/reviews/<int:review_id>')
 @login_required
@@ -3298,104 +3299,30 @@ def admin_review_delete(review_id):
 @login_required
 @admin_required
 def admin_sales():
-    """売上/ポイント管理画面"""
+    """管理者用売上一覧"""
     try:
         page = request.args.get('page', 1, type=int)
-        type_filter = request.args.get('type')
         
-        # 今月の日範囲
-        today = datetime.now()
-        this_month_start = datetime(today.year, today.month, 1)
-        this_month_end = datetime(today.year, today.month, monthrange(today.year, today.month)[1], 23, 59, 59)
+        # 売上一覧を取得
+        sales = db.session.query(
+            PaymentLog, User
+        ).join(
+            User, PaymentLog.user_id == User.id
+        ).order_by(
+            PaymentLog.created_at.desc()
+        ).paginate(page=page, per_page=20, error_out=False)
         
-        # 先月の日付範囲
-        last_month = today - timedelta(days=today.day)
-        last_month_start = datetime(last_month.year, last_month.month, 1)
-        last_month_end = datetime(last_month.year, last_month.month, monthrange(last_month.year, last_month.month)[1], 23, 59, 59)
-
-        # 今月の売上集計
-        monthly_sales = db.session.query(func.sum(PaymentLog.amount))\
-            .filter(
-                PaymentLog.status == 'completed',
-                PaymentLog.created_at.between(this_month_start, this_month_end)
-            ).scalar() or 0
-
-        # 先月の売上集計
-        last_month_sales = db.session.query(func.sum(PaymentLog.amount))\
-            .filter(
-                PaymentLog.status == 'completed',
-                PaymentLog.created_at.between(last_month_start, last_month_end)
-            ).scalar() or 0
-
-        # 今月のポイント購入集計
-        monthly_points = db.session.query(func.sum(PaymentLog.points))\
-            .filter(
-                PaymentLog.status == 'completed',
-                PaymentLog.type == 'point',
-                PaymentLog.created_at.between(this_month_start, this_month_end)
-            ).scalar() or 0
-
-        # 先月のポイント購入集計
-        last_month_points = db.session.query(func.sum(PaymentLog.points))\
-            .filter(
-                PaymentLog.status == 'completed',
-                PaymentLog.type == 'point',
-                PaymentLog.created_at.between(last_month_start, last_month_end)
-            ).scalar() or 0
-
-        # 今月のレビュー購入数
-        monthly_reviews = db.session.query(func.count(ReviewPurchase.id))\
-            .filter(ReviewPurchase.created_at.between(this_month_start, this_month_end))\
-            .scalar() or 0
-
-        # 先月のレビュー購入数
-        last_month_reviews = db.session.query(func.count(ReviewPurchase.id))\
-            .filter(ReviewPurchase.created_at.between(last_month_start, last_month_end))\
-            .scalar() or 0
-
-        # 今月のプレミアム会員数
-        monthly_premium = db.session.query(func.count(User.id))\
-            .filter(
-                User.is_premium == True,
-                User.premium_expired_at > this_month_end
-            ).scalar() or 0
-
-        # 先月のプレミアム会員数
-        last_month_premium = db.session.query(func.count(User.id))\
-            .filter(
-                User.is_premium == True,
-                User.premium_expired_at > last_month_end
-            ).scalar() or 0
-
-        # 取引履歴のクエリ
-        query = PaymentLog.query.join(User)
+        # 売上集計
+        total_sales = db.session.query(func.sum(PaymentLog.amount)).scalar() or 0
         
-        if type_filter:
-            query = query.filter(PaymentLog.type == type_filter)
-        
-        # ページネーション
-        pagination = query.order_by(PaymentLog.created_at.desc()).paginate(
-            page=page,
-            per_page=20,
-            error_out=False
-        )
-        
-        return render_template('admin/sales.html',
-                           monthly_sales=monthly_sales,
-                           monthly_diff=monthly_sales - last_month_sales,
-                           monthly_points=monthly_points,
-                           monthly_points_diff=monthly_points - last_month_points,
-                           monthly_reviews=monthly_reviews,
-                           monthly_reviews_diff=monthly_reviews - last_month_reviews,
-                           monthly_premium=monthly_premium,
-                           monthly_premium_diff=monthly_premium - last_month_premium,
-                           payment_logs=pagination.items,
-                           pagination=pagination)
-                           
+        return render_template('admin/sales.html', 
+                              sales=sales, 
+                              page=page, 
+                              total_sales=total_sales)
     except Exception as e:
         app.logger.error(f"Error in admin sales: {str(e)}")
-        flash('売上情報の読み込み中にエラーが発生しました', 'error')
-        return redirect(url_for('admin_dashboard'))
+        flash('売上一覧の読み込み中にエラーが発生しました', 'danger')
+        return render_template('admin/sales.html')
 
 @app.route('/admin/api/sales-stats')
 @login_required

@@ -34,46 +34,31 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for review in reviews %}
-                        <tr>
-                            <td>{{ review.id }}</td>
-                            <td>{{ review.created_at.strftime('%Y/%m/%d %H:%M') }}</td>
-                            <td>
-                                <a href="{{ url_for('race_detail', race_id=review.race.id) }}" target="_blank">
-                                    {{ review.race.name }}
-                                </a>
-                            </td>
-                            <td>{{ review.user.username }}</td>
-                            <td>{{ review.rating }}/5</td>
-                            <td>{{ review.price }}pt</td>
-                            <td>{{ review.purchases|length }}</td>
-                            <td>
-                                {% if review.reports|length > 0 %}
-                                <span class="badge bg-danger">{{ review.reports|length }}</span>
-                                {% endif %}
-                            </td>
-                            <td>
-                                <span class="badge {% if review.is_public %}bg-success{% else %}bg-secondary{% endif %}">
-                                    {{ '公開' if review.is_public else '非公開' }}
-                                </span>
-                            </td>
-                            <td>
-                                <div class="btn-group btn-group-sm">
-                                    <button type="button" class="btn btn-outline-primary"
-                                            onclick="viewReview({{ review.id }})">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                    <button type="button" class="btn btn-outline-warning"
-                                            onclick="toggleStatus({{ review.id }})">
-                                        <i class="fas fa-sync-alt"></i>
-                                    </button>
-                                    <button type="button" class="btn btn-outline-danger"
-                                            onclick="confirmDelete({{ review.id }})">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
+                        {% for review_tuple in reviews.items %}
+                            {% set review = review_tuple[0] %}
+                            {% set user = review_tuple[1] %}
+                            {% set race = review_tuple[2] %}
+                            <tr>
+                                <td>{{ review.id }}</td>
+                                <td>{{ user.username }}</td>
+                                <td>{{ race.name }}</td>
+                                <td>{{ review.title }}</td>
+                                <td>{{ review.is_premium }}</td>
+                                <td>{{ review.price }}</td>
+                                <td>{{ review.created_at.strftime('%Y/%m/%d %H:%M') }}</td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <a href="{{ url_for('review_detail', review_id=review.id) }}" 
+                                           class="btn btn-outline-primary">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <button type="button" class="btn btn-outline-danger"
+                                                onclick="confirmDelete({{ review.id }})">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
                         {% endfor %}
                     </tbody>
                 </table>

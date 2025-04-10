@@ -797,10 +797,10 @@ class AccessLog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
     ip_address = db.Column(db.String(50))
-    path = db.Column(db.String(200))
+    path = db.Column(db.String(255))
     method = db.Column(db.String(10))
     status_code = db.Column(db.Integer)
-    user_agent = db.Column(db.String(200))
+    user_agent = db.Column(db.String(255))
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
     
     # リレーションシップ
