@@ -710,10 +710,10 @@ class PaymentLog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     amount = db.Column(db.Integer, nullable=False)
-    plan_type = db.Column(db.String(20), nullable=False)  # monthly, half_yearly, yearly
-    duration_days = db.Column(db.Integer, nullable=False)
-    payment_date = db.Column(db.DateTime, default=datetime.utcnow)
-    status = db.Column(db.String(20), default='completed')  # pending, completed, failed
+    payment_type = db.Column(db.String(50), nullable=False)
+    status = db.Column(db.String(20), nullable=False)
+    transaction_id = db.Column(db.String(100))
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
     user = db.relationship('User', backref=db.backref('payment_logs', lazy='dynamic'))
 
@@ -784,4 +784,19 @@ class ShutubaEntry(db.Model):
         ).order_by(
             Race.date.desc()
         ).limit(limit).all()
+
+class AccessLog(db.Model):
+    __tablename__ = 'access_logs'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    ip_address = db.Column(db.String(50))
+    path = db.Column(db.String(200))
+    method = db.Column(db.String(10))
+    status_code = db.Column(db.Integer)
+    user_agent = db.Column(db.String(200))
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    # リレーションシップ
+    user = db.relationship('User', backref=db.backref('access_logs', lazy='dynamic'))
 

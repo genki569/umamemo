@@ -1,50 +1,87 @@
 {% extends "admin/base.html" %}
 
 {% block content %}
-<div class="analytics-dashboard">
-    <!-- 成長率グラフ -->
+<div class="container-fluid">
+    <h1 class="h3 mb-4 text-gray-800">アクセス分析</h1>
+    
     <div class="row">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">
-                    <h5>ユーザー成長率</h5>
+        <div class="col-xl-12">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">日別アクセス数</h6>
+                    <div class="dropdown no-arrow">
+                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
+                            aria-labelledby="dropdownMenuLink">
+                            <div class="dropdown-header">期間:</div>
+                            <a class="dropdown-item" href="?period=7">7日間</a>
+                            <a class="dropdown-item" href="?period=30">30日間</a>
+                            <a class="dropdown-item" href="?period=90">90日間</a>
+                        </div>
+                    </div>
                 </div>
                 <div class="card-body">
-                    <canvas id="userGrowthChart"></canvas>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">
-                    <h5>プレミアム会員統計</h5>
-                </div>
-                <div class="card-body">
-                    <canvas id="premiumStatsChart"></canvas>
+                    <div class="chart-area">
+                        <canvas id="dailyAccessChart"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- 詳細な統計情報 -->
-    <div class="row mt-4">
-        <div class="col-md-12">
-            <div class="card">
-                <div class="card-header">
-                    <h5>レビュー分析</h5>
+    
+    <div class="row">
+        <div class="col-xl-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">ページ別アクセス数</h6>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table">
+                        <table class="table table-bordered" width="100%" cellspacing="0">
                             <thead>
                                 <tr>
-                                    <th>指標</th>
-                                    <th>値</th>
-                                    <th>前月比</th>
+                                    <th>ページ</th>
+                                    <th>アクセス数</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <!-- レビュー統計データ -->
+                                {% for page in page_access %}
+                                <tr>
+                                    <td>{{ page.path }}</td>
+                                    <td>{{ page.count }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">ユーザー別アクセス数</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>ユーザー</th>
+                                    <th>アクセス数</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user in user_access %}
+                                <tr>
+                                    <td>{{ user.username }}</td>
+                                    <td>{{ user.count }}</td>
+                                </tr>
+                                {% endfor %}
                             </tbody>
                         </table>
                     </div>
@@ -53,10 +90,91 @@
         </div>
     </div>
 </div>
+{% endblock %}
 
-<!-- Chart.js の読み込み -->
+{% block scripts %}
+{{ super() }}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-// グラフの初期化コード
+    // 日別アクセス数のグラフ
+    var ctx = document.getElementById('dailyAccessChart').getContext('2d');
+    var dailyAccessChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: [{% for day in daily_access %}'{{ day.date }}'{% if not loop.last %}, {% endif %}{% endfor %}],
+            datasets: [{
+                label: 'アクセス数',
+                data: [{% for day in daily_access %}{{ day.count }}{% if not loop.last %}, {% endif %}{% endfor %}],
+                backgroundColor: 'rgba(78, 115, 223, 0.05)',
+                borderColor: 'rgba(78, 115, 223, 1)',
+                pointRadius: 3,
+                pointBackgroundColor: 'rgba(78, 115, 223, 1)',
+                pointBorderColor: 'rgba(78, 115, 223, 1)',
+                pointHoverRadius: 5,
+                pointHoverBackgroundColor: 'rgba(78, 115, 223, 1)',
+                pointHoverBorderColor: 'rgba(78, 115, 223, 1)',
+                pointHitRadius: 10,
+                pointBorderWidth: 2,
+                lineTension: 0.3
+            }]
+        },
+        options: {
+            maintainAspectRatio: false,
+            layout: {
+                padding: {
+                    left: 10,
+                    right: 25,
+                    top: 25,
+                    bottom: 0
+                }
+            },
+            scales: {
+                xAxes: [{
+                    time: {
+                        unit: 'date'
+                    },
+                    gridLines: {
+                        display: false,
+                        drawBorder: false
+                    },
+                    ticks: {
+                        maxTicksLimit: 7
+                    }
+                }],
+                yAxes: [{
+                    ticks: {
+                        maxTicksLimit: 5,
+                        padding: 10,
+                        beginAtZero: true
+                    },
+                    gridLines: {
+                        color: "rgb(234, 236, 244)",
+                        zeroLineColor: "rgb(234, 236, 244)",
+                        drawBorder: false,
+                        borderDash: [2],
+                        zeroLineBorderDash: [2]
+                    }
+                }]
+            },
+            legend: {
+                display: false
+            },
+            tooltips: {
+                backgroundColor: "rgb(255,255,255)",
+                bodyFontColor: "#858796",
+                titleMarginBottom: 10,
+                titleFontColor: '#6e707e',
+                titleFontSize: 14,
+                borderColor: '#dddfeb',
+                borderWidth: 1,
+                xPadding: 15,
+                yPadding: 15,
+                displayColors: false,
+                intersect: false,
+                mode: 'index',
+                caretPadding: 10
+            }
+        }
+    });
 </script>
 {% endblock %}
