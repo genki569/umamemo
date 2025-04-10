@@ -64,3 +64,27 @@ upload_dir = app.config['UPLOAD_FOLDER']
 profiles_dir = os.path.join(upload_dir, 'profiles')
 if not os.path.exists(profiles_dir):
     os.makedirs(profiles_dir, exist_ok=True)
+
+# アクセスログを記録するミドルウェア
+@app.after_request
+def log_request(response):
+    if not request.path.startswith('/static/') and not request.path.startswith('/favicon.ico'):
+        try:
+            user_id = current_user.id if current_user.is_authenticated else None
+            
+            access_log = AccessLog(
+                user_id=user_id,
+                ip_address=request.remote_addr,
+                path=request.path,
+                method=request.method,
+                status_code=response.status_code,
+                user_agent=request.user_agent.string if request.user_agent else None
+            )
+            
+            db.session.add(access_log)
+            db.session.commit()
+        except Exception as e:
+            app.logger.error(f"Error logging request: {str(e)}")
+            db.session.rollback()
+    
+    return response
