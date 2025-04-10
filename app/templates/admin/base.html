@@ -78,6 +78,12 @@
                             <i class="fas fa-yen-sign me-2"></i>売上管理
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'admin_analytics' %}active{% endif %}" 
+                           href="{{ url_for('admin_analytics') }}">
+                            <i class="fas fa-chart-line me-2"></i>アクセス分析
+                        </a>
+                    </li>
                     <li class="nav-item mt-4">
                         <a class="nav-link" href="{{ url_for('index') }}">
                             <i class="fas fa-arrow-left me-2"></i>サイトに戻る
