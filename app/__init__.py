@@ -68,7 +68,6 @@ if not os.path.exists(profiles_dir):
 # アクセスログを記録するミドルウェア
 @app.after_request
 def log_request(response):
-    # モデルのインポート後に実行されるように修正
     if not request.path.startswith('/static/') and not request.path.startswith('/favicon.ico'):
         try:
             # ここでAccessLogをインポート

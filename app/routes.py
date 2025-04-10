@@ -3042,19 +3042,60 @@ def commercial_transactions():
 @login_required
 @admin_required
 def admin_analytics():
-    """基本的な分析ページ"""
+    """管理者用アクセス分析ページ"""
     try:
-        # 基本な統計情報のみ取得
-        stats = {
-            'total_users': User.query.count(),
-            'total_reviews': RaceReview.query.count(),
-            'total_horses': Horse.query.count()
-        }
+        # 直近7日間のアクセス統計
+        end_date = datetime.utcnow()
+        start_date = end_date - timedelta(days=7)
         
-        return render_template('admin/analytics.html', stats=stats)
+        # 日別アクセス数
+        daily_access = db.session.query(
+            func.date(AccessLog.timestamp).label('date'),
+            func.count().label('count')
+        ).filter(
+            AccessLog.timestamp.between(start_date, end_date)
+        ).group_by(
+            func.date(AccessLog.timestamp)
+        ).order_by(
+            func.date(AccessLog.timestamp)
+        ).all()
+        
+        # ページ別アクセス数
+        page_access = db.session.query(
+            AccessLog.path,
+            func.count().label('count')
+        ).filter(
+            AccessLog.timestamp.between(start_date, end_date)
+        ).group_by(
+            AccessLog.path
+        ).order_by(
+            func.count().desc()
+        ).limit(10).all()
+        
+        # ユーザー別アクセス数
+        user_access = db.session.query(
+            User.username,
+            func.count().label('count')
+        ).join(
+            AccessLog, User.id == AccessLog.user_id
+        ).filter(
+            AccessLog.timestamp.between(start_date, end_date),
+            AccessLog.user_id.isnot(None)
+        ).group_by(
+            User.username
+        ).order_by(
+            func.count().desc()
+        ).limit(10).all()
+        
+        return render_template('admin/analytics.html',
+                              daily_access=daily_access,
+                              page_access=page_access,
+                              user_access=user_access,
+                              start_date=start_date,
+                              end_date=end_date)
     except Exception as e:
-        app.logger.error(f"Error in analytics: {str(e)}")
-        flash('統計情報の取得中にエラーが発生しました', 'error')
+        app.logger.error(f"Error in admin analytics: {str(e)}")
+        flash('アクセス統計の取得中にエラーが発生しました', 'danger')
         return redirect(url_for('admin_dashboard'))
 
 @app.route('/admin/system')
@@ -4197,66 +4238,3 @@ def mark_notifications_read_api():  # 関数名を変更
         db.session.rollback()
         app.logger.error(f"Error marking notifications as read: {str(e)}")
         return jsonify({'status': 'error', 'message': str(e)}), 500
-
-@app.route('/admin/analytics')
-@login_required
-def admin_analytics():
-    """管理者用アクセス分析ページ"""
-    if not current_user.is_admin:
-        flash('管理者権限が必要です', 'danger')
-        return redirect(url_for('index'))
-        
-    try:
-        # 直近7日間のアクセス統計
-        end_date = datetime.utcnow()
-        start_date = end_date - timedelta(days=7)
-        
-        # 日別アクセス数
-        daily_access = db.session.query(
-            func.date(AccessLog.timestamp).label('date'),
-            func.count().label('count')
-        ).filter(
-            AccessLog.timestamp.between(start_date, end_date)
-        ).group_by(
-            func.date(AccessLog.timestamp)
-        ).order_by(
-            func.date(AccessLog.timestamp)
-        ).all()
-        
-        # ページ別アクセス数
-        page_access = db.session.query(
-            AccessLog.path,
-            func.count().label('count')
-        ).filter(
-            AccessLog.timestamp.between(start_date, end_date)
-        ).group_by(
-            AccessLog.path
-        ).order_by(
-            func.count().desc()
-        ).limit(10).all()
-        
-        # ユーザー別アクセス数
-        user_access = db.session.query(
-            User.username,
-            func.count().label('count')
-        ).join(
-            AccessLog, User.id == AccessLog.user_id
-        ).filter(
-            AccessLog.timestamp.between(start_date, end_date),
-            AccessLog.user_id.isnot(None)
-        ).group_by(
-            User.username
-        ).order_by(
-            func.count().desc()
-        ).limit(10).all()
-        
-        return render_template('admin/analytics.html',
-                              daily_access=daily_access,
-                              page_access=page_access,
-                              user_access=user_access,
-                              start_date=start_date,
-                              end_date=end_date)
-    except Exception as e:
-        app.logger.error(f"Error in admin analytics: {str(e)}")
-        flash('アクセス統計の取得中にエラーが発生しました', 'danger')
-        return redirect(url_for('admin_dashboard'))
