@@ -4185,8 +4185,7 @@ def notification_count():
 
 @app.route('/api/notifications/mark-read', methods=['POST'])
 @login_required
-def mark_notifications_read():
-    """通知を既読にするAPI"""
+def mark_notifications_read_api():  # 関数名を変更
     try:
         data = request.get_json()
         notification_ids = data.get('notification_ids', [])
