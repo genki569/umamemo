@@ -5,7 +5,7 @@ from app.models import (
     RaceReview, RaceMemo, UserSettings, ReviewPurchase, 
     Notification, LoginHistory, SupportTicket, 
     MembershipChangeLog, PaymentLog, ShutubaEntry,
-    HorseMemo, FavoriteHorse
+    HorseMemo, 
 )
 from datetime import datetime, timedelta
 from flask_wtf import FlaskForm
