@@ -714,6 +714,7 @@ class PaymentLog(db.Model):
     status = db.Column(db.String(20), nullable=False)
     transaction_id = db.Column(db.String(100))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    payment_date = db.Column(db.DateTime, default=datetime.utcnow)
     
     user = db.relationship('User', backref=db.backref('payment_logs', lazy='dynamic'))
 
