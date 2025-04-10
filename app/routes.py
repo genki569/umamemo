@@ -1477,7 +1477,24 @@ def mypage_home():
         race_memos = RaceMemo.query.filter_by(user_id=current_user.id).order_by(RaceMemo.created_at.desc()).limit(5).all()
         
         # ユーザーの最近の馬メモを取得
-        horse_memos = HorseMemo.query.filter_by(user_id=current_user.id).order_by(HorseMemo.created_at.desc()).limit(5).all()
+        # HorseMemoモデルのフィールド名を確認
+        # user_idではなく、おそらくcreator_idなどの別名になっている可能性がある
+        horse_memos = []
+        try:
+            # モデルの構造を確認
+            app.logger.info(f"HorseMemo columns: {[c.name for c in HorseMemo.__table__.columns]}")
+            
+            # 正しいフィールド名で検索
+            if hasattr(HorseMemo, 'user_id'):
+                horse_memos = HorseMemo.query.filter_by(user_id=current_user.id).order_by(HorseMemo.created_at.desc()).limit(5).all()
+            elif hasattr(HorseMemo, 'creator_id'):
+                horse_memos = HorseMemo.query.filter_by(creator_id=current_user.id).order_by(HorseMemo.created_at.desc()).limit(5).all()
+            else:
+                # 関連するフィールドがない場合は空のリストを使用
+                app.logger.warning("HorseMemo model does not have user_id or creator_id field")
+        except Exception as horse_memo_error:
+            app.logger.error(f"Error getting horse memos: {str(horse_memo_error)}")
+            # エラーが発生しても処理を続行
         
         # ユーザーの最近のレビューを取得
         reviews = RaceReview.query.filter_by(user_id=current_user.id).order_by(RaceReview.created_at.desc()).limit(5).all()
@@ -1494,7 +1511,7 @@ def mypage_home():
             app.logger.error(f"Error getting user settings: {str(settings_error)}")
             # 設定がなくてもページは表示する
         
-        app.logger.info(f"Found {len(race_memos)} race memos, {len(horse_memos)} horse memos, and {len(reviews)} reviews for user {current_user.id}")
+        app.logger.info(f"Found {len(race_memos)} race memos and {len(reviews)} reviews for user {current_user.id}")
         
         return render_template('mypage/index.html', 
                               race_memos=race_memos,
@@ -4053,6 +4070,26 @@ def debug_mypage():
             'user_settings': settings_info,
             'settings_error': settings_error
         })
+    except Exception as e:
+        return jsonify({
+            'error': str(e)
+        }), 500
+
+@app.route('/debug/models')
+@login_required
+def debug_models():
+    """モデルの構造を確認するためのデバッグエンドポイント"""
+    try:
+        # 各モデルのカラム情報を取得
+        models_info = {
+            'User': [c.name for c in User.__table__.columns],
+            'RaceMemo': [c.name for c in RaceMemo.__table__.columns],
+            'HorseMemo': [c.name for c in HorseMemo.__table__.columns],
+            'RaceReview': [c.name for c in RaceReview.__table__.columns],
+            'UserSettings': [c.name for c in UserSettings.__table__.columns]
+        }
+        
+        return jsonify(models_info)
     except Exception as e:
         return jsonify({
             'error': str(e)
