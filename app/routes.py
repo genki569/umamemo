@@ -1473,15 +1473,6 @@ def delete_race_memo(race_id, memo_id):
 def mypage_home():
     """マイページのホーム画面を表示"""
     try:
-        # ユーザー設定を取得
-        user_settings = UserSettings.query.filter_by(user_id=current_user.id).first()
-        
-        # 設定が存在しない場合は作成
-        if not user_settings:
-            user_settings = UserSettings(user_id=current_user.id)
-            db.session.add(user_settings)
-            db.session.commit()
-        
         # ユーザーの最近のレースメモを取得
         race_memos = RaceMemo.query.filter_by(user_id=current_user.id).order_by(RaceMemo.created_at.desc()).limit(5).all()
         
@@ -1491,8 +1482,17 @@ def mypage_home():
         # ユーザーの最近のレビューを取得
         reviews = RaceReview.query.filter_by(user_id=current_user.id).order_by(RaceReview.created_at.desc()).limit(5).all()
         
-        # お気に入り馬を取得
-        favorites = Favorite.query.filter_by(user_id=current_user.id).order_by(Favorite.created_at.desc()).limit(5).all()
+        # ユーザー設定を取得（存在しない場合は作成）
+        user_settings = None
+        try:
+            user_settings = UserSettings.query.filter_by(user_id=current_user.id).first()
+            if not user_settings:
+                user_settings = UserSettings(user_id=current_user.id)
+                db.session.add(user_settings)
+                db.session.commit()
+        except Exception as settings_error:
+            app.logger.error(f"Error getting user settings: {str(settings_error)}")
+            # 設定がなくてもページは表示する
         
         app.logger.info(f"Found {len(race_memos)} race memos, {len(horse_memos)} horse memos, and {len(reviews)} reviews for user {current_user.id}")
         
@@ -1500,7 +1500,6 @@ def mypage_home():
                               race_memos=race_memos,
                               horse_memos=horse_memos,
                               reviews=reviews,
-                              favorites=favorites,
                               settings=user_settings)
     except Exception as e:
         app.logger.error(f"Error in mypage_home: {str(e)}")
@@ -4011,6 +4010,50 @@ def debug_user_settings():
         })
     except Exception as e:
         app.logger.error(f"Error in debug_user_settings: {str(e)}")
+        return jsonify({
+            'error': str(e)
+        }), 500
+
+@app.route('/debug/mypage')
+@login_required
+def debug_mypage():
+    """マイページのデバッグ情報を表示"""
+    try:
+        # 各種データの取得を試みる
+        race_memos_count = RaceMemo.query.filter_by(user_id=current_user.id).count()
+        horse_memos_count = HorseMemo.query.filter_by(user_id=current_user.id).count()
+        reviews_count = RaceReview.query.filter_by(user_id=current_user.id).count()
+        
+        # ユーザー設定の取得を試みる
+        user_settings = None
+        settings_error = None
+        try:
+            user_settings = UserSettings.query.filter_by(user_id=current_user.id).first()
+            if user_settings:
+                settings_info = {
+                    'id': user_settings.id,
+                    'user_id': user_settings.user_id,
+                    'notification_race': user_settings.notification_race,
+                    'notification_memo': user_settings.notification_memo,
+                    'items_per_page': user_settings.items_per_page
+                }
+            else:
+                settings_info = "設定が見つかりません"
+        except Exception as e:
+            settings_error = str(e)
+            settings_info = None
+        
+        # 結果をJSONで返す
+        return jsonify({
+            'user_id': current_user.id,
+            'username': current_user.username,
+            'race_memos_count': race_memos_count,
+            'horse_memos_count': horse_memos_count,
+            'reviews_count': reviews_count,
+            'user_settings': settings_info,
+            'settings_error': settings_error
+        })
+    except Exception as e:
         return jsonify({
             'error': str(e)
         }), 500
