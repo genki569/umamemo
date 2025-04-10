@@ -89,5 +89,6 @@ def log_request(response):
         except Exception as e:
             app.logger.error(f"Error logging request: {str(e)}")
             db.session.rollback()
+            # エラーが発生しても処理を続行
     
     return response

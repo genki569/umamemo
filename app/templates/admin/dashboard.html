@@ -94,7 +94,7 @@
                                 </div>
                                 <div class="text-end">
                                     <h6 class="mb-0">{{ sale.amount|format_yen }}</h6>
-                                    <small class="text-muted">{{ sale.payment_date.strftime('%Y/%m/%d %H:%M') }}</small>
+                                    <small class="text-muted">{{ sale.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
                                 </div>
                             </div>
                         </div>

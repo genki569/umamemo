@@ -2053,40 +2053,44 @@ def admin_required(f):
 @login_required
 @admin_required
 def admin_dashboard():
+    """管理者ダッシュボード"""
     try:
-        # 総ユーザー数
-        total_users = User.query.count()
+        # 基本統計情報
+        stats = {
+            'total_users': User.query.count(),
+            'total_reviews': RaceReview.query.count(),
+            'total_horses': Horse.query.count(),
+            'premium_users': User.query.filter_by(is_premium=True).count()
+        }
         
-        # 登録馬数
-        total_horses = Horse.query.count()
+        # 最近の支払い
+        recent_payments = db.session.query(
+            PaymentLog, User
+        ).join(
+            User, PaymentLog.user_id == User.id
+        ).order_by(
+            PaymentLog.created_at.desc()  # payment_date の代わりに created_at を使用
+        ).limit(5).all()
         
-        # 総レビュー数
-        total_reviews = RaceReview.query.count()
+        # 最近のレビュー
+        recent_reviews = db.session.query(
+            RaceReview, User, Race
+        ).join(
+            User, RaceReview.user_id == User.id
+        ).join(
+            Race, RaceReview.race_id == Race.id
+        ).order_by(
+            RaceReview.created_at.desc()
+        ).limit(5).all()
         
-        # 最近の登録ユーザー（最新5件）
-        recent_users = User.query\
-            .order_by(User.created_at.desc())\
-            .limit(5)\
-            .all()
-            
-        # 最の売上（最新5件）- payment_dateを使用
-        recent_sales = PaymentLog.query\
-            .filter_by(status='completed')\
-            .order_by(PaymentLog.payment_date.desc())\
-            .limit(5)\
-            .all()
-
-        return render_template('admin/dashboard.html',
-                           total_users=total_users,
-                           total_horses=total_horses,
-                           total_reviews=total_reviews,
-                           recent_users=recent_users,
-                           recent_sales=recent_sales)
-                           
+        return render_template('admin/dashboard.html', 
+                              stats=stats,
+                              recent_payments=recent_payments,
+                              recent_reviews=recent_reviews)
     except Exception as e:
         app.logger.error(f"Error in admin dashboard: {str(e)}")
-        flash('ダッシボードの読み込みに失敗しました', 'danger')
-        return redirect(url_for('index'))
+        flash('ダッシュボードの読み込み中にエラーが発生しました', 'danger')
+        return render_template('admin/dashboard.html')
 
 # 補助関数
 def calculate_monthly_premium_growth():
@@ -3044,50 +3048,67 @@ def commercial_transactions():
 def admin_analytics():
     """管理者用アクセス分析ページ"""
     try:
+        # 基本統計情報
+        stats = {
+            'total_users': User.query.count(),
+            'total_reviews': RaceReview.query.count(),
+            'total_horses': Horse.query.count()
+        }
+        
         # 直近7日間のアクセス統計
         end_date = datetime.utcnow()
         start_date = end_date - timedelta(days=7)
         
-        # 日別アクセス数
-        daily_access = db.session.query(
-            func.date(AccessLog.timestamp).label('date'),
-            func.count().label('count')
-        ).filter(
-            AccessLog.timestamp.between(start_date, end_date)
-        ).group_by(
-            func.date(AccessLog.timestamp)
-        ).order_by(
-            func.date(AccessLog.timestamp)
-        ).all()
+        # 日別アクセス数（テーブルが存在する場合のみ）
+        daily_access = []
+        page_access = []
+        user_access = []
         
-        # ページ別アクセス数
-        page_access = db.session.query(
-            AccessLog.path,
-            func.count().label('count')
-        ).filter(
-            AccessLog.timestamp.between(start_date, end_date)
-        ).group_by(
-            AccessLog.path
-        ).order_by(
-            func.count().desc()
-        ).limit(10).all()
-        
-        # ユーザー別アクセス数
-        user_access = db.session.query(
-            User.username,
-            func.count().label('count')
-        ).join(
-            AccessLog, User.id == AccessLog.user_id
-        ).filter(
-            AccessLog.timestamp.between(start_date, end_date),
-            AccessLog.user_id.isnot(None)
-        ).group_by(
-            User.username
-        ).order_by(
-            func.count().desc()
-        ).limit(10).all()
+        try:
+            # 日別アクセス数
+            daily_access = db.session.query(
+                func.date(AccessLog.timestamp).label('date'),
+                func.count().label('count')
+            ).filter(
+                AccessLog.timestamp.between(start_date, end_date)
+            ).group_by(
+                func.date(AccessLog.timestamp)
+            ).order_by(
+                func.date(AccessLog.timestamp)
+            ).all()
+            
+            # ページ別アクセス数
+            page_access = db.session.query(
+                AccessLog.path,
+                func.count().label('count')
+            ).filter(
+                AccessLog.timestamp.between(start_date, end_date)
+            ).group_by(
+                AccessLog.path
+            ).order_by(
+                func.count().desc()
+            ).limit(10).all()
+            
+            # ユーザー別アクセス数
+            user_access = db.session.query(
+                User.username,
+                func.count().label('count')
+            ).join(
+                AccessLog, User.id == AccessLog.user_id
+            ).filter(
+                AccessLog.timestamp.between(start_date, end_date),
+                AccessLog.user_id.isnot(None)
+            ).group_by(
+                User.username
+            ).order_by(
+                func.count().desc()
+            ).limit(10).all()
+        except Exception as e:
+            app.logger.warning(f"アクセスログの取得中にエラーが発生しました: {str(e)}")
+            # エラーが発生しても処理を続行
         
         return render_template('admin/analytics.html',
+                              stats=stats,
                               daily_access=daily_access,
                               page_access=page_access,
                               user_access=user_access,
