@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "_macros.html" import user_link %}
 
 {% block content %}
 <div class="container mt-4">
@@ -16,7 +17,7 @@
     <div class="card mb-4">
         <div class="card-header d-flex justify-content-between align-items-center">
             <div>
-                <strong>作成者:</strong> {{ review.user.username }}
+                <strong>作成者:</strong> {{ user_link(review.user) }}
             </div>
             <div>
                 <span class="badge bg-primary">{{ '有料コンテンツ' if review.is_premium else '無料公開' }}</span>
