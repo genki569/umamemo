@@ -2053,21 +2053,12 @@ def admin_dashboard():
     """管理者ダッシュボード"""
     try:
         # 基本統計情報
-        stats = {
-            'total_users': User.query.count(),
-            'total_reviews': RaceReview.query.count(),
-            'total_horses': Horse.query.count(),
-            'premium_users': User.query.filter_by(is_premium=True).count()
-        }
+        total_users = User.query.count()
+        total_reviews = RaceReview.query.count()
+        total_horses = Horse.query.count()
         
-        # 最近の支払い
-        recent_payments = db.session.query(
-            PaymentLog, User
-        ).join(
-            User, PaymentLog.user_id == User.id
-        ).order_by(
-            PaymentLog.created_at.desc()
-        ).limit(5).all()
+        # 最近の登録ユーザー
+        recent_users = User.query.order_by(User.created_at.desc()).limit(5).all()
         
         # 最近のレビュー
         recent_reviews = db.session.query(
@@ -2080,12 +2071,18 @@ def admin_dashboard():
             RaceReview.created_at.desc()
         ).limit(5).all()
         
+        # 最近の売上
+        recent_sales = PaymentLog.query.order_by(PaymentLog.created_at.desc()).limit(5).all()
+        
         return render_template('admin/dashboard.html', 
-                              stats=stats,
-                              recent_payments=recent_payments,
-                              recent_reviews=recent_reviews)
+                              total_users=total_users,
+                              total_reviews=total_reviews,
+                              total_horses=total_horses,
+                              recent_users=recent_users,
+                              recent_reviews=recent_reviews,
+                              recent_sales=recent_sales)
     except Exception as e:
-        app.logger.error(f"Error in admin dashboard: {str(e)}")
+        current_app.logger.error(f"Error in admin dashboard: {str(e)}")
         flash('ダッシュボードの読み込み中にエラーが発生しました', 'danger')
         return render_template('admin/dashboard.html')
 
