@@ -34,7 +34,9 @@
                             <td>{{ race.id }}</td>
                             <td>{{ race.date.strftime('%Y/%m/%d') }}</td>
                             <td>{{ VENUE_NAMES.get(race.venue_id, '不明') }}</td>
-                            <td>{{ race.name }}</td>
+                            <td>
+                                <a href="{{ url_for('race', race_id=race.id) }}">{{ race.name }}</a>
+                            </td>
                             <td>{{ race.grade or '-' }}</td>
                             <td>{{ race.entries_count }}</td>
                             <td>{{ race.review_count }}</td>
