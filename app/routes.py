@@ -3081,11 +3081,11 @@ def admin_analytics():
         end_date = datetime.utcnow()
         start_date = end_date - timedelta(days=7)
         
-        # 日付リストを作成
+        # 日付リストを作成（年月日形式）
         dates = []
         current_date = start_date
         while current_date <= end_date:
-            dates.append(current_date.strftime('%Y-%m-%d'))
+            dates.append(current_date.strftime('%Y年%m月%d日'))
             current_date += timedelta(days=1)
         
         # 日別アクセス数を取得

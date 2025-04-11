@@ -34,7 +34,28 @@
                     <h6 class="m-0 font-weight-bold">日別アクセス数</h6>
                 </div>
                 <div class="card-body">
-                    <div class="chart-area">
+                    <!-- 表形式で日別アクセス数を表示 -->
+                    <div class="table-responsive">
+                        <table class="table table-bordered" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>日付</th>
+                                    <th>アクセス数</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for date, count in dates|zip(counts) %}
+                                <tr>
+                                    <td>{{ date.replace('-', '年', 1).replace('-', '月', 1) + '日' }}</td>
+                                    <td>{{ count }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- グラフ表示部分は残しておく（将来的に修正する可能性があるため） -->
+                    <div class="chart-area" style="display: none;">
                         <canvas id="dailyAccessChart"></canvas>
                     </div>
                 </div>
