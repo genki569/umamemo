@@ -29,6 +29,7 @@ from calendar import monthrange
 import logging
 import time
 import os
+import calendar
 
 # カスタムコレータの定義（ファイルの先頭付近に配置）
 def custom_login_required(f):
@@ -3077,9 +3078,48 @@ def admin_analytics():
         # 総ユーザー数
         total_users = User.query.count()
         
-        # 日別アクセス数（過去7日間）
+        # 期間の選択
+        period = request.args.get('period', '7')  # デフォルトは7日間
+        
+        # 期間に応じた日付範囲を設定
         end_date = datetime.utcnow()
-        start_date = end_date - timedelta(days=7)
+        
+        if period == '7':
+            start_date = end_date - timedelta(days=7)
+            title = "直近7日間"
+        elif period == '30':
+            start_date = end_date - timedelta(days=30)
+            title = "直近30日間"
+        elif period == '90':
+            start_date = end_date - timedelta(days=90)
+            title = "直近90日間"
+        elif period == 'current_month':
+            # 今月の初日
+            start_date = end_date.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+            title = f"{end_date.year}年{end_date.month}月"
+        elif period == 'last_month':
+            # 先月の初日
+            if end_date.month == 1:
+                start_date = end_date.replace(year=end_date.year-1, month=12, day=1, hour=0, minute=0, second=0, microsecond=0)
+            else:
+                start_date = end_date.replace(month=end_date.month-1, day=1, hour=0, minute=0, second=0, microsecond=0)
+            
+            # 先月の最終日
+            if end_date.month == 1:
+                end_date = datetime(end_date.year-1, 12, 31, 23, 59, 59)
+            else:
+                last_day = calendar.monthrange(end_date.year, end_date.month-1)[1]
+                end_date = datetime(end_date.year, end_date.month-1, last_day, 23, 59, 59)
+            
+            title = f"{start_date.year}年{start_date.month}月"
+        elif period == 'year':
+            # 今年の初日
+            start_date = end_date.replace(month=1, day=1, hour=0, minute=0, second=0, microsecond=0)
+            title = f"{end_date.year}年"
+        else:
+            # デフォルトは7日間
+            start_date = end_date - timedelta(days=7)
+            title = "直近7日間"
         
         # 日付リストを作成
         dates = []
@@ -3099,10 +3139,7 @@ def admin_analytics():
             ).count()
             counts.append(count)
         
-        # データがない場合はダミーデータを使用
-        if all(count == 0 for count in counts):
-            app.logger.warning("No access data found, using dummy data")
-            counts = [5, 10, 15, 20, 25, 30, 35]  # ダミーデータ
+        # データがない場合はダミーデータを使用しない（実際のデータを表示）
         
         # 日付と件数を結合したリストを作成（表示用に日付形式を変換）
         access_data = []
@@ -3116,6 +3153,9 @@ def admin_analytics():
         page_access = db.session.query(
             AccessLog.path, 
             func.count(AccessLog.id).label('count')
+        ).filter(
+            AccessLog.timestamp >= start_date,
+            AccessLog.timestamp <= end_date
         ).group_by(
             AccessLog.path
         ).order_by(
@@ -3128,6 +3168,9 @@ def admin_analytics():
             func.count(AccessLog.id).label('count')
         ).join(
             User, AccessLog.user_id == User.id
+        ).filter(
+            AccessLog.timestamp >= start_date,
+            AccessLog.timestamp <= end_date
         ).group_by(
             User.username
         ).order_by(
@@ -3135,7 +3178,12 @@ def admin_analytics():
         ).limit(10).all()
         
         # 未ログインユーザーのアクセス数も取得
-        anonymous_count = AccessLog.query.filter(AccessLog.user_id == None).count()
+        anonymous_count = AccessLog.query.filter(
+            AccessLog.user_id == None,
+            AccessLog.timestamp >= start_date,
+            AccessLog.timestamp <= end_date
+        ).count()
+        
         if anonymous_count > 0:
             user_access = [('未ログインユーザー', anonymous_count)] + list(user_access)
         
