@@ -2212,7 +2212,9 @@ def admin_races():
                               page=page, 
                               total_pages=total_pages,
                               selected_date=selected_date,
-                              VENUE_NAMES=VENUE_NAMES)
+                              VENUE_NAMES=VENUE_NAMES,
+                              max=max,  # max関数をテンプレートに渡す
+                              min=min)  # min関数もテンプレートに渡す
     except Exception as e:
         app.logger.error(f"Error in admin races: {str(e)}")
         flash('レース一覧の読み込み中にエラーが発生しました', 'danger')
@@ -2221,7 +2223,9 @@ def admin_races():
                               page=1, 
                               total_pages=1,
                               selected_date=None,
-                              VENUE_NAMES=VENUE_NAMES)
+                              VENUE_NAMES=VENUE_NAMES,
+                              max=max,
+                              min=min)
 
 @app.route('/admin/races/add', methods=['POST'])
 @login_required
@@ -3118,7 +3122,12 @@ def admin_analytics():
     except Exception as e:
         app.logger.error(f"Error in admin analytics: {str(e)}")
         flash('アクセス分析の読み込み中にエラーが発生しました', 'danger')
-        return render_template('admin/analytics.html')
+        return render_template('admin/analytics.html', 
+                              total_users=0,
+                              dates=[],
+                              counts=[],
+                              page_access=[],
+                              user_access=[])
 
 @app.route('/admin/system')
 @login_required
@@ -3222,7 +3231,10 @@ def admin_reviews():
             RaceReview.created_at.desc()
         ).paginate(page=page, per_page=20, error_out=False)
         
-        return render_template('admin/reviews.html', reviews=reviews, page=page)
+        return render_template('admin/reviews.html', 
+                              reviews=reviews, 
+                              page=page,
+                              pagination=reviews)
     except Exception as e:
         app.logger.error(f"Error in admin reviews: {str(e)}")
         flash('レビュー一覧の読み込み中にエラーが発生しました', 'danger')
