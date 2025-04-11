@@ -3099,6 +3099,10 @@ def admin_analytics():
             ).count()
             counts.append(count)
         
+        # デバッグ用ログ
+        app.logger.info(f"Dates: {dates}")
+        app.logger.info(f"Counts: {counts}")
+        
         # ページ別アクセス数
         page_access = db.session.query(
             AccessLog.path, 
