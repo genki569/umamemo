@@ -2213,13 +2213,30 @@ def admin_races():
                               total_pages=total_pages,
                               selected_date=selected_date,
                               VENUE_NAMES=VENUE_NAMES,
-                              max=max,  # max関数をテンプレートに渡す
-                              min=min)  # min関数もテンプレートに渡す
+                              max=max,
+                              min=min)
     except Exception as e:
         app.logger.error(f"Error in admin races: {str(e)}")
         flash('レース一覧の読み込み中にエラーが発生しました', 'danger')
+        
+        # エラー時にもダミーのページネーションオブジェクトを渡す
+        class DummyPagination:
+            def __init__(self):
+                self.items = []
+                self.page = 1
+                self.pages = 1
+                self.total = 0
+                self.has_prev = False
+                self.has_next = False
+                self.prev_num = 1
+                self.next_num = 1
+            
+            def iter_pages(self):
+                return [1]
+        
+        dummy_pagination = DummyPagination()
         return render_template('admin/races.html', 
-                              races=[], 
+                              races=dummy_pagination, 
                               page=1, 
                               total_pages=1,
                               selected_date=None,
@@ -3127,8 +3144,6 @@ def admin_analytics():
         
         app.logger.info(f"Dates: {dates}")
         app.logger.info(f"Counts: {counts}")
-        app.logger.info(f"Page access: {page_access}")
-        app.logger.info(f"User access: {user_access}")
         
         return render_template('admin/analytics.html',
                               total_users=total_users,
@@ -3248,6 +3263,8 @@ def admin_reviews():
             RaceReview.created_at.desc()
         ).paginate(page=page, per_page=20, error_out=False)
         
+        app.logger.info(f"Found {len(reviews.items)} reviews")
+        
         return render_template('admin/reviews.html', 
                               reviews=reviews, 
                               page=page,
@@ -3255,7 +3272,26 @@ def admin_reviews():
     except Exception as e:
         app.logger.error(f"Error in admin reviews: {str(e)}")
         flash('レビュー一覧の読み込み中にエラーが発生しました', 'danger')
-        return render_template('admin/reviews.html')
+        # エラー時にもダミーのページネーションオブジェクトを渡す
+        class DummyPagination:
+            def __init__(self):
+                self.items = []
+                self.page = 1
+                self.pages = 1
+                self.total = 0
+                self.has_prev = False
+                self.has_next = False
+                self.prev_num = 1
+                self.next_num = 1
+            
+            def iter_pages(self):
+                return [1]
+        
+        dummy_pagination = DummyPagination()
+        return render_template('admin/reviews.html', 
+                              reviews=dummy_pagination,
+                              page=1,
+                              pagination=dummy_pagination)
 
 @app.route('/admin/api/reviews/<int:review_id>')
 @login_required
