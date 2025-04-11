@@ -713,10 +713,32 @@ class PaymentLog(db.Model):
     plan_type = db.Column(db.String(20), nullable=False)
     duration_days = db.Column(db.Integer, nullable=False)
     payment_date = db.Column(db.DateTime)
+    points = db.Column(db.Integer)
     status = db.Column(db.String(20))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
     user = db.relationship('User', backref=db.backref('payment_logs', lazy='dynamic'))
+
+    # 表示用プロパティ
+    @property
+    def status_display(self):
+        status_map = {
+            'completed': '完了',
+            'pending': '処理中',
+            'failed': '失敗',
+            'refunded': '返金済み'
+        }
+        return status_map.get(self.status, self.status)
+    
+    @property
+    def status_color(self):
+        color_map = {
+            'completed': 'success',
+            'pending': 'warning',
+            'failed': 'danger',
+            'refunded': 'info'
+        }
+        return color_map.get(self.status, 'secondary')
 
 # 既存のモデルの後に追加
 class HorseMemo(db.Model):

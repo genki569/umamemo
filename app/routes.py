@@ -2216,7 +2216,12 @@ def admin_races():
     except Exception as e:
         app.logger.error(f"Error in admin races: {str(e)}")
         flash('レース一覧の読み込み中にエラーが発生しました', 'danger')
-        return render_template('admin/races.html')
+        return render_template('admin/races.html', 
+                              races=[], 
+                              page=1, 
+                              total_pages=1,
+                              selected_date=None,
+                              VENUE_NAMES=VENUE_NAMES)
 
 @app.route('/admin/races/add', methods=['POST'])
 @login_required
@@ -3315,10 +3320,44 @@ def admin_sales():
         # 売上集計
         total_sales = db.session.query(func.sum(PaymentLog.amount)).scalar() or 0
         
+        # 月次データ
+        now = datetime.utcnow()
+        this_month = datetime(now.year, now.month, 1)
+        last_month = this_month - timedelta(days=1)
+        last_month = datetime(last_month.year, last_month.month, 1)
+        
+        monthly_sales = db.session.query(func.sum(PaymentLog.amount)).filter(
+            PaymentLog.created_at >= this_month
+        ).scalar() or 0
+        
+        last_monthly_sales = db.session.query(func.sum(PaymentLog.amount)).filter(
+            PaymentLog.created_at >= last_month,
+            PaymentLog.created_at < this_month
+        ).scalar() or 0
+        
+        monthly_diff = monthly_sales - last_monthly_sales
+        
+        # ダミーデータ（points関連）
+        monthly_points = 1000
+        monthly_points_diff = 200
+        monthly_reviews = 50
+        monthly_reviews_diff = 10
+        monthly_premium = 20
+        monthly_premium_diff = 5
+        
         return render_template('admin/sales.html', 
                               sales=sales, 
-                              page=page, 
-                              total_sales=total_sales)
+                              page=page,
+                              pagination=sales,
+                              total_sales=total_sales,
+                              monthly_sales=monthly_sales,
+                              monthly_diff=monthly_diff,
+                              monthly_points=monthly_points,
+                              monthly_points_diff=monthly_points_diff,
+                              monthly_reviews=monthly_reviews,
+                              monthly_reviews_diff=monthly_reviews_diff,
+                              monthly_premium=monthly_premium,
+                              monthly_premium_diff=monthly_premium_diff)
     except Exception as e:
         app.logger.error(f"Error in admin sales: {str(e)}")
         flash('売上一覧の読み込み中にエラーが発生しました', 'danger')

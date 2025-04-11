@@ -107,10 +107,10 @@
                                 <td>{{ user.username }}</td>
                                 <td>{{ sale.plan_type }}</td>
                                 <td>{{ sale.amount|format_yen }}</td>
-                                <td>{{ sale.points|format_number if sale.points else '-' }}</td>
+                                <td>-</td>
                                 <td>
-                                    <span class="badge bg-{{ sale.status_color }}">
-                                        {{ sale.status_display }}
+                                    <span class="badge bg-{{ sale.status_color if sale.status_color is defined else 'secondary' }}">
+                                        {{ sale.status_display if sale.status_display is defined else sale.status }}
                                     </span>
                                 </td>
                                 <td>
