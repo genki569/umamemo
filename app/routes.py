@@ -4034,7 +4034,7 @@ def user_profile(user_id):
     """ユーザープロフィールページ"""
     user = User.query.get_or_404(user_id)
     # ...
-    return render_template('user/profile.html', user=user, ...)
+    return render_template('user/profile.html', user=user)
 
 @app.route('/debug/user_settings')
 @login_required
