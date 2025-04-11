@@ -3070,6 +3070,14 @@ def admin_analytics():
         end_date = datetime.utcnow()
         start_date = end_date - timedelta(days=7)
         
+        # 日付の範囲を作成
+        date_range = []
+        current_date = start_date
+        while current_date <= end_date:
+            date_range.append(current_date.date())
+            current_date += timedelta(days=1)
+        
+        # 日別アクセス数を取得
         daily_access = db.session.query(
             func.date(AccessLog.timestamp).label('date'),
             func.count(AccessLog.id).label('count')
@@ -3082,12 +3090,16 @@ def admin_analytics():
             func.date(AccessLog.timestamp)
         ).all()
         
-        # 日付とアクセス数のリストを作成
+        # 日付とアクセス数のマッピングを作成
+        access_map = {date.strftime('%Y-%m-%d'): count for date, count in daily_access}
+        
+        # 日付とアクセス数のリストを作成（0件の日も含める）
         dates = []
         counts = []
-        for date, count in daily_access:
-            dates.append(date.strftime('%Y-%m-%d'))
-            counts.append(count)
+        for date in date_range:
+            date_str = date.strftime('%Y-%m-%d')
+            dates.append(date_str)
+            counts.append(access_map.get(date_str, 0))
         
         # ページ別アクセス数
         page_access = db.session.query(
@@ -3113,14 +3125,12 @@ def admin_analytics():
             func.count(AccessLog.id).desc()
         ).limit(10).all()
         
-        # stats 辞書を作成
-        stats = {
-            'total_users': total_users,
-            # 他の統計情報も必要に応じて追加
-        }
+        app.logger.info(f"Dates: {dates}")
+        app.logger.info(f"Counts: {counts}")
+        app.logger.info(f"Page access: {page_access}")
+        app.logger.info(f"User access: {user_access}")
         
         return render_template('admin/analytics.html',
-                              stats=stats,
                               total_users=total_users,
                               dates=dates,
                               counts=counts,
@@ -3130,7 +3140,6 @@ def admin_analytics():
         app.logger.error(f"Error in admin analytics: {str(e)}")
         flash('アクセス分析の読み込み中にエラーが発生しました', 'danger')
         return render_template('admin/analytics.html', 
-                              stats={'total_users': 0},
                               total_users=0,
                               dates=[],
                               counts=[],
