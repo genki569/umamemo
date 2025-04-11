@@ -716,7 +716,29 @@ class PaymentLog(db.Model):
     status = db.Column(db.String(20))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
+    # リレーションシップ
     user = db.relationship('User', backref=db.backref('payment_logs', lazy='dynamic'))
+    
+    # 表示用プロパティ
+    @property
+    def status_display(self):
+        status_map = {
+            'completed': '完了',
+            'pending': '処理中',
+            'failed': '失敗',
+            'refunded': '返金済み'
+        }
+        return status_map.get(self.status, self.status)
+    
+    @property
+    def status_color(self):
+        color_map = {
+            'completed': 'success',
+            'pending': 'warning',
+            'failed': 'danger',
+            'refunded': 'info'
+        }
+        return color_map.get(self.status, 'secondary')
 
 # 既存のモデルの後に追加
 class HorseMemo(db.Model):
@@ -787,20 +809,15 @@ class ShutubaEntry(db.Model):
         ).limit(limit).all()
 
 class AccessLog(db.Model):
-    """
-    アクセスログを記録するモデル
-    
-    ユーザーのアクセス履歴を追跡し、アナリティクスに使用します。
-    """
     __tablename__ = 'access_logs'
     
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
     ip_address = db.Column(db.String(50))
-    path = db.Column(db.String(200))
+    path = db.Column(db.String(200))  # 200文字に合わせる
     method = db.Column(db.String(10))
     status_code = db.Column(db.Integer)
-    user_agent = db.Column(db.String(200))
+    user_agent = db.Column(db.String(200))  # 200文字に合わせる
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
     
     # リレーションシップ
