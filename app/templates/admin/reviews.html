@@ -40,12 +40,12 @@
                             <td>{{ review.id }}</td>
                             <td>{{ review.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
                             <td>
-                                <a href="{{ url_for('race_view', race_id=race.id) }}">
+                                <a href="{{ url_for('race', race_id=race.id) }}">
                                     {{ race.date.strftime('%Y-%m-%d') }} {{ race.name }}
                                 </a>
                             </td>
                             <td>
-                                <a href="{{ url_for('user_profile', username=user.username) }}">
+                                <a href="{{ url_for('user_profile', user_id=user.id) }}">
                                     {{ user.username }}
                                 </a>
                             </td>
