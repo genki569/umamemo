@@ -3191,9 +3191,11 @@ def admin_analytics():
                               total_users=total_users,
                               dates=dates,
                               counts=counts,
-                              access_data=access_data,  # 結合したデータを渡す
+                              access_data=access_data,
                               page_access=page_access,
-                              user_access=user_access)
+                              user_access=user_access,
+                              period=period,
+                              title=title)
     except Exception as e:
         app.logger.error(f"Error in admin analytics: {str(e)}")
         flash('アクセス分析の読み込み中にエラーが発生しました', 'danger')
@@ -3201,9 +3203,11 @@ def admin_analytics():
                               total_users=0,
                               dates=[],
                               counts=[],
-                              access_data=[],  # 空のリストを渡す
+                              access_data=[],
                               page_access=[],
-                              user_access=[])
+                              user_access=[],
+                              period='7',
+                              title="エラー")
 
 @app.route('/admin/system')
 @login_required
