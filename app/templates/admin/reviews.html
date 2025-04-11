@@ -91,10 +91,10 @@
                     </li>
                     {% endif %}
                     
-                    {% for page in pagination.iter_pages() %}
-                        {% if page %}
-                            <li class="page-item {{ 'active' if page == pagination.page else '' }}">
-                                <a class="page-link" href="{{ url_for('admin_reviews', page=page) }}">{{ page }}</a>
+                    {% for page_num in pagination.iter_pages() %}
+                        {% if page_num %}
+                            <li class="page-item {{ 'active' if page_num == page else '' }}">
+                                <a class="page-link" href="{{ url_for('admin_reviews', page=page_num) }}">{{ page_num }}</a>
                             </li>
                         {% else %}
                             <li class="page-item disabled"><span class="page-link">...</span></li>
