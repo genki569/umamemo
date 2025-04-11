@@ -44,9 +44,9 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for date, count in dates|zip(counts) %}
+                                {% for date_str, count in access_data %}
                                 <tr>
-                                    <td>{{ date.replace('-', '年', 1).replace('-', '月', 1) + '日' }}</td>
+                                    <td>{{ date_str }}</td>
                                     <td>{{ count }}</td>
                                 </tr>
                                 {% endfor %}
