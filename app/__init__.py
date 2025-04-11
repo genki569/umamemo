@@ -93,5 +93,8 @@ def log_request(response):
     
     return response
 
-# Jinja2 グローバル関数の追加
+# Jinja2 グローバル関数とフィルターの追加
 app.jinja_env.globals.update(max=max, min=min)
+
+# zipフィルターを追加
+app.jinja_env.filters['zip'] = zip
