@@ -713,12 +713,12 @@ class PaymentLog(db.Model):
     plan_type = db.Column(db.String(20), nullable=False)
     duration_days = db.Column(db.Integer, nullable=False)
     payment_date = db.Column(db.DateTime)
-    points = db.Column(db.Integer)
     status = db.Column(db.String(20))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
+    # リレーションシップ
     user = db.relationship('User', backref=db.backref('payment_logs', lazy='dynamic'))
-
+    
     # 表示用プロパティ
     @property
     def status_display(self):
@@ -809,20 +809,15 @@ class ShutubaEntry(db.Model):
         ).limit(limit).all()
 
 class AccessLog(db.Model):
-    """
-    アクセスログを記録するモデル
-    
-    ユーザーのアクセス履歴を追跡し、アナリティクスに使用します。
-    """
     __tablename__ = 'access_logs'
     
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
     ip_address = db.Column(db.String(50))
-    path = db.Column(db.String(255))
+    path = db.Column(db.String(200))  # 200文字に合わせる
     method = db.Column(db.String(10))
     status_code = db.Column(db.Integer)
-    user_agent = db.Column(db.String(255))
+    user_agent = db.Column(db.String(200))  # 200文字に合わせる
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
     
     # リレーションシップ
