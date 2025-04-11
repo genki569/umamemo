@@ -35,53 +35,53 @@
                     </thead>
                     <tbody>
                         {% for review_tuple in reviews.items %}
-                            {% set review = review_tuple[0] %}
-                            {% set user = review_tuple[1] %}
-                            {% set race = review_tuple[2] %}
-                            <tr>
-                                <td>{{ review.id }}</td>
-                                <td>{{ review.created_at.strftime('%Y/%m/%d %H:%M') }}</td>
-                                <td>
-                                    <a href="{{ url_for('race_detail', race_id=race.id) }}" target="_blank">
-                                        {{ race.name }}
-                                    </a>
-                                </td>
-                                <td>{{ user.username }}</td>
-                                <td>{{ review.rating }}/5</td>
-                                <td>{{ review.price }}pt</td>
-                                <td>{{ review.purchases|length if review.purchases is defined else 0 }}</td>
-                                <td>
-                                    {% if review.reports is defined and review.reports|length > 0 %}
-                                    <span class="badge bg-danger">{{ review.reports|length }}</span>
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    <span class="badge {% if review.is_public %}bg-success{% else %}bg-secondary{% endif %}">
-                                        {{ '公開' if review.is_public else '非公開' }}
-                                    </span>
-                                </td>
-                                <td>
-                                    <div class="btn-group btn-group-sm">
-                                        <button type="button" class="btn btn-outline-primary"
-                                                onclick="viewReview({{ review.id }})">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                        <button type="button" class="btn btn-outline-warning"
-                                                onclick="toggleStatus({{ review.id }})">
-                                            <i class="fas fa-sync-alt"></i>
-                                        </button>
-                                        <button type="button" class="btn btn-outline-danger"
-                                                onclick="confirmDelete({{ review.id }})">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
+                        {% set review, user, race = review_tuple %}
+                        <tr>
+                            <td>{{ review.id }}</td>
+                            <td>{{ review.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                            <td>
+                                <a href="{{ url_for('race_view', race_id=race.id) }}">
+                                    {{ race.date.strftime('%Y-%m-%d') }} {{ race.name }}
+                                </a>
+                            </td>
+                            <td>
+                                <a href="{{ url_for('user_profile', username=user.username) }}">
+                                    {{ user.username }}
+                                </a>
+                            </td>
+                            <td>{{ "★" * review.rating }}</td>
+                            <td>{{ review.price|format_yen }}</td>
+                            <td>{{ review.purchase_count }}</td>
+                            <td>{{ review.report_count }}</td>
+                            <td>
+                                {% if review.is_public %}
+                                <span class="badge bg-success">公開</span>
+                                {% else %}
+                                <span class="badge bg-secondary">非公開</span>
+                                {% endif %}
+                                
+                                {% if review.report_count > 0 %}
+                                <span class="badge bg-warning">報告あり</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-sm btn-outline-primary" 
+                                            onclick="viewReview({{ review.id }})">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-danger"
+                                            onclick="confirmDelete({{ review.id }})">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
-
+            
             <!-- ページネーション -->
             <nav aria-label="ページ送り">
                 <ul class="pagination justify-content-center">
@@ -113,36 +113,35 @@
 </div>
 
 <!-- レビュー詳細モーダル -->
-<div class="modal fade" id="reviewModal" tabindex="-1">
+<div class="modal fade" id="reviewModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">レビュー詳細</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
-                <div id="reviewContent">
-                    <!-- Ajax で動的に内容を表示 -->
-                </div>
+            <div class="modal-body" id="reviewModalBody">
+                <!-- レビュー詳細がここに表示されます -->
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">閉じる</button>
+                <button type="button" class="btn btn-success" id="togglePublicBtn">公開/非公開切替</button>
             </div>
         </div>
     </div>
 </div>
 
 <!-- 削除確認モーダル -->
-<div class="modal fade" id="deleteModal" tabindex="-1">
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">レビューの削除確認</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <h5 class="modal-title">削除確認</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <p>このレビューを削除してもよろしいですか？</p>
-                <p class="text-danger">この操作は取り消せません。購入履歴も全て削除されます。</p>
+                <p class="text-danger">この操作は取り消せません。</p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">キャンセル</button>
@@ -155,45 +154,64 @@
 </div>
 
 <script>
-// レビュー詳細の表示
+// レビュー詳細表示
 function viewReview(reviewId) {
     fetch(`/admin/api/reviews/${reviewId}`)
         .then(response => response.json())
         .then(data => {
-            document.getElementById('reviewContent').innerHTML = `
-                <div class="review-detail">
-                    <h6>レース情報</h6>
-                    <p>${data.race_name} (${data.race_date})</p>
+            document.getElementById('reviewModalBody').innerHTML = `
+                <dl class="row">
+                    <dt class="col-sm-3">レース</dt>
+                    <dd class="col-sm-9">${data.race_name}</dd>
                     
-                    <h6>投稿者</h6>
-                    <p>${data.username}</p>
+                    <dt class="col-sm-3">投稿者</dt>
+                    <dd class="col-sm-9">${data.username}</dd>
                     
-                    <h6>評価</h6>
-                    <p>${data.rating}/5</p>
+                    <dt class="col-sm-3">評価</dt>
+                    <dd class="col-sm-9">${'★'.repeat(data.rating)}</dd>
                     
-                    <h6>本文</h6>
-                    <p>${data.content}</p>
+                    <dt class="col-sm-3">販売価格</dt>
+                    <dd class="col-sm-9">${data.price}</dd>
                     
-                    <h6>報告内容</h6>
-                    <ul>
-                        ${data.reports.map(report => `
-                            <li>${report.reason} - ${report.created_at}</li>
-                        `).join('')}
-                    </ul>
-                </div>
+                    <dt class="col-sm-3">購入数</dt>
+                    <dd class="col-sm-9">${data.purchase_count}</dd>
+                    
+                    <dt class="col-sm-3">報告数</dt>
+                    <dd class="col-sm-9">${data.report_count}</dd>
+                    
+                    <dt class="col-sm-3">ステータス</dt>
+                    <dd class="col-sm-9">
+                        <span class="badge bg-${data.is_public ? 'success' : 'secondary'}">
+                            ${data.is_public ? '公開' : '非公開'}
+                        </span>
+                        ${data.report_count > 0 ? '<span class="badge bg-warning ms-2">報告あり</span>' : ''}
+                    </dd>
+                    
+                    <dt class="col-sm-3">投稿日時</dt>
+                    <dd class="col-sm-9">${data.created_at}</dd>
+                    
+                    <dt class="col-sm-3">内容</dt>
+                    <dd class="col-sm-9">${data.content}</dd>
+                </dl>
             `;
+            
+            const toggleBtn = document.getElementById('togglePublicBtn');
+            toggleBtn.textContent = data.is_public ? '非公開にする' : '公開する';
+            toggleBtn.onclick = () => togglePublic(reviewId, !data.is_public);
+            
             const modal = new bootstrap.Modal(document.getElementById('reviewModal'));
             modal.show();
         });
 }
 
-// ステータス切り替え
-function toggleStatus(reviewId) {
-    fetch(`/admin/reviews/${reviewId}/toggle`, {
+// 公開/非公開切替
+function togglePublic(reviewId, isPublic) {
+    fetch(`/admin/api/reviews/${reviewId}/toggle-public`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-        }
+        },
+        body: JSON.stringify({ is_public: isPublic })
     })
     .then(response => response.json())
     .then(data => {

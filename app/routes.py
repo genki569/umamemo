@@ -190,26 +190,23 @@ def races():
         )
 
 @app.route('/races/<int:race_id>')
-def race(race_id):
-    try:
-        race = Race.query.get_or_404(race_id)
-        entries = db.session.query(Entry)\
-            .join(Horse)\
-            .outerjoin(Jockey)\
-            .filter(Entry.race_id == race_id)\
-            .options(
-                joinedload(Entry.horse),
-                joinedload(Entry.jockey)
-            )\
-            .order_by(Entry.horse_number.asc())\
-            .all()
-            
-        return render_template('race_detail.html', 
-                             race=race, 
-                             entries=entries)
-    except Exception as e:
-        app.logger.error(f"Error in race: {str(e)}")
-        return jsonify({'error': str(e)}), 500
+def race_view(race_id):
+    """レース詳細ページ"""
+    race = Race.query.get_or_404(race_id)
+    entries = db.session.query(Entry)\
+        .join(Horse)\
+        .outerjoin(Jockey)\
+        .filter(Entry.race_id == race_id)\
+        .options(
+            joinedload(Entry.horse),
+            joinedload(Entry.jockey)
+        )\
+        .order_by(Entry.horse_number.asc())\
+        .all()
+        
+    return render_template('race_detail.html', 
+                         race=race, 
+                         entries=entries)
 
 @app.route('/add_race', methods=['GET', 'POST'])
 def add_race():
