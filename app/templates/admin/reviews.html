@@ -47,7 +47,15 @@
                                     {{ user.username }}
                                 </a>
                             </td>
-                            <td>{{ "★" * review.rating }}</td>
+                            <td>
+                                {% if review.race_rating is defined and review.race_rating %}
+                                    {{ "★" * review.race_rating }}
+                                {% elif review.rating_overall is defined and review.rating_overall %}
+                                    {{ "★" * review.rating_overall }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
                             <td>{{ review.price|format_yen }}</td>
                             <td>{{ review.purchase_count }}</td>
                             <td>{{ review.report_count }}</td>
