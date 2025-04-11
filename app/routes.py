@@ -3121,6 +3121,11 @@ def admin_analytics():
             func.count(AccessLog.id).desc()
         ).limit(10).all()
         
+        # 未ログインユーザーのアクセス数も取得
+        anonymous_count = AccessLog.query.filter(AccessLog.user_id == None).count()
+        if anonymous_count > 0:
+            user_access = [('未ログインユーザー', anonymous_count)] + list(user_access)
+        
         return render_template('admin/analytics.html', 
                               total_users=total_users,
                               dates=dates,
