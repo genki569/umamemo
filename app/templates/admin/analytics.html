@@ -71,10 +71,10 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for page in page_access %}
+                                {% for path, count in page_access %}
                                 <tr>
-                                    <td>{{ page.path }}</td>
-                                    <td>{{ page.count }}</td>
+                                    <td>{{ path }}</td>
+                                    <td>{{ count }}</td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
@@ -99,10 +99,10 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for user in user_access %}
+                                {% for username, count in user_access %}
                                 <tr>
-                                    <td>{{ user.username }}</td>
-                                    <td>{{ user.count }}</td>
+                                    <td>{{ username }}</td>
+                                    <td>{{ count }}</td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
@@ -119,15 +119,16 @@
 {{ super() }}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    // 日別アクセス数のグラフ
+document.addEventListener('DOMContentLoaded', function() {
+    // 日別アクセスグラフの初期化
     var ctx = document.getElementById('dailyAccessChart').getContext('2d');
     var dailyAccessChart = new Chart(ctx, {
         type: 'line',
         data: {
-            labels: [{% for day in daily_access %}'{{ day.date }}'{% if not loop.last %}, {% endif %}{% endfor %}],
+            labels: {{ dates|tojson }},
             datasets: [{
                 label: 'アクセス数',
-                data: [{% for day in daily_access %}{{ day.count }}{% if not loop.last %}, {% endif %}{% endfor %}],
+                data: {{ counts|tojson }},
                 backgroundColor: 'rgba(78, 115, 223, 0.05)',
                 borderColor: 'rgba(78, 115, 223, 1)',
                 pointRadius: 3,
@@ -152,52 +153,68 @@
                 }
             },
             scales: {
-                xAxes: [{
+                x: {
                     time: {
                         unit: 'date'
                     },
-                    gridLines: {
+                    grid: {
                         display: false,
                         drawBorder: false
                     },
                     ticks: {
                         maxTicksLimit: 7
                     }
-                }],
-                yAxes: [{
+                },
+                y: {
                     ticks: {
                         maxTicksLimit: 5,
                         padding: 10,
-                        beginAtZero: true
+                        // y軸の値を整数に
+                        callback: function(value, index, values) {
+                            return Math.round(value);
+                        }
                     },
-                    gridLines: {
+                    grid: {
                         color: "rgb(234, 236, 244)",
                         zeroLineColor: "rgb(234, 236, 244)",
                         drawBorder: false,
                         borderDash: [2],
                         zeroLineBorderDash: [2]
                     }
-                }]
+                }
             },
-            legend: {
-                display: false
-            },
-            tooltips: {
-                backgroundColor: "rgb(255,255,255)",
-                bodyFontColor: "#858796",
-                titleMarginBottom: 10,
-                titleFontColor: '#6e707e',
-                titleFontSize: 14,
-                borderColor: '#dddfeb',
-                borderWidth: 1,
-                xPadding: 15,
-                yPadding: 15,
-                displayColors: false,
-                intersect: false,
-                mode: 'index',
-                caretPadding: 10
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    backgroundColor: "rgb(255,255,255)",
+                    bodyFontColor: "#858796",
+                    titleMarginBottom: 10,
+                    titleFontColor: '#6e707e',
+                    titleFontSize: 14,
+                    borderColor: '#dddfeb',
+                    borderWidth: 1,
+                    xPadding: 15,
+                    yPadding: 15,
+                    displayColors: false,
+                    intersect: false,
+                    mode: 'index',
+                    caretPadding: 10,
+                    callbacks: {
+                        label: function(context) {
+                            var label = context.dataset.label || '';
+                            if (label) {
+                                label += ': ';
+                            }
+                            label += context.parsed.y;
+                            return label;
+                        }
+                    }
+                }
             }
         }
     });
+});
 </script>
 {% endblock %}
