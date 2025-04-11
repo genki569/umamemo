@@ -3084,40 +3084,27 @@ def admin_analytics():
         end_date = datetime.utcnow()
         start_date = end_date - timedelta(days=7)
         
-        # 日付の範囲を作成
-        date_range = []
+        # 日付リストを作成
+        dates = []
         current_date = start_date
         while current_date <= end_date:
-            date_range.append(current_date.date())
+            dates.append(current_date.strftime('%Y-%m-%d'))
             current_date += timedelta(days=1)
         
         # 日別アクセス数を取得
-        daily_access = db.session.query(
-            func.date(AccessLog.timestamp).label('date'),
-            func.count(AccessLog.id).label('count')
-        ).filter(
-            AccessLog.timestamp >= start_date,
-            AccessLog.timestamp <= end_date
-        ).group_by(
-            func.date(AccessLog.timestamp)
-        ).order_by(
-            func.date(AccessLog.timestamp)
-        ).all()
-        
-        # 日付とアクセス数のマッピングを作成
-        access_map = {date.strftime('%Y-%m-%d'): count for date, count in daily_access}
-        
-        # 日付とアクセス数のリストを作成（0件の日も含める）
-        dates = []
         counts = []
-        for date in date_range:
-            date_str = date.strftime('%Y-%m-%d')
-            dates.append(date_str)
-            counts.append(access_map.get(date_str, 0))
+        for date_str in dates:
+            date_obj = datetime.strptime(date_str, '%Y-%m-%d')
+            next_date = date_obj + timedelta(days=1)
+            count = AccessLog.query.filter(
+                AccessLog.timestamp >= date_obj,
+                AccessLog.timestamp < next_date
+            ).count()
+            counts.append(count)
         
         # ページ別アクセス数
         page_access = db.session.query(
-            AccessLog.path,
+            AccessLog.path, 
             func.count(AccessLog.id).label('count')
         ).group_by(
             AccessLog.path
@@ -3127,22 +3114,17 @@ def admin_analytics():
         
         # ユーザー別アクセス数
         user_access = db.session.query(
-            User.username,
+            User.username, 
             func.count(AccessLog.id).label('count')
         ).join(
             User, AccessLog.user_id == User.id
-        ).filter(
-            AccessLog.user_id.isnot(None)
         ).group_by(
             User.username
         ).order_by(
             func.count(AccessLog.id).desc()
         ).limit(10).all()
         
-        app.logger.info(f"Dates: {dates}")
-        app.logger.info(f"Counts: {counts}")
-        
-        return render_template('admin/analytics.html',
+        return render_template('admin/analytics.html', 
                               total_users=total_users,
                               dates=dates,
                               counts=counts,
