@@ -3113,7 +3113,14 @@ def admin_analytics():
             func.count(AccessLog.id).desc()
         ).limit(10).all()
         
+        # stats 辞書を作成
+        stats = {
+            'total_users': total_users,
+            # 他の統計情報も必要に応じて追加
+        }
+        
         return render_template('admin/analytics.html',
+                              stats=stats,
                               total_users=total_users,
                               dates=dates,
                               counts=counts,
@@ -3123,6 +3130,7 @@ def admin_analytics():
         app.logger.error(f"Error in admin analytics: {str(e)}")
         flash('アクセス分析の読み込み中にエラーが発生しました', 'danger')
         return render_template('admin/analytics.html', 
+                              stats={'total_users': 0},
                               total_users=0,
                               dates=[],
                               counts=[],
