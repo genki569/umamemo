@@ -4034,14 +4034,14 @@ def save_review(race_id):
             flash('レビューを保存しました', 'success')
         
         # 正しいエンドポイント名に修正
-        return redirect(url_for('race', race_id=race_id))
+        return redirect(url_for('races', race_id=race_id))
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"Error saving review: {str(e)}")
         current_app.logger.error(traceback.format_exc())
         flash('レビューの保存中にエラーが発生しました', 'danger')
         # 正しいエンドポイント名に修正
-        return redirect(url_for('race', race_id=race_id))
+        return redirect(url_for('races', race_id=race_id))
 
 @app.route('/reviews/<int:review_id>')
 def review_detail(review_id):
