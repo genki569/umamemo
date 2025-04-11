@@ -28,7 +28,6 @@
                             <th>評価</th>
                             <th>販売価格</th>
                             <th>購入数</th>
-                            <th>報告</th>
                             <th>ステータス</th>
                             <th>操作</th>
                         </tr>
@@ -58,16 +57,11 @@
                             </td>
                             <td>{{ review.price|format_yen }}</td>
                             <td>{{ review.purchase_count }}</td>
-                            <td>{{ review.report_count }}</td>
                             <td>
                                 {% if review.is_public %}
                                 <span class="badge bg-success">公開</span>
                                 {% else %}
                                 <span class="badge bg-secondary">非公開</span>
-                                {% endif %}
-                                
-                                {% if review.report_count > 0 %}
-                                <span class="badge bg-warning">報告あり</span>
                                 {% endif %}
                             </td>
                             <td>
