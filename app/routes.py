@@ -3130,10 +3130,17 @@ def admin_analytics():
         if anonymous_count > 0:
             user_access = [('未ログインユーザー', anonymous_count)] + list(user_access)
         
+        # 日付と件数を結合したリストを作成
+        access_data = []
+        for i in range(len(dates)):
+            date_str = dates[i].replace('-', '年', 1).replace('-', '月', 1) + '日'
+            access_data.append((date_str, counts[i]))
+        
         return render_template('admin/analytics.html', 
                               total_users=total_users,
                               dates=dates,
                               counts=counts,
+                              access_data=access_data,  # 結合したデータを渡す
                               page_access=page_access,
                               user_access=user_access)
     except Exception as e:
