@@ -40,18 +40,36 @@
                             {% set race = review_tuple[2] %}
                             <tr>
                                 <td>{{ review.id }}</td>
-                                <td>{{ user.username }}</td>
-                                <td>{{ race.name }}</td>
-                                <td>{{ review.title }}</td>
-                                <td>{{ review.is_premium }}</td>
-                                <td>{{ review.price }}</td>
                                 <td>{{ review.created_at.strftime('%Y/%m/%d %H:%M') }}</td>
                                 <td>
+                                    <a href="{{ url_for('race_detail', race_id=race.id) }}" target="_blank">
+                                        {{ race.name }}
+                                    </a>
+                                </td>
+                                <td>{{ user.username }}</td>
+                                <td>{{ review.rating }}/5</td>
+                                <td>{{ review.price }}pt</td>
+                                <td>{{ review.purchases|length if review.purchases is defined else 0 }}</td>
+                                <td>
+                                    {% if review.reports is defined and review.reports|length > 0 %}
+                                    <span class="badge bg-danger">{{ review.reports|length }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="badge {% if review.is_public %}bg-success{% else %}bg-secondary{% endif %}">
+                                        {{ '公開' if review.is_public else '非公開' }}
+                                    </span>
+                                </td>
+                                <td>
                                     <div class="btn-group btn-group-sm">
-                                        <a href="{{ url_for('review_detail', review_id=review.id) }}" 
-                                           class="btn btn-outline-primary">
+                                        <button type="button" class="btn btn-outline-primary"
+                                                onclick="viewReview({{ review.id }})">
                                             <i class="fas fa-eye"></i>
-                                        </a>
+                                        </button>
+                                        <button type="button" class="btn btn-outline-warning"
+                                                onclick="toggleStatus({{ review.id }})">
+                                            <i class="fas fa-sync-alt"></i>
+                                        </button>
                                         <button type="button" class="btn btn-outline-danger"
                                                 onclick="confirmDelete({{ review.id }})">
                                             <i class="fas fa-trash"></i>
