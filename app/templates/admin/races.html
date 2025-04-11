@@ -35,14 +35,14 @@
                             <td>{{ race.date.strftime('%Y/%m/%d') }}</td>
                             <td>{{ VENUE_NAMES.get(race.venue_id, '不明') }}</td>
                             <td>
-                                <a href="{{ url_for('race', race_id=race.id) }}">{{ race.name }}</a>
+                                <a href="{{ url_for('races', race_id=race.id) }}">{{ race.name }}</a>
                             </td>
                             <td>{{ race.grade or '-' }}</td>
                             <td>{{ race.entries_count }}</td>
                             <td>{{ race.review_count }}</td>
                             <td>
                                 <div class="btn-group btn-group-sm">
-                                    <a href="{{ url_for('race', race_id=race.id) }}" 
+                                    <a href="{{ url_for('races', race_id=race.id) }}" 
                                        class="btn btn-outline-primary">
                                         <i class="fas fa-eye"></i>
                                     </a>
