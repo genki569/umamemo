@@ -92,3 +92,6 @@ def log_request(response):
             # エラーが発生しても処理を続行
     
     return response
+
+# Jinja2 グローバル関数の追加
+app.jinja_env.globals.update(max=max, min=min)
