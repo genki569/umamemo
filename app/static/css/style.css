@@ -1430,3 +1430,28 @@ p, h1, h2, h3, h4, h5, h6, span, a, div {
     color: #4F46E5;
     text-decoration: underline;
 }
+
+/* フッター内の法的リンク - 視認性向上 */
+.umamemo-legal-links {
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.umamemo-legal-links a {
+    color: #ffffff;
+    background-color: rgba(79, 70, 229, 0.7);
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    padding: 6px 12px;
+    border-radius: 6px;
+    display: inline-block;
+}
+
+.umamemo-legal-links a:hover {
+    background-color: rgba(79, 70, 229, 0.9);
+    color: #ffffff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
