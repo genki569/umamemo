@@ -109,9 +109,3 @@ app.jinja_env.globals.update(max=max, min=min)
 
 # zipフィルターを追加
 app.jinja_env.filters['zip'] = zip
-
-# Flask-Mail のインスタンスを作成
-mail = Mail()
-
-# Flask-Mail の初期化
-mail.init_app(app)
