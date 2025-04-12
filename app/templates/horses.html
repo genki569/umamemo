@@ -1,71 +1,563 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="horses-header">
+<div class="horses-page">
+    <div class="horses-header">
+        <div class="container">
+            <div class="header-content">
+                <h1>登録馬一覧</h1>
+                <p class="header-description">
+                    JRA所属の現役競走馬を一覧で確認できます。
+                    <span class="highlight">10000頭</span>の競走馬が登録されており、
+                    各馬の詳細情報や過去のレース成績を閲覧できます。
+                </p>
+            </div>
+        </div>
+    </div>
+
     <div class="container">
-        <div class="header-content">
-            <h1>登録馬一覧</h1>
-            <p class="header-description">
-                JRA所属の現役競走馬を一覧で確認できます。
-                <span class="highlight">10000頭</span>の競走馬が登録されており、
-                各馬の詳細情報や過去のレース成績を閲覧できます。
-            </p>
+        <!-- 検索フォーム -->
+        <div class="search-container">
+            <div class="search-box">
+                <form class="search-form" method="get" action="{{ url_for('horses') }}">
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="fas fa-search"></i>
+                        </span>
+                        <input type="text" 
+                               class="form-control search-input" 
+                               name="search" 
+                               placeholder="馬名を入力..." 
+                               value="{{ search }}">
+                        <div class="input-group-append">
+                            <button class="btn search-btn" type="submit">
+                                検索
+                            </button>
+                            {% if search %}
+                                <a href="{{ url_for('horses') }}" class="btn clear-btn">
+                                    <i class="fas fa-times"></i> クリア
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
-    </div>
-</div>
-
-<div class="container mt-4">
-    <!-- 検索フォーム -->
-    <div class="search-container">
-        <form class="search-form" method="get" action="{{ url_for('horses') }}">
-            <div class="input-group">
-                <input type="text" class="form-control" name="search" 
-                       placeholder="馬名を入力..." value="{{ search }}">
-                <button class="btn btn-primary" type="submit">
-                    <i class="fas fa-search"></i> 検索
-                </button>
-                {% if search %}
-                    <a href="{{ url_for('horses') }}" class="btn btn-outline-secondary">
-                        <i class="fas fa-times"></i> クリア
-                    </a>
-                {% endif %}
+        
+        <!-- 馬一覧のカードをおしゃれに表示 -->
+        <div class="horses-grid">
+            {% for horse in horses %}
+            <div class="horse-card">
+                <div class="horse-icon">
+                    <i class="fas fa-horse-head"></i>
+                </div>
+                <h3 class="horse-name">{{ horse.name }}</h3>
+                <div class="horse-info">
+                    <span class="horse-attribute">{{ horse.sex }}</span>
+                </div>
+                <a href="{{ url_for('horse_detail', horse_id=horse.id) }}" class="btn horse-detail-btn">
+                    詳細を見る
+                </a>
             </div>
-        </form>
-    </div>
-    
-    <!-- 馬一覧のカードをおしゃれに表示 -->
-    <div class="horses-grid">
-        {% for horse in horses %}
-        <div class="horse-card">
-            <div class="horse-icon">
-                <i class="fas fa-horse"></i>
-            </div>
-            <h3 class="horse-name">{{ horse.name }}</h3>
-            <div class="horse-info">
-                <span class="horse-attribute">{{ horse.sex }}</span>
-            </div>
-            <a href="{{ url_for('horse_detail', horse_id=horse.id) }}" class="btn horse-detail-btn">
-                詳細を見る
-            </a>
+            {% endfor %}
         </div>
-        {% endfor %}
-    </div>
 
-    <!-- ページネーション -->
-    {% if pagination %}
-    <nav aria-label="Page navigation" class="mt-4">
-        <ul class="pagination justify-content-center">
-            {% for page in pagination.iter_pages() %}
-                {% if page %}
-                    <li class="page-item {% if page == pagination.page %}active{% endif %}">
-                        <a class="page-link" href="{{ url_for('horses', page=page, search=search) }}">{{ page }}</a>
+        <!-- ページネーション -->
+        {% if pagination %}
+        <nav aria-label="Page navigation" class="pagination-container">
+            <ul class="pagination justify-content-center">
+                {% if pagination.has_prev %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('horses', page=pagination.prev_num, search=search) }}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
                     </li>
                 {% else %}
-                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                    <li class="page-item disabled">
+                        <span class="page-link" aria-hidden="true">&laquo;</span>
+                    </li>
                 {% endif %}
-            {% endfor %}
-        </ul>
-    </nav>
-    {% endif %}
+                
+                {% for page in pagination.iter_pages() %}
+                    {% if page %}
+                        <li class="page-item {% if page == pagination.page %}active{% endif %}">
+                            <a class="page-link" href="{{ url_for('horses', page=page, search=search) }}">{{ page }}</a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled"><span class="page-link">...</span></li>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if pagination.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('horses', page=pagination.next_num, search=search) }}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link" aria-hidden="true">&raquo;</span>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
 </div>
+
+<style>
+/**
+ * 登録馬一覧ページのスタイル定義
+ * モダンでおしゃれなデザインを実現するためのスタイル
+ */
+
+/* ベースとなるページスタイル */
+.horses-page {
+    background-color: #f8fafc;
+    background-image: linear-gradient(to bottom, #f8fafc, #f1f5f9);
+    min-height: 100vh;
+    padding-bottom: 3rem;
+}
+
+/* ヘッダー部分のスタイリング */
+.horses-header {
+    background: linear-gradient(135deg, #4338ca, #6366f1, #8b5cf6);
+    color: white;
+    padding: 3.5rem 0 4rem;
+    position: relative;
+    margin-bottom: 3rem;
+    box-shadow: 0 4px 20px rgba(99, 102, 241, 0.25);
+    overflow: hidden;
+}
+
+.horses-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.08'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    z-index: 0;
+}
+
+.horses-header::after {
+    content: '';
+    position: absolute;
+    top: -100px;
+    right: -100px;
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    z-index: 0;
+}
+
+.header-content {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    animation: fadeInUp 0.8s ease-out;
+}
+
+.header-content h1 {
+    font-size: 2.8rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    letter-spacing: -0.02em;
+}
+
+.header-description {
+    max-width: 700px;
+    margin: 0 auto;
+    font-size: 1.2rem;
+    opacity: 0.95;
+    line-height: 1.6;
+}
+
+.highlight {
+    color: #fef3c7;
+    font-weight: 700;
+    position: relative;
+    display: inline-block;
+}
+
+.highlight::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 5px;
+    background: rgba(254, 243, 199, 0.3);
+    border-radius: 10px;
+}
+
+/* 検索コンテナのスタイリング */
+.search-container {
+    position: relative;
+    margin-top: -2.8rem;
+    margin-bottom: 2.5rem;
+    z-index: 10;
+    animation: fadeInUp 0.8s ease-out 0.4s both;
+}
+
+.search-box {
+    max-width: 550px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 60px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+.search-box:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+}
+
+.search-form .input-group {
+    border-radius: 60px;
+    overflow: hidden;
+}
+
+.search-form .input-group-text {
+    background-color: transparent;
+    border: none;
+    color: #6366f1;
+    padding-left: 1.8rem;
+    font-size: 1.1rem;
+}
+
+.search-form .search-input {
+    border: none;
+    padding: 1.4rem 0.5rem;
+    font-size: 1.05rem;
+}
+
+.search-form .search-input:focus {
+    box-shadow: none;
+}
+
+.search-form .search-input::placeholder {
+    color: #a1a1aa;
+    font-weight: 400;
+}
+
+.search-btn {
+    background: linear-gradient(to right, #4f46e5, #6366f1);
+    color: white;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    font-weight: 500;
+    border-radius: 0 60px 60px 0;
+    transition: all 0.3s ease;
+}
+
+.search-btn:hover {
+    background: linear-gradient(to right, #4338ca, #4f46e5);
+    color: white;
+    box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3);
+}
+
+.clear-btn {
+    background-color: #f3f4f6;
+    color: #6b7280;
+    border: none;
+    margin-left: 0.5rem;
+    padding: 0.8rem 1.2rem;
+    font-weight: 500;
+    border-radius: 60px;
+    transition: all 0.3s ease;
+}
+
+.clear-btn:hover {
+    background-color: #e5e7eb;
+    color: #4b5563;
+}
+
+/* 馬一覧のグリッドレイアウト */
+.horses-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
+    animation: fadeInUp 0.8s ease-out 0.6s both;
+}
+
+/* 馬カードのスタイル */
+.horse-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+    padding: 1.5rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(226, 232, 240, 0.7);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.horse-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 5px;
+    background: linear-gradient(90deg, #4f46e5, #8b5cf6);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.horse-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.08);
+}
+
+.horse-card:hover::before {
+    opacity: 1;
+}
+
+/* 馬アイコン */
+.horse-icon {
+    width: 70px;
+    height: 70px;
+    background: linear-gradient(135deg, #4f46e5, #8b5cf6);
+    color: white;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    font-size: 28px;
+    box-shadow: 0 8px 20px rgba(79, 70, 229, 0.2);
+    transition: all 0.3s ease;
+}
+
+.horse-card:hover .horse-icon {
+    transform: scale(1.05);
+    box-shadow: 0 10px 25px rgba(79, 70, 229, 0.3);
+}
+
+/* 馬名 */
+.horse-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin: 0 0 0.8rem;
+    color: #1e293b;
+    transition: color 0.3s ease;
+    line-height: 1.4;
+}
+
+.horse-card:hover .horse-name {
+    color: #4f46e5;
+}
+
+/* 馬の属性 */
+.horse-info {
+    margin-bottom: 1.2rem;
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    flex-grow: 1;
+}
+
+.horse-attribute {
+    background: linear-gradient(135deg, rgba(79, 70, 229, 0.1), rgba(139, 92, 246, 0.15));
+    color: #6366f1;
+    padding: 0.4rem 0.8rem;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    border: 1px solid rgba(79, 70, 229, 0.2);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+.horse-card:hover .horse-attribute {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* 詳細ボタン */
+.horse-detail-btn {
+    width: 100%;
+    background: linear-gradient(to right, #4f46e5, #6366f1);
+    color: white;
+    padding: 0.8rem 0;
+    font-size: 0.95rem;
+    border-radius: 12px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.15);
+    border: none;
+    letter-spacing: 0.02em;
+}
+
+.horse-detail-btn:hover {
+    background: linear-gradient(to right, #4338ca, #4f46e5);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(79, 70, 229, 0.25);
+}
+
+/* ページネーション */
+.pagination-container {
+    animation: fadeInUp 0.8s ease-out 0.8s both;
+}
+
+.pagination {
+    gap: 0.3rem;
+}
+
+.page-link {
+    border: none;
+    color: #4b5563;
+    padding: 0.6rem 1rem;
+    font-weight: 600;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.page-link:hover {
+    background-color: #f3f4f6;
+    color: #4f46e5;
+}
+
+.page-item.active .page-link {
+    background: linear-gradient(to right, #4f46e5, #6366f1);
+    color: white;
+    box-shadow: 0 4px 10px rgba(79, 70, 229, 0.25);
+}
+
+.page-item.disabled .page-link {
+    color: #d1d5db;
+    background-color: transparent;
+}
+
+/* アニメーション定義 */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+    .horses-header {
+        padding: 2.5rem 0 3rem;
+    }
+    
+    .header-content h1 {
+        font-size: 2.2rem;
+    }
+    
+    .header-description {
+        font-size: 1.05rem;
+    }
+    
+    .search-form .search-input {
+        padding: 1.2rem 0.5rem;
+    }
+    
+    .horses-grid {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 1rem;
+    }
+    
+    .horse-card {
+        padding: 1.2rem;
+    }
+    
+    .horse-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 24px;
+        margin-bottom: 0.8rem;
+    }
+    
+    .horse-name {
+        font-size: 1rem;
+    }
+    
+    .horse-attribute {
+        padding: 0.3rem 0.7rem;
+        font-size: 0.8rem;
+    }
+    
+    .horse-detail-btn {
+        padding: 0.7rem 0;
+        font-size: 0.9rem;
+    }
+    
+    .page-link {
+        padding: 0.5rem 0.8rem;
+    }
+}
+
+/* ダークモード対応 */
+@media (prefers-color-scheme: dark) {
+    .horses-page {
+        background-color: #1a1b26;
+        background-image: linear-gradient(to bottom, #1a1b26, #1e293b);
+    }
+    
+    .horse-card,
+    .search-box {
+        background-color: #1e293b;
+        border-color: rgba(51, 65, 85, 0.5);
+    }
+    
+    .horse-name {
+        color: #e2e8f0;
+    }
+    
+    .horse-attribute {
+        background: linear-gradient(135deg, rgba(79, 70, 229, 0.2), rgba(139, 92, 246, 0.25));
+        border-color: rgba(79, 70, 229, 0.3);
+    }
+    
+    .search-form .search-input {
+        color: #e2e8f0;
+        background-color: #1e293b;
+    }
+    
+    .search-form .search-input::placeholder {
+        color: #64748b;
+    }
+    
+    .clear-btn {
+        background-color: #334155;
+        color: #e2e8f0;
+    }
+    
+    .clear-btn:hover {
+        background-color: #475569;
+    }
+    
+    .page-link {
+        background-color: #1e293b;
+        color: #e2e8f0;
+    }
+    
+    .page-link:hover {
+        background-color: #334155;
+    }
+    
+    .page-item.disabled .page-link {
+        background-color: #1e293b;
+        color: #475569;
+    }
+}
+</style>
 {% endblock %}
