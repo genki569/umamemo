@@ -211,36 +211,86 @@
                             <div class="stats-section">
                                 <h6 class="stats-title">{{ race.distance }}mでの成績</h6>
                                 {% if entry.distance_stats %}
-                                    <div class="stats-grid">
-                                        <div class="stats-item">
-                                            <span class="stats-label">総レース数</span>
-                                            <span class="stats-value">{{ entry.distance_stats.total }}</span>
-                                        </div>
-                                        <div class="stats-item">
-                                            <span class="stats-label">勝利</span>
-                                            <span class="stats-value win-rate">
-                                                {{ entry.distance_stats.wins }}
-                                                <small>({{ "%.1f"|format(entry.distance_stats.win_rate) }}%)</small>
-                                            </span>
-                                        </div>
-                                        <div class="stats-item">
-                                            <span class="stats-label">複勝</span>
-                                            <span class="stats-value place-rate">
-                                                {{ entry.distance_stats.top3 }}
-                                                <small>({{ "%.1f"|format(entry.distance_stats.top3_rate) }}%)</small>
-                                            </span>
+                                    <!-- PC表示用 -->
+                                    <div class="d-none d-md-block">
+                                        <div class="stats-grid">
+                                            <div class="stats-item">
+                                                <span class="stats-label">総レース数</span>
+                                                <span class="stats-value">{{ entry.distance_stats.total }}</span>
+                                            </div>
+                                            <div class="stats-item">
+                                                <span class="stats-label">勝利</span>
+                                                <span class="stats-value win-rate">
+                                                    {{ entry.distance_stats.wins }}
+                                                    <small>({{ "%.1f"|format(entry.distance_stats.win_rate) }}%)</small>
+                                                </span>
+                                            </div>
+                                            <div class="stats-item">
+                                                <span class="stats-label">複勝</span>
+                                                <span class="stats-value place-rate">
+                                                    {{ entry.distance_stats.top3 }}
+                                                    <small>({{ "%.1f"|format(entry.distance_stats.top3_rate) }}%)</small>
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
+                                    
+                                    <!-- モバイル表示用 -->
+                                    <div class="d-md-none">
+                                        <div class="mobile-stats-card">
+                                            <div class="mobile-stats-row">
+                                                <div class="mobile-stats-item">
+                                                    <div class="stats-circle">
+                                                        <span class="stats-number">{{ entry.distance_stats.total }}</span>
+                                                    </div>
+                                                    <div class="stats-item-label">総レース数</div>
+                                                </div>
+                                                <div class="mobile-stats-item">
+                                                    <div class="stats-circle win">
+                                                        <span class="stats-number">{{ entry.distance_stats.wins }}</span>
+                                                    </div>
+                                                    <div class="stats-item-label">勝利数</div>
+                                                    <div class="stats-percentage">{{ "%.1f"|format(entry.distance_stats.win_rate) }}%</div>
+                                                </div>
+                                                <div class="mobile-stats-item">
+                                                    <div class="stats-circle place">
+                                                        <span class="stats-number">{{ entry.distance_stats.top3 }}</span>
+                                                    </div>
+                                                    <div class="stats-item-label">複勝数</div>
+                                                    <div class="stats-percentage">{{ "%.1f"|format(entry.distance_stats.top3_rate) }}%</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
                                     {% if entry.best_time %}
-                                        <div class="best-time-box">
-                                            <div class="best-time-header">最速タイム</div>
-                                            <div class="best-time-content">
-                                                <span class="time">{{ entry.best_time.time }}</span>
-                                                <span class="details">
-                                                    {{ entry.best_time.date.strftime('%y/%m/%d') }}
-                                                    {{ entry.best_time.venue }}
-                                                    {{ entry.best_time.track_condition }}
-                                                </span>
+                                        <!-- PC表示用 -->
+                                        <div class="d-none d-md-block">
+                                            <div class="best-time-box">
+                                                <div class="best-time-header">最速タイム</div>
+                                                <div class="best-time-content">
+                                                    <span class="time">{{ entry.best_time.time }}</span>
+                                                    <span class="details">
+                                                        {{ entry.best_time.date.strftime('%y/%m/%d') }}
+                                                        {{ entry.best_time.venue }}
+                                                        {{ entry.best_time.track_condition }}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- モバイル表示用 -->
+                                        <div class="d-md-none">
+                                            <div class="mobile-best-time">
+                                                <div class="mobile-best-time-header">
+                                                    <i class="fas fa-stopwatch"></i> 最速タイム
+                                                </div>
+                                                <div class="mobile-best-time-content">
+                                                    <div class="mobile-best-time-value">{{ entry.best_time.time }}</div>
+                                                    <div class="mobile-best-time-details">
+                                                        {{ entry.best_time.date.strftime('%y/%m/%d') }}・{{ entry.best_time.venue }}・{{ entry.best_time.track_condition }}
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     {% endif %}
@@ -253,30 +303,64 @@
                             <div class="stats-section">
                                 <h6 class="stats-title">月別成績</h6>
                                 {% if entry.month_stats %}
-                                    <table class="table table-sm month-stats">
-                                        <thead>
-                                            <tr>
-                                                <th>月</th>
-                                                <th>総数</th>
-                                                <th>勝利</th>
-                                                <th>勝率</th>
-                                                <th>複勝率</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
+                                    <!-- PC表示用テーブル -->
+                                    <div class="d-none d-md-block">
+                                        <table class="table table-sm month-stats">
+                                            <thead>
+                                                <tr>
+                                                    <th>月</th>
+                                                    <th>総数</th>
+                                                    <th>勝利</th>
+                                                    <th>勝率</th>
+                                                    <th>複勝率</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for month in range(1, 13) %}
+                                                    {% if month in entry.month_stats %}
+                                                        <tr>
+                                                            <td>{{ month }}月</td>
+                                                            <td>{{ entry.month_stats[month].total }}</td>
+                                                            <td>{{ entry.month_stats[month].wins }}</td>
+                                                            <td>{{ "%.1f"|format(entry.month_stats[month].win_rate) }}%</td>
+                                                            <td>{{ "%.1f"|format(entry.month_stats[month].top3_rate) }}%</td>
+                                                        </tr>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    
+                                    <!-- モバイル表示用カード -->
+                                    <div class="d-md-none">
+                                        <div class="mobile-month-stats">
                                             {% for month in range(1, 13) %}
                                                 {% if month in entry.month_stats %}
-                                                    <tr>
-                                                        <td>{{ month }}月</td>
-                                                        <td>{{ entry.month_stats[month].total }}</td>
-                                                        <td>{{ entry.month_stats[month].wins }}</td>
-                                                        <td>{{ "%.1f"|format(entry.month_stats[month].win_rate) }}%</td>
-                                                        <td>{{ "%.1f"|format(entry.month_stats[month].top3_rate) }}%</td>
-                                                    </tr>
+                                                    <div class="mobile-month-card">
+                                                        <div class="mobile-month-header">{{ month }}月</div>
+                                                        <div class="mobile-month-stats-grid">
+                                                            <div class="mobile-month-stats-item">
+                                                                <span class="mobile-stats-label">総数</span>
+                                                                <span class="mobile-stats-value">{{ entry.month_stats[month].total }}</span>
+                                                            </div>
+                                                            <div class="mobile-month-stats-item">
+                                                                <span class="mobile-stats-label">勝利</span>
+                                                                <span class="mobile-stats-value">{{ entry.month_stats[month].wins }}</span>
+                                                            </div>
+                                                            <div class="mobile-month-stats-item">
+                                                                <span class="mobile-stats-label">勝率</span>
+                                                                <span class="mobile-stats-value">{{ "%.1f"|format(entry.month_stats[month].win_rate) }}%</span>
+                                                            </div>
+                                                            <div class="mobile-month-stats-item">
+                                                                <span class="mobile-stats-label">複勝率</span>
+                                                                <span class="mobile-stats-value">{{ "%.1f"|format(entry.month_stats[month].top3_rate) }}%</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 {% endif %}
                                             {% endfor %}
-                                        </tbody>
-                                    </table>
+                                        </div>
+                                    </div>
                                 {% else %}
                                     <p class="no-data">月別成績データなし</p>
                                 {% endif %}
@@ -597,6 +681,157 @@
     border-left-color: #CD7F32;
 }
 
+/* モバイル表示用の分析データカードスタイル */
+.mobile-stats-card {
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.mobile-stats-row {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 10px 0;
+}
+
+.mobile-stats-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.stats-circle {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: #f3f4f6;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.stats-circle.win {
+    background-color: rgba(209, 231, 221, 0.8);
+    border: 2px solid #10B981;
+}
+
+.stats-circle.place {
+    background-color: rgba(207, 226, 255, 0.8);
+    border: 2px solid #3B82F6;
+}
+
+.stats-number {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #111827;
+}
+
+.stats-item-label {
+    font-size: 0.8rem;
+    color: #6b7280;
+    margin-bottom: 2px;
+}
+
+.stats-percentage {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #4F46E5;
+}
+
+/* モバイル用最速タイム表示 */
+.mobile-best-time {
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    margin-top: 15px;
+    border-left: 4px solid #3B82F6;
+}
+
+.mobile-best-time-header {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #3B82F6;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.mobile-best-time-header i {
+    margin-right: 6px;
+}
+
+.mobile-best-time-content {
+    padding: 5px 0;
+}
+
+.mobile-best-time-value {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 5px;
+}
+
+.mobile-best-time-details {
+    font-size: 0.85rem;
+    color: #6b7280;
+}
+
+/* 月別成績のモバイル表示 */
+.mobile-month-stats {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+}
+
+.mobile-month-card {
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.mobile-month-header {
+    background-color: #4F46E5;
+    color: white;
+    padding: 8px 15px;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.mobile-month-stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding: 12px;
+    gap: 10px;
+}
+
+.mobile-month-stats-item {
+    display: flex;
+    flex-direction: column;
+    padding: 8px;
+    background-color: #f9fafb;
+    border-radius: 8px;
+}
+
+.mobile-stats-label {
+    font-size: 0.8rem;
+    color: #6b7280;
+    margin-bottom: 4px;
+}
+
+.mobile-stats-value {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #111827;
+}
+
 @media (max-width: 767.98px) {
     .horse-results-header {
         font-size: 1.2rem;
@@ -609,6 +844,39 @@
     .recent-races {
         font-size: 0.9rem;
         color: #6b7280;
+    }
+    
+    .analysis-card {
+        margin-bottom: 25px;
+        background-color: #f8fafc;
+        border-radius: 12px;
+        padding: 15px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+    
+    .analysis-header {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 15px;
+        color: #4F46E5;
+        padding-bottom: 8px;
+        border-bottom: 1px solid #e5e7eb;
+    }
+    
+    .stats-title {
+        font-size: 1rem;
+        font-weight: 600;
+        margin-bottom: 12px;
+        padding: 8px 12px;
+        background-color: #eff6ff;
+        border-radius: 8px;
+        color: #1e40af;
+        display: flex;
+        align-items: center;
+    }
+    
+    .stats-section {
+        margin-bottom: 20px;
     }
 }
 </style>
