@@ -22,6 +22,8 @@ app.config['MAIL_USERNAME'] = 'your-email@gmail.com'  # 実際のメールアド
 app.config['MAIL_PASSWORD'] = 'your-app-password'  # Gmailアプリパスワードに変更
 app.config['MAIL_DEFAULT_SENDER'] = 'your-email@gmail.com'  # 送信元アドレス
 
+mail.init_app(app)
+
 app.config['DEBUG'] = True
 app.config['UPLOAD_FOLDER'] = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static', 'uploads')
 
