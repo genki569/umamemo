@@ -381,12 +381,11 @@
         background-color: #4F46E5;
         z-index: 999;
         overflow-y: auto;
-        transform: translateX(-100%);
-        transition: transform 0.3s ease;
+        display: none !important;
       }
       
       .umamemo-navbar-collapse.show {
-        transform: translateX(0);
+        display: block !important;
       }
 
       .umamemo-nav {
@@ -681,7 +680,9 @@
         if (navbarToggler && navbarCollapse) {
             // トグラーのクリックイベント
             navbarToggler.addEventListener('click', function() {
+                console.log('ナビゲーションボタンがクリックされました');
                 navbarCollapse.classList.toggle('show');
+                console.log('show クラスの切り替え後:', navbarCollapse.classList.contains('show'));
                 
                 // ボディのスクロールを制御（メニュー表示時はスクロール禁止）
                 if (navbarCollapse.classList.contains('show')) {
