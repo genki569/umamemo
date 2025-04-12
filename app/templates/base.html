@@ -372,20 +372,21 @@
       }
 
       .umamemo-navbar-collapse {
-        position: absolute !important;
-        top: 100% !important;
-        left: 0 !important;
-        right: 0 !important;
-        background-color: #4F46E5 !important;
-        padding: 1rem !important;
-        z-index: 9999 !important;
-        max-height: 80vh !important;
-        overflow-y: auto !important;
-        display: none !important;
+        position: fixed !important;
+        top: 60px; /* ヘッダーの高さに合わせて調整 */
+        left: 0;
+        width: 100%;
+        height: calc(100vh - 60px);
+        padding: 1rem;
+        background-color: var(--primary-color);
+        z-index: 999;
+        overflow-y: auto;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
       }
-
+      
       .umamemo-navbar-collapse.show {
-        display: block !important;
+        transform: translateX(0);
       }
 
       .umamemo-nav {
@@ -678,8 +679,35 @@
         const navbarCollapse = document.getElementById('umamemoNavbarCollapse');
         
         if (navbarToggler && navbarCollapse) {
+            // トグラーのクリックイベント
             navbarToggler.addEventListener('click', function() {
                 navbarCollapse.classList.toggle('show');
+                
+                // ボディのスクロールを制御（メニュー表示時はスクロール禁止）
+                if (navbarCollapse.classList.contains('show')) {
+                    document.body.style.overflow = 'hidden';
+                } else {
+                    document.body.style.overflow = '';
+                }
+            });
+            
+            // ナビゲーションリンクのクリックでメニューを閉じる
+            const navLinks = navbarCollapse.querySelectorAll('.umamemo-nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    navbarCollapse.classList.remove('show');
+                    document.body.style.overflow = '';
+                });
+            });
+            
+            // 画面の他の場所をクリックしたらメニューを閉じる
+            document.addEventListener('click', function(event) {
+                if (navbarCollapse.classList.contains('show') && 
+                    !navbarCollapse.contains(event.target) && 
+                    !navbarToggler.contains(event.target)) {
+                    navbarCollapse.classList.remove('show');
+                    document.body.style.overflow = '';
+                }
             });
         }
         
