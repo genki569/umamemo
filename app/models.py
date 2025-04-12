@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from app import db, login, app
 import json
 from flask_login import UserMixin
@@ -6,6 +6,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy import func
 from sqlalchemy.orm import joinedload
 from sqlalchemy.sql import case
+import secrets
+from flask import current_app
 @login.user_loader
 def load_user(id):
     return User.query.get(int(id))
@@ -421,6 +423,11 @@ class User(UserMixin, db.Model):
     specialties = db.Column(db.String(200))
     analysis_style = db.Column(db.String(200))
     
+    # メール認証用のフィールドを追加
+    email_confirmed = db.Column(db.Boolean, default=False)
+    confirmation_token = db.Column(db.String(100), unique=True)
+    confirmation_token_expires = db.Column(db.DateTime)
+    
     # リレーションシップ
     user_settings = db.relationship('UserSettings', 
                                   backref=db.backref('user_ref', uselist=False),
@@ -484,6 +491,23 @@ class User(UserMixin, db.Model):
         """ユーザーが購入したレース回顧のIDリストを返す"""
         purchases = ReviewPurchase.query.filter_by(user_id=self.id).all()
         return [purchase.review_id for purchase in purchases]
+
+    def generate_confirmation_token(self):
+        """メール確認用のトークンを生成"""
+        token = secrets.token_urlsafe(32)
+        self.confirmation_token = token
+        self.confirmation_token_expires = datetime.utcnow() + timedelta(hours=24)
+        return token
+    
+    def confirm_email(self):
+        """メールアドレスを確認済みにする"""
+        self.email_confirmed = True
+        self.confirmation_token = None
+        self.confirmation_token_expires = None
+        
+    def is_email_confirmed(self):
+        """メールが確認済みかどうか"""
+        return self.email_confirmed
 
 # お気に入モデルを追加
 class Favorite(db.Model):

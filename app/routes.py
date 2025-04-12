@@ -30,6 +30,7 @@ import logging
 import time
 import os
 import calendar
+from app.email_utils import send_confirmation_email
 
 # カスタムコレータの定義（ファイルの先頭付近に配置）
 def custom_login_required(f):
@@ -954,23 +955,64 @@ def shutuba_list():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
+    """ユーザー登録"""
     if current_user.is_authenticated:
         return redirect(url_for('index'))
+    
     form = RegistrationForm()
     if form.validate_on_submit():
-        user = User(username=form.username.data, email=form.email.data)
+        user = User(
+            username=form.username.data,
+            email=form.email.data
+        )
         user.set_password(form.password.data)
+        
+        # 確認トークンを生成
+        user.generate_confirmation_token()
+        
         db.session.add(user)
-        db.session.flush()  # userにIDを割り当てる
-        
-        # ユーザー設定を作成
-        user_settings = UserSettings(user_id=user.id)
-        db.session.add(user_settings)
-        
         db.session.commit()
-        flash('登録完しました')
+        
+        # 確認メールを送信
+        send_confirmation_email(user)
+        
+        flash('登録が完了しました。確認メールを送信しましたので、メール内のリンクをクリックして登録を完了してください。', 'success')
         return redirect(url_for('login'))
-    return render_template('register.html', title='新規登録', form=form)
+    
+    return render_template('register.html', form=form)
+
+@app.route('/confirm/<token>')
+def confirm_email(token):
+    """メールアドレス確認"""
+    user = User.query.filter_by(confirmation_token=token).first()
+    
+    if not user or user.confirmation_token_expires < datetime.utcnow():
+        flash('無効または期限切れの確認リンクです。', 'danger')
+        return redirect(url_for('login'))
+    
+    user.confirm_email()
+    db.session.commit()
+    
+    flash('メールアドレスの確認が完了しました。ログインしてください。', 'success')
+    return redirect(url_for('login'))
+
+@app.route('/resend-confirmation')
+@login_required
+def resend_confirmation():
+    """確認メールの再送信"""
+    if current_user.email_confirmed:
+        flash('メールアドレスは既に確認済みです。', 'info')
+        return redirect(url_for('index'))
+    
+    # 新しいトークンを生成
+    current_user.generate_confirmation_token()
+    db.session.commit()
+    
+    # 確認メールを再送信
+    send_confirmation_email(current_user)
+    
+    flash('確認メールを再送信しました。メール内のリンクをクリックして登録を完了してください。', 'success')
+    return redirect(url_for('index'))
 
 @app.route('/api/points/add', methods=['POST'])
 @login_required
