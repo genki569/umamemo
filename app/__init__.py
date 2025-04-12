@@ -15,12 +15,12 @@ app = Flask(__name__)
 app.config.from_object(Config)
 
 # メール設定（ここに追加）
-app.config['MAIL_SERVER'] = 'smtp.gmail.com'  # または別のSMTPサーバー
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = 'your-email@gmail.com'  # 実際のメールアドレスに変更
-app.config['MAIL_PASSWORD'] = 'your-app-password'  # Gmailアプリパスワードに変更
-app.config['MAIL_DEFAULT_SENDER'] = 'your-email@gmail.com'  # 送信元アドレス
+app.config['MAIL_USERNAME'] = 'umamemokeiba@gmail.com'
+app.config['MAIL_PASSWORD'] = 'gripjsakzkgnrgyo'  # スペースを除去
+app.config['MAIL_DEFAULT_SENDER'] = 'umamemokeiba@gmail.com'
 
 mail.init_app(app)
 
