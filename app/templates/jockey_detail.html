@@ -96,4 +96,295 @@
         <i class="fas fa-arrow-left me-2"></i>騎手一覧に戻る
     </a>
 </div>
+
+<style>
+/* 騎手詳細ページのスタイル改善 */
+.jockey-detail-header {
+    background: linear-gradient(135deg, #4F46E5, #A78BFA);
+    padding: 3rem 0;
+    color: white;
+    border-radius: 0 0 30px 30px;
+    margin-bottom: 2rem;
+    box-shadow: 0 10px 25px rgba(79, 70, 229, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.jockey-detail-header::before {
+    content: '';
+    position: absolute;
+    top: -50px;
+    right: -50px;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    z-index: 1;
+}
+
+.jockey-detail-header::after {
+    content: '';
+    position: absolute;
+    bottom: -80px;
+    left: -80px;
+    width: 250px;
+    height: 250px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+    z-index: 1;
+}
+
+.jockey-detail-header h1 {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    position: relative;
+    z-index: 2;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.jockey-detail-header .badge {
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    position: relative;
+    z-index: 2;
+}
+
+.jockey-stats-card {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    padding: 2rem;
+    margin-bottom: 2.5rem;
+    transform: translateY(-20px);
+    position: relative;
+    z-index: 10;
+    border: none;
+}
+
+.jockey-stats-card h2 {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 2rem;
+    font-weight: 700;
+    color: #333;
+}
+
+.jockey-stats-card h2::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -10px;
+    width: 60px;
+    height: 4px;
+    background: linear-gradient(to right, #4F46E5, #A78BFA);
+    border-radius: 2px;
+}
+
+.stats-item {
+    background: #f8f9fa;
+    border-radius: 15px;
+    padding: 1.5rem;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
+    height: 100%;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.stats-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    background: #fff;
+    border-color: rgba(79, 70, 229, 0.2);
+}
+
+.stats-label {
+    color: #6c757d;
+    font-size: 1rem;
+    font-weight: 500;
+    margin-bottom: 0.75rem;
+}
+
+.stats-value {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #4F46E5;
+}
+
+.recent-rides-container {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    padding: 2rem;
+    margin-bottom: 2.5rem;
+    position: relative;
+    border: none;
+}
+
+.recent-rides-container h2 {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 2rem;
+    font-weight: 700;
+    color: #333;
+}
+
+.recent-rides-container h2::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -10px;
+    width: 60px;
+    height: 4px;
+    background: linear-gradient(to right, #4F46E5, #A78BFA);
+    border-radius: 2px;
+}
+
+.recent-rides-table {
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100%;
+    margin-bottom: 0;
+}
+
+.recent-rides-table th {
+    font-weight: 600;
+    color: #495057;
+    border-bottom: 2px solid #e9ecef;
+    padding: 1rem 0.75rem;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+}
+
+.recent-rides-table td {
+    padding: 1.2rem 0.75rem;
+    vertical-align: middle;
+    border-bottom: 1px solid #f1f1f1;
+    font-size: 0.95rem;
+}
+
+.recent-rides-table tr:last-child td {
+    border-bottom: none;
+}
+
+.recent-rides-table tr:hover {
+    background: rgba(79, 70, 229, 0.03);
+}
+
+.race-link, .horse-link {
+    color: #4F46E5;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.race-link:hover, .horse-link:hover {
+    color: #A78BFA;
+    text-decoration: underline;
+}
+
+.back-button {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.8rem 1.5rem;
+    background: #f8f9fa;
+    color: #4F46E5;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    margin-bottom: 2rem;
+}
+
+.back-button:hover {
+    background: #4F46E5;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* モバイル対応 */
+@media (max-width: 768px) {
+    .jockey-detail-header {
+        padding: 2rem 0;
+        border-radius: 0 0 20px 20px;
+    }
+    
+    .jockey-detail-header h1 {
+        font-size: 2.2rem;
+    }
+    
+    .jockey-stats-card, .recent-rides-container {
+        padding: 1.5rem;
+        border-radius: 15px;
+    }
+    
+    .stats-item {
+        padding: 1rem;
+    }
+    
+    .stats-value {
+        font-size: 1.8rem;
+    }
+    
+    /* テーブルのレスポンシブ対応を強化 */
+    .recent-rides-table th, 
+    .recent-rides-table td {
+        padding: 0.75rem 0.5rem;
+        font-size: 0.85rem;
+    }
+    
+    /* スマホサイズで日付と着順を小さく */
+    .recent-rides-table th:nth-child(1),
+    .recent-rides-table td:nth-child(1),
+    .recent-rides-table th:nth-child(4),
+    .recent-rides-table td:nth-child(4) {
+        white-space: nowrap;
+        width: 1%;
+    }
+    
+    /* 馬名・レース名を優先的に表示 */
+    .recent-rides-table th:nth-child(2),
+    .recent-rides-table td:nth-child(2),
+    .recent-rides-table th:nth-child(3),
+    .recent-rides-table td:nth-child(3) {
+        max-width: 40%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+}
+
+/* アニメーション効果 */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.jockey-stats-card {
+    animation: fadeInUp 0.8s ease both;
+    animation-delay: 0.2s;
+}
+
+.recent-rides-container {
+    animation: fadeInUp 0.8s ease both;
+    animation-delay: 0.4s;
+}
+
+.back-button {
+    animation: fadeInUp 0.8s ease both;
+    animation-delay: 0.6s;
+}
+</style>
 {% endblock %} 

@@ -4,69 +4,284 @@
 {% block content %}
 <div class="container mt-4">
     <div class="mb-3">
-        <a href="{{ url_for('race', race_id=review.race_id) }}" class="btn btn-outline-secondary">
-            <i class="fas fa-arrow-left"></i> レース結果に戻る
+        <a href="{{ url_for('race_view', race_id=review.race_id) }}" class="back-button">
+            <i class="fas fa-arrow-left me-2"></i> レース結果に戻る
         </a>
     </div>
 
-    <h2>{{ review.race.name }} - レース回顧</h2>
-    <div class="race-info mb-3">
-        <span class="text-muted">{{ review.race.date.strftime('%Y/%m/%d') }} - {{ review.race.venue }}</span>
+    <div class="review-header">
+        <h2>{{ review.race.name }} - レース回顧</h2>
+        <div class="race-info mb-3">
+            <span class="race-date"><i class="far fa-calendar-alt me-2"></i>{{ review.race.date.strftime('%Y/%m/%d') }}</span>
+            <span class="race-venue"><i class="fas fa-map-marker-alt me-2"></i>{{ review.race.venue }}</span>
+        </div>
     </div>
 
-    <div class="card mb-4">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <div>
+    <div class="review-card">
+        <div class="review-author">
+            <div class="author-info">
                 <strong>作成者:</strong> {{ user_link(review.user) }}
             </div>
             <div>
-                <span class="badge bg-primary">{{ '有料コンテンツ' if review.is_premium else '無料公開' }}</span>
+                <span class="premium-badge {{ 'premium' if review.is_premium else 'free' }}">
+                    <i class="fas {{ 'fa-crown' if review.is_premium else 'fa-unlock-alt' }} me-1"></i>
+                    {{ '有料コンテンツ' if review.is_premium else '無料公開' }}
+                </span>
             </div>
         </div>
-        <div class="card-body">
+
+        <div class="review-content">
             {% if review.pace_analysis %}
-                <h5>ペース分析</h5>
-                <p>{{ review.pace_analysis }}</p>
+                <div class="review-section">
+                    <h5><i class="fas fa-tachometer-alt me-2"></i>ペース分析</h5>
+                    <p>{{ review.pace_analysis }}</p>
+                </div>
             {% endif %}
             
             {% if review.track_condition_note %}
-                <h5>馬場状態</h5>
-                <p>{{ review.track_condition_note }}</p>
+                <div class="review-section">
+                    <h5><i class="fas fa-road me-2"></i>馬場状態</h5>
+                    <p>{{ review.track_condition_note }}</p>
+                </div>
             {% endif %}
             
             {% if review.race_flow %}
-                <h5>レース展開</h5>
-                <p>{{ review.race_flow }}</p>
+                <div class="review-section">
+                    <h5><i class="fas fa-chess me-2"></i>レース展開</h5>
+                    <p>{{ review.race_flow }}</p>
+                </div>
             {% endif %}
             
             {% if review.overall_impression %}
-                <h5>総評</h5>
-                <p>{{ review.overall_impression }}</p>
+                <div class="review-section">
+                    <h5><i class="fas fa-star me-2"></i>総評</h5>
+                    <p>{{ review.overall_impression }}</p>
+                </div>
             {% endif %}
             
             {% if review.winner_analysis %}
-                <h5>勝ち馬分析</h5>
-                <p>{{ review.winner_analysis }}</p>
+                <div class="review-section">
+                    <h5><i class="fas fa-trophy me-2"></i>勝ち馬分析</h5>
+                    <p>{{ review.winner_analysis }}</p>
+                </div>
             {% endif %}
             
             {% if review.placed_horses_analysis %}
-                <h5>上位馬分析</h5>
-                <p>{{ review.placed_horses_analysis }}</p>
+                <div class="review-section">
+                    <h5><i class="fas fa-medal me-2"></i>上位馬分析</h5>
+                    <p>{{ review.placed_horses_analysis }}</p>
+                </div>
             {% endif %}
             
             {% if review.notable_performances %}
-                <h5>注目すべき競走馬</h5>
-                <p>{{ review.notable_performances }}</p>
+                <div class="review-section">
+                    <h5><i class="fas fa-bookmark me-2"></i>注目すべき競走馬</h5>
+                    <p>{{ review.notable_performances }}</p>
+                </div>
             {% endif %}
             
             {% if review.future_prospects %}
-                <h5>今後の展望</h5>
-                <p>{{ review.future_prospects }}</p>
+                <div class="review-section">
+                    <h5><i class="fas fa-binoculars me-2"></i>今後の展望</h5>
+                    <p>{{ review.future_prospects }}</p>
+                </div>
             {% endif %}
         </div>
-        <div class="card-footer text-muted">
-            <small>更新: {{ review.updated_at.strftime('%Y/%m/%d %H:%M') }}</small>
+
+        <div class="review-footer">
+            <small><i class="far fa-clock me-1"></i>更新: {{ review.updated_at.strftime('%Y/%m/%d %H:%M') }}</small>
         </div>
     </div>
 </div>
+
+<style>
+/* レビュー詳細ページのスタイル改善 */
+.review-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.review-header h2 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 1rem;
+    background: linear-gradient(90deg, #4F46E5, #A78BFA);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
+}
+
+.race-info {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    font-size: 1rem;
+    color: #666;
+}
+
+.race-date, .race-venue {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.4rem 0.8rem;
+    background: rgba(79, 70, 229, 0.05);
+    border-radius: 8px;
+    font-weight: 500;
+}
+
+.review-card {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    margin-bottom: 2.5rem;
+    border: none;
+    animation: fadeIn 0.5s ease;
+}
+
+.review-author {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 2rem;
+    background: #f8f9fa;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.author-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.premium-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+.premium-badge.premium {
+    background: linear-gradient(135deg, #F59E0B, #FBBF24);
+    color: white;
+    box-shadow: 0 2px 6px rgba(245, 158, 11, 0.3);
+}
+
+.premium-badge.free {
+    background: linear-gradient(135deg, #4F46E5, #818CF8);
+    color: white;
+    box-shadow: 0 2px 6px rgba(79, 70, 229, 0.3);
+}
+
+.review-content {
+    padding: 2rem;
+}
+
+.review-section {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.review-section:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.review-section h5 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #4F46E5;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+}
+
+.review-section p {
+    color: #444;
+    font-size: 1.05rem;
+    line-height: 1.8;
+}
+
+.review-footer {
+    padding: 1.2rem 2rem;
+    background: #f8f9fa;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.back-button {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.8rem 1.5rem;
+    background: #f8f9fa;
+    color: #4F46E5;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    margin-bottom: 1rem;
+}
+
+.back-button:hover {
+    background: #4F46E5;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* アニメーション */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* モバイル対応 */
+@media (max-width: 768px) {
+    .review-header h2 {
+        font-size: 1.8rem;
+    }
+    
+    .race-info {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .review-author {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+        padding: 1.2rem 1.5rem;
+    }
+    
+    .review-content {
+        padding: 1.5rem;
+    }
+    
+    .review-section h5 {
+        font-size: 1.1rem;
+    }
+    
+    .review-section p {
+        font-size: 1rem;
+    }
+    
+    .back-button {
+        width: 100%;
+        justify-content: center;
+    }
+}
+</style>
 {% endblock %} 
