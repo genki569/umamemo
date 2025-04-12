@@ -8,7 +8,8 @@ import logging
 from logging.handlers import RotatingFileHandler
 import os
 from flask_mail import Mail
-
+   # Flask-Mail のインスタンスを作成（ここに移動）
+mail = Mail()
 # アプリケーションの初期化
 app = Flask(__name__)
 app.config.from_object(Config)
