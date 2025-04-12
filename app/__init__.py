@@ -16,10 +16,11 @@ app.config.from_object(Config)
 
 # メール設定（ここに追加）
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-app.config['MAIL_PORT'] = 587
-app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_PORT'] = 465
+app.config['MAIL_USE_TLS'] = False  # TLSをオフに
+app.config['MAIL_USE_SSL'] = True   # SSLをオンに
 app.config['MAIL_USERNAME'] = 'umamemokeiba@gmail.com'
-app.config['MAIL_PASSWORD'] = 'gripjsakzkgnrgyo'  # スペースを除去
+app.config['MAIL_PASSWORD'] = 'gripjsakzkgnrgyo'
 app.config['MAIL_DEFAULT_SENDER'] = 'umamemokeiba@gmail.com'
 
 mail.init_app(app)
