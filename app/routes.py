@@ -714,12 +714,70 @@ def get_cached_jockey_stats():
 @app.route('/jockeys')
 def jockeys():
     try:
-        jockey_stats = get_cached_jockey_stats()
-        return render_template('jockeys.html', jockey_stats=jockey_stats)
+        # ページネーションパラメータの取得
+        page = request.args.get('page', 1, type=int)
+        per_page = request.args.get('per_page', 20, type=int)  # 1ページあたり20件表示
+        
+        # フィルタリングパラメータの取得
+        affiliation_filter = request.args.get('affiliation', 'all')
+        sort_by = request.args.get('sort', 'wins')
+        search_query = request.args.get('q', '')
+        
+        # 騎手データ取得
+        all_jockey_stats = get_cached_jockey_stats()
+        
+        # サーバーサイドでフィルタリング
+        filtered_stats = all_jockey_stats
+        
+        # 所属フィルター適用
+        if affiliation_filter != 'all':
+            filtered_stats = [
+                stat for stat in filtered_stats 
+                if (affiliation_filter == 'central' and stat['affiliation'] == '中央') or
+                   (affiliation_filter == 'local' and stat['affiliation'] == '地方')
+            ]
+        
+        # 検索クエリ適用
+        if search_query:
+            filtered_stats = [
+                stat for stat in filtered_stats
+                if search_query.lower() in stat['name'].lower()
+            ]
+        
+        # ソート適用
+        if sort_by == 'wins':
+            filtered_stats.sort(key=lambda x: x['wins'], reverse=True)
+        elif sort_by == 'winrate':
+            filtered_stats.sort(key=lambda x: x['win_rate'], reverse=True)
+        elif sort_by == 'totalrides':
+            filtered_stats.sort(key=lambda x: x['total_rides'], reverse=True)
+            
+        # 全体の件数を取得
+        total_count = len(filtered_stats)
+        
+        # ページネーション適用
+        start_idx = (page - 1) * per_page
+        end_idx = start_idx + per_page
+        paginated_stats = filtered_stats[start_idx:end_idx]
+        
+        # 総ページ数を計算
+        total_pages = (total_count + per_page - 1) // per_page
+        
+        return render_template(
+            'jockeys.html', 
+            jockey_stats=paginated_stats,
+            total_count=total_count,
+            current_page=page,
+            total_pages=total_pages,
+            per_page=per_page,
+            affiliation_filter=affiliation_filter,
+            sort_by=sort_by,
+            search_query=search_query
+        )
     except Exception as e:
         current_app.logger.error(f"Error fetching jockeys: {str(e)}")
         traceback.print_exc()
-        return render_template('jockeys.html', jockey_stats=[])
+        return render_template('jockeys.html', jockey_stats=[], total_pages=0, current_page=1)
 
 @app.route('/jockey/<int:jockey_id>')
 def jockey_detail(jockey_id):

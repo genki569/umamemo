@@ -11,18 +11,26 @@
 
     <div class="container">
         <div class="search-container">
-            <div class="search-box">
-                <div class="input-group">
-                    <span class="input-group-text">
-                        <i class="fas fa-search"></i>
-                    </span>
-                    <input type="text" 
-                           class="form-control search-input" 
-                           id="jockey-search" 
-                           placeholder="騎手名で検索..."
-                           onkeyup="searchJockeys()">
+            <form action="{{ url_for('jockeys') }}" method="get" id="jockey-search-form">
+                <div class="search-box">
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="fas fa-search"></i>
+                        </span>
+                        <input type="text" 
+                               class="form-control search-input" 
+                               id="jockey-search" 
+                               name="q"
+                               placeholder="騎手名で検索..."
+                               value="{{ search_query }}">
+                        <!-- 現在のフィルタリング状態を維持するための隠しフィールド -->
+                        <input type="hidden" name="affiliation" value="{{ affiliation_filter }}" id="affiliation-input">
+                        <input type="hidden" name="sort" value="{{ sort_by }}" id="sort-input">
+                        <input type="hidden" name="page" value="1" id="page-input">
+                        <input type="hidden" name="per_page" value="{{ per_page }}" id="per-page-input">
+                    </div>
                 </div>
-            </div>
+            </form>
         </div>
 
         <div class="filter-section">
@@ -31,9 +39,9 @@
                     <div class="filter-group">
                         <div class="filter-label">所属</div>
                         <div class="btn-group w-100" role="group" id="affiliation-filter">
-                            <button type="button" class="btn btn-filter active" data-filter="all">全て</button>
-                            <button type="button" class="btn btn-filter" data-filter="central">中央所属</button>
-                            <button type="button" class="btn btn-filter" data-filter="local">地方所属</button>
+                            <button type="button" class="btn btn-filter {{ 'active' if affiliation_filter == 'all' }}" data-filter="all">全て</button>
+                            <button type="button" class="btn btn-filter {{ 'active' if affiliation_filter == 'central' }}" data-filter="central">中央所属</button>
+                            <button type="button" class="btn btn-filter {{ 'active' if affiliation_filter == 'local' }}" data-filter="local">地方所属</button>
                         </div>
                     </div>
                 </div>
@@ -41,13 +49,21 @@
                     <div class="filter-group">
                         <div class="filter-label">並び替え</div>
                         <div class="btn-group w-100" role="group" id="sort-filter">
-                            <button type="button" class="btn btn-filter active" data-sort="wins">勝利数順</button>
-                            <button type="button" class="btn btn-filter" data-sort="winrate">勝率順</button>
-                            <button type="button" class="btn btn-filter" data-sort="totalrides">騎乗数順</button>
+                            <button type="button" class="btn btn-filter {{ 'active' if sort_by == 'wins' }}" data-sort="wins">勝利数順</button>
+                            <button type="button" class="btn btn-filter {{ 'active' if sort_by == 'winrate' }}" data-sort="winrate">勝率順</button>
+                            <button type="button" class="btn btn-filter {{ 'active' if sort_by == 'totalrides' }}" data-sort="totalrides">騎乗数順</button>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
+
+        <!-- 検索結果数表示 -->
+        <div class="search-result-count mb-3">
+            <p>検索結果: <span class="fw-bold">{{ total_count }}</span> 件中 
+               <span class="fw-bold">{{ ((current_page - 1) * per_page) + 1 }}</span>-
+               <span class="fw-bold">{{ min(current_page * per_page, total_count) }}</span> 件表示
+            </p>
         </div>
 
         <div class="table-container">
@@ -69,12 +85,7 @@
                     </thead>
                     <tbody id="jockey-table-body">
                         {% for stat in jockey_stats %}
-                            <tr class="jockey-row" 
-                                data-name="{{ stat.name }}"
-                                data-affiliation="{{ stat.affiliation }}"
-                                data-wins="{{ stat.wins }}"
-                                data-winrate="{{ stat.win_rate }}"
-                                data-totalrides="{{ stat.total_rides }}">
+                            <tr class="jockey-row">
                                 <td>
                                     <a href="{{ url_for('jockey_detail', jockey_id=stat.id) }}" class="jockey-name">
                                         {{ stat.name }}
@@ -105,7 +116,63 @@
             </div>
         </div>
         
-        <div id="no-results" class="no-results-message" style="display: none;">
+        <!-- ページネーションUI -->
+        {% if total_pages > 1 %}
+        <div class="pagination-container">
+            <nav aria-label="騎手一覧ページネーション">
+                <ul class="pagination justify-content-center">
+                    <!-- 前のページへのリンク -->
+                    <li class="page-item {{ 'disabled' if current_page == 1 else '' }}">
+                        <a class="page-link" href="{{ url_for('jockeys', page=current_page-1, per_page=per_page, affiliation=affiliation_filter, sort=sort_by, q=search_query) if current_page > 1 else '#' }}" aria-label="前へ">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    
+                    <!-- ページ番号 -->
+                    {% set start_page = [current_page - 2, 1] | max %}
+                    {% set end_page = [start_page + 4, total_pages] | min %}
+                    {% set start_page = [end_page - 4, 1] | max %}
+                    
+                    {% if start_page > 1 %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('jockeys', page=1, per_page=per_page, affiliation=affiliation_filter, sort=sort_by, q=search_query) }}">1</a>
+                        </li>
+                        {% if start_page > 2 %}
+                            <li class="page-item disabled">
+                                <span class="page-link">...</span>
+                            </li>
+                        {% endif %}
+                    {% endif %}
+                    
+                    {% for p in range(start_page, end_page + 1) %}
+                        <li class="page-item {{ 'active' if p == current_page else '' }}">
+                            <a class="page-link" href="{{ url_for('jockeys', page=p, per_page=per_page, affiliation=affiliation_filter, sort=sort_by, q=search_query) }}">{{ p }}</a>
+                        </li>
+                    {% endfor %}
+                    
+                    {% if end_page < total_pages %}
+                        {% if end_page < total_pages - 1 %}
+                            <li class="page-item disabled">
+                                <span class="page-link">...</span>
+                            </li>
+                        {% endif %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('jockeys', page=total_pages, per_page=per_page, affiliation=affiliation_filter, sort=sort_by, q=search_query) }}">{{ total_pages }}</a>
+                        </li>
+                    {% endif %}
+                    
+                    <!-- 次のページへのリンク -->
+                    <li class="page-item {{ 'disabled' if current_page == total_pages else '' }}">
+                        <a class="page-link" href="{{ url_for('jockeys', page=current_page+1, per_page=per_page, affiliation=affiliation_filter, sort=sort_by, q=search_query) if current_page < total_pages else '#' }}" aria-label="次へ">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        {% endif %}
+        
+        <div id="no-results" class="no-results-message" style="{{ 'display: flex' if not jockey_stats else 'display: none' }}">
             <i class="fas fa-search"></i>
             <p>該当する騎手が見つかりませんでした</p>
         </div>
@@ -118,18 +185,8 @@
  * 機能：フィルタリング、ソート、検索機能を提供
  */
 
-// グローバル変数
-let allJockeys = [];
-let currentFilter = 'all';
-let currentSort = 'wins';
-let searchQuery = '';
-
-// 初期化関数
+// フィルターとソートのイベントハンドラ設定
 document.addEventListener('DOMContentLoaded', function() {
-    // 全ての騎手行を取得
-    const jockeyRows = document.querySelectorAll('.jockey-row');
-    allJockeys = Array.from(jockeyRows);
-    
     // フィルターボタンのイベントリスナーを設定
     const filterButtons = document.querySelectorAll('#affiliation-filter .btn');
     filterButtons.forEach(button => {
@@ -138,9 +195,10 @@ document.addEventListener('DOMContentLoaded', function() {
             filterButtons.forEach(btn => btn.classList.remove('active'));
             this.classList.add('active');
             
-            // フィルター適用
-            currentFilter = this.getAttribute('data-filter');
-            applyFiltersAndSort();
+            // フィルター値を設定して検索フォームを送信
+            document.getElementById('affiliation-input').value = this.getAttribute('data-filter');
+            document.getElementById('page-input').value = 1; // ページをリセット
+            document.getElementById('jockey-search-form').submit();
         });
     });
     
@@ -152,106 +210,21 @@ document.addEventListener('DOMContentLoaded', function() {
             sortButtons.forEach(btn => btn.classList.remove('active'));
             this.classList.add('active');
             
-            // ソート適用
-            currentSort = this.getAttribute('data-sort');
-            applyFiltersAndSort();
+            // ソート値を設定して検索フォームを送信
+            document.getElementById('sort-input').value = this.getAttribute('data-sort');
+            document.getElementById('jockey-search-form').submit();
         });
     });
     
-    // 初期表示
-    applyFiltersAndSort();
-});
-
-// 騎手検索関数
-function searchJockeys() {
-    searchQuery = document.getElementById('jockey-search').value.toLowerCase().trim();
-    applyFiltersAndSort();
-}
-
-// フィルターとソートを適用する関数
-function applyFiltersAndSort() {
-    // テーブルボディを取得
-    const tableBody = document.getElementById('jockey-table-body');
-    
-    // フィルターとソートを適用
-    let filteredJockeys = filterJockeysByAffiliation(allJockeys, currentFilter);
-    filteredJockeys = filterJockeysBySearch(filteredJockeys, searchQuery);
-    filteredJockeys = sortJockeys(filteredJockeys, currentSort);
-    
-    // テーブルを更新
-    updateJockeyTable(tableBody, filteredJockeys);
-}
-
-// 所属でフィルタリングする関数
-function filterJockeysByAffiliation(jockeys, filter) {
-    if (filter === 'all') {
-        return jockeys;
-    }
-    
-    return jockeys.filter(jockey => {
-        const affiliation = jockey.getAttribute('data-affiliation');
-        return (filter === 'central' && affiliation === '中央') || 
-               (filter === 'local' && affiliation === '地方');
-    });
-}
-
-// 検索でフィルタリングする関数
-function filterJockeysBySearch(jockeys, query) {
-    if (!query) {
-        return jockeys;
-    }
-    
-    return jockeys.filter(jockey => {
-        const name = jockey.getAttribute('data-name') || 
-                    jockey.querySelector('.jockey-name').textContent.trim();
-        return name.toLowerCase().includes(query);
-    });
-}
-
-// ソートする関数
-function sortJockeys(jockeys, sortBy) {
-    return jockeys.sort((a, b) => {
-        let valueA, valueB;
-        
-        switch(sortBy) {
-            case 'wins':
-                valueA = parseInt(a.getAttribute('data-wins'), 10);
-                valueB = parseInt(b.getAttribute('data-wins'), 10);
-                break;
-            case 'winrate':
-                valueA = parseFloat(a.getAttribute('data-winrate'));
-                valueB = parseFloat(b.getAttribute('data-winrate'));
-                break;
-            case 'totalrides':
-                valueA = parseInt(a.getAttribute('data-totalrides'), 10);
-                valueB = parseInt(b.getAttribute('data-totalrides'), 10);
-                break;
-            default:
-                valueA = parseInt(a.getAttribute('data-wins'), 10);
-                valueB = parseInt(b.getAttribute('data-wins'), 10);
+    // 検索ボックスの Enter キーイベントリスナー
+    document.getElementById('jockey-search').addEventListener('keyup', function(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            document.getElementById('page-input').value = 1; // ページをリセット
+            document.getElementById('jockey-search-form').submit();
         }
-        
-        return valueB - valueA; // 降順ソート
     });
-}
-
-// テーブルを更新する関数
-function updateJockeyTable(tableBody, jockeys) {
-    // テーブルをクリア
-    tableBody.innerHTML = '';
-    
-    // 結果が0件の場合
-    if (jockeys.length === 0) {
-        document.getElementById('no-results').style.display = 'flex';
-    } else {
-        document.getElementById('no-results').style.display = 'none';
-        
-        // 結果を表示
-        jockeys.forEach(jockey => {
-            tableBody.appendChild(jockey.cloneNode(true));
-        });
-    }
-}
+});
 </script>
 
 <style>
@@ -592,6 +565,50 @@ function updateJockeyTable(tableBody, jockeys) {
     margin-bottom: 0;
 }
 
+/* 新規追加: ページネーションスタイル */
+.pagination-container {
+    margin: 2rem 0 3rem;
+}
+
+.pagination .page-link {
+    border: none;
+    padding: 0.8rem 1.2rem;
+    margin: 0 0.2rem;
+    color: #4b5563;
+    border-radius: 10px;
+    transition: all 0.2s ease;
+    font-weight: 500;
+}
+
+.pagination .page-link:hover {
+    background-color: #e5e7eb;
+    color: #111827;
+    transform: translateY(-2px);
+}
+
+.pagination .page-item.active .page-link {
+    background: linear-gradient(to right, #4f46e5, #6366f1);
+    color: white;
+    box-shadow: 0 4px 10px rgba(99, 102, 241, 0.25);
+}
+
+.pagination .page-item.disabled .page-link {
+    color: #9ca3af;
+    background-color: transparent;
+}
+
+/* 検索結果カウントスタイル */
+.search-result-count {
+    background: white;
+    border-radius: 10px;
+    padding: 0.8rem 1.2rem;
+    color: #4b5563;
+    font-size: 0.95rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+    border: 1px solid rgba(226, 232, 240, 0.7);
+    animation: fadeInUp 0.8s ease-out 0.5s both;
+}
+
 /* アニメーション定義 */
 @keyframes fadeInUp {
     from {
@@ -648,16 +665,6 @@ function updateJockeyTable(tableBody, jockeys) {
         padding: 0.9rem 0.5rem;
         font-size: 0.85rem;
     }
-    
-    .btn-detail {
-        padding: 0.35rem 0.9rem;
-        font-size: 0.85rem;
-    }
-    
-    .affiliation-badge {
-        padding: 0.25rem 0.7rem;
-        font-size: 0.8rem;
-    }
 }
 
 /* ダークモード対応 */
@@ -670,7 +677,8 @@ function updateJockeyTable(tableBody, jockeys) {
     .search-box,
     .filter-section,
     .table-container,
-    .no-results-message {
+    .no-results-message,
+    .search-result-count {
         background-color: #1e293b;
         border-color: rgba(51, 65, 85, 0.5);
     }
@@ -721,6 +729,21 @@ function updateJockeyTable(tableBody, jockeys) {
     
     .no-results-message i {
         color: #475569;
+    }
+    
+    .pagination .page-link {
+        background-color: #1e1e2d;
+        color: #e2e8f0;
+    }
+    
+    .pagination .page-link:hover {
+        background-color: #252538;
+        color: #f8fafc;
+    }
+    
+    .pagination .page-item.disabled .page-link {
+        color: #64748b;
+        background-color: #1e1e2d;
     }
 }
 </style>
