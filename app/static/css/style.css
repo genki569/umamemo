@@ -1413,3 +1413,20 @@ p, h1, h2, h3, h4, h5, h6, span, a, div {
     max-height: none !important; /* 高さ制限なし */
   }
 }
+
+/* フッター内の法的リンク */
+.umamemo-legal-links {
+    margin-bottom: 10px;
+}
+
+.umamemo-legal-links a {
+    color: #6c757d;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.3s ease;
+}
+
+.umamemo-legal-links a:hover {
+    color: #4F46E5;
+    text-decoration: underline;
+}
