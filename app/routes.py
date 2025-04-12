@@ -955,7 +955,7 @@ def shutuba_list():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    """ユーザー登録"""
+    """ユーザー登録処理"""
     if current_user.is_authenticated:
         return redirect(url_for('index'))
     
@@ -966,8 +966,6 @@ def register():
             email=form.email.data
         )
         user.set_password(form.password.data)
-        
-        # 確認トークンを生成
         user.generate_confirmation_token()
         
         db.session.add(user)
@@ -983,7 +981,7 @@ def register():
 
 @app.route('/confirm/<token>')
 def confirm_email(token):
-    """メールアドレス確認"""
+    """メールアドレス確認処理"""
     user = User.query.filter_by(confirmation_token=token).first()
     
     if not user or user.confirmation_token_expires < datetime.utcnow():
@@ -999,19 +997,16 @@ def confirm_email(token):
 @app.route('/resend-confirmation')
 @login_required
 def resend_confirmation():
-    """確認メールの再送信"""
+    """確認メールの再送信処理"""
     if current_user.email_confirmed:
         flash('メールアドレスは既に確認済みです。', 'info')
         return redirect(url_for('index'))
     
-    # 新しいトークンを生成
     current_user.generate_confirmation_token()
     db.session.commit()
-    
-    # 確認メールを再送信
     send_confirmation_email(current_user)
     
-    flash('確認メールを再送信しました。メール内のリンクをクリックして登録を完了してください。', 'success')
+    flash('確認メールを再送信しました。', 'success')
     return redirect(url_for('index'))
 
 @app.route('/api/points/add', methods=['POST'])
