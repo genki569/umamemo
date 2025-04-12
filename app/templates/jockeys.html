@@ -1,321 +1,516 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="jockeys-header">
+<div class="jockeys-page">
+    <div class="jockeys-header">
+        <div class="container">
+            <h1>騎手一覧</h1>
+            <p>中央・地方の騎手成績を一覧で確認できます</p>
+        </div>
+    </div>
+
     <div class="container">
-        <h1 class="display-4 mb-3">騎手一覧</h1>
-        <p class="lead">
-            中央・地方の騎手成績を一覧で確認できます
-        </p>
-    </div>
-</div>
-
-<div class="container">
-    <div class="search-box mb-4">
-        <div class="input-group">
-            <span class="input-group-text">
-                <i class="fas fa-search"></i>
-            </span>
-            <input type="text" 
-                   class="form-control search-input" 
-                   id="jockey-search" 
-                   placeholder="騎手名で検索..."
-                   onkeyup="searchJockeys()">
-        </div>
-    </div>
-
-    <div class="filter-buttons mb-4">
-        <div class="row g-3">
-            <div class="col-md-6">
-                <div class="btn-group w-100">
-                    <button type="button" class="btn btn-outline-primary active" onclick="filterJockeys('all')">全て</button>
-                    <button type="button" class="btn btn-outline-primary" onclick="filterJockeys('central')">中央所属</button>
-                    <button type="button" class="btn btn-outline-primary" onclick="filterJockeys('local')">地方所属</button>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="btn-group w-100">
-                    <button type="button" class="btn btn-outline-secondary active" onclick="sortJockeys('wins')">勝利数順</button>
-                    <button type="button" class="btn btn-outline-secondary" onclick="sortJockeys('winrate')">勝率順</button>
-                    <button type="button" class="btn btn-outline-secondary" onclick="sortJockeys('totalrides')">騎乗数順</button>
+        <div class="search-container">
+            <div class="search-box">
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="fas fa-search"></i>
+                    </span>
+                    <input type="text" 
+                           class="form-control search-input" 
+                           id="jockey-search" 
+                           placeholder="騎手名で検索..."
+                           onkeyup="searchJockeys()">
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="table-container fade-in" data-aos="fade-up">
-        <div class="table-responsive">
-            <table class="table table-striped table-hover">
-                <thead class="table-light">
-                    <tr>
-                        <th>騎手名</th>
-                        <th class="text-center bg-light">所属</th>
-                        <th>総騎乗数</th>
-                        <th>1着</th>
-                        <th>2着</th>
-                        <th>3着</th>
-                        <th>着外</th>
-                        <th>勝率</th>
-                        <th>複勝率</th>
-                        <th>詳細</th>
-                    </tr>
-                </thead>
-                <tbody id="jockey-table-body">
-                    {% for stat in jockey_stats %}
-                        <tr class="jockey-row" 
-                            data-affiliation="{{ stat.affiliation }}"
-                            data-wins="{{ stat.wins }}"
-                            data-winrate="{{ stat.win_rate }}"
-                            data-totalrides="{{ stat.total_rides }}">
-                            <td>
-                                <a href="{{ url_for('jockey_detail', jockey_id=stat.id) }}" class="text-decoration-none">
-                                    {{ stat.name }}
-                                </a>
-                            </td>
-                            <td class="text-center bg-light">{{ stat.affiliation }}</td>
-                            <td>{{ stat.total_rides }}</td>
-                            <td>{{ stat.wins }}</td>
-                            <td>{{ stat.seconds }}</td>
-                            <td>{{ stat.thirds }}</td>
-                            <td>{{ stat.others }}</td>
-                            <td>{{ stat.win_rate }}%</td>
-                            <td>{{ stat.place_rate }}%</td>
-                            <td>
-                                <a href="{{ url_for('jockey_detail', jockey_id=stat.id) }}" 
-                                   class="btn btn-sm btn-primary">
-                                    詳細
-                                </a>
-                            </td>
+        <div class="filter-section">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="filter-group">
+                        <div class="filter-label">所属</div>
+                        <div class="btn-group w-100" role="group" id="affiliation-filter">
+                            <button type="button" class="btn btn-filter active" data-filter="all">全て</button>
+                            <button type="button" class="btn btn-filter" data-filter="central">中央所属</button>
+                            <button type="button" class="btn btn-filter" data-filter="local">地方所属</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="filter-group">
+                        <div class="filter-label">並び替え</div>
+                        <div class="btn-group w-100" role="group" id="sort-filter">
+                            <button type="button" class="btn btn-filter active" data-sort="wins">勝利数順</button>
+                            <button type="button" class="btn btn-filter" data-sort="winrate">勝率順</button>
+                            <button type="button" class="btn btn-filter" data-sort="totalrides">騎乗数順</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <div class="table-responsive">
+                <table class="table jockeys-table">
+                    <thead>
+                        <tr>
+                            <th>騎手名</th>
+                            <th class="text-center">所属</th>
+                            <th>総騎乗数</th>
+                            <th>1着</th>
+                            <th>2着</th>
+                            <th>3着</th>
+                            <th>着外</th>
+                            <th>勝率</th>
+                            <th>複勝率</th>
+                            <th></th>
                         </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody id="jockey-table-body">
+                        {% for stat in jockey_stats %}
+                            <tr class="jockey-row" 
+                                data-name="{{ stat.name }}"
+                                data-affiliation="{{ stat.affiliation }}"
+                                data-wins="{{ stat.wins }}"
+                                data-winrate="{{ stat.win_rate }}"
+                                data-totalrides="{{ stat.total_rides }}">
+                                <td>
+                                    <a href="{{ url_for('jockey_detail', jockey_id=stat.id) }}" class="jockey-name">
+                                        {{ stat.name }}
+                                    </a>
+                                </td>
+                                <td class="text-center affiliation-cell">
+                                    <span class="affiliation-badge {{ 'affiliation-central' if stat.affiliation == '中央' else 'affiliation-local' }}">
+                                        {{ stat.affiliation }}
+                                    </span>
+                                </td>
+                                <td class="text-end">{{ stat.total_rides }}</td>
+                                <td class="text-end">{{ stat.wins }}</td>
+                                <td class="text-end">{{ stat.seconds }}</td>
+                                <td class="text-end">{{ stat.thirds }}</td>
+                                <td class="text-end">{{ stat.others }}</td>
+                                <td class="text-end">{{ stat.win_rate }}%</td>
+                                <td class="text-end">{{ stat.place_rate }}%</td>
+                                <td>
+                                    <a href="{{ url_for('jockey_detail', jockey_id=stat.id) }}" 
+                                       class="btn btn-detail">
+                                        詳細
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
-    </div>
-</div>
-
-<div class="text-center mt-4 mb-5">
-    <div class="d-flex justify-content-between align-items-center">
-        <div class="entries-info">
-            全 <span id="total-entries">0</span> 件中 
-            <span id="showing-entries">0-0</span> 件を表示
+        
+        <div id="no-results" class="no-results-message" style="display: none;">
+            <i class="fas fa-search"></i>
+            <p>該当する騎手が見つかりませんでした</p>
         </div>
-        <button id="load-more" class="btn btn-primary" onclick="loadMore()">
-            <i class="fas fa-plus-circle me-2"></i>もっと見る
-        </button>
     </div>
 </div>
 
 <script>
+// グローバル変数
+let allJockeys = [];
 let currentFilter = 'all';
 let currentSort = 'wins';
 let searchQuery = '';
 
+// 初期化関数
+document.addEventListener('DOMContentLoaded', function() {
+    // 全ての騎手行を取得
+    const jockeyRows = document.querySelectorAll('.jockey-row');
+    allJockeys = Array.from(jockeyRows);
+    
+    // フィルターボタンのイベントリスナーを設定
+    const filterButtons = document.querySelectorAll('#affiliation-filter .btn');
+    filterButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            // アクティブクラスを切り替え
+            filterButtons.forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+            
+            // フィルター適用
+            currentFilter = this.getAttribute('data-filter');
+            applyFiltersAndSort();
+        });
+    });
+    
+    // ソートボタンのイベントリスナーを設定
+    const sortButtons = document.querySelectorAll('#sort-filter .btn');
+    sortButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            // アクティブクラスを切り替え
+            sortButtons.forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+            
+            // ソート適用
+            currentSort = this.getAttribute('data-sort');
+            applyFiltersAndSort();
+        });
+    });
+    
+    // 初期表示
+    applyFiltersAndSort();
+});
+
+// 騎手検索関数
 function searchJockeys() {
-    const searchInput = document.getElementById('jockey-search');
-    searchQuery = searchInput.value.toLowerCase().trim();
-    filterAndSortTable();
+    searchQuery = document.getElementById('jockey-search').value.toLowerCase().trim();
+    applyFiltersAndSort();
 }
 
-function filterJockeys(filter) {
-    currentFilter = filter;
-    filterAndSortTable();
-    
-    // ボタンのアクティブ状態を更新
-    document.querySelectorAll('.btn-outline-primary').forEach(btn => {
-        btn.classList.remove('active');
-    });
-    event.target.classList.add('active');
-}
-
-function sortJockeys(sort) {
-    currentSort = sort;
-    filterAndSortTable();
-    
-    // ボタンのアクティブ状態を更新
-    document.querySelectorAll('.btn-outline-secondary').forEach(btn => {
-        btn.classList.remove('active');
-    });
-    event.target.classList.add('active');
-}
-
-function filterAndSortTable() {
+// フィルターとソートを適用する関数
+function applyFiltersAndSort() {
+    // テーブルボディを取得
     const tableBody = document.getElementById('jockey-table-body');
-    const rows = Array.from(tableBody.getElementsByTagName('tr'));
     
-    // 検索とフィルタリング
-    const filteredRows = rows.filter(row => {
-        const name = row.querySelector('td:first-child a').textContent.trim().toLowerCase();
-        const affiliation = row.querySelector('td:nth-child(2)').textContent.trim();
-        
-        const matchesSearch = searchQuery === '' || name.includes(searchQuery);
-        const matchesFilter = 
-            currentFilter === 'all' ? true :
-            currentFilter === 'central' ? affiliation === '中央' :
-            currentFilter === 'local' ? affiliation === '地方' : false;
-        
-        return matchesSearch && matchesFilter;
-    });
-    
-    // ソート
-    filteredRows.sort((a, b) => {
-        let aValue, bValue;
-        
-        switch(currentSort) {
-            case 'wins':
-                aValue = parseInt(a.querySelector('td:nth-child(4)').textContent);
-                bValue = parseInt(b.querySelector('td:nth-child(4)').textContent);
-                break;
-            case 'winrate':
-                aValue = parseFloat(a.querySelector('td:nth-child(8)').textContent);
-                bValue = parseFloat(b.querySelector('td:nth-child(8)').textContent);
-                break;
-            case 'totalrides':
-                aValue = parseInt(a.querySelector('td:nth-child(3)').textContent);
-                bValue = parseInt(b.querySelector('td:nth-child(3)').textContent);
-                break;
-        }
-        
-        return bValue - aValue;
-    });
+    // フィルターとソートを適用
+    let filteredJockeys = filterJockeysByAffiliation(allJockeys, currentFilter);
+    filteredJockeys = filterJockeysBySearch(filteredJockeys, searchQuery);
+    filteredJockeys = sortJockeys(filteredJockeys, currentSort);
     
     // テーブルを更新
-    tableBody.innerHTML = '';
-    filteredRows.forEach(row => {
-        tableBody.appendChild(row.cloneNode(true));
+    updateJockeyTable(tableBody, filteredJockeys);
+}
+
+// 所属でフィルタリングする関数
+function filterJockeysByAffiliation(jockeys, filter) {
+    if (filter === 'all') {
+        return jockeys;
+    }
+    
+    return jockeys.filter(jockey => {
+        const affiliation = jockey.getAttribute('data-affiliation');
+        return (filter === 'central' && affiliation === '中央') || 
+               (filter === 'local' && affiliation === '地方');
     });
-    
-    // 表示件数を更新
-    updateDisplayCount(filteredRows.length);
-    
-    // 検索結果が0件の場合のメッセージ
-    if (filteredRows.length === 0) {
-        const noResultRow = document.createElement('tr');
-        noResultRow.innerHTML = `
-            <td colspan="10" class="text-center py-4 text-muted">
-                <i class="fas fa-search me-2"></i>
-                検索結果が見つかりませんでした
-            </td>
-        `;
-        tableBody.appendChild(noResultRow);
-    }
 }
 
-function updateDisplayCount(count) {
-    const countDisplay = document.getElementById('total-entries');
-    if (countDisplay) {
-        countDisplay.textContent = count;
+// 検索でフィルタリングする関数
+function filterJockeysBySearch(jockeys, query) {
+    if (!query) {
+        return jockeys;
     }
+    
+    return jockeys.filter(jockey => {
+        const name = jockey.getAttribute('data-name') || 
+                    jockey.querySelector('.jockey-name').textContent.trim();
+        return name.toLowerCase().includes(query);
+    });
 }
 
-// 初期表示時に実行
-document.addEventListener('DOMContentLoaded', function() {
-    filterAndSortTable();
-});
+// ソートする関数
+function sortJockeys(jockeys, sortBy) {
+    return jockeys.sort((a, b) => {
+        let valueA, valueB;
+        
+        switch(sortBy) {
+            case 'wins':
+                valueA = parseInt(a.getAttribute('data-wins'), 10);
+                valueB = parseInt(b.getAttribute('data-wins'), 10);
+                break;
+            case 'winrate':
+                valueA = parseFloat(a.getAttribute('data-winrate'));
+                valueB = parseFloat(b.getAttribute('data-winrate'));
+                break;
+            case 'totalrides':
+                valueA = parseInt(a.getAttribute('data-totalrides'), 10);
+                valueB = parseInt(b.getAttribute('data-totalrides'), 10);
+                break;
+            default:
+                valueA = parseInt(a.getAttribute('data-wins'), 10);
+                valueB = parseInt(b.getAttribute('data-wins'), 10);
+        }
+        
+        return valueB - valueA; // 降順ソート
+    });
+}
+
+// テーブルを更新する関数
+function updateJockeyTable(tableBody, jockeys) {
+    // テーブルをクリア
+    tableBody.innerHTML = '';
+    
+    // 結果が0件の場合
+    if (jockeys.length === 0) {
+        document.getElementById('no-results').style.display = 'flex';
+    } else {
+        document.getElementById('no-results').style.display = 'none';
+        
+        // 結果を表示
+        jockeys.forEach(jockey => {
+            tableBody.appendChild(jockey.cloneNode(true));
+        });
+    }
+}
 </script>
 
 <style>
-.pagination-container {
-    background: #f8f9fa;
-    padding: 1rem;
-    border-radius: 0.5rem;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+/* 騎手一覧ページのスタイル */
+.jockeys-page {
+    background-color: #f5f7fb;
+    min-height: 100vh;
+    padding-bottom: 3rem;
 }
 
-.entries-info {
-    color: #6c757d;
+.jockeys-header {
+    background: linear-gradient(120deg, #4F46E5, #7C3AED);
+    color: white;
+    padding: 3rem 0 3.5rem;
+    position: relative;
+    margin-bottom: 3rem;
 }
 
-.pagination-controls .btn {
-    min-width: 100px;
+.jockeys-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    z-index: 0;
 }
 
-#load-more {
-    min-width: 200px;
-    transition: all 0.3s ease;
+.jockeys-header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    position: relative;
+    z-index: 1;
 }
 
-#load-more:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+.jockeys-header p {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    position: relative;
+    z-index: 1;
+}
+
+.search-container {
+    position: relative;
+    margin-top: -2.5rem;
+    margin-bottom: 2rem;
+    z-index: 10;
 }
 
 .search-box {
     max-width: 500px;
     margin: 0 auto;
+    background: white;
+    border-radius: 50px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
 }
 
 .search-box .input-group-text {
-    background-color: #fff;
-    border-right: none;
+    background-color: transparent;
+    border: none;
     color: #6c757d;
+    padding-left: 1.5rem;
 }
 
 .search-box .search-input {
-    border-left: none;
-    color: #212529;  /* 文字色を濃く */
-    background-color: #fff;
-}
-
-.search-box .search-input::placeholder {
-    color: #6c757d;
+    border: none;
+    padding: 1.2rem 1rem 1.2rem 0;
+    border-radius: 50px;
 }
 
 .search-box .search-input:focus {
-    border-color: #ced4da;
     box-shadow: none;
 }
 
-.btn-group .btn.active {
-    background-color: #0d6efd;
-    color: #fff;
-    border-color: #0d6efd;
+.filter-section {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    margin-bottom: 2rem;
+    padding: 1.5rem;
 }
 
-/* テーブルのスタイル改善 */
-.table {
-    color: #212529;  /* テーブルの文字色を濃く */
+.filter-group {
+    margin-bottom: 0.5rem;
 }
 
-.table th {
+.filter-label {
+    font-size: 0.85rem;
+    color: #6c757d;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.btn-filter {
     background-color: #f8f9fa;
+    border-color: #e9ecef;
     color: #495057;
+    border-radius: 8px;
+    font-weight: 500;
+    padding: 0.6rem 0;
+    transition: all 0.2s ease;
 }
 
-.table td {
-    vertical-align: middle;
-}
-
-.table a {
-    color: #0d6efd;  /* リンクの色を調整 */
-}
-
-.table a:hover {
-    color: #0a58ca;
-}
-
-/* 詳細ボタンのスタイル */
-.btn-primary {
-    color: #fff !important;
-    background-color: #0d6efd;
-    border-color: #0d6efd;
-}
-
-.btn-primary:hover {
-    color: #fff !important;
-    background-color: #0b5ed7;
-    border-color: #0a58ca;
-}
-
-/* 所属カラムの背景色 */
-td.bg-light {
-    background-color: #f8f9fa !important;
+.btn-filter:hover {
+    background-color: #e9ecef;
+    border-color: #dee2e6;
     color: #212529;
 }
 
-/* 検索結果なしのメッセージ */
-.text-muted {
-    color: #6c757d !important;
+.btn-filter.active {
+    background-color: #4F46E5;
+    border-color: #4F46E5;
+    color: white;
+    box-shadow: 0 2px 5px rgba(79, 70, 229, 0.25);
+}
+
+.filter-group .btn-group {
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.table-container {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    margin-bottom: 2rem;
+    overflow: hidden;
+}
+
+.jockeys-table {
+    margin-bottom: 0;
+}
+
+.jockeys-table thead th {
+    background-color: #f8f9fa;
+    color: #495057;
+    font-weight: 600;
+    font-size: 0.85rem;
+    padding: 1rem 0.75rem;
+    border-top: none;
+    border-bottom: 2px solid #e9ecef;
+}
+
+.jockeys-table tbody td {
+    padding: 1rem 0.75rem;
+    vertical-align: middle;
+    border-bottom: 1px solid #f1f1f1;
+}
+
+.jockeys-table tbody tr:hover {
+    background-color: rgba(79, 70, 229, 0.03);
+}
+
+.jockeys-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.jockey-name {
+    font-weight: 500;
+    color: #4F46E5;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.jockey-name:hover {
+    color: #7C3AED;
+    text-decoration: underline;
+}
+
+.affiliation-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.affiliation-central {
+    background-color: rgba(79, 70, 229, 0.1);
+    color: #4F46E5;
+}
+
+.affiliation-local {
+    background-color: rgba(124, 58, 237, 0.1);
+    color: #7C3AED;
+}
+
+.btn-detail {
+    padding: 0.4rem 1rem;
+    background-color: #4F46E5;
+    color: white;
+    border-radius: 6px;
+    border: none;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.btn-detail:hover {
+    background-color: #4338CA;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 3px 6px rgba(79, 70, 229, 0.2);
+}
+
+.no-results-message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    padding: 3rem;
+    text-align: center;
+    color: #6c757d;
+}
+
+.no-results-message i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: #d1d5db;
+}
+
+.no-results-message p {
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin-bottom: 0;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+    .jockeys-header {
+        padding: 2rem 0 2.5rem;
+    }
+    
+    .jockeys-header h1 {
+        font-size: 2rem;
+    }
+    
+    .filter-section {
+        padding: 1rem;
+    }
+    
+    .search-box {
+        max-width: 100%;
+    }
+    
+    .jockeys-table {
+        white-space: nowrap;
+    }
+    
+    .jockeys-table th, 
+    .jockeys-table td {
+        padding: 0.75rem 0.5rem;
+        font-size: 0.85rem;
+    }
+    
+    .btn-detail {
+        padding: 0.3rem 0.75rem;
+        font-size: 0.8rem;
+    }
 }
 </style>
-{% endblock %} 
+{% endblock %}
