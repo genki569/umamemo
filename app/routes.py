@@ -777,17 +777,1495 @@ def jockeys():
     except Exception as e:
         current_app.logger.error(f"Error fetching jockeys: {str(e)}")
         traceback.print_exc()
+        return render_template('jockeys.html', jockey_stats=[], total_pages=0, current_page=1)
+
+@app.route('/jockey/<int:jockey_id>')
+def jockey_detail(jockey_id):
+    try:
+        jockey = Jockey.query.get_or_404(jockey_id)
+        
+        # 騎手の全レース履歴取得
+        entries = Entry.query.filter_by(jockey_id=jockey_id).all()
+        total_rides = len(entries)
+        wins = sum(1 for e in entries if e.position == 1)
+        seconds = sum(1 for e in entries if e.position == 2)
+        thirds = sum(1 for e in entries if e.position == 3)
+        
+        # 央競馬の開催場所リスト
+        central_venues = ['東京', '中山', '阪神', '京都', '中京', '小倉', '福島', '新潟', '札幌']
+        
+        # レース情報を取得して所属を判
+        races = db.session.query(Race).join(Entry).filter(Entry.jockey_id == jockey_id).all()
+        
+        # venueがNoneの場合のエラー処理を追加
+        central_races = sum(1 for r in races if r.venue and any(venue in r.venue for venue in central_venues))
+        local_races = sum(1 for r in races if r.venue and not any(venue in r.venue for venue in central_venues))
+        
+        # 主な所属を判断（レース数の多い方）
+        affiliation = "中央" if central_races >= local_races else "地方"
+        
+        stats = {
+            'total_rides': total_rides,
+            'wins': wins,
+            'seconds': seconds,
+            'thirds': thirds,
+            'others': total_rides - (wins + seconds + thirds),
+            'win_rate': round((wins / total_rides * 100), 1) if total_rides > 0 else 0,
+            'place_rate': round(((wins + seconds + thirds) / total_rides * 100), 1) if total_rides > 0 else 0,
+            'central_races': central_races,
+            'local_races': local_races,
+            'affiliation': affiliation
+        }
+        
+        # 最近の騎乗成績を取得（最新10件）
+        recent_rides = db.session.query(
+            Entry, Race, Horse
+        ).join(
+            Race, Entry.race_id == Race.id
+        ).join(
+            Horse, Entry.horse_id == Horse.id
+        ).filter(
+            Entry.jockey_id == jockey_id
+        ).order_by(
+            Race.date.desc()
+        ).limit(10).all()
+
+        # 日のフォーマット
+        for entry, race, horse in recent_rides:
+            if isinstance(race.date, str):
+                race.formatted_date = datetime.strptime(race.date, '%Y-%m-%d').strftime('%Y/%m/%d')
+            else:
+                race.formatted_date = race.date.strftime('%Y/%m/%d')
+
+        return render_template('jockey_detail.html', 
+                             jockey=jockey,
+                             stats=stats,
+                             recent_rides=recent_rides)
+
+    except Exception as e:
+        current_app.logger.error(f"Error fetching jockey details: {str(e)}")
+        traceback.print_exc()
+        flash('騎手情報の取得中にエラーが発まし。', 'error')
+        return redirect(url_for('jockeys'))
+
+def create_entry(race, entry_data):
+    try:
+        # デバ報追加
+        print(f"Creating entry for race:")
+        print(f"Race ID: {race.id}")
+        print(f"Race Name: {race.name}")
+        print(f"Race Date: {race.date}")
+        print(f"Race Venue: {race.venue}")
+        print(f"Entry Data: {entry_data}")
+        
+        # 既存のエトリーをチェク
+        existing_entries = (Entry.query
+                          .join(Race)
+                          .filter(
+                              Race.date == race.date,
+                              Race.venue == race.venue,
+                              Race.start_time == race.start_time,
+                              Race.name == race.name
+                          )
+                          .all())
+        
+        if existing_entries:
+            print(f"Warning: Found existing entries for this race combination")
+            return None
+        
+        # 着順を値に変換（失格、中止などの場合はNoneを設定）
+        try:
+            result = int(entry_data['順'])
+        except (ValueError, TypeError):
+            result = None
+        
+        # 馬体と増減を分離
+        weight_str = entry_data.get('馬体重', '')
+        if weight_str and '(' in weight_str:
+            horse_weight = int(weight_str.split('(')[0])
+            weight_change = int(weight_str.split('(')[1].rstrip(')'))
+        else:
+            horse_weight = None
+            weight_change = None
+        
+        # ッズを数
+        try:
+            odds = float(entry_data.get('単勝', 0))
+        except (ValueError, TypeError):
+            odds = None
+        
+        # 上りを数値に変換
+        try:
+            last3f = float(entry_data.get('上り', 0))
+        except (ValueError, TypeError):
+            last3f = None
+            
+        # 騎情報取得
+        jockey = get_or_create_jockey(entry_data) if '' in entry_data else None
+        jockey_id = jockey.id if jockey else None
+        
+        # 馬情報を得
+        horse = get_or_create_horse(entry_data)
+        
+        horse_number = int(entry_data.get('番', 0))
+        entry_dict = {
+            'id': Entry.generate_entry_id(race.id, horse_number),  # 新しいID生成
+            'race_id': race.id,
+            'horse_id': horse.id,
+            'horse_number': horse_number,
+            'jockey_id': jockey.id if jockey else None,
+            'number': int(entry_data.get('馬番', 0)),
+            'frame': int(entry_data.get('枠番', 0)),
+            'weight': float(entry_data.get('斤量', 0)),
+            'odds': odds,
+            'popularity': int(entry_data.get('人気', 0)) if entry_data.get('人気') else None,  # 余分な閉じカッを削除
+            'result': result,
+            'time': entry_data.get('タイム', ''),
+            'margin': entry_data.get('着差', ''),
+            'passing': entry_data.get('通過', ''),
+            'last3f': last3f,
+            'horse_weight': horse_weight,
+            'weight_change': weight_change
+        }
+        
+        entry = Entry(**entry_dict)
+        db.session.add(entry)
+        return entry
+    except Exception as e:
+        current_app.logger.warning(f"ントリーの処理中にエラーが発生しました: {str(e)}")
+        current_app.logger.warning(f"問題のデータ: {entry_data}")
+        return None
+
+@app.route('/shutuba')
+def shutuba_list():
+    try:
+        # 日付パラメータの取得（デフォルトは今日）
+        date_str = request.args.get('date')
+        
+        try:
+            if date_str:
+                selected_date = datetime.strptime(date_str, '%Y%m%d').date()
+            else:
+                selected_date = datetime.now().date()
+        except ValueError:
+            selected_date = datetime.now().date()
+        
+        # 利用可能な日付を取得（出馬表があるレースのみ）
+        available_dates = db.session.query(
+            func.date(Race.date).label('race_date')
+        ).join(ShutubaEntry).distinct().order_by(
+            func.date(Race.date)
+        ).all()
+        
+        # 日付一覧の作成
+        dates = []
+        for date_row in available_dates:
+            date = date_row.race_date
+            dates.append({
+                'value': date.strftime('%Y%m%d'),
+                'month': date.month,
+                'day': date.day,
+                'weekday': date.strftime('%a')
+            })
+        
+        # 選択された日付の出馬表を取得
+        races = Race.query.join(ShutubaEntry).filter(
+            func.date(Race.date) == selected_date
+        ).distinct().all()
+        
+        # 会場ごとにグループ化
+        venue_races = {}
+        for race in races:
+            venue_code = get_venue_code(race.venue)
+            if venue_code:
+                if venue_code not in venue_races:
+                    venue_races[venue_code] = {
+                        'venue_name': VENUE_NAMES.get(venue_code, race.venue),
+                        'weather': getattr(race, 'weather', '不明'),
+                        'track_condition': getattr(race, 'track_condition', '不明'),
+                        'races': []
+                    }
+                venue_races[venue_code]['races'].append(race)
+        
+        # レースを各会場内でソート
+        for venue_data in venue_races.values():
+            venue_data['races'].sort(key=lambda x: x.race_number)
+        
         return render_template(
-            'jockeys.html', 
-            jockey_stats=[],
-            total_count=0,
-            current_page=1,
-            total_pages=0,
-            per_page=20,
-            affiliation_filter='all',
-            sort_by='wins',
-            search_query=''
+            'shutuba_list.html',
+            dates=dates,
+            selected_date=selected_date,
+            venue_races=venue_races,
+            venues=VENUE_NAMES
         )
+        
+    except Exception as e:
+        app.logger.error(f'Error in shutuba_list: {str(e)}')
+        # エラー時にもselected_dateを渡す
+        return render_template(
+            'shutuba_list.html',
+            dates=[],
+            selected_date=datetime.now().date(),
+            venue_races={},
+            venues=VENUE_NAMES,
+            error=str(e)
+        )
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    """ユーザー登録処理"""
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    
+    form = RegistrationForm()
+    if form.validate_on_submit():
+        user = User(
+            username=form.username.data,
+            email=form.email.data
+        )
+        user.set_password(form.password.data)
+        user.generate_confirmation_token()
+        
+        db.session.add(user)
+        db.session.commit()
+        
+        # 確認メールを送信
+        send_confirmation_email(user)
+        
+        flash('登録が完了しました。確認メールを送信しましたので、メール内のリンクをクリックして登録を完了してください。', 'success')
+        return redirect(url_for('login'))
+    
+    return render_template('register.html', form=form)
+
+@app.route('/confirm/<token>')
+def confirm_email(token):
+    """メールアドレス確認処理"""
+    user = User.query.filter_by(confirmation_token=token).first()
+    
+    if not user or user.confirmation_token_expires < datetime.utcnow():
+        flash('無効または期限切れの確認リンクです。', 'danger')
+        return redirect(url_for('login'))
+    
+    user.confirm_email()
+    db.session.commit()
+    
+    flash('メールアドレスの確認が完了しました。ログインしてください。', 'success')
+    return redirect(url_for('login'))
+
+@app.route('/resend-confirmation')
+@login_required
+def resend_confirmation():
+    """確認メールの再送信処理"""
+    if current_user.email_confirmed:
+        flash('メールアドレスは既に確認済みです。', 'info')
+        return redirect(url_for('index'))
+    
+    current_user.generate_confirmation_token()
+    db.session.commit()
+    send_confirmation_email(current_user)
+    
+    flash('確認メールを再送信しました。', 'success')
+    return redirect(url_for('index'))
+
+@app.route('/api/points/add', methods=['POST'])
+@login_required
+def add_points():
+    try:
+        points = int(request.json.get('points', 0))
+        reason = request.json.get('reason', '')
+        
+        if points <= 0:
+            return jsonify({'success': False, 'message': '無効なポイント数です'}), 400
+            
+        current_user.add_points(points, reason)
+        
+        return jsonify({
+            'success': True,
+            'new_balance': current_user.point_balance,
+            'message': f'{points}ポイントを加しました'
+        })
+        
+    except Exception as e:
+        app.logger.error(f"Point addition error: {str(e)}")
+        return jsonify({'success': False, 'message': 'ポイントの追加失敗しまし'}), 500
+
+@app.route('/api/points/use', methods=['POST'])
+@login_required
+def use_points():
+    try:
+        points = int(request.json.get('points', 0))
+        
+        if points <= 0:
+            return jsonify({'success': False, 'message': '無効なポイント数です'}), 400
+            
+        if not current_user.has_enough_points(points):
+            return jsonify({'success': False, 'message': 'ポイントが不足しています'}), 400
+            
+        if current_user.use_points(points):
+            return jsonify({
+                'success': True,
+                'new_balance': current_user.point_balance,
+                'message': f'{points}ポイントを用しました'
+            })
+        
+        return jsonify({'success': False, 'message': 'ポイントの使用に失敗しました'}), 400
+        
+    except Exception as e:
+        app.logger.error(f"Point usage error: {str(e)}")
+        return jsonify({'success': False, 'message': 'ポイントの使用に失敗しました'}), 500
+
+@app.route('/api/points/balance', methods=['GET'])
+@login_required
+def get_point_balance():
+    try:
+        return jsonify({
+            'success': True,
+            'balance': current_user.point_balance
+        })
+    except Exception as e:
+        app.logger.error(f"Point balance check error: {str(e)}")
+        return jsonify({'success': False, 'message': 'ポイント残高の取得に失敗しまし'}), 500
+
+@app.route('/toggle_favorite/<int:horse_id>', methods=['POST'])
+def toggle_favorite(horse_id):
+    """お気に入りの追加・削除"""
+    # ログインチェック
+    if not current_user.is_authenticated:
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return jsonify({
+                'status': 'error',
+                'message': 'ログインが必要です',
+                'redirect': url_for('login', next=request.referrer)
+            }), 401
+        return redirect(url_for('login', next=request.referrer))
+
+    try:
+        app.logger.info(f"Toggle favorite request - User: {current_user.id}, Horse: {horse_id}")
+        
+        horse = Horse.query.get_or_404(horse_id)
+        favorite = Favorite.query.filter_by(
+            user_id=current_user.id,
+            horse_id=horse_id
+        ).first()
+        
+        if favorite:
+            db.session.delete(favorite)
+            message = '馬をお気入りから削除しました'
+            is_favorite = False
+        else:
+            favorite = Favorite(
+                user_id=current_user.id,
+                horse_id=horse_id
+            )
+            db.session.add(favorite)
+            message = '馬をお気に入りに追加しました'
+            is_favorite = True
+            
+        db.session.commit()
+        
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return jsonify({
+                'status': 'success',
+                'message': message,
+                'is_favorite': is_favorite
+            })
+        return redirect(request.referrer or url_for('index'))
+        
+    except Exception as e:
+        db.session.rollback()
+        app.logger.error(f"Error in toggle_favorite: {str(e)}")
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return jsonify({
+                'status': 'error',
+                'message': 'お気にりの更新に失敗しました'
+            }), 500
+        return redirect(request.referrer or url_for('index'))
+
+@app.route('/favorites')
+@login_required
+def favorites():
+    try:
+        favorite_horses = Horse.query\
+            .join(Favorite)\
+            .filter(Favorite.user_id == current_user.id)\
+            .order_by(Horse.name)\
+            .all()
+        
+        return render_template('favorites.html', 
+                             favorites=favorite_horses,
+                             favorite_horses=favorite_horses)
+                            
+    except Exception as e:
+        app.logger.error(f"Error in favorites route: {str(e)}")
+        return render_template('favorites.html', 
+                             favorites=[],
+                             favorite_horses=[],
+                             error="お気に入情報の得中にエラーが発生しました。")
+
+@app.route('/mypage/favorites')
+@login_required
+def mypage_favorites():
+    """マイページのお気に入り馬覧"""
+    try:
+        page = request.args.get('page', 1, type=int)
+        
+        # デバッグ用のログ出力
+        app.logger.info(f"Current user ID: {current_user.id}")
+        
+        # まずお気入りの数を確認
+        favorite_count = Favorite.query.filter_by(user_id=current_user.id).count()
+        app.logger.info(f"Favorite count: {favorite_count}")
+        
+        # お気に入り馬を取（クエリを分解して確認）
+        favorites_query = Horse.query\
+            .join(Favorite)\
+            .filter(Favorite.user_id == current_user.id)\
+            .order_by(Horse.name)
+            
+        # SQLクエをログ出力
+        app.logger.info(f"SQL Query: {str(favorites_query)}")
+        
+        # 結果を取得しページネーション
+        favorites = favorites_query.paginate(
+            page=page,
+            per_page=12,
+            error_out=False
+        )
+        
+        app.logger.info(f"Total favorites: {favorites.total}")
+        
+        return render_template('mypage/favorites.html',
+                             favorites=favorites)
+                             
+    except Exception as e:
+        app.logger.error(f"Error in mypage_favorites: {str(e)}")
+        app.logger.error(traceback.format_exc())  # スタックトレースを出力
+        flash('おに入り情報取得中にエラーが発生ました', 'error')
+        return render_template('mypage/favorites.html',
+                             favorites=[])
+
+# プアム機能のメインージ
+@app.route('/premium')
+def premium():
+    """プレミアムプランのトップページ"""
+    return render_template('premium/index.html')
+
+# プレミアム機能の詳細ページ
+@app.route('/premium/features')
+def premium_features():
+    """プレアム機能の詳細ペー"""
+    return render_template('premium/features.html')
+
+# プレミアムの支払ページ
+@app.route('/premium/payment', methods=['GET', 'POST'])
+@login_required
+def premium_payment():
+    """プレミアム会員支払いペー"""
+    return render_template('premium/payment.html')
+
+# プレミアム登録完了ページ
+@app.route('/premium/complete')
+@login_required
+def premium_complete():
+    """プレミアム会員登録完了ページ"""
+    return render_template('premium/complete.html')
+
+# プレミアム会員登録処理
+@app.route('/premium/subscribe', methods=['POST'])
+@login_required
+def premium_subscribe():
+    """プレミアム会員への登録処理"""
+    try:
+        data = request.get_json()
+        
+        # 支払い実際にはStripeなの決済サービスを使用）
+        payment_successful = process_payment(data)  # この関は実装が必要
+        
+        if payment_successful:
+            # ユーザーのプレミアム状態を更新
+            current_user.is_premium = True
+            current_user.premium_expires_at = datetime.now() + timedelta(days=int(data['duration']))
+            
+            # 支払い履歴を記録
+            payment_log = PaymentLog(
+                user_id=current_user.id,
+                amount=data['price'],
+                plan_type=data['plan'],
+                duration_days=data['duration']
+            )
+            db.session.add(payment_log)
+            
+            # 変更履歴を記録
+            membership_change = MembershipChangeLog(
+                user_id=current_user.id,
+                changed_by=current_user.id,
+                old_status='normal',
+                new_status='premium',
+                reason='ユーザーによる購入'
+            )
+            db.session.add(membership_change)
+            
+            db.session.commit()
+            
+            return jsonify({
+                'success': True,
+                'message': 'プレミア会員が了しました'
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'message': '支払い処理に失敗しました'
+            }), 400
+            
+    except Exception as e:
+        db.session.rollback()
+        app.logger.error(f"Error in premium subscription: {str(e)}")
+        return jsonify({
+            'success': False,
+            'message': 'エーが発生しました'
+        }), 500
+
+# デッグ用簡易ログイン
+@app.route('/debug-login')
+def debug_login():
+    if app.debug:  # デバッグモーのみ
+        user = User.query.first()  # 最初のユーーでログイン
+        if user:
+            login_user(user)
+            flash('デバッグ用ログインしました。', 'success')
+            return redirect(url_for('premium'))
+    return redirect(url_for('index'))
+
+# バッグの一時的なユーザークラス
+class DebugUser(UserMixin):
+    def __init__(self, user):
+        self.user = user
+        
+    def get_id(self):
+        return str(self.user.id)
+        
+    @property
+    def is_authenticated(self):
+        return True
+        
+    @property
+    def is_active(self):
+        return True
+
+# ユーザーラッパークラス
+class UserWrapper(UserMixin):
+    def __init__(self, user):
+        self.user = user
+        
+    def get_id(self):
+        return str(self.user.id)
+        
+    @property
+    def is_authenticated(self):
+        return True
+        
+    @property
+    def is_active(self):
+        return True
+
+    # 元のーザーモデの属性をプロキシ
+    def __getattr__(self, attr):
+        return getattr(self.user, attr)
+
+
+@app.route('/debug/create-user')
+def create_debug_user():
+    if not app.debug:
+        return redirect(url_for('index'))
+        
+    # デバッグユーザーが在するか確認
+    debug_user = User.query.filter_by(email='debug@example.com').first()
+    
+    if not debug_user:
+        # デバッグユーザーを作成
+        debug_user = User(
+            email='debug@example.com',
+            username='debuguser',
+            password_hash=generate_password_hash('debug123')
+        )
+        db.session.add(debug_user)
+        try:
+            db.session.commit()
+            flash('バッグユーザーを作成しました', 'success')
+        except Exception as e:
+            db.session.rollback()
+            flash('ーーザー作成失敗した', 'danger')
+            return redirect(url_for('index'))
+    
+    # UserWrapperでラップしてログン
+    user_wrapper = UserWrapper(debug_user)
+    if login_user(user_wrapper, force=True):
+        flash('デバッグユーザーでグインしまた', 'info')
+        next_page = request.args.get('next')
+        if next_page:
+            return redirect(next_page)
+    else:
+        flash('ログインに失敗しました', 'danger')
+    
+    return redirect(url_for('index'))
+
+@app.route('/debug/db-check')
+def debug_db_check():
+    try:
+        # レース数を認
+        race_count = Race.query.count()
+        
+        # 馬の数を確認
+        horse_count = Horse.query.count()
+        
+        # 最のレースを確認
+        latest_race = Race.query.order_by(Race.date.desc()).first()
+        
+        # いくつかの馬を取得
+        some_horses = Horse.query.limit(5).all()
+        
+        return jsonify({
+            'status': 'success',
+            'counts': {
+                'races': race_count,
+                'horses': horse_count
+            },
+            'latest_race': {
+                'id': latest_race.id if latest_race else None,
+                'name': latest_race.name if latest_race else None,
+                'date': str(latest_race.date) if latest_race else None
+            },
+            'sample_horses': [
+                {'id': h.id, 'name': h.name} for h in some_horses
+            ]
+        })
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': str(e),
+            'traceback': traceback.format_exc()
+        })
+
+# 回顧ノート関連のルート
+@app.route('/races/<int:race_id>/review', methods=['GET', 'POST'])
+@login_required
+def race_review(race_id):
+    race = Race.query.get_or_404(race_id)
+    review = RaceReview.query.filter_by(race_id=race_id, user_id=current_user.id).first()
+    
+    if request.method == 'POST':
+        # 'content' ではなく、RaceReviewモデルの実際のフィールド名を使用
+        # 例: pace_analysis, track_condition_note, race_flow, overall_impression など
+        pace_analysis = request.form.get('pace_analysis', '')
+        track_condition_note = request.form.get('track_condition_note', '')
+        race_flow = request.form.get('race_flow', '')
+        overall_impression = request.form.get('overall_impression', '')
+        winner_analysis = request.form.get('winner_analysis', '')
+        placed_horses_analysis = request.form.get('placed_horses_analysis', '')
+        notable_performances = request.form.get('notable_performances', '')
+        future_prospects = request.form.get('future_prospects', '')
+        
+        # 有料コンテンツの設定
+        is_premium = 'is_premium' in request.form
+        price = int(request.form.get('price', 0)) if is_premium else 0
+        
+        if review:
+            # 既存のレビューを更新
+            review.pace_analysis = pace_analysis
+            review.track_condition_note = track_condition_note
+            review.race_flow = race_flow
+            review.overall_impression = overall_impression
+            review.winner_analysis = winner_analysis
+            review.placed_horses_analysis = placed_horses_analysis
+            review.notable_performances = notable_performances
+            review.future_prospects = future_prospects
+            review.is_premium = is_premium
+            review.price = price
+            review.updated_at = datetime.utcnow()
+        else:
+            # 新しいレビューを作成
+            review = RaceReview(
+                race_id=race_id,
+                user_id=current_user.id,
+                pace_analysis=pace_analysis,
+                track_condition_note=track_condition_note,
+                race_flow=race_flow,
+                overall_impression=overall_impression,
+                winner_analysis=winner_analysis,
+                placed_horses_analysis=placed_horses_analysis,
+                notable_performances=notable_performances,
+                future_prospects=future_prospects,
+                is_premium=is_premium,
+                price=price
+            )
+            db.session.add(review)
+            
+        db.session.commit()
+        flash('レース回顧を保存しました', 'success')
+        return redirect(url_for('review_detail', review_id=review.id))
+        
+    return render_template('race_review.html', race=race, review=review)
+
+@app.route('/races/<race_id>/reviews')
+def race_reviews(race_id):
+    race = Race.query.get_or_404(race_id)
+    
+    # race_idを整数型に変換
+    race_id_int = int(race_id)
+    
+    # デバッグログを追加
+    app.logger.info(f"Fetching reviews for race {race_id_int}")
+    
+    # レビューを取得 - 整数型のrace_idを使用
+    reviews = RaceReview.query.filter_by(race_id=race_id_int).all()
+    
+    # デバッグ用にレビュー数をログに出力
+    app.logger.info(f"Found {len(reviews)} reviews for race {race_id_int}")
+    
+    return render_template('race_reviews.html', race=race, reviews=reviews)
+
+@app.route('/reviews', methods=['GET'])
+def all_reviews():
+    # 検索エリの取
+    search_query = request.args.get('search', '')
+    
+    # ベースクエリの作成
+    query = RaceReview.query.join(Race)
+    
+    # 検索条件の適用
+    if search_query:
+        query = query.filter(Race.name.like(f'%{search_query}%'))
+    
+    # 日順に並び替え
+    reviews = query.order_by(RaceReview.created_at.desc()).all()
+    
+    return render_template('all_reviews.html', reviews=reviews, search_query=search_query)
+
+@app.route('/races/<int:race_id>/memo/<int:memo_id>/delete', methods=['POST'])
+@login_required
+def delete_race_memo(race_id, memo_id):
+    try:
+        memo = RaceMemo.query.get_or_404(memo_id)
+        
+        # 権限チェック
+        if memo.user_id != current_user.id:
+            return jsonify({'status': 'error', 'message': 'このメモを削除する権限がありません'}), 403
+        
+        db.session.delete(memo)
+        db.session.commit()
+        
+        return jsonify({'status': 'success', 'message': 'メモを削除しました'})
+        
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"Error deleting race memo: {str(e)}")
+        return jsonify({'status': 'error', 'message': 'メモの削除中にエラーが発生しました'}), 500
+
+@app.route('/mypage')
+@login_required
+def mypage_home():
+    """マイページのホーム画面を表示"""
+    try:
+        # ユーザーの最近のレースメモを取得
+        race_memos = RaceMemo.query.filter_by(user_id=current_user.id).order_by(RaceMemo.created_at.desc()).limit(5).all()
+        
+        # ユーザーの最近の馬メモを取得
+        # HorseMemoモデルのフィールド名を確認
+        # user_idではなく、おそらくcreator_idなどの別名になっている可能性がある
+        horse_memos = []
+        try:
+            # モデルの構造を確認
+            app.logger.info(f"HorseMemo columns: {[c.name for c in HorseMemo.__table__.columns]}")
+            
+            # 正しいフィールド名で検索
+            if hasattr(HorseMemo, 'user_id'):
+                horse_memos = HorseMemo.query.filter_by(user_id=current_user.id).order_by(HorseMemo.created_at.desc()).limit(5).all()
+            elif hasattr(HorseMemo, 'creator_id'):
+                horse_memos = HorseMemo.query.filter_by(creator_id=current_user.id).order_by(HorseMemo.created_at.desc()).limit(5).all()
+            else:
+                # 関連するフィールドがない場合は空のリストを使用
+                app.logger.warning("HorseMemo model does not have user_id or creator_id field")
+        except Exception as horse_memo_error:
+            app.logger.error(f"Error getting horse memos: {str(horse_memo_error)}")
+            # エラーが発生しても処理を続行
+        
+        # ユーザーの最近のレビューを取得
+        reviews = RaceReview.query.filter_by(user_id=current_user.id).order_by(RaceReview.created_at.desc()).limit(5).all()
+        
+        # ユーザー設定を取得（存在しない場合は作成）
+        user_settings = None
+        try:
+            user_settings = UserSettings.query.filter_by(user_id=current_user.id).first()
+            if not user_settings:
+                user_settings = UserSettings(user_id=current_user.id)
+                db.session.add(user_settings)
+                db.session.commit()
+        except Exception as settings_error:
+            app.logger.error(f"Error getting user settings: {str(settings_error)}")
+            # 設定がなくてもページは表示する
+        
+        app.logger.info(f"Found {len(race_memos)} race memos and {len(reviews)} reviews for user {current_user.id}")
+        
+        return render_template('mypage/index.html', 
+                              race_memos=race_memos,
+                              horse_memos=horse_memos,
+                              reviews=reviews,
+                              settings=user_settings)
+    except Exception as e:
+        app.logger.error(f"Error in mypage_home: {str(e)}")
+        flash('マイページの読み込み中にエラーが発生しました', 'error')
+        return redirect(url_for('index'))
+
+@app.route('/mypage/reviews')
+@login_required
+def mypage_reviews():
+    """自分の回顧ノート一覧"""
+    page = request.args.get('page', 1, type=int)
+    reviews = RaceReview.query\
+        .filter_by(user_id=current_user.id)\
+        .order_by(RaceReview.created_at.desc())\
+        .paginate(page=page, per_page=10)
+    return render_template('mypage/reviews.html', reviews=reviews)
+
+@app.route('/mypage/purchased-reviews')
+@login_required
+def mypage_purchased_reviews():
+    """購入済みレビュー一覧を表示"""
+    try:
+        # 購入済みレビューを取得
+        purchased_reviews = RaceReview.query\
+            .join(ReviewPurchase)\
+            .join(Race)\
+            .filter(ReviewPurchase.user_id == current_user.id)\
+            .options(
+                db.joinedload(RaceReview.race),
+                db.joinedload(RaceReview.user)
+            )\
+            .order_by(ReviewPurchase.purchased_at.desc())\
+            .all()
+            
+        # 各レビューのURLを設定
+        for review in purchased_reviews:
+            review.view_url = url_for('view_review',
+                                    race_id=review.race_id,
+                                    review_id=review.id)
+        
+        return render_template('mypage/purchased_reviews.html',
+                             reviews=purchased_reviews)
+                             
+    except Exception as e:
+        app.logger.error(f"Error in mypage_purchased_reviews: {str(e)}")
+        flash('購入済みレビューの取得中にエラーが発生しました', 'error')
+        return render_template('mypage/purchased_reviews.html',
+                             reviews=[])
+
+@app.route('/mypage/review-sales')
+@login_required
+def mypage_review_sales():
+    try:
+        # 売上計のクリ
+        sales_summary = db.session.query(
+            RaceReview.id,
+            RaceReview.title,
+            Race.name.label('race_name'),
+            Race.date.label('race_date'),
+            func.count(ReviewPurchase.id).label('purchase_count'),
+            func.sum(ReviewPurchase.price).label('total_sales'),  # price_paidをpriceに変
+        ).join(
+            ReviewPurchase, RaceReview.id == ReviewPurchase.review_id
+        ).join(
+            Race, RaceReview.race_id == Race.id
+        ).filter(
+            RaceReview.user_id == current_user.id
+        ).group_by(
+            RaceReview.id,
+            RaceReview.title,
+            Race.name,
+            Race.date
+        ).order_by(
+            func.sum(ReviewPurchase.price).desc()  # price_paidをpriceに
+        ).all()
+
+        # 上を計算
+        total_revenue = sum(sale.total_sales for sale in sales_summary)
+        
+        return render_template('mypage/review_sales.html',
+                             sales_summary=sales_summary,
+                             total_revenue=total_revenue)
+                             
+    except Exception as e:
+        app.logger.error(f"Error in mypage_review_sales: {str(e)}")
+        return render_template('mypage/review_sales.html',
+                             sales_summary=[],
+                             total_revenue=0,
+                             error="売上情報取得中エラーが発生しました。")
+
+# お気に入り解除API
+@app.route('/api/favorites/<int:horse_id>', methods=['DELETE'])
+@login_required
+def remove_favorite(horse_id):
+    """お気に入りか削除するAPI"""
+    try:
+        favorite = Favorite.query.filter_by(
+            user_id=current_user.id,
+            horse_id=horse_id
+        ).first()
+        
+        if favorite:
+            db.session.delete(favorite)
+            db.session.commit()
+            return jsonify({
+                'status': 'success',
+                'message': 'お気に入りら削除しました'
+            })
+        else:
+            return jsonify({
+                'status': 'error',
+                'message': 'おに入りが見つかりませ'
+            }), 404
+            
+    except Exception as e:
+        db.session.rollback()
+        app.logger.error(f"Error removing favorite: {str(e)}")
+        return jsonify({
+            'status': 'error',
+            'message': 'エラーが発生しました'
+        }), 500
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@app.route('/mypage/settings', methods=['GET', 'POST'])
+@login_required
+def mypage_settings():
+    """ユーザー設定ページを表示"""
+    try:
+        # ユーザー設定を取得
+        user_settings = UserSettings.query.filter_by(user_id=current_user.id).first()
+        
+        # 設定が存在しない場合は作成
+        if not user_settings:
+            user_settings = UserSettings(user_id=current_user.id)
+            db.session.add(user_settings)
+            db.session.commit()
+            
+        if request.method == 'POST':
+            # フォームからデータを取得
+            current_user.introduction = request.form.get('introduction', '')
+            current_user.twitter = request.form.get('twitter', '')
+            current_user.note = request.form.get('note', '')
+            current_user.blog = request.form.get('blog', '')
+            current_user.youtube = request.form.get('youtube', '')
+            current_user.specialties = request.form.get('specialties', '')
+            current_user.analysis_style = request.form.get('analysis_style', '')
+            
+            # 通知設定の更新
+            user_settings.notification_race = 'notification_race' in request.form
+            user_settings.notification_memo = 'notification_memo' in request.form
+            user_settings.items_per_page = int(request.form.get('items_per_page', 10))
+            
+            # プロフィール画像の処理
+            if 'profile_image' in request.files and request.files['profile_image'].filename:
+                file = request.files['profile_image']
+                filename = secure_filename(file.filename)
+                # ファイル名にユーザーIDと現在時刻を追加して一意にする
+                unique_filename = f"{current_user.id}_{int(datetime.utcnow().timestamp())}_{filename}"
+                file_path = os.path.join(app.config['UPLOAD_FOLDER'], 'profiles', unique_filename)
+                
+                # ディレクトリが存在しない場合は作成
+                os.makedirs(os.path.dirname(file_path), exist_ok=True)
+                
+                # ファイルを保存
+                file.save(file_path)
+                
+                # データベースに保存するパスを設定
+                current_user.profile_image = f"/static/uploads/profiles/{unique_filename}"
+            
+            # 変更を保存
+            db.session.commit()
+            
+            flash('プロフィールを更新しました', 'success')
+            return redirect(url_for('mypage_settings'))
+        
+        return render_template('mypage/settings.html', settings=user_settings)
+    except Exception as e:
+        app.logger.error(f"Error in mypage_settings: {str(e)}")
+        flash('設定の取得中にエラーが発生しました', 'error')
+        return redirect(url_for('mypage_home'))
+
+
+# プレミアム機能へのリダイレト
+@app.route('/premium/redirect')
+@custom_login_required
+def premium_redirect():
+    return redirect(url_for('premium_features'))  # 'premium'から'premium_features'に変更
+
+# レミアム機能のクセスチェック
+def premium_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not current_user.is_premium:
+            flash('この機能はプレミアム会員専です', 'warning')
+            return redirect(url_for('premium_features'))  # 'premium'から'premium_features'に変更
+        return f(*args, **kwargs)
+    return decorated_function
+
+# レビュー関連のルートを加
+@app.route('/races/<int:race_id>/review/create', methods=['GET', 'POST'])
+@login_required
+def create_review(race_id):
+    """レビューの作成・編集"""
+    race = Race.query.get_or_404(race_id)
+    
+    if request.method == 'POST':
+        review = RaceReview(
+            race_id=race_id,
+            user_id=current_user.id,
+            title=request.form['title'],
+            pace_analysis=request.form['pace_analysis'],
+            track_condition_note=request.form['track_condition_note'],
+            race_flow=request.form['race_flow'],
+            overall_impression=request.form['overall_impression'],
+            winner_analysis=request.form['winner_analysis'],
+            placed_horses_analysis=request.form['placed_horses_analysis'],
+            notable_performances=request.form['notable_performances'],
+            future_prospects=request.form['future_prospects'],
+            is_public=request.form.get('is_public', type=bool),
+            sale_status=request.form.get('sale_status', 'free'),
+            price=request.form.get('price', type=int, default=0),
+            description=request.form.get('description', '')
+        )  # ここに閉じ括弧を追加
+        db.session.add(review)
+        db.session.commit()
+        
+        # 新規レビュー作成時に通知を作成
+        Notification.create_new_review_notification(review)
+        
+        flash('レビューを作成しました', 'success')
+        return redirect(url_for('view_review', race_id=race_id, review_id=review.id))
+    
+    return render_template('review/create.html', race=race)
+
+@app.route('/races/<int:race_id>/review/<int:review_id>', methods=['GET'])
+def view_review(race_id, review_id):
+    """レビュー詳細を表示"""
+    try:
+        review = RaceReview.query.get_or_404(review_id)
+        race = Race.query.options(joinedload(Race.entries)).get_or_404(race_id)
+        
+        # 購入済みかどうかをチェック
+        is_purchased = False
+        if current_user.is_authenticated:
+            purchase = ReviewPurchase.query.filter_by(
+                user_id=current_user.id,
+                review_id=review_id
+            ).first()
+            is_purchased = purchase is not None
+        
+        # レース情報を取得
+        race_entries = race.entries.order_by(Entry.position).all()
+        
+        return render_template('review/view.html', 
+                             review=review, 
+                             race=race,
+                             race_entries=race_entries,
+                             is_purchased=is_purchased)
+    except Exception as e:
+        app.logger.error(f"Error in view_review: {str(e)}")
+        flash('レビューの表示に失敗しました', 'error')
+        return redirect(url_for('index'))
+
+@app.route('/reviews/<int:review_id>/purchase', methods=['GET', 'POST'])
+@login_required
+def purchase_review(review_id):
+    review = RaceReview.query.get_or_404(review_id)
+    
+    # 自分のレビューは購入不要
+    if review.user_id == current_user.id:
+        return redirect(url_for('review_detail', review_id=review_id))
+    
+    # 既に購入済みかチェック
+    existing_purchase = ReviewPurchase.query.filter_by(
+        user_id=current_user.id,
+        review_id=review_id,
+        status='completed'
+    ).first()
+    
+    if existing_purchase:
+        return redirect(url_for('review_detail', review_id=review_id))
+    
+    if request.method == 'POST':
+        # ポイント残高チェック
+        if current_user.point_balance < review.price:
+            flash('ポイント残高が不足しています。', 'danger')
+            return redirect(url_for('mypage_points'))
+        
+        try:
+            # ポイント引き落とし
+            current_user.point_balance -= review.price
+            
+            # 購入記録作成
+            purchase = ReviewPurchase(
+                user_id=current_user.id,
+                review_id=review_id,
+                price=review.price,
+                status='completed'
+            )
+            
+            # 販売者にポイント付与（手数料10%）
+            if review.user:
+                seller_amount = int(review.price * 0.9)
+                review.user.point_balance += seller_amount
+                
+                # ポイントログ記録
+                seller_log = UserPointLog(
+                    user_id=review.user_id,
+                    amount=seller_amount,
+                    description=f'レビュー販売: {review.race.name}',
+                    transaction_type='sale'
+                )
+                db.session.add(seller_log)
+            
+            # 購入者のポイントログ
+            buyer_log = UserPointLog(
+                user_id=current_user.id,
+                amount=-review.price,
+                description=f'レビュー購入: {review.race.name}',
+                transaction_type='purchase'
+            )
+            
+            db.session.add(purchase)
+            db.session.add(buyer_log)
+            db.session.commit()
+            
+            flash('レビューを購入しました。', 'success')
+            return redirect(url_for('review_detail', review_id=review_id))
+            
+        except Exception as e:
+            db.session.rollback()
+            current_app.logger.error(f"Error purchasing review: {str(e)}")
+            flash('購入処理中にエラーが発生しました。', 'danger')
+    
+    return render_template('purchase_review.html', review=review)
+
+@app.route('/webhook/stripe', methods=['POST'])
+def stripe_webhook():
+    """Stripeからのwebhook処理"""
+    payload = request.get_data()
+    sig_header = request.headers.get('Stripe-Signature')
+    
+    try:
+        event = stripe.Webhook.construct_event(
+            payload, sig_header, current_app.config['STRIPE_WEBHOOK_SECRET']
+        )
+        
+        if event.type == 'payment_intent.succeeded':
+            payment_intent = event.data.object
+            PaymentManager.confirm_payment(payment_intent.id)
+            
+        return jsonify({'status': 'success'})
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 400
+
+@app.route('/notifications')
+@login_required
+def view_all_notifications():
+    try:
+        notifications = Notification.query\
+            .filter_by(user_id=current_user.id)\
+            .order_by(Notification.created_at.desc())\
+            .all()
+        
+        # 未読の通知を既読にマーク
+        for notification in notifications:
+            if not notification.is_read:  # readをis_readに変更
+                notification.is_read = True
+        db.session.commit()
+        
+        return render_template('notifications.html', notifications=notifications)
+        
+    except Exception as e:
+        app.logger.error(f"Error in view_all_notifications: {str(e)}")
+        flash('通知の取得中にエラーが発生しました', 'error')
+        return render_template('notifications.html', notifications=[])
+
+@app.route('/notifications/unread-count')
+@login_required
+def unread_notifications_count():
+    try:
+        count = db.session.query(func.count(Notification.id))\
+            .filter(
+                Notification.user_id == current_user.id,
+                Notification.read == False  # is_read -> read に変更
+            ).scalar()
+        
+        return jsonify({'count': count or 0})
+    except Exception as e:
+        app.logger.error(f"Error in unread_notifications_count: {str(e)}")
+        return jsonify({'count': 0})
+
+@app.route('/reviews/market')
+def review_market():
+    try:
+        # 有料レビューの一覧を取得
+        premium_reviews = RaceReview.query.filter_by(is_premium=True).order_by(RaceReview.created_at.desc()).all()
+        
+        # 購入済みレビューのIDリスト（ログインしている場合のみ）
+        purchased_review_ids = []
+        if current_user.is_authenticated:
+            # 直接クエリを実行して購入済みレビューのIDを取得
+            purchases = ReviewPurchase.query.filter_by(user_id=current_user.id).all()
+            purchased_review_ids = [purchase.review_id for purchase in purchases]
+            
+            # デバッグログを追加
+            current_app.logger.info(f"User {current_user.id} has purchased reviews: {purchased_review_ids}")
+        
+        # レビューにsummary属性がない場合、contentから生成
+        for review in premium_reviews:
+            # contentの代わりにoverall_impressionを使用
+            if not getattr(review, 'overall_impression', None):
+                review.overall_impression = ''
+        
+        return render_template('review_market.html', 
+                              reviews=premium_reviews,
+                              purchased_review_ids=purchased_review_ids)
+    except Exception as e:
+        current_app.logger.error(f"Error in review_market: {str(e)}")
+        current_app.logger.error(traceback.format_exc())
+        return render_template('error.html', 
+                              error_message="レビュー一覧の取得中にエラーが発生しました。",
+                              debug_info=str(e)), 500
+
+@app.route('/mypage/charge-points', methods=['GET'])
+@login_required
+def charge_points():
+    return render_template('mypage/charge_points.html',
+                         stripe_public_key=current_app.config['STRIPE_PUBLIC_KEY'])
+
+@app.route('/create-payment-intent', methods=['POST'])
+@login_required
+def create_payment_intent():
+    try:
+        data = request.get_json()
+        amount = data.get('amount', 500)  # デフォルト500円
+        
+        # 許可された金額かチェック
+        allowed_amounts = [500, 1000, 3000, 5000]
+        if amount not in allowed_amounts:
+            return jsonify({'error': '不正な金額です'}), 400
+
+        payment_intent = stripe.PaymentIntent.create(
+            amount=amount,
+            currency='jpy',
+            automatic_payment_methods={
+                'enabled': True,
+            },
+            metadata={
+                'user_id': current_user.id,
+                'points': amount  # 1円=1ポイント
+            }
+        )
+        
+        return jsonify({
+            'clientSecret': payment_intent.client_secret
+        })
+    except Exception as e:
+        app.logger.error(f"Error creating payment intent: {str(e)}")
+        return jsonify({'error': str(e)}), 400
+
+@app.route('/mypage/point-charge-complete')
+@login_required
+def point_charge_complete():
+    """ポイントチャー完処理"""
+    payment_intent_id = request.args.get('payment_intent')
+    if not payment_intent_id:
+        flash('決済情報が見つかりません。', 'error')
+        return redirect(url_for('mypage_charge_points'))
+    
+    try:
+        # Stripeら決済情報を取得
+        intent = stripe.PaymentIntent.retrieve(payment_intent_id)
+        
+        if intent.status == 'succeeded':
+            points = int(intent.metadata.get('points', 0))
+            
+            # ポイントを追加
+            current_user.add_points(
+                points,
+                type='charge',
+                reference_id=payment_intent_id,
+                description=f'ポイントチャジ: {points}P'
+            )
+            
+            flash(f'{points}ポイントがチャージされました！', 'success')
+            return redirect(url_for('mypage'))
+            
+        else:
+            flash('決済が完了していません。', 'error')
+            return redirect(url_for('mypage_charge_points'))
+            
+    except Exception as e:
+        app.logger.error(f"Error in point charge completion: {str(e)}")
+        flash('エラーが発生しました。', 'error')
+        return redirect(url_for('mypage_charge_points'))
+
+@app.template_filter('from_json')
+def from_json(value):
+    try:
+        return json.loads(value)
+    except:
+        return []
+
+# 管理者権限チェック用デコレータ
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not current_user.is_authenticated or not current_user.is_admin:
+            flash('管理権限が必要です。', 'danger')
+            return redirect(url_for('index'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+# 管画面のルート
+@app.route('/admin')
+@app.route('/admin/dashboard')
+@login_required
+@admin_required
+def admin_dashboard():
+    """管理者ダッシュボード"""
+    try:
+        # 基本統計情報
+        total_users = User.query.count()
+        total_reviews = RaceReview.query.count()
+        total_horses = Horse.query.count()
+        
+        # 最近の登録ユーザー
+        recent_users = User.query.order_by(User.created_at.desc()).limit(5).all()
+        
+        # 最近のレビュー
+        recent_reviews = db.session.query(
+            RaceReview, User, Race
+        ).join(
+            User, RaceReview.user_id == User.id
+        ).join(
+            Race, RaceReview.race_id == Race.id
+        ).order_by(
+            RaceReview.created_at.desc()
+        ).limit(5).all()
+        
+        # 最近の売上
+        recent_sales = PaymentLog.query.order_by(PaymentLog.created_at.desc()).limit(5).all()
+        
+        return render_template('admin/dashboard.html', 
+                              total_users=total_users,
+                              total_reviews=total_reviews,
+                              total_horses=total_horses,
+                              recent_users=recent_users,
+                              recent_reviews=recent_reviews,
+                              recent_sales=recent_sales)
+    except Exception as e:
+        current_app.logger.error(f"Error in admin dashboard: {str(e)}")
+        flash('ダッシュボードの読み込み中にエラーが発生しました', 'danger')
+        return render_template('admin/dashboard.html')
+
+# 補助関数
+def calculate_monthly_premium_growth():
+    """月間のプレミアム会員増加率を計算"""
+    try:
+        last_month = datetime.now() - timedelta(days=30)
+        new_premium_users = User.query\
+            .filter(User.is_premium == True)\
+            .filter(User.premium_since >= last_month)\
+            .count()
+        return new_premium_users
+    except Exception as e:
+        app.logger.error(f"Error calculating premium growth: {str(e)}")
+        return 0
+
+def get_disk_usage():
+    """システムのディスク使用状況を取得"""
+    try:
+        total, used, free = shutil.disk_usage("/")
+        return {
+            'total': total // (2**30),  # GB
+            'used': used // (2**30),
+            'free': free // (2**30)
+        }
+    except Exception as e:
+        app.logger.error(f"Error getting disk usage: {str(e)}")
+        return {'total': 0, 'used': 0, 'free': 0}
+
+def get_memory_usage():
+    """システムのメモリ使用状況を取得"""
+    try:
+        process = psutil.Process()
+        return {
+            'memory_percent': process.memory_percent(),
+            'memory_mb': process.memory_info().rss / 1024 / 1024
+        }
+    except Exception as e:
+        app.logger.error(f"Error getting memory usage: {str(e)}")
+        return {'memory_percent': 0, 'memory_mb': 0}
+
+def get_recent_errors():
+    """最近のラーログを取得"""
+    try:
+        # ログファイルから最新のエラーを取得する実装
+        # この実装は環境に応じて調整が必要
+        return []
+    except Exception as e:
+        app.logger.error(f"Error getting recent errors: {str(e)}")
+        return []
+
+@app.route('/admin/users')
+@login_required
+@admin_required
+def admin_users():
+    """ユーザー管理画面"""
+    try:
+        page = request.args.get('page', 1, type=int)
+        search = request.args.get('search', '')
+        
+        query = User.query
+        
+        # 検索フィルター
+        if search:
+            query = query.filter(
+                or_(
+                    User.username.ilike(f'%{search}%'),
+                    User.email.ilike(f'%{search}%')
+                )
+            )
+            
+        # ページネーション
+        pagination = query.order_by(User.created_at.desc()).paginate(
+            page=page,
+            per_page=20,
+            error_out=False
+        )
+        
+        return render_template('admin/users.html',
+                           users=pagination.items,
+                           pagination=pagination)
+                           
+    except Exception as e:
+        app.logger.error(f"Error in admin users: {str(e)}")
+        flash('ユーザー一覧の読み込み中にエラーが発生しました', 'error')
+        return redirect(url_for('admin_dashboard'))
 
 @app.route('/admin/races')
 @login_required
