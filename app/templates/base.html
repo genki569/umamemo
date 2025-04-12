@@ -508,7 +508,93 @@
       display: block;
     }
 
-    /* 他のスタイルは同じ */
+    /* モバイルメニュー - 完全に新しい実装 */
+    .mobile-menu-button {
+      display: none;
+      padding: 0.5rem;
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .mobile-menu-icon {
+      display: block;
+      width: 24px;
+      height: 2px;
+      background-color: white;
+      position: relative;
+    }
+
+    .mobile-menu-icon:before,
+    .mobile-menu-icon:after {
+      content: '';
+      position: absolute;
+      width: 24px;
+      height: 2px;
+      background-color: white;
+      left: 0;
+    }
+
+    .mobile-menu-icon:before {
+      top: -8px;
+    }
+
+    .mobile-menu-icon:after {
+      bottom: -8px;
+    }
+
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      top: 60px;
+      left: 0;
+      width: 100%;
+      height: calc(100vh - 60px);
+      background-color: #4F46E5;
+      z-index: 9999;
+      padding: 1rem;
+      overflow-y: auto;
+    }
+
+    .mobile-menu.open {
+      display: block;
+    }
+
+    .mobile-menu-nav {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .mobile-menu-item {
+      margin: 1rem 0;
+    }
+
+    .mobile-menu-link {
+      display: block;
+      color: white;
+      font-size: 1.1rem;
+      text-decoration: none;
+      padding: 0.5rem 0;
+    }
+
+    .mobile-register-btn {
+      display: inline-block;
+      background-color: white;
+      color: #4F46E5 !important;
+      border-radius: 30px;
+      padding: 0.6rem 1.5rem;
+      font-weight: 600;
+      margin-top: 1rem;
+    }
+
+    /* モバイルメニュー表示 */
+    @media (max-width: 991.98px) {
+      .mobile-menu-button {
+        display: block;
+      }
+    }
     </style>
     {% endblock %}
 </head>
@@ -522,11 +608,62 @@
                         <i class="fas fa-horse-head"></i>馬メモ
                     </a>
                     
-                    <button class="umamemo-navbar-toggler d-lg-none" type="button" id="umamemoNavbarToggler">
-                        <span class="umamemo-navbar-toggler-icon"></span>
-            </button>
+                    <button class="mobile-menu-button" type="button" id="mobileMenuButton">
+                        <span class="mobile-menu-icon"></span>
+                    </button>
 
-                    <div class="umamemo-navbar-collapse d-lg-flex" id="umamemoNavbarCollapse">
+                    <div class="mobile-menu" id="mobileMenu">
+                        <ul class="mobile-menu-nav">
+                            <li class="mobile-menu-item">
+                                <a class="mobile-menu-link" href="{{ url_for('races') }}">レース情報</a>
+                            </li>
+                            <li class="mobile-menu-item">
+                                <a class="mobile-menu-link" href="{{ url_for('shutuba_list') }}">出馬表</a>
+                            </li>
+                            <li class="mobile-menu-item">
+                                <a class="mobile-menu-link" href="{{ url_for('horses') }}">馬一覧</a>
+                            </li>
+                            <li class="mobile-menu-item">
+                                <a class="mobile-menu-link" href="{{ url_for('jockeys') }}">騎手一覧</a>
+                            </li>
+                            <li class="mobile-menu-item">
+                                <a class="mobile-menu-link" href="{{ url_for('review_market') }}">回顧ノート</a>
+                            </li>
+                            
+                            {% if current_user.is_authenticated %}
+                            <li class="mobile-menu-item">
+                                <a class="mobile-menu-link" href="{{ url_for('mypage_home') }}">
+                                    <i class="fas fa-user me-2"></i>マイページ
+                                </a>
+                            </li>
+                            <li class="mobile-menu-item">
+                                <a class="mobile-menu-link" href="{{ url_for('mypage_notifications') }}">
+                                    通知 <span id="mobile-notification-badge" class="badge bg-danger rounded-pill ms-1 d-none">0</span>
+                                </a>
+                            </li>
+                            <li class="mobile-menu-item">
+                                <a class="mobile-menu-link" href="{{ url_for('mypage_settings') }}">
+                                    <i class="fas fa-cog me-2"></i>設定
+                                </a>
+                            </li>
+                            <li class="mobile-menu-item">
+                                <a class="mobile-menu-link" href="{{ url_for('logout') }}">
+                                    <i class="fas fa-sign-out-alt me-2"></i>ログアウト
+                                </a>
+                            </li>
+                            {% else %}
+                            <li class="mobile-menu-item">
+                                <a class="mobile-menu-link" href="{{ url_for('login') }}">ログイン</a>
+                            </li>
+                            <li class="mobile-menu-item">
+                                <a class="mobile-menu-link mobile-register-btn" href="{{ url_for('register') }}">新規登録</a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </div>
+
+                    <!-- PC用メニュー (d-none d-lg-flex で小さい画面では非表示) -->
+                    <div class="umamemo-navbar-collapse d-none d-lg-flex" id="umamemoNavbarCollapse">
                         <ul class="umamemo-nav me-auto">
                             <li class="umamemo-nav-item">
                                 <a class="umamemo-nav-link" href="{{ url_for('races') }}">レース情報</a>
@@ -673,40 +810,39 @@
     <script src="{{ url_for('static', filename='js/notifications.js') }}"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-        // ハンバーガーメニューの開閉
-        const navbarToggler = document.getElementById('umamemoNavbarToggler');
-        const navbarCollapse = document.getElementById('umamemoNavbarCollapse');
+        // シンプルなモバイルメニュー実装
+        const mobileMenuButton = document.getElementById('mobileMenuButton');
+        const mobileMenu = document.getElementById('mobileMenu');
         
-        if (navbarToggler && navbarCollapse) {
-            // トグラーのクリックイベント
-            navbarToggler.addEventListener('click', function() {
-                console.log('ナビゲーションボタンがクリックされました');
-                navbarCollapse.classList.toggle('show');
-                console.log('show クラスの切り替え後:', navbarCollapse.classList.contains('show'));
+        if (mobileMenuButton && mobileMenu) {
+            // ボタンクリックでメニュー表示切替
+            mobileMenuButton.addEventListener('click', function(e) {
+                e.stopPropagation();
+                mobileMenu.classList.toggle('open');
                 
-                // ボディのスクロールを制御（メニュー表示時はスクロール禁止）
-                if (navbarCollapse.classList.contains('show')) {
+                // スクロール制御
+                if (mobileMenu.classList.contains('open')) {
                     document.body.style.overflow = 'hidden';
                 } else {
                     document.body.style.overflow = '';
                 }
             });
             
-            // ナビゲーションリンクのクリックでメニューを閉じる
-            const navLinks = navbarCollapse.querySelectorAll('.umamemo-nav-link');
-            navLinks.forEach(link => {
+            // メニュー内のリンククリックでメニューを閉じる
+            const mobileLinks = mobileMenu.querySelectorAll('.mobile-menu-link');
+            mobileLinks.forEach(link => {
                 link.addEventListener('click', function() {
-                    navbarCollapse.classList.remove('show');
+                    mobileMenu.classList.remove('open');
                     document.body.style.overflow = '';
                 });
             });
             
             // 画面の他の場所をクリックしたらメニューを閉じる
             document.addEventListener('click', function(event) {
-                if (navbarCollapse.classList.contains('show') && 
-                    !navbarCollapse.contains(event.target) && 
-                    !navbarToggler.contains(event.target)) {
-                    navbarCollapse.classList.remove('show');
+                if (mobileMenu.classList.contains('open') && 
+                    !mobileMenu.contains(event.target) && 
+                    !mobileMenuButton.contains(event.target)) {
+                    mobileMenu.classList.remove('open');
                     document.body.style.overflow = '';
                 }
             });
