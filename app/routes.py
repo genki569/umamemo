@@ -778,7 +778,7 @@ def jockeys():
         current_app.logger.error(f"Error fetching jockeys: {str(e)}")
         traceback.print_exc()
         return render_template(
-<<<<<<< HEAD
+
             'shutuba_list.html',
             dates=dates,
             selected_date=selected_date,
@@ -2041,19 +2041,19 @@ def admin_users():
         # ページネーション
         pagination = query.order_by(User.created_at.desc()).paginate(
             page=page,
-=======
-            'jockeys.html', 
-            jockey_stats=[],
-            total_count=0,
-            current_page=1,
-            total_pages=0,
->>>>>>> 9f2d69a970652f6402a549addb180e07d1af1576
-            per_page=20,
-            affiliation_filter='all',
-            sort_by='wins',
-            search_query=''
+            per_page=per_page,
+            error_out=False
         )
 
+        return render_template(
+            'admin/users.html',
+            users=pagination.items,
+            pagination=pagination
+        )
+    except Exception as e:
+        app.logger.error(f"Error in admin users: {str(e)}")
+        flash('ユーザー一覧の読み込み中にエラーが発生しました', 'error')
+        return redirect(url_for('admin_dashboard'))
 @app.route('/admin/races')
 @login_required
 @admin_required
