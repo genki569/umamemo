@@ -1,370 +1,459 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="jockey-detail-header">
-    <div class="container">
-        <h1 class="display-4">{{ jockey.name }}</h1>
-        <div class="badge bg-light text-primary fs-6 mt-2">{{ stats.affiliation }}所属</div>
+<div class="jockey-page">
+    <div class="jockey-header">
+        <div class="container">
+            <h1>{{ jockey.name }}</h1>
+            <div class="jockey-affiliation">{{ stats.affiliation }}所属</div>
+        </div>
     </div>
-</div>
 
-<div class="container">
-    <div class="jockey-stats-card">
-        <div class="card-body">
-            <h2 class="h4 mb-4">通算成績</h2>
-            <div class="row g-4">
-                <div class="col-md-3">
-                    <div class="stats-item">
+    <div class="container">
+        <div class="stats-cards">
+            <div class="row g-3">
+                <div class="col-6 col-md-3">
+                    <div class="stats-card total">
+                        <div class="stats-icon">
+                            <i class="fas fa-horse-head"></i>
+                        </div>
+                        <div class="stats-number">{{ stats.total_rides }}</div>
                         <div class="stats-label">総騎乗</div>
-                        <div class="stats-value">{{ stats.total_rides }}</div>
                     </div>
                 </div>
-                <div class="col-md-3">
-                    <div class="stats-item">
+                
+                <div class="col-6 col-md-3">
+                    <div class="stats-card wins">
+                        <div class="stats-icon">
+                            <i class="fas fa-trophy"></i>
+                        </div>
+                        <div class="stats-number">{{ stats.wins }}</div>
                         <div class="stats-label">勝利数</div>
-                        <div class="stats-value">{{ stats.wins }}</div>
                     </div>
                 </div>
-                <div class="col-md-3">
-                    <div class="stats-item">
+                
+                <div class="col-6 col-md-3">
+                    <div class="stats-card rate">
+                        <div class="stats-icon">
+                            <i class="fas fa-percentage"></i>
+                        </div>
+                        <div class="stats-number">{{ stats.win_rate }}%</div>
                         <div class="stats-label">勝率</div>
-                        <div class="stats-value">{{ stats.win_rate }}%</div>
                     </div>
                 </div>
-                <div class="col-md-3">
-                    <div class="stats-item">
+                
+                <div class="col-6 col-md-3">
+                    <div class="stats-card place">
+                        <div class="stats-icon">
+                            <i class="fas fa-medal"></i>
+                        </div>
+                        <div class="stats-number">{{ stats.place_rate }}%</div>
                         <div class="stats-label">複勝率</div>
-                        <div class="stats-value">{{ stats.place_rate }}%</div>
                     </div>
                 </div>
             </div>
             
-            <div class="row g-4 mt-3">
-                <div class="col-md-6">
-                    <div class="stats-item">
-                        <div class="stats-label">中央レース数</div>
-                        <div class="stats-value">{{ stats.central_races }}</div>
+            <div class="row g-3 mt-3">
+                <div class="col-6">
+                    <div class="stats-card central">
+                        <div class="stats-number-small">{{ stats.central_races }}</div>
+                        <div class="stats-label-small">中央レース数</div>
                     </div>
                 </div>
-                <div class="col-md-6">
-                    <div class="stats-item">
-                        <div class="stats-label">地方レース数</div>
-                        <div class="stats-value">{{ stats.local_races }}</div>
+                
+                <div class="col-6">
+                    <div class="stats-card local">
+                        <div class="stats-number-small">{{ stats.local_races }}</div>
+                        <div class="stats-label-small">地方レース数</div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-    
-    <div class="recent-rides-container">
-        <h2 class="h4 mb-4">最近の騎乗</h2>
-        <div class="table-responsive">
-            <table class="table recent-rides-table">
-                <thead>
-                    <tr>
-                        <th>日付</th>
-                        <th>レース名</th>
-                        <th>馬名</th>
-                        <th>着順</th>
-                        <th>タイム</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for entry, race, horse in recent_rides %}
+        
+        <div class="recent-rides-section">
+            <h2>最近の騎乗</h2>
+            <div class="table-responsive">
+                <table class="table ride-history-table">
+                    <thead>
                         <tr>
-                            <td>{{ race.formatted_date }}</td>
-                            <td>
-                                <a href="{{ url_for('race_view', race_id=race.id) }}" class="race-link">
-                                    {{ race.name }}
-                                </a>
-                            </td>
-                            <td>
-                                <a href="{{ url_for('horse_detail', horse_id=horse.id) }}" class="horse-link">
-                                    {{ horse.name }}
-                                </a>
-                            </td>
-                            <td>{{ entry.position }}着</td>
-                            <td>{{ entry.time }}</td>
+                            <th>日付</th>
+                            <th>レース名</th>
+                            <th>馬名</th>
+                            <th>着順</th>
+                            <th>タイム</th>
                         </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {% for entry, race, horse in recent_rides %}
+                            <tr class="{% if entry.position == 1 %}first-place{% elif entry.position == 2 %}second-place{% elif entry.position == 3 %}third-place{% endif %}">
+                                <td class="date-cell">{{ race.formatted_date }}</td>
+                                <td class="race-cell">
+                                    <a href="{{ url_for('race_view', race_id=race.id) }}">
+                                        {{ race.name }}
+                                    </a>
+                                </td>
+                                <td class="horse-cell">
+                                    <a href="{{ url_for('horse_detail', horse_id=horse.id) }}">
+                                        {{ horse.name }}
+                                    </a>
+                                </td>
+                                <td class="position-cell">{{ entry.position }}着</td>
+                                <td class="time-cell">{{ entry.time }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
+        
+        <a href="{{ url_for('jockeys') }}" class="back-link">
+            <i class="fas fa-arrow-left"></i> 騎手一覧に戻る
+        </a>
     </div>
-    
-    <a href="{{ url_for('jockeys') }}" class="back-button">
-        <i class="fas fa-arrow-left me-2"></i>騎手一覧に戻る
-    </a>
 </div>
 
 <style>
-/* 騎手詳細ページのスタイル改善 */
-.jockey-detail-header {
+/* 騎手詳細ページのスタイル */
+.jockey-page {
+    margin-bottom: 3rem;
+}
+
+.jockey-header {
     background: linear-gradient(135deg, #4F46E5, #A78BFA);
     padding: 3rem 0;
     color: white;
-    border-radius: 0 0 30px 30px;
     margin-bottom: 2rem;
-    box-shadow: 0 10px 25px rgba(79, 70, 229, 0.2);
     position: relative;
     overflow: hidden;
 }
 
-.jockey-detail-header::before {
+.jockey-header::before {
     content: '';
     position: absolute;
-    top: -50px;
-    right: -50px;
-    width: 200px;
-    height: 200px;
+    top: -100px;
+    right: -100px;
+    width: 300px;
+    height: 300px;
     border-radius: 50%;
     background: rgba(255, 255, 255, 0.1);
-    z-index: 1;
 }
 
-.jockey-detail-header::after {
+.jockey-header::after {
     content: '';
     position: absolute;
-    bottom: -80px;
-    left: -80px;
-    width: 250px;
-    height: 250px;
+    bottom: -100px;
+    left: -100px;
+    width: 300px;
+    height: 300px;
     border-radius: 50%;
     background: rgba(255, 255, 255, 0.05);
-    z-index: 1;
 }
 
-.jockey-detail-header h1 {
-    font-size: 3rem;
+.jockey-header h1 {
+    font-size: 2.5rem;
     font-weight: 700;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
     margin-bottom: 0.5rem;
     position: relative;
-    z-index: 2;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    z-index: 10;
 }
 
-.jockey-detail-header .badge {
-    font-size: 1rem;
+.jockey-affiliation {
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.2);
     padding: 0.5rem 1rem;
     border-radius: 50px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    position: relative;
-    z-index: 2;
-}
-
-.jockey-stats-card {
-    background: white;
-    border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-    padding: 2rem;
-    margin-bottom: 2.5rem;
-    transform: translateY(-20px);
+    font-weight: 500;
     position: relative;
     z-index: 10;
-    border: none;
 }
 
-.jockey-stats-card h2 {
-    position: relative;
-    display: inline-block;
+.stats-cards {
     margin-bottom: 2rem;
-    font-weight: 700;
-    color: #333;
+    position: relative;
+    z-index: 20;
+    margin-top: -1.5rem;
 }
 
-.jockey-stats-card h2::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    bottom: -10px;
-    width: 60px;
-    height: 4px;
-    background: linear-gradient(to right, #4F46E5, #A78BFA);
-    border-radius: 2px;
-}
-
-.stats-item {
-    background: #f8f9fa;
+.stats-card {
+    background: white;
     border-radius: 15px;
     padding: 1.5rem;
     text-align: center;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
     height: 100%;
     transition: all 0.3s ease;
-    border: 1px solid rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0,0,0,0.03);
+    position: relative;
+    overflow: hidden;
 }
 
-.stats-item:hover {
+.stats-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 5px;
+    background: linear-gradient(to right, #4F46E5, #A78BFA);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.stats-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-    background: #fff;
-    border-color: rgba(79, 70, 229, 0.2);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.stats-card:hover::before {
+    opacity: 1;
+}
+
+.stats-icon {
+    font-size: 1.5rem;
+    color: #4F46E5;
+    margin-bottom: 0.5rem;
+}
+
+.stats-number {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 0.25rem;
+}
+
+.stats-number-small {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 0.25rem;
 }
 
 .stats-label {
-    color: #6c757d;
-    font-size: 1rem;
+    font-size: 0.9rem;
     font-weight: 500;
-    margin-bottom: 0.75rem;
+    color: #666;
 }
 
-.stats-value {
-    font-size: 2.2rem;
-    font-weight: 700;
-    color: #4F46E5;
+.stats-label-small {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #666;
 }
 
-.recent-rides-container {
+.stats-card.total {
+    border-left: 4px solid #4F46E5;
+}
+
+.stats-card.wins {
+    border-left: 4px solid #F59E0B;
+}
+
+.stats-card.rate {
+    border-left: 4px solid #10B981;
+}
+
+.stats-card.place {
+    border-left: 4px solid #3B82F6;
+}
+
+.stats-card.central, .stats-card.local {
+    padding: 1rem;
+    background: #f8f9fa;
+}
+
+.recent-rides-section {
     background: white;
     border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
     padding: 2rem;
-    margin-bottom: 2.5rem;
-    position: relative;
-    border: none;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    margin-bottom: 2rem;
 }
 
-.recent-rides-container h2 {
-    position: relative;
-    display: inline-block;
-    margin-bottom: 2rem;
+.recent-rides-section h2 {
+    font-size: 1.5rem;
     font-weight: 700;
     color: #333;
+    margin-bottom: 1.5rem;
+    position: relative;
+    display: inline-block;
 }
 
-.recent-rides-container h2::after {
+.recent-rides-section h2::after {
     content: '';
     position: absolute;
-    left: 0;
     bottom: -10px;
-    width: 60px;
+    left: 0;
+    width: 50px;
     height: 4px;
     background: linear-gradient(to right, #4F46E5, #A78BFA);
     border-radius: 2px;
 }
 
-.recent-rides-table {
-    border-collapse: separate;
-    border-spacing: 0;
+.ride-history-table {
     width: 100%;
     margin-bottom: 0;
 }
 
-.recent-rides-table th {
+.ride-history-table thead {
+    background: #f8f9fa;
+}
+
+.ride-history-table th {
     font-weight: 600;
     color: #495057;
-    border-bottom: 2px solid #e9ecef;
-    padding: 1rem 0.75rem;
+    padding: 1rem;
     text-transform: uppercase;
-    font-size: 0.85rem;
-    letter-spacing: 0.5px;
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+    border-bottom: 2px solid #e9ecef;
 }
 
-.recent-rides-table td {
-    padding: 1.2rem 0.75rem;
+.ride-history-table td {
+    padding: 1rem;
     vertical-align: middle;
     border-bottom: 1px solid #f1f1f1;
-    font-size: 0.95rem;
 }
 
-.recent-rides-table tr:last-child td {
+.ride-history-table tr:last-child td {
     border-bottom: none;
 }
 
-.recent-rides-table tr:hover {
+.ride-history-table tr:hover {
     background: rgba(79, 70, 229, 0.03);
 }
 
-.race-link, .horse-link {
-    color: #4F46E5;
-    text-decoration: none;
-    font-weight: 500;
-    transition: all 0.2s ease;
+.first-place {
+    background: rgba(255, 236, 179, 0.2);
 }
 
-.race-link:hover, .horse-link:hover {
+.second-place {
+    background: rgba(224, 224, 224, 0.2);
+}
+
+.third-place {
+    background: rgba(205, 127, 50, 0.05);
+}
+
+.date-cell {
+    font-size: 0.9rem;
+    color: #666;
+    white-space: nowrap;
+}
+
+.race-cell a, .horse-cell a {
+    color: #4F46E5;
+    text-decoration: none;
+    transition: color 0.2s ease;
+    font-weight: 500;
+}
+
+.race-cell a:hover, .horse-cell a:hover {
     color: #A78BFA;
     text-decoration: underline;
 }
 
-.back-button {
+.position-cell {
+    font-weight: 600;
+    text-align: center;
+}
+
+.time-cell {
+    font-family: monospace;
+    font-weight: 600;
+    color: #333;
+    text-align: center;
+}
+
+.back-link {
     display: inline-flex;
     align-items: center;
-    padding: 0.8rem 1.5rem;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
     background: #f8f9fa;
     color: #4F46E5;
-    border-radius: 12px;
+    border-radius: 10px;
     text-decoration: none;
     font-weight: 500;
     transition: all 0.3s ease;
-    border: 1px solid rgba(0, 0, 0, 0.05);
     margin-bottom: 2rem;
 }
 
-.back-button:hover {
+.back-link:hover {
     background: #4F46E5;
     color: white;
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 5px 15px rgba(79, 70, 229, 0.2);
 }
 
 /* モバイル対応 */
 @media (max-width: 768px) {
-    .jockey-detail-header {
+    .jockey-header {
         padding: 2rem 0;
-        border-radius: 0 0 20px 20px;
     }
     
-    .jockey-detail-header h1 {
-        font-size: 2.2rem;
+    .jockey-header h1 {
+        font-size: 2rem;
     }
     
-    .jockey-stats-card, .recent-rides-container {
+    .stats-card {
+        padding: 1rem;
+    }
+    
+    .stats-number {
+        font-size: 1.5rem;
+    }
+    
+    .stats-number-small {
+        font-size: 1.25rem;
+    }
+    
+    .stats-icon {
+        font-size: 1.25rem;
+    }
+    
+    .recent-rides-section {
         padding: 1.5rem;
         border-radius: 15px;
     }
     
-    .stats-item {
-        padding: 1rem;
+    .recent-rides-section h2 {
+        font-size: 1.25rem;
     }
     
-    .stats-value {
-        font-size: 1.8rem;
-    }
-    
-    /* テーブルのレスポンシブ対応を強化 */
-    .recent-rides-table th, 
-    .recent-rides-table td {
+    .ride-history-table th,
+    .ride-history-table td {
         padding: 0.75rem 0.5rem;
         font-size: 0.85rem;
     }
     
     /* スマホサイズで日付と着順を小さく */
-    .recent-rides-table th:nth-child(1),
-    .recent-rides-table td:nth-child(1),
-    .recent-rides-table th:nth-child(4),
-    .recent-rides-table td:nth-child(4) {
-        white-space: nowrap;
-        width: 1%;
+    .date-cell,
+    .position-cell,
+    .time-cell {
+        font-size: 0.8rem;
     }
     
-    /* 馬名・レース名を優先的に表示 */
-    .recent-rides-table th:nth-child(2),
-    .recent-rides-table td:nth-child(2),
-    .recent-rides-table th:nth-child(3),
-    .recent-rides-table td:nth-child(3) {
-        max-width: 40%;
+    /* レース名と馬名のセルを調整 */
+    .race-cell,
+    .horse-cell {
+        max-width: 120px;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
     }
+    
+    .back-link {
+        width: 100%;
+        justify-content: center;
+    }
 }
 
-/* アニメーション効果 */
+/* アニメーション */
 @keyframes fadeInUp {
     from {
         opacity: 0;
-        transform: translateY(20px);
+        transform: translateY(30px);
     }
     to {
         opacity: 1;
@@ -372,19 +461,18 @@
     }
 }
 
-.jockey-stats-card {
-    animation: fadeInUp 0.8s ease both;
+.stats-cards {
+    animation: fadeInUp 0.8s ease forwards;
+}
+
+.recent-rides-section {
+    animation: fadeInUp 0.8s ease forwards;
     animation-delay: 0.2s;
 }
 
-.recent-rides-container {
-    animation: fadeInUp 0.8s ease both;
+.back-link {
+    animation: fadeInUp 0.8s ease forwards;
     animation-delay: 0.4s;
-}
-
-.back-button {
-    animation: fadeInUp 0.8s ease both;
-    animation-delay: 0.6s;
 }
 </style>
 {% endblock %} 
