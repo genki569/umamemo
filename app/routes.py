@@ -777,221 +777,8 @@ def jockeys():
     except Exception as e:
         current_app.logger.error(f"Error fetching jockeys: {str(e)}")
         traceback.print_exc()
-        return render_template('jockeys.html', jockey_stats=[], total_pages=0, current_page=1)
-
-@app.route('/jockey/<int:jockey_id>')
-def jockey_detail(jockey_id):
-    try:
-        jockey = Jockey.query.get_or_404(jockey_id)
-        
-        # 騎手の全レース履歴取得
-        entries = Entry.query.filter_by(jockey_id=jockey_id).all()
-        total_rides = len(entries)
-        wins = sum(1 for e in entries if e.position == 1)
-        seconds = sum(1 for e in entries if e.position == 2)
-        thirds = sum(1 for e in entries if e.position == 3)
-        
-        # 央競馬の開催場所リスト
-        central_venues = ['東京', '中山', '阪神', '京都', '中京', '小倉', '福島', '新潟', '札幌']
-        
-        # レース情報を取得して所属を判
-        races = db.session.query(Race).join(Entry).filter(Entry.jockey_id == jockey_id).all()
-        
-        # venueがNoneの場合のエラー処理を追加
-        central_races = sum(1 for r in races if r.venue and any(venue in r.venue for venue in central_venues))
-        local_races = sum(1 for r in races if r.venue and not any(venue in r.venue for venue in central_venues))
-        
-        # 主な所属を判断（レース数の多い方）
-        affiliation = "中央" if central_races >= local_races else "地方"
-        
-        stats = {
-            'total_rides': total_rides,
-            'wins': wins,
-            'seconds': seconds,
-            'thirds': thirds,
-            'others': total_rides - (wins + seconds + thirds),
-            'win_rate': round((wins / total_rides * 100), 1) if total_rides > 0 else 0,
-            'place_rate': round(((wins + seconds + thirds) / total_rides * 100), 1) if total_rides > 0 else 0,
-            'central_races': central_races,
-            'local_races': local_races,
-            'affiliation': affiliation
-        }
-        
-        # 最近の騎乗成績を取得（最新10件）
-        recent_rides = db.session.query(
-            Entry, Race, Horse
-        ).join(
-            Race, Entry.race_id == Race.id
-        ).join(
-            Horse, Entry.horse_id == Horse.id
-        ).filter(
-            Entry.jockey_id == jockey_id
-        ).order_by(
-            Race.date.desc()
-        ).limit(10).all()
-
-        # 日のフォーマット
-        for entry, race, horse in recent_rides:
-            if isinstance(race.date, str):
-                race.formatted_date = datetime.strptime(race.date, '%Y-%m-%d').strftime('%Y/%m/%d')
-            else:
-                race.formatted_date = race.date.strftime('%Y/%m/%d')
-
-        return render_template('jockey_detail.html', 
-                             jockey=jockey,
-                             stats=stats,
-                             recent_rides=recent_rides)
-
-    except Exception as e:
-        current_app.logger.error(f"Error fetching jockey details: {str(e)}")
-        traceback.print_exc()
-        flash('騎手情報の取得中にエラーが発まし。', 'error')
-        return redirect(url_for('jockeys'))
-
-def create_entry(race, entry_data):
-    try:
-        # デバ報追加
-        print(f"Creating entry for race:")
-        print(f"Race ID: {race.id}")
-        print(f"Race Name: {race.name}")
-        print(f"Race Date: {race.date}")
-        print(f"Race Venue: {race.venue}")
-        print(f"Entry Data: {entry_data}")
-        
-        # 既存のエトリーをチェク
-        existing_entries = (Entry.query
-                          .join(Race)
-                          .filter(
-                              Race.date == race.date,
-                              Race.venue == race.venue,
-                              Race.start_time == race.start_time,
-                              Race.name == race.name
-                          )
-                          .all())
-        
-        if existing_entries:
-            print(f"Warning: Found existing entries for this race combination")
-            return None
-        
-        # 着順を値に変換（失格、中止などの場合はNoneを設定）
-        try:
-            result = int(entry_data['順'])
-        except (ValueError, TypeError):
-            result = None
-        
-        # 馬体と増減を分離
-        weight_str = entry_data.get('馬体重', '')
-        if weight_str and '(' in weight_str:
-            horse_weight = int(weight_str.split('(')[0])
-            weight_change = int(weight_str.split('(')[1].rstrip(')'))
-        else:
-            horse_weight = None
-            weight_change = None
-        
-        # ッズを数
-        try:
-            odds = float(entry_data.get('単勝', 0))
-        except (ValueError, TypeError):
-            odds = None
-        
-        # 上りを数値に変換
-        try:
-            last3f = float(entry_data.get('上り', 0))
-        except (ValueError, TypeError):
-            last3f = None
-            
-        # 騎情報取得
-        jockey = get_or_create_jockey(entry_data) if '' in entry_data else None
-        jockey_id = jockey.id if jockey else None
-        
-        # 馬情報を得
-        horse = get_or_create_horse(entry_data)
-        
-        horse_number = int(entry_data.get('番', 0))
-        entry_dict = {
-            'id': Entry.generate_entry_id(race.id, horse_number),  # 新しいID生成
-            'race_id': race.id,
-            'horse_id': horse.id,
-            'horse_number': horse_number,
-            'jockey_id': jockey.id if jockey else None,
-            'number': int(entry_data.get('馬番', 0)),
-            'frame': int(entry_data.get('枠番', 0)),
-            'weight': float(entry_data.get('斤量', 0)),
-            'odds': odds,
-            'popularity': int(entry_data.get('人気', 0)) if entry_data.get('人気') else None,  # 余分な閉じカッを削除
-            'result': result,
-            'time': entry_data.get('タイム', ''),
-            'margin': entry_data.get('着差', ''),
-            'passing': entry_data.get('通過', ''),
-            'last3f': last3f,
-            'horse_weight': horse_weight,
-            'weight_change': weight_change
-        }
-        
-        entry = Entry(**entry_dict)
-        db.session.add(entry)
-        return entry
-    except Exception as e:
-        current_app.logger.warning(f"ントリーの処理中にエラーが発生しました: {str(e)}")
-        current_app.logger.warning(f"問題のデータ: {entry_data}")
-        return None
-
-@app.route('/shutuba')
-def shutuba_list():
-    try:
-        # 日付パラメータの取得（デフォルトは今日）
-        date_str = request.args.get('date')
-        
-        try:
-            if date_str:
-                selected_date = datetime.strptime(date_str, '%Y%m%d').date()
-            else:
-                selected_date = datetime.now().date()
-        except ValueError:
-            selected_date = datetime.now().date()
-        
-        # 利用可能な日付を取得（出馬表があるレースのみ）
-        available_dates = db.session.query(
-            func.date(Race.date).label('race_date')
-        ).join(ShutubaEntry).distinct().order_by(
-            func.date(Race.date)
-        ).all()
-        
-        # 日付一覧の作成
-        dates = []
-        for date_row in available_dates:
-            date = date_row.race_date
-            dates.append({
-                'value': date.strftime('%Y%m%d'),
-                'month': date.month,
-                'day': date.day,
-                'weekday': date.strftime('%a')
-            })
-        
-        # 選択された日付の出馬表を取得
-        races = Race.query.join(ShutubaEntry).filter(
-            func.date(Race.date) == selected_date
-        ).distinct().all()
-        
-        # 会場ごとにグループ化
-        venue_races = {}
-        for race in races:
-            venue_code = get_venue_code(race.venue)
-            if venue_code:
-                if venue_code not in venue_races:
-                    venue_races[venue_code] = {
-                        'venue_name': VENUE_NAMES.get(venue_code, race.venue),
-                        'weather': getattr(race, 'weather', '不明'),
-                        'track_condition': getattr(race, 'track_condition', '不明'),
-                        'races': []
-                    }
-                venue_races[venue_code]['races'].append(race)
-        
-        # レースを各会場内でソート
-        for venue_data in venue_races.values():
-            venue_data['races'].sort(key=lambda x: x.race_number)
-        
         return render_template(
+<<<<<<< HEAD
             'shutuba_list.html',
             dates=dates,
             selected_date=selected_date,
@@ -2254,18 +2041,18 @@ def admin_users():
         # ページネーション
         pagination = query.order_by(User.created_at.desc()).paginate(
             page=page,
+=======
+            'jockeys.html', 
+            jockey_stats=[],
+            total_count=0,
+            current_page=1,
+            total_pages=0,
+>>>>>>> 9f2d69a970652f6402a549addb180e07d1af1576
             per_page=20,
-            error_out=False
+            affiliation_filter='all',
+            sort_by='wins',
+            search_query=''
         )
-        
-        return render_template('admin/users.html',
-                           users=pagination.items,
-                           pagination=pagination)
-                           
-    except Exception as e:
-        app.logger.error(f"Error in admin users: {str(e)}")
-        flash('ユーザー一覧の読み込み中にエラーが発生しました', 'error')
-        return redirect(url_for('admin_dashboard'))
 
 @app.route('/admin/races')
 @login_required
