@@ -96,7 +96,7 @@
                     {% if race_memos %}
                         <div class="list-group list-group-flush">
                             {% for memo in race_memos %}
-                                <a href="{{ url_for('race', race_id=memo.race_id) }}" class="list-group-item list-group-item-action">
+                                <a href="{{ url_for('race_view', race_id=memo.race_id) }}" class="list-group-item list-group-item-action">
                                     <div class="d-flex w-100 justify-content-between">
                                         <h6 class="mb-1">{{ memo.race.name }}</h6>
                                         <small>{{ memo.created_at.strftime('%Y-%m-%d') }}</small>
