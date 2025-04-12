@@ -113,6 +113,11 @@
 </div>
 
 <script>
+/**
+ * 騎手一覧ページのコントローラースクリプト
+ * 機能：フィルタリング、ソート、検索機能を提供
+ */
+
 // グローバル変数
 let allJockeys = [];
 let currentFilter = 'all';
@@ -250,19 +255,28 @@ function updateJockeyTable(tableBody, jockeys) {
 </script>
 
 <style>
-/* 騎手一覧ページのスタイル */
+/**
+ * 騎手一覧ページのスタイル定義
+ * モダンでおしゃれなデザインを実現するためのスタイル
+ */
+
+/* ベースとなるページスタイル */
 .jockeys-page {
-    background-color: #f5f7fb;
+    background-color: #f8fafc;
+    background-image: linear-gradient(to bottom, #f8fafc, #f1f5f9);
     min-height: 100vh;
     padding-bottom: 3rem;
 }
 
+/* ヘッダー部分のスタイリング */
 .jockeys-header {
-    background: linear-gradient(120deg, #4F46E5, #7C3AED);
+    background: linear-gradient(135deg, #4338ca, #6366f1, #8b5cf6);
     color: white;
-    padding: 3rem 0 3.5rem;
+    padding: 3.5rem 0 4rem;
     position: relative;
     margin-bottom: 3rem;
+    box-shadow: 0 4px 20px rgba(99, 102, 241, 0.25);
+    overflow: hidden;
 }
 
 .jockeys-header::before {
@@ -272,110 +286,165 @@ function updateJockeyTable(tableBody, jockeys) {
     right: 0;
     bottom: 0;
     left: 0;
-    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.08'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    z-index: 0;
+}
+
+.jockeys-header::after {
+    content: '';
+    position: absolute;
+    top: -100px;
+    right: -100px;
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
     z-index: 0;
 }
 
 .jockeys-header h1 {
-    font-size: 2.5rem;
-    font-weight: 700;
-    margin-bottom: 0.5rem;
+    font-size: 2.8rem;
+    font-weight: 800;
+    margin-bottom: 0.8rem;
     position: relative;
     z-index: 1;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    letter-spacing: -0.02em;
+    animation: fadeInUp 0.8s ease-out;
 }
 
 .jockeys-header p {
-    font-size: 1.1rem;
-    opacity: 0.9;
+    font-size: 1.2rem;
+    opacity: 0.95;
     position: relative;
     z-index: 1;
+    animation: fadeInUp 0.8s ease-out 0.2s both;
 }
 
+/* 検索コンテナのスタイリング */
 .search-container {
     position: relative;
-    margin-top: -2.5rem;
-    margin-bottom: 2rem;
+    margin-top: -2.8rem;
+    margin-bottom: 2.5rem;
     z-index: 10;
+    animation: fadeInUp 0.8s ease-out 0.4s both;
 }
 
 .search-box {
-    max-width: 500px;
+    max-width: 550px;
     margin: 0 auto;
     background: white;
-    border-radius: 50px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    border-radius: 60px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+.search-box:hover, .search-box:focus-within {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
 }
 
 .search-box .input-group-text {
     background-color: transparent;
     border: none;
-    color: #6c757d;
-    padding-left: 1.5rem;
+    color: #6366f1;
+    padding-left: 1.8rem;
+    font-size: 1.1rem;
 }
 
 .search-box .search-input {
     border: none;
-    padding: 1.2rem 1rem 1.2rem 0;
-    border-radius: 50px;
+    padding: 1.4rem 1.2rem 1.4rem 0.5rem;
+    border-radius: 60px;
+    font-size: 1.05rem;
 }
 
 .search-box .search-input:focus {
     box-shadow: none;
 }
 
+.search-box .search-input::placeholder {
+    color: #a1a1aa;
+    font-weight: 400;
+}
+
+/* フィルターセクションのスタイル */
 .filter-section {
     background: white;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    margin-bottom: 2rem;
-    padding: 1.5rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+    margin-bottom: 2.5rem;
+    padding: 1.8rem;
+    border: 1px solid rgba(226, 232, 240, 0.7);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    animation: fadeInUp 0.8s ease-out 0.6s both;
+}
+
+.filter-section:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
 }
 
 .filter-group {
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.8rem;
 }
 
 .filter-label {
-    font-size: 0.85rem;
-    color: #6c757d;
-    font-weight: 500;
-    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    color: #4b5563;
+    font-weight: 600;
+    margin-bottom: 0.8rem;
+    letter-spacing: 0.02em;
 }
 
 .btn-filter {
-    background-color: #f8f9fa;
-    border-color: #e9ecef;
-    color: #495057;
-    border-radius: 8px;
+    background-color: #f9fafb;
+    border-color: #e5e7eb;
+    color: #4b5563;
+    border-radius: 10px;
     font-weight: 500;
-    padding: 0.6rem 0;
-    transition: all 0.2s ease;
+    padding: 0.7rem 0;
+    transition: all 0.25s ease;
+    font-size: 0.95rem;
+    letter-spacing: 0.01em;
 }
 
 .btn-filter:hover {
-    background-color: #e9ecef;
-    border-color: #dee2e6;
-    color: #212529;
+    background-color: #f3f4f6;
+    border-color: #d1d5db;
+    color: #374151;
 }
 
 .btn-filter.active {
-    background-color: #4F46E5;
-    border-color: #4F46E5;
+    background: linear-gradient(to right, #4f46e5, #6366f1);
+    border-color: transparent;
     color: white;
-    box-shadow: 0 2px 5px rgba(79, 70, 229, 0.25);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
+    font-weight: 600;
 }
 
 .filter-group .btn-group {
-    border-radius: 8px;
+    border-radius: 10px;
     overflow: hidden;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
 }
 
+/* テーブルコンテナのスタイル */
 .table-container {
     background: white;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    margin-bottom: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+    margin-bottom: 2.5rem;
     overflow: hidden;
+    border: 1px solid rgba(226, 232, 240, 0.7);
+    animation: fadeInUp 0.8s ease-out 0.8s both;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.table-container:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
 }
 
 .jockeys-table {
@@ -383,23 +452,32 @@ function updateJockeyTable(tableBody, jockeys) {
 }
 
 .jockeys-table thead th {
-    background-color: #f8f9fa;
-    color: #495057;
+    background-color: #f8fafc;
+    color: #374151;
     font-weight: 600;
-    font-size: 0.85rem;
-    padding: 1rem 0.75rem;
+    font-size: 0.9rem;
+    padding: 1.2rem 0.75rem;
     border-top: none;
-    border-bottom: 2px solid #e9ecef;
+    border-bottom: 2px solid #e2e8f0;
+    letter-spacing: 0.02em;
 }
 
 .jockeys-table tbody td {
-    padding: 1rem 0.75rem;
+    padding: 1.2rem 0.75rem;
     vertical-align: middle;
-    border-bottom: 1px solid #f1f1f1;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 0.95rem;
+    transition: background-color 0.2s ease;
+}
+
+.jockeys-table tbody tr {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .jockeys-table tbody tr:hover {
-    background-color: rgba(79, 70, 229, 0.03);
+    background-color: rgba(99, 102, 241, 0.04);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
 }
 
 .jockeys-table tbody tr:last-child td {
@@ -407,51 +485,83 @@ function updateJockeyTable(tableBody, jockeys) {
 }
 
 .jockey-name {
-    font-weight: 500;
-    color: #4F46E5;
+    font-weight: 600;
+    color: #4f46e5;
     text-decoration: none;
-    transition: color 0.2s ease;
+    transition: all 0.2s ease;
+    font-size: 1rem;
+    display: inline-block;
 }
 
 .jockey-name:hover {
-    color: #7C3AED;
-    text-decoration: underline;
+    color: #6366f1;
+    text-decoration: none;
+    transform: translateX(3px);
+}
+
+.jockey-name::after {
+    content: '';
+    display: block;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(to right, #4f46e5, #6366f1);
+    transition: width 0.3s ease;
+}
+
+.jockey-name:hover::after {
+    width: 100%;
 }
 
 .affiliation-badge {
     display: inline-block;
-    padding: 0.25rem 0.75rem;
+    padding: 0.3rem 0.9rem;
     border-radius: 50px;
     font-size: 0.85rem;
-    font-weight: 500;
-}
-
-.affiliation-central {
-    background-color: rgba(79, 70, 229, 0.1);
-    color: #4F46E5;
-}
-
-.affiliation-local {
-    background-color: rgba(124, 58, 237, 0.1);
-    color: #7C3AED;
-}
-
-.btn-detail {
-    padding: 0.4rem 1rem;
-    background-color: #4F46E5;
-    color: white;
-    border-radius: 6px;
-    border: none;
-    font-size: 0.85rem;
-    font-weight: 500;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
     transition: all 0.2s ease;
 }
 
-.btn-detail:hover {
-    background-color: #4338CA;
-    color: white;
+.affiliation-badge:hover {
     transform: translateY(-2px);
-    box-shadow: 0 3px 6px rgba(79, 70, 229, 0.2);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+}
+
+.affiliation-central {
+    background: linear-gradient(135deg, rgba(79, 70, 229, 0.1), rgba(99, 102, 241, 0.15));
+    color: #4f46e5;
+    border: 1px solid rgba(79, 70, 229, 0.2);
+}
+
+.affiliation-local {
+    background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(139, 92, 246, 0.15));
+    color: #7c3aed;
+    border: 1px solid rgba(124, 58, 237, 0.2);
+}
+
+.btn-detail {
+    padding: 0.45rem 1.2rem;
+    background: linear-gradient(to right, #4f46e5, #6366f1);
+    color: white;
+    border-radius: 8px;
+    border: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.25s ease;
+    box-shadow: 0 2px 5px rgba(99, 102, 241, 0.25);
+    letter-spacing: 0.02em;
+}
+
+.btn-detail:hover {
+    background: linear-gradient(to right, #4338ca, #4f46e5);
+    color: white;
+    transform: translateY(-3px);
+    box-shadow: 0 5px 10px rgba(79, 70, 229, 0.3);
+}
+
+.btn-detail:active {
+    transform: translateY(-1px);
 }
 
 .no-results-message {
@@ -460,41 +570,73 @@ function updateJockeyTable(tableBody, jockeys) {
     align-items: center;
     justify-content: center;
     background: white;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    padding: 3rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+    padding: 4rem 2rem;
     text-align: center;
-    color: #6c757d;
+    color: #6b7280;
+    border: 1px solid rgba(226, 232, 240, 0.7);
+    animation: fadeIn 0.5s ease;
 }
 
 .no-results-message i {
-    font-size: 3rem;
-    margin-bottom: 1rem;
+    font-size: 3.5rem;
+    margin-bottom: 1.5rem;
     color: #d1d5db;
+    opacity: 0.8;
 }
 
 .no-results-message p {
-    font-size: 1.1rem;
+    font-size: 1.15rem;
     font-weight: 500;
     margin-bottom: 0;
+}
+
+/* アニメーション定義 */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }
 
 /* レスポンシブ対応 */
 @media (max-width: 768px) {
     .jockeys-header {
-        padding: 2rem 0 2.5rem;
+        padding: 2.5rem 0 3rem;
     }
     
     .jockeys-header h1 {
-        font-size: 2rem;
+        font-size: 2.2rem;
+    }
+    
+    .jockeys-header p {
+        font-size: 1.05rem;
     }
     
     .filter-section {
-        padding: 1rem;
+        padding: 1.2rem;
     }
     
     .search-box {
         max-width: 100%;
+    }
+    
+    .search-box .search-input {
+        padding: 1.2rem 1rem 1.2rem 0.5rem;
     }
     
     .jockeys-table {
@@ -503,13 +645,82 @@ function updateJockeyTable(tableBody, jockeys) {
     
     .jockeys-table th, 
     .jockeys-table td {
-        padding: 0.75rem 0.5rem;
+        padding: 0.9rem 0.5rem;
         font-size: 0.85rem;
     }
     
     .btn-detail {
-        padding: 0.3rem 0.75rem;
+        padding: 0.35rem 0.9rem;
+        font-size: 0.85rem;
+    }
+    
+    .affiliation-badge {
+        padding: 0.25rem 0.7rem;
         font-size: 0.8rem;
+    }
+}
+
+/* ダークモード対応 */
+@media (prefers-color-scheme: dark) {
+    .jockeys-page {
+        background-color: #1a1b26;
+        background-image: linear-gradient(to bottom, #1a1b26, #1e293b);
+    }
+    
+    .search-box,
+    .filter-section,
+    .table-container,
+    .no-results-message {
+        background-color: #1e293b;
+        border-color: rgba(51, 65, 85, 0.5);
+    }
+    
+    .jockeys-table thead th {
+        background-color: #1e1e2d;
+        color: #e2e8f0;
+        border-bottom-color: #334155;
+    }
+    
+    .jockeys-table tbody td {
+        border-bottom-color: #334155;
+        color: #e2e8f0;
+    }
+    
+    .jockeys-table tbody tr:hover {
+        background-color: rgba(99, 102, 241, 0.1);
+    }
+    
+    .filter-label {
+        color: #e2e8f0;
+    }
+    
+    .btn-filter {
+        background-color: #1e1e2d;
+        border-color: #334155;
+        color: #e2e8f0;
+    }
+    
+    .btn-filter:hover {
+        background-color: #252538;
+        border-color: #475569;
+        color: #f8fafc;
+    }
+    
+    .search-box .search-input {
+        color: #e2e8f0;
+        background-color: #1e293b;
+    }
+    
+    .search-box .search-input::placeholder {
+        color: #64748b;
+    }
+    
+    .no-results-message {
+        color: #94a3b8;
+    }
+    
+    .no-results-message i {
+        color: #475569;
     }
 }
 </style>
