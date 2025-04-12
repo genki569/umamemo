@@ -2,13 +2,13 @@
 
 {% block content %}
 <div class="container mt-4">
-    <h2>{{ race.name }} の回顧一覧</h2>
+    <h2>{{ race_view.name }} の回顧一覧</h2>
     
     <div class="mb-3">
-        <a href="{{ url_for('race', race_id=race.id) }}" class="btn btn-secondary">
+        <a href="{{ url_for('race_view', race_id=race_view.id) }}" class="btn btn-secondary">
             レース詳細に戻る
         </a>
-        <a href="{{ url_for('race_review', race_id=race.id) }}" class="btn btn-primary">
+        <a href="{{ url_for('race_review', race_id=race_view.id) }}" class="btn btn-primary">
             新しい回顧を書く
         </a>
     </div>
@@ -58,7 +58,7 @@
     {% else %}
         <div class="alert alert-info">
             まだ回顧ノートが投稿されていません。
-            <a href="{{ url_for('race_review', race_id=race.id) }}" class="btn btn-primary mt-2">
+            <a href="{{ url_for('race_review', race_id=race_view.id) }}" class="btn btn-primary mt-2">
                 <i class="fas fa-edit"></i> 最初の回顧を書く
             </a>
         </div>
