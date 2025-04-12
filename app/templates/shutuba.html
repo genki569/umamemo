@@ -109,40 +109,91 @@
                             {{ entry.horse.name }}の戦績
                             <span class="recent-races">（最近5走）</span>
                         </div>
-                        <table class="table table-sm">
-                            <thead>
-                                <tr>
-                                    <th>開催日</th>
-                                    <th>開催</th>
-                                    <th>レース名</th>
-                                    <th>着順</th>
-                                    <th>人気</th>
-                                    <th>騎手</th>
-                                    <th>斤量</th>
-                                    <th>距離</th>
-                                    <th>馬場</th>
-                                    <th>タイム</th>
-                                    <th>着差</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for result in entry.recent_results %}
-                                <tr>
-                                    <td>{{ result.date.strftime('%y/%m/%d') }}</td>
-                                    <td>{{ result.venue }}</td>
-                                    <td>{{ result.name }}</td>
-                                    <td>{{ result.position }}着</td>
-                                    <td>{{ result.popularity if result.popularity else '-' }}</td>
-                                    <td>{{ result.jockey_name }}</td>
-                                    <td>{{ result.weight_carry }}</td>
-                                    <td>{{ result.distance }}m</td>
-                                    <td>{{ result.track_condition }}</td>
-                                    <td>{{ result.time }}</td>
-                                    <td>{{ result.margin }}</td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+                        
+                        <!-- PCでの表示用テーブル（モバイルでは非表示） -->
+                        <div class="d-none d-md-block">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>開催日</th>
+                                        <th>開催</th>
+                                        <th>レース名</th>
+                                        <th>着順</th>
+                                        <th>人気</th>
+                                        <th>騎手</th>
+                                        <th>斤量</th>
+                                        <th>距離</th>
+                                        <th>馬場</th>
+                                        <th>タイム</th>
+                                        <th>着差</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for result in entry.recent_results %}
+                                    <tr>
+                                        <td>{{ result.date.strftime('%y/%m/%d') }}</td>
+                                        <td>{{ result.venue }}</td>
+                                        <td>{{ result.name }}</td>
+                                        <td>{{ result.position }}着</td>
+                                        <td>{{ result.popularity if result.popularity else '-' }}</td>
+                                        <td>{{ result.jockey_name }}</td>
+                                        <td>{{ result.weight_carry }}</td>
+                                        <td>{{ result.distance }}m</td>
+                                        <td>{{ result.track_condition }}</td>
+                                        <td>{{ result.time }}</td>
+                                        <td>{{ result.margin }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <!-- モバイル表示用カード（PCでは非表示） -->
+                        <div class="d-md-none">
+                            {% for result in entry.recent_results %}
+                            <div class="mobile-race-card mb-3 {% if result.position == 1 %}position-1{% elif result.position == 2 %}position-2{% elif result.position == 3 %}position-3{% endif %}">
+                                <div class="race-card-header">
+                                    <div class="race-date">{{ result.date.strftime('%y/%m/%d') }}</div>
+                                    <div class="race-venue">{{ result.venue }}</div>
+                                </div>
+                                <div class="race-card-name">{{ result.name }}</div>
+                                <div class="race-card-results">
+                                    <div class="race-card-result-item">
+                                        <span class="result-label">着順</span>
+                                        <span class="result-value">{{ result.position }}着</span>
+                                    </div>
+                                    <div class="race-card-result-item">
+                                        <span class="result-label">人気</span>
+                                        <span class="result-value">{{ result.popularity if result.popularity else '-' }}</span>
+                                    </div>
+                                    <div class="race-card-result-item">
+                                        <span class="result-label">騎手</span>
+                                        <span class="result-value">{{ result.jockey_name }}</span>
+                                    </div>
+                                    <div class="race-card-result-item">
+                                        <span class="result-label">斤量</span>
+                                        <span class="result-value">{{ result.weight_carry }}</span>
+                                    </div>
+                                    <div class="race-card-result-item">
+                                        <span class="result-label">距離</span>
+                                        <span class="result-value">{{ result.distance }}m</span>
+                                    </div>
+                                    <div class="race-card-result-item">
+                                        <span class="result-label">馬場</span>
+                                        <span class="result-value">{{ result.track_condition }}</span>
+                                    </div>
+                                    <div class="race-card-result-item">
+                                        <span class="result-label">タイム</span>
+                                        <span class="result-value">{{ result.time }}</span>
+                                    </div>
+                                    <div class="race-card-result-item">
+                                        <span class="result-label">着差</span>
+                                        <span class="result-value">{{ result.margin }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
                     </div>
                     {% endfor %}
                 </div>
@@ -248,13 +299,13 @@
 <style>
 /* 枠番の色 */
 .bg-bracket-1 { background-color: #FFFFFF; color: #000000; border: 1px solid #000000; }
-.bg-bracket-2 { background-color: #000000; color: #FFFFFF; }
-.bg-bracket-3 { background-color: #FF0000; color: #FFFFFF; }
-.bg-bracket-4 { background-color: #0000FF; color: #FFFFFF; }
-.bg-bracket-5 { background-color: #FFFF00; color: #000000; }
-.bg-bracket-6 { background-color: #00FF00; color: #000000; }
-.bg-bracket-7 { background-color: #FFA500; color: #000000; }
-.bg-bracket-8 { background-color: #FFC0CB; color: #000000; }
+.bg-bracket-2 { background-color: #030303; color: #FFFFFF; }
+.bg-bracket-3 { background-color: #E70012; color: #FFFFFF; }
+.bg-bracket-4 { background-color: #004098; color: #FFFFFF; }
+.bg-bracket-5 { background-color: #E4007F; color: #FFFFFF; }
+.bg-bracket-6 { background-color: #00A650; color: #FFFFFF; }
+.bg-bracket-7 { background-color: #FFF100; color: #000000; }
+.bg-bracket-8 { background-color: #F18D00; color: #FFFFFF; }
 
 /* 出馬表のコンテナ */
 .shutuba-container {
@@ -458,13 +509,107 @@
 
 /* 人気順の背景色 */
 .bg-favorite-1 {
-    background-color: rgba(255, 215, 0, 0.3) !important; /* 金色（少し濃いめ） */
+    background-color: rgba(253, 235, 208, 0.5);
 }
 .bg-favorite-2 {
-    background-color: rgba(192, 192, 192, 0.3) !important; /* 銀色（少し濃いめ） */
+    background-color: rgba(209, 231, 221, 0.5);
 }
 .bg-favorite-3 {
-    background-color: rgba(205, 127, 50, 0.3) !important; /* 銅色（少し濃いめ） */
+    background-color: rgba(207, 226, 255, 0.5);
+}
+
+/* 馬番の共通スタイル */
+.horse-number {
+    font-weight: bold;
+    text-align: center;
+}
+
+/* モバイル表示用過去戦績カードのスタイル */
+.mobile-race-card {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    margin-bottom: 15px;
+    border-left: 4px solid #4F46E5;
+}
+
+.race-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.race-date {
+    font-weight: 600;
+    color: #4F46E5;
+}
+
+.race-venue {
+    font-size: 0.9rem;
+    background-color: #f3f4f6;
+    padding: 3px 8px;
+    border-radius: 4px;
+}
+
+.race-card-name {
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.race-card-results {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.race-card-result-item {
+    display: flex;
+    flex-direction: column;
+    padding: 5px;
+}
+
+.result-label {
+    font-size: 0.8rem;
+    color: #6b7280;
+    margin-bottom: 2px;
+}
+
+.result-value {
+    font-weight: 600;
+    color: #111827;
+}
+
+/* レース結果ごとに色分け（例：1着は金色、2着は銀色、3着は銅色） */
+.position-1 {
+    border-left-color: #FFD700;
+}
+
+.position-2 {
+    border-left-color: #C0C0C0;
+}
+
+.position-3 {
+    border-left-color: #CD7F32;
+}
+
+@media (max-width: 767.98px) {
+    .horse-results-header {
+        font-size: 1.2rem;
+        padding: 10px 15px;
+        background-color: #f8fafc;
+        border-radius: 8px;
+        margin-bottom: 15px;
+    }
+    
+    .recent-races {
+        font-size: 0.9rem;
+        color: #6b7280;
+    }
 }
 </style>
 
