@@ -7,6 +7,7 @@ from config import Config
 import logging
 from logging.handlers import RotatingFileHandler
 import os
+from flask_mail import Mail
 
 # アプリケーションの初期化
 app = Flask(__name__)
@@ -98,3 +99,9 @@ app.jinja_env.globals.update(max=max, min=min)
 
 # zipフィルターを追加
 app.jinja_env.filters['zip'] = zip
+
+# Flask-Mail のインスタンスを作成
+mail = Mail()
+
+# Flask-Mail の初期化
+mail.init_app(app)

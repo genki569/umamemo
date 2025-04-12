@@ -602,6 +602,17 @@
         {% endif %}
     {% endwith %}
     
+    <!-- 既存のコード... -->
+
+    {% if current_user.is_authenticated and not current_user.email_confirmed %}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <strong><i class="fas fa-exclamation-triangle"></i> メールアドレスが未確認です。</strong>
+        確認メールをご確認いただき、リンクをクリックして登録を完了してください。
+        <a href="{{ url_for('resend_confirmation') }}" class="alert-link">確認メールを再送信する</a>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endif %}
+
     <!-- メインコンテンツ -->
     <main class="umamemo-main">
         {% block content %}{% endblock %}
