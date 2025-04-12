@@ -112,8 +112,8 @@
                         
                         <!-- PCでの表示用テーブル（モバイルでは非表示） -->
                         <div class="d-none d-md-block">
-                            <table class="table table-sm">
-                                <thead>
+                            <table class="table table-sm table-hover custom-race-table">
+                                <thead class="table-light">
                                     <tr>
                                         <th>開催日</th>
                                         <th>開催</th>
@@ -130,17 +130,17 @@
                                 </thead>
                                 <tbody>
                                     {% for result in entry.recent_results %}
-                                    <tr>
+                                    <tr class="{% if result.position == 1 %}position-row-1{% elif result.position == 2 %}position-row-2{% elif result.position == 3 %}position-row-3{% endif %}">
                                         <td>{{ result.date.strftime('%y/%m/%d') }}</td>
-                                        <td>{{ result.venue }}</td>
-                                        <td>{{ result.name }}</td>
-                                        <td>{{ result.position }}着</td>
-                                        <td>{{ result.popularity if result.popularity else '-' }}</td>
+                                        <td><span class="venue-badge">{{ result.venue }}</span></td>
+                                        <td class="race-name">{{ result.name }}</td>
+                                        <td class="text-center"><strong>{{ result.position }}着</strong></td>
+                                        <td class="text-center">{{ result.popularity if result.popularity else '-' }}</td>
                                         <td>{{ result.jockey_name }}</td>
-                                        <td>{{ result.weight_carry }}</td>
+                                        <td class="text-center">{{ result.weight_carry }}</td>
                                         <td>{{ result.distance }}m</td>
                                         <td>{{ result.track_condition }}</td>
-                                        <td>{{ result.time }}</td>
+                                        <td class="race-time">{{ result.time }}</td>
                                         <td>{{ result.margin }}</td>
                                     </tr>
                                     {% endfor %}
@@ -213,24 +213,28 @@
                                 {% if entry.distance_stats %}
                                     <!-- PC表示用 -->
                                     <div class="d-none d-md-block">
-                                        <div class="stats-grid">
-                                            <div class="stats-item">
-                                                <span class="stats-label">総レース数</span>
-                                                <span class="stats-value">{{ entry.distance_stats.total }}</span>
-                                            </div>
-                                            <div class="stats-item">
-                                                <span class="stats-label">勝利</span>
-                                                <span class="stats-value win-rate">
-                                                    {{ entry.distance_stats.wins }}
-                                                    <small>({{ "%.1f"|format(entry.distance_stats.win_rate) }}%)</small>
-                                                </span>
-                                            </div>
-                                            <div class="stats-item">
-                                                <span class="stats-label">複勝</span>
-                                                <span class="stats-value place-rate">
-                                                    {{ entry.distance_stats.top3 }}
-                                                    <small>({{ "%.1f"|format(entry.distance_stats.top3_rate) }}%)</small>
-                                                </span>
+                                        <div class="stats-card">
+                                            <div class="stats-grid-pc">
+                                                <div class="stats-item-pc">
+                                                    <div class="stats-circle-pc">
+                                                        <span class="stats-number-pc">{{ entry.distance_stats.total }}</span>
+                                                    </div>
+                                                    <div class="stats-label-pc">総レース数</div>
+                                                </div>
+                                                <div class="stats-item-pc">
+                                                    <div class="stats-circle-pc win">
+                                                        <span class="stats-number-pc">{{ entry.distance_stats.wins }}</span>
+                                                    </div>
+                                                    <div class="stats-label-pc">勝利数</div>
+                                                    <div class="stats-percentage-pc">勝率 {{ "%.1f"|format(entry.distance_stats.win_rate) }}%</div>
+                                                </div>
+                                                <div class="stats-item-pc">
+                                                    <div class="stats-circle-pc place">
+                                                        <span class="stats-number-pc">{{ entry.distance_stats.top3 }}</span>
+                                                    </div>
+                                                    <div class="stats-label-pc">複勝数</div>
+                                                    <div class="stats-percentage-pc">複勝率 {{ "%.1f"|format(entry.distance_stats.top3_rate) }}%</div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -266,15 +270,17 @@
                                     {% if entry.best_time %}
                                         <!-- PC表示用 -->
                                         <div class="d-none d-md-block">
-                                            <div class="best-time-box">
-                                                <div class="best-time-header">最速タイム</div>
-                                                <div class="best-time-content">
-                                                    <span class="time">{{ entry.best_time.time }}</span>
-                                                    <span class="details">
-                                                        {{ entry.best_time.date.strftime('%y/%m/%d') }}
-                                                        {{ entry.best_time.venue }}
-                                                        {{ entry.best_time.track_condition }}
-                                                    </span>
+                                            <div class="best-time-card">
+                                                <div class="best-time-header-pc">
+                                                    <i class="fas fa-stopwatch"></i> 最速タイム
+                                                </div>
+                                                <div class="best-time-content-pc">
+                                                    <div class="best-time-value-pc">{{ entry.best_time.time }}</div>
+                                                    <div class="best-time-details-pc">
+                                                        <span class="best-time-detail">{{ entry.best_time.date.strftime('%y/%m/%d') }}</span>
+                                                        <span class="best-time-detail">{{ entry.best_time.venue }}</span>
+                                                        <span class="best-time-detail">{{ entry.best_time.track_condition }}</span>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -305,30 +311,32 @@
                                 {% if entry.month_stats %}
                                     <!-- PC表示用テーブル -->
                                     <div class="d-none d-md-block">
-                                        <table class="table table-sm month-stats">
-                                            <thead>
-                                                <tr>
-                                                    <th>月</th>
-                                                    <th>総数</th>
-                                                    <th>勝利</th>
-                                                    <th>勝率</th>
-                                                    <th>複勝率</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {% for month in range(1, 13) %}
-                                                    {% if month in entry.month_stats %}
-                                                        <tr>
-                                                            <td>{{ month }}月</td>
-                                                            <td>{{ entry.month_stats[month].total }}</td>
-                                                            <td>{{ entry.month_stats[month].wins }}</td>
-                                                            <td>{{ "%.1f"|format(entry.month_stats[month].win_rate) }}%</td>
-                                                            <td>{{ "%.1f"|format(entry.month_stats[month].top3_rate) }}%</td>
-                                                        </tr>
-                                                    {% endif %}
-                                                {% endfor %}
-                                            </tbody>
-                                        </table>
+                                        <div class="month-stats-pc">
+                                            <table class="table table-sm table-hover month-stats">
+                                                <thead class="table-primary">
+                                                    <tr>
+                                                        <th>月</th>
+                                                        <th>総数</th>
+                                                        <th>勝利</th>
+                                                        <th>勝率</th>
+                                                        <th>複勝率</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for month in range(1, 13) %}
+                                                        {% if month in entry.month_stats %}
+                                                            <tr>
+                                                                <td><span class="month-badge">{{ month }}月</span></td>
+                                                                <td>{{ entry.month_stats[month].total }}</td>
+                                                                <td>{{ entry.month_stats[month].wins }}</td>
+                                                                <td>{{ "%.1f"|format(entry.month_stats[month].win_rate) }}%</td>
+                                                                <td>{{ "%.1f"|format(entry.month_stats[month].top3_rate) }}%</td>
+                                                            </tr>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
                                     </div>
                                     
                                     <!-- モバイル表示用カード -->
@@ -878,6 +886,189 @@
     .stats-section {
         margin-bottom: 20px;
     }
+}
+
+/* PC版の過去戦績テーブル改善 */
+.custom-race-table {
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border: none;
+}
+
+.custom-race-table thead {
+    background-color: #4F46E5;
+    color: white;
+}
+
+.custom-race-table th {
+    font-weight: 600;
+    padding: 12px 15px;
+}
+
+.custom-race-table td {
+    padding: 12px 15px;
+    vertical-align: middle;
+}
+
+.venue-badge {
+    display: inline-block;
+    padding: 4px 8px;
+    background-color: #f3f4f6;
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+
+.race-name {
+    font-weight: 500;
+    color: #4F46E5;
+}
+
+.race-time {
+    font-weight: 600;
+    color: #111827;
+}
+
+.position-row-1 {
+    background-color: rgba(253, 235, 208, 0.5);
+}
+
+.position-row-2 {
+    background-color: rgba(209, 231, 221, 0.5);
+}
+
+.position-row-3 {
+    background-color: rgba(207, 226, 255, 0.5);
+}
+
+/* PC版の分析データカードスタイル */
+.stats-card {
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.stats-grid-pc {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 10px 0;
+}
+
+.stats-item-pc {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.stats-circle-pc {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background-color: #f3f4f6;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.stats-circle-pc.win {
+    background-color: rgba(209, 231, 221, 0.8);
+    border: 3px solid #10B981;
+}
+
+.stats-circle-pc.place {
+    background-color: rgba(207, 226, 255, 0.8);
+    border: 3px solid #3B82F6;
+}
+
+.stats-number-pc {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #111827;
+}
+
+.stats-label-pc {
+    font-size: 1rem;
+    color: #6b7280;
+    margin-bottom: 4px;
+}
+
+.stats-percentage-pc {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #4F46E5;
+}
+
+/* PC用最速タイム表示 */
+.best-time-card {
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-top: 20px;
+    border-left: 6px solid #3B82F6;
+}
+
+.best-time-header-pc {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #3B82F6;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+}
+
+.best-time-header-pc i {
+    margin-right: 8px;
+    font-size: 1.1rem;
+}
+
+.best-time-content-pc {
+    padding: 5px 0;
+}
+
+.best-time-value-pc {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 10px;
+}
+
+.best-time-details-pc {
+    display: flex;
+    gap: 15px;
+}
+
+.best-time-detail {
+    display: inline-block;
+    padding: 5px 10px;
+    background-color: #f3f4f6;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    color: #4b5563;
+}
+
+/* PC版の月別成績表示 */
+.month-stats-pc {
+    background-color: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.month-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    background-color: #4F46E5;
+    color: white;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.9rem;
 }
 </style>
 
