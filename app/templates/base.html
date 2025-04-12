@@ -516,32 +516,54 @@
       border: 1px solid rgba(255, 255, 255, 0.5);
       border-radius: 4px;
       cursor: pointer;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .mobile-menu-icon {
       display: block;
-      width: 24px;
+      width: 20px;
       height: 2px;
       background-color: white;
       position: relative;
+      transition: background-color 0.3s;
     }
 
     .mobile-menu-icon:before,
     .mobile-menu-icon:after {
       content: '';
       position: absolute;
-      width: 24px;
+      width: 20px;
       height: 2px;
       background-color: white;
       left: 0;
+      transition: transform 0.3s;
     }
 
     .mobile-menu-icon:before {
-      top: -8px;
+      top: -6px;
     }
 
     .mobile-menu-icon:after {
-      bottom: -8px;
+      bottom: -6px;
+    }
+
+    /* メニュー開いたときのアイコン変化 */
+    .mobile-menu-button.active .mobile-menu-icon {
+      background-color: transparent;
+    }
+
+    .mobile-menu-button.active .mobile-menu-icon:before {
+      transform: rotate(45deg);
+      top: 0;
+    }
+
+    .mobile-menu-button.active .mobile-menu-icon:after {
+      transform: rotate(-45deg);
+      bottom: 0;
     }
 
     .mobile-menu {
@@ -555,6 +577,7 @@
       z-index: 9999;
       padding: 1rem;
       overflow-y: auto;
+      overscroll-behavior: contain;
     }
 
     .mobile-menu.open {
@@ -819,12 +842,21 @@
             mobileMenuButton.addEventListener('click', function(e) {
                 e.stopPropagation();
                 mobileMenu.classList.toggle('open');
+                mobileMenuButton.classList.toggle('active'); // ボタンにアクティブクラスを追加
                 
                 // スクロール制御
                 if (mobileMenu.classList.contains('open')) {
                     document.body.style.overflow = 'hidden';
+                    document.body.style.position = 'fixed';
+                    document.body.style.width = '100%';
+                    document.body.style.top = `-${window.scrollY}px`;
                 } else {
+                    const scrollY = document.body.style.top;
                     document.body.style.overflow = '';
+                    document.body.style.position = '';
+                    document.body.style.width = '';
+                    document.body.style.top = '';
+                    window.scrollTo(0, parseInt(scrollY || '0') * -1);
                 }
             });
             
