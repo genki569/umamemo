@@ -64,11 +64,17 @@
                 {% if memos %}
                     <div class="memos-list">
                         {% for memo in memos|reverse %}
-                            <div class="memo-card">
-                                <div class="memo-content">{{ memo.content }}</div>
+                            <div class="memo-item" id="memo-{{ memo.id }}">
+                                <div class="memo-text">{{ memo.content }}</div>
                                 <div class="memo-meta">
-                                    <div class="memo-date">{{ memo.created_at.strftime('%Y/%m/%d %H:%M') }}</div>
-                                    <form method="POST" action="{{ url_for('delete_horse_memo', horse_id=horse.id, memo_id=memo.id) }}" class="delete-form">
+                                    <div class="memo-date">
+                                        {% if memo.created_at is string %}
+                                            {{ memo.created_at }}
+                                        {% else %}
+                                            {{ memo.created_at.strftime('%Y/%m/%d %H:%M') }}
+                                        {% endif %}
+                                    </div>
+                                    <form method="POST" action="{{ url_for('delete_horse_memo_post', horse_id=horse.id, memo_id=memo.id) }}">
                                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                         <button type="submit" class="delete-btn" onclick="return confirm('このメモを削除しますか？')">
                                             <i class="fas fa-trash"></i>
@@ -374,7 +380,7 @@
     padding: 1.5rem;
 }
 
-.memo-card {
+.memo-item {
     background: #f8fafc;
     border-radius: 10px;
     padding: 1.2rem;
@@ -383,12 +389,12 @@
     transition: all 0.3s ease;
 }
 
-.memo-card:hover {
+.memo-item:hover {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
     transform: translateY(-2px);
 }
 
-.memo-content {
+.memo-text {
     color: #334155;
     font-size: 0.95rem;
     line-height: 1.6;
@@ -608,12 +614,12 @@
         color: #e2e8f0;
     }
     
-    .memo-card {
+    .memo-item {
         background-color: #1a1b26;
         border-color: rgba(51, 65, 85, 0.5);
     }
     
-    .memo-content {
+    .memo-text {
         color: #e2e8f0;
     }
     
