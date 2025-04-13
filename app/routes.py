@@ -4421,3 +4421,45 @@ def confirm_email(token):
     
     flash('メールアドレスの確認が完了しました。ログインしてください。', 'success')
     return redirect(url_for('login'))
+
+@app.route('/admin/users/<int:user_id>/delete', methods=['POST'])
+@login_required
+@admin_required
+def admin_user_delete(user_id):
+    """ユーザーの削除処理"""
+    try:
+        user = User.query.get_or_404(user_id)
+        
+        # 自分自身は削除できない
+        if user.id == current_user.id:
+            flash('自分自身を削除することはできません', 'error')
+            return redirect(url_for('admin_users'))
+        
+        # ユーザー名と削除日時を記録
+        username = user.username
+        email = user.email
+        
+        # 関連データの削除（必要に応じて）
+        # - お気に入り
+        Favorite.query.filter_by(user_id=user_id).delete()
+        # - 通知
+        Notification.query.filter_by(user_id=user_id).delete()
+        # - 購入履歴
+        ReviewPurchase.query.filter_by(user_id=user_id).delete()
+        # - ユーザー設定
+        UserSettings.query.filter_by(user_id=user_id).delete()
+        
+        # ユーザーの削除
+        db.session.delete(user)
+        db.session.commit()
+        
+        flash(f'ユーザー「{username}」を削除しました', 'success')
+        app.logger.info(f"User deleted: {username} ({email}) by admin {current_user.username}")
+        
+        return redirect(url_for('admin_users'))
+        
+    except Exception as e:
+        db.session.rollback()
+        app.logger.error(f"Error deleting user: {str(e)}")
+        flash('ユーザーの削除中にエラーが発生しました', 'error')
+        return redirect(url_for('admin_users'))
