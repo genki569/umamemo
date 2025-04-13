@@ -189,6 +189,13 @@
     white-space: nowrap;
     -webkit-overflow-scrolling: touch;
     position: relative;
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 #f1f5f9;
+    scroll-behavior: smooth;
+    overscroll-behavior-x: contain;
+    padding-bottom: 5px;
+    will-change: scroll-position;
+    transform: translateZ(0);
 }
 
 .entries-table-scroll::-webkit-scrollbar {
@@ -472,6 +479,15 @@
     .action-btn {
         width: 100%;
         justify-content: center;
+    }
+    
+    .entries-table th,
+    .entries-table td {
+        padding: 8px 10px;
+    }
+    
+    .entries-table-scroll::-webkit-scrollbar {
+        height: 5px;
     }
 }
 
@@ -1039,6 +1055,30 @@ document.addEventListener('DOMContentLoaded', function() {
     // ドキュメント内クリックのバブリングを停止
     memoSection.addEventListener('click', function(event) {
         event.stopPropagation();
+    });
+    
+    // タッチスクロールの改善
+    const tableScrolls = document.querySelectorAll('.entries-table-scroll');
+    tableScrolls.forEach(scroll => {
+        let isScrolling = false;
+        let startX, scrollLeft;
+        
+        scroll.addEventListener('touchstart', (e) => {
+            isScrolling = true;
+            startX = e.touches[0].pageX - scroll.offsetLeft;
+            scrollLeft = scroll.scrollLeft;
+        }, { passive: true });
+        
+        scroll.addEventListener('touchmove', (e) => {
+            if (!isScrolling) return;
+            const x = e.touches[0].pageX - scroll.offsetLeft;
+            const dist = (x - startX);
+            scroll.scrollLeft = scrollLeft - dist;
+        }, { passive: true });
+        
+        scroll.addEventListener('touchend', () => {
+            isScrolling = false;
+        }, { passive: true });
     });
     
     // 回顧ノートを非同期で取得
