@@ -412,28 +412,37 @@
                         <label class="form-label">
                             <i class="fas fa-user me-2"></i>ユーザー名
                         </label>
-                        <input type="text" class="form-control" name="username" placeholder="ユーザー名を入力" required>
+                        {{ form.username(class="form-control", placeholder="ユーザー名を入力") }}
+                        {% if form.username.errors %}
+                            {% for error in form.username.errors %}
+                                <div class="text-danger mt-1">{{ error }}</div>
+                            {% endfor %}
+                        {% endif %}
                     </div>
                     
                     <div class="form-group">
                         <label class="form-label">
                             <i class="fas fa-envelope me-2"></i>メールアドレス
                         </label>
-                        <input type="email" class="form-control" name="email" placeholder="例: example@umamemo.co" required>
+                        {{ form.email(class="form-control", placeholder="例: example@umamemo.co") }}
+                        {% if form.email.errors %}
+                            {% for error in form.email.errors %}
+                                <div class="text-danger mt-1">{{ error }}</div>
+                            {% endfor %}
+                        {% endif %}
                     </div>
                     
                     <div class="form-group">
                         <label class="form-label">
                             <i class="fas fa-lock me-2"></i>パスワード
                         </label>
-                        <input type="password" class="form-control" name="password" placeholder="8文字以上のパスワード" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">
-                            <i class="fas fa-lock me-2"></i>パスワード（確認）
-                        </label>
-                        <input type="password" class="form-control" name="confirm_password" placeholder="パスワードを再入力" required>
+                        {{ form.password(class="form-control", placeholder="8文字以上のパスワード") }}
+                        {% if form.password.errors %}
+                            {% for error in form.password.errors %}
+                                <div class="text-danger mt-1">{{ error }}</div>
+                            {% endfor %}
+                        {% endif %}
+                        <div class="form-text small text-muted mt-1">8文字以上の英数字を入力してください</div>
                     </div>
                     
                     <button type="submit" class="login-btn">
