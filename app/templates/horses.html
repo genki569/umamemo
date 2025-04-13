@@ -53,7 +53,13 @@
                 </div>
                 <h3 class="horse-name">{{ horse.name }}</h3>
                 <div class="horse-info">
-                    <span class="horse-attribute">{{ horse.sex }}</span>
+                    <span class="horse-attribute 
+                        {% if horse.sex == '牡' %}male{% 
+                        elif horse.sex == '牝' %}female{% 
+                        elif horse.sex == 'セ' %}gelding{% 
+                        else %}other{% endif %}">
+                        {{ horse.sex }}
+                    </span>
                 </div>
                 <a href="{{ url_for('horse_detail', horse_id=horse.id) }}" class="btn horse-detail-btn">
                     詳細を見る
@@ -123,9 +129,9 @@
 .horses-header {
     background: linear-gradient(135deg, #4338ca, #6366f1, #8b5cf6);
     color: white;
-    padding: 3.5rem 0 4rem;
+    padding: 3.5rem 0 2.5rem;
     position: relative;
-    margin-bottom: 3rem;
+    margin-bottom: 1rem;
     box-shadow: 0 4px 20px rgba(99, 102, 241, 0.25);
     overflow: hidden;
 }
@@ -197,7 +203,7 @@
 /* 検索コンテナのスタイリング */
 .search-container {
     position: relative;
-    margin-top: -2.8rem;
+    margin-top: 1.5rem;
     margin-bottom: 2.5rem;
     z-index: 10;
     animation: fadeInUp 0.8s ease-out 0.4s both;
@@ -378,6 +384,34 @@
     border: 1px solid rgba(79, 70, 229, 0.2);
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
     transition: all 0.3s ease;
+}
+
+/* 牡馬の色 */
+.horse-attribute.male {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(37, 99, 235, 0.15));
+    color: #3b82f6;
+    border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+/* 牝馬の色 */
+.horse-attribute.female {
+    background: linear-gradient(135deg, rgba(236, 72, 153, 0.1), rgba(219, 39, 119, 0.15));
+    color: #ec4899;
+    border: 1px solid rgba(236, 72, 153, 0.2);
+}
+
+/* セン馬の色 */
+.horse-attribute.gelding {
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(22, 163, 74, 0.15));
+    color: #22c55e;
+    border: 1px solid rgba(34, 197, 94, 0.2);
+}
+
+/* その他の馬の色（デフォルト） */
+.horse-attribute.other {
+    background: linear-gradient(135deg, rgba(79, 70, 229, 0.1), rgba(139, 92, 246, 0.15));
+    color: #6366f1;
+    border: 1px solid rgba(79, 70, 229, 0.2);
 }
 
 .horse-card:hover .horse-attribute {
