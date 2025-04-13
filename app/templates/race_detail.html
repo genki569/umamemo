@@ -179,25 +179,57 @@
 
 /* エントリーテーブル */
 .entries-table-container {
+    margin-top: 1rem;
     overflow-x: auto;
-    border-radius: 10px;
+}
+
+.entries-table-scroll {
+    width: 100%;
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+    position: relative;
+}
+
+.entries-table-scroll::-webkit-scrollbar {
+    height: 8px;
+}
+
+.entries-table-scroll::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 4px;
+}
+
+.entries-table-scroll::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
 }
 
 .entries-table {
     width: 100%;
+    min-width: 1000px;
     border-collapse: collapse;
+    table-layout: fixed;
 }
 
 .entries-table th {
-    background: #f8fafc;
-    color: #475569;
-    font-size: 0.9rem;
-    font-weight: 600;
-    text-align: left;
-    padding: 1rem;
-    border-bottom: 2px solid #e2e8f0;
     white-space: nowrap;
+    padding: 0.75rem;
 }
+
+.entries-table th.th-position { width: 50px; }
+.entries-table th.th-frame { width: 50px; }
+.entries-table th.th-number { width: 50px; }
+.entries-table th.th-horse { width: 160px; }
+.entries-table th.th-jockey { width: 120px; }
+.entries-table th.th-time { width: 80px; }
+.entries-table th.th-margin { width: 60px; }
+.entries-table th.th-passing { width: 90px; }
+.entries-table th.th-last3f { width: 60px; }
+.entries-table th.th-weight { width: 100px; }
+.entries-table th.th-popularity { width: 50px; }
+.entries-table th.th-odds { width: 70px; }
+.entries-table th.th-memo { width: 180px; }
 
 .entries-table td {
     padding: 1rem;
@@ -542,6 +574,14 @@
         background-color: #1a1b26;
         color: #a5b4fc;
     }
+    
+    .entries-table-scroll::-webkit-scrollbar-track {
+        background: #1e293b;
+    }
+    
+    .entries-table-scroll::-webkit-scrollbar-thumb {
+        background: #475569;
+    }
 }
 
 /* テーブル内のメモスタイル */
@@ -736,155 +776,157 @@
             </div>
             <div class="section-content">
                 <div class="entries-table-container">
-                    <table class="entries-table">
-                        <thead>
-                            <tr>
-                                <th>着順</th>
-                                <th>枠番</th>
-                                <th>馬番</th>
-                                <th>馬名</th>
-                                <th>騎手</th>
-                                <th>タイム</th>
-                                <th>着差</th>
-                                <th>通過</th>
-                                <th>上り</th>
-                                <th>体重</th>
-                                <th>人気</th>
-                                <th>オッズ</th>
-                                <th>メモ</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {# まず着順のある馬（数字のみ）を表示、ソートも追加 #}
-                            {% for entry in entries|selectattr('position', 'defined')|selectattr('position', 'number')|sort(attribute='position') %}
+                    <div class="entries-table-scroll">
+                        <table class="entries-table">
+                            <thead>
                                 <tr>
-                                    <td>{{ entry.position }}</td>
-                                    <td>{{ entry.frame_number or '-' }}</td>
-                                    <td>{{ entry.horse_number or '-' }}</td>
-                                    <td>
-                                        <a href="{{ url_for('horse_detail', horse_id=entry.horse.id) }}" class="horse-link">
-                                            {{ entry.horse.name }}
-                                        </a>
-                                    </td>
-                                    <td>
-                                        {% if entry.jockey %}
-                                        <a href="{{ url_for('jockey_detail', jockey_id=entry.jockey.id) }}" class="jockey-link">
-                                            {{ entry.jockey.name }}
-                                        </a>
-                                        {% else %}
-                                        -
-                                        {% endif %}
-                                    </td>
-                                    <td>{{ entry.time or '-' }}</td>
-                                    <td>{{ entry.margin or '-' }}</td>
-                                    <td>{{ entry.passing or '-' }}</td>
-                                    <td>{{ entry.last_3f or '-' }}</td>
-                                    <td>{{ entry.horse_weight }}{% if entry.weight_change %}<span class="weight-change">({{ entry.weight_change }})</span>{% endif %}</td>
-                                    <td>{{ entry.popularity or '-' }}</td>
-                                    <td>{{ entry.odds if entry.odds else '-' }}</td>
-                                    <td>
-                                        {% if current_user.is_authenticated %}
-                                            <div class="horse-memo">
-                                                <form method="POST" action="{{ url_for('save_horse_memo', horse_id=entry.horse.id) }}" class="memo-form-small">
-                                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                                    <div class="memo-input-group">
-                                                        <textarea name="content" class="memo-input-small" placeholder="メモを入力..." rows="2"></textarea>
-                                                        <button type="submit" class="memo-save-btn-small">
-                                                            <i class="fas fa-save"></i>
-                                                        </button>
-                                                    </div>
-                                                </form>
-                                                {% if entry.horse.get_memos() %}
-                                                    <div class="horse-memo-list">
-                                                        {% for memo in entry.horse.get_memos()|reverse %}
-                                                            <div class="horse-memo-item">
-                                                                <div class="horse-memo-text">{{ memo.content }}</div>
-                                                                <div class="horse-memo-date">
-                                                                    {% if memo.created_at is string %}
-                                                                        {{ memo.created_at }}
-                                                                    {% else %}
-                                                                        {{ memo.created_at.strftime('%m/%d %H:%M') }}
-                                                                    {% endif %}
-                                                                </div>
-                                                            </div>
-                                                        {% endfor %}
-                                                    </div>
-                                                {% endif %}
-                                            </div>
-                                        {% else %}
-                                            <a href="{{ url_for('login') }}" class="login-for-memo">
-                                                <i class="fas fa-lock"></i> ログインしてメモを追加
-                                            </a>
-                                        {% endif %}
-                                    </td>
+                                    <th class="th-position">着順</th>
+                                    <th class="th-frame">枠番</th>
+                                    <th class="th-number">馬番</th>
+                                    <th class="th-horse">馬名</th>
+                                    <th class="th-jockey">騎手</th>
+                                    <th class="th-time">タイム</th>
+                                    <th class="th-margin">着差</th>
+                                    <th class="th-passing">通過</th>
+                                    <th class="th-last3f">上り</th>
+                                    <th class="th-weight">体重</th>
+                                    <th class="th-popularity">人気</th>
+                                    <th class="th-odds">オッズ</th>
+                                    <th class="th-memo">メモ</th>
                                 </tr>
-                            {% endfor %}
-                            {# 次に着順のない馬や特殊記号の馬を表示 #}
-                            {% for entry in entries if not entry.position or not entry.position is number %}
-                                <tr>
-                                    <td>{{ entry.position or '-' }}</td>
-                                    <td>{{ entry.frame_number or '-' }}</td>
-                                    <td>{{ entry.horse_number or '-' }}</td>
-                                    <td>
-                                        <a href="{{ url_for('horse_detail', horse_id=entry.horse.id) }}" class="horse-link">
-                                            {{ entry.horse.name }}
-                                        </a>
-                                    </td>
-                                    <td>
-                                        {% if entry.jockey %}
-                                        <a href="{{ url_for('jockey_detail', jockey_id=entry.jockey.id) }}" class="jockey-link">
-                                            {{ entry.jockey.name }}
-                                        </a>
-                                        {% else %}
-                                        -
-                                        {% endif %}
-                                    </td>
-                                    <td>{{ entry.time or '-' }}</td>
-                                    <td>{{ entry.margin or '-' }}</td>
-                                    <td>{{ entry.passing or '-' }}</td>
-                                    <td>{{ entry.last_3f or '-' }}</td>
-                                    <td>{{ entry.horse_weight }}{% if entry.weight_change %}<span class="weight-change">({{ entry.weight_change }})</span>{% endif %}</td>
-                                    <td>{{ entry.popularity or '-' }}</td>
-                                    <td>{{ entry.odds if entry.odds else '-' }}</td>
-                                    <td>
-                                        {% if current_user.is_authenticated %}
-                                            <div class="horse-memo">
-                                                <form method="POST" action="{{ url_for('save_horse_memo', horse_id=entry.horse.id) }}" class="memo-form-small">
-                                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                                    <div class="memo-input-group">
-                                                        <textarea name="content" class="memo-input-small" placeholder="メモを入力..." rows="2"></textarea>
-                                                        <button type="submit" class="memo-save-btn-small">
-                                                            <i class="fas fa-save"></i>
-                                                        </button>
-                                                    </div>
-                                                </form>
-                                                {% if entry.horse.get_memos() %}
-                                                    <div class="horse-memo-list">
-                                                        {% for memo in entry.horse.get_memos()|reverse %}
-                                                            <div class="horse-memo-item">
-                                                                <div class="horse-memo-text">{{ memo.content }}</div>
-                                                                <div class="horse-memo-date">
-                                                                    {% if memo.created_at is string %}
-                                                                        {{ memo.created_at }}
-                                                                    {% else %}
-                                                                        {{ memo.created_at.strftime('%m/%d %H:%M') }}
-                                                                    {% endif %}
-                                                                </div>
-                                                            </div>
-                                                        {% endfor %}
-                                                    </div>
-                                                {% endif %}
-                                            </div>
-                                        {% else %}
-                                            <a href="{{ url_for('login') }}" class="login-for-memo">
-                                                <i class="fas fa-lock"></i> ログインしてメモを追加
+                            </thead>
+                            <tbody>
+                                {# まず着順のある馬（数字のみ）を表示、ソートも追加 #}
+                                {% for entry in entries|selectattr('position', 'defined')|selectattr('position', 'number')|sort(attribute='position') %}
+                                    <tr>
+                                        <td>{{ entry.position }}</td>
+                                        <td>{{ entry.frame_number or '-' }}</td>
+                                        <td>{{ entry.horse_number or '-' }}</td>
+                                        <td>
+                                            <a href="{{ url_for('horse_detail', horse_id=entry.horse.id) }}" class="horse-link">
+                                                {{ entry.horse.name }}
                                             </a>
-                                        {% endif %}
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+                                        </td>
+                                        <td>
+                                            {% if entry.jockey %}
+                                            <a href="{{ url_for('jockey_detail', jockey_id=entry.jockey.id) }}" class="jockey-link">
+                                                {{ entry.jockey.name }}
+                                            </a>
+                                            {% else %}
+                                            -
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ entry.time or '-' }}</td>
+                                        <td>{{ entry.margin or '-' }}</td>
+                                        <td>{{ entry.passing or '-' }}</td>
+                                        <td>{{ entry.last_3f or '-' }}</td>
+                                        <td>{{ entry.horse_weight }}{% if entry.weight_change %}<span class="weight-change">({{ entry.weight_change }})</span>{% endif %}</td>
+                                        <td>{{ entry.popularity or '-' }}</td>
+                                        <td>{{ entry.odds if entry.odds else '-' }}</td>
+                                        <td>
+                                            {% if current_user.is_authenticated %}
+                                                <div class="horse-memo">
+                                                    <form method="POST" action="{{ url_for('save_horse_memo', horse_id=entry.horse.id) }}" class="memo-form-small">
+                                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                                        <div class="memo-input-group">
+                                                            <textarea name="content" class="memo-input-small" placeholder="メモを入力..." rows="2"></textarea>
+                                                            <button type="submit" class="memo-save-btn-small">
+                                                                <i class="fas fa-save"></i>
+                                                            </button>
+                                                        </div>
+                                                    </form>
+                                                    {% if entry.horse.get_memos() %}
+                                                        <div class="horse-memo-list">
+                                                            {% for memo in entry.horse.get_memos()|reverse %}
+                                                                <div class="horse-memo-item">
+                                                                    <div class="horse-memo-text">{{ memo.content }}</div>
+                                                                    <div class="horse-memo-date">
+                                                                        {% if memo.created_at is string %}
+                                                                            {{ memo.created_at }}
+                                                                        {% else %}
+                                                                            {{ memo.created_at.strftime('%m/%d %H:%M') }}
+                                                                        {% endif %}
+                                                                    </div>
+                                                                </div>
+                                                            {% endfor %}
+                                                        </div>
+                                                    {% endif %}
+                                                </div>
+                                            {% else %}
+                                                <a href="{{ url_for('login') }}" class="login-for-memo">
+                                                    <i class="fas fa-lock"></i> ログインしてメモを追加
+                                                </a>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                {# 次に着順のない馬や特殊記号の馬を表示 #}
+                                {% for entry in entries if not entry.position or not entry.position is number %}
+                                    <tr>
+                                        <td>{{ entry.position or '-' }}</td>
+                                        <td>{{ entry.frame_number or '-' }}</td>
+                                        <td>{{ entry.horse_number or '-' }}</td>
+                                        <td>
+                                            <a href="{{ url_for('horse_detail', horse_id=entry.horse.id) }}" class="horse-link">
+                                                {{ entry.horse.name }}
+                                            </a>
+                                        </td>
+                                        <td>
+                                            {% if entry.jockey %}
+                                            <a href="{{ url_for('jockey_detail', jockey_id=entry.jockey.id) }}" class="jockey-link">
+                                                {{ entry.jockey.name }}
+                                            </a>
+                                            {% else %}
+                                            -
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ entry.time or '-' }}</td>
+                                        <td>{{ entry.margin or '-' }}</td>
+                                        <td>{{ entry.passing or '-' }}</td>
+                                        <td>{{ entry.last_3f or '-' }}</td>
+                                        <td>{{ entry.horse_weight }}{% if entry.weight_change %}<span class="weight-change">({{ entry.weight_change }})</span>{% endif %}</td>
+                                        <td>{{ entry.popularity or '-' }}</td>
+                                        <td>{{ entry.odds if entry.odds else '-' }}</td>
+                                        <td>
+                                            {% if current_user.is_authenticated %}
+                                                <div class="horse-memo">
+                                                    <form method="POST" action="{{ url_for('save_horse_memo', horse_id=entry.horse.id) }}" class="memo-form-small">
+                                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                                        <div class="memo-input-group">
+                                                            <textarea name="content" class="memo-input-small" placeholder="メモを入力..." rows="2"></textarea>
+                                                            <button type="submit" class="memo-save-btn-small">
+                                                                <i class="fas fa-save"></i>
+                                                            </button>
+                                                        </div>
+                                                    </form>
+                                                    {% if entry.horse.get_memos() %}
+                                                        <div class="horse-memo-list">
+                                                            {% for memo in entry.horse.get_memos()|reverse %}
+                                                                <div class="horse-memo-item">
+                                                                    <div class="horse-memo-text">{{ memo.content }}</div>
+                                                                    <div class="horse-memo-date">
+                                                                        {% if memo.created_at is string %}
+                                                                            {{ memo.created_at }}
+                                                                        {% else %}
+                                                                            {{ memo.created_at.strftime('%m/%d %H:%M') }}
+                                                                        {% endif %}
+                                                                    </div>
+                                                                </div>
+                                                            {% endfor %}
+                                                        </div>
+                                                    {% endif %}
+                                                </div>
+                                            {% else %}
+                                                <a href="{{ url_for('login') }}" class="login-for-memo">
+                                                    <i class="fas fa-lock"></i> ログインしてメモを追加
+                                                </a>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
