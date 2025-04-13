@@ -992,30 +992,11 @@ def shutuba_list():
             venue_data['races'].sort(key=lambda x: x.race_number)
         
         return render_template(
-<<<<<<< HEAD
-
-=======
->>>>>>> 92aa8f1d5347d9d9325077dc72f331e99d540489
             'shutuba_list.html',
             dates=dates,
             selected_date=selected_date,
             venue_races=venue_races,
             venues=VENUE_NAMES
-<<<<<<< HEAD
-        )
-        
-    except Exception as e:
-        app.logger.error(f'Error in shutuba_list: {str(e)}')
-        # エラー時にもselected_dateを渡す
-        return render_template(
-            'shutuba_list.html',
-            dates=[],
-            selected_date=datetime.now().date(),
-            venue_races={},
-            venues=VENUE_NAMES,
-            error=str(e)
-=======
->>>>>>> 92aa8f1d5347d9d9325077dc72f331e99d540489
         )
         
     except Exception as e:
@@ -1055,21 +1036,6 @@ def register():
         return redirect(url_for('login'))
     
     return render_template('register.html', form=form)
-
-@app.route('/confirm/<token>')
-def confirm_email(token):
-    """メールアドレス確認処理"""
-    user = User.query.filter_by(confirmation_token=token).first()
-    
-    if not user or user.confirmation_token_expires < datetime.utcnow():
-        flash('無効または期限切れの確認リンクです。', 'danger')
-        return redirect(url_for('login'))
-    
-    user.confirm_email()
-    db.session.commit()
-    
-    flash('メールアドレスの確認が完了しました。ログインしてください。', 'success')
-    return redirect(url_for('login'))
 
 @app.route('/resend-confirmation')
 @login_required
@@ -3311,8 +3277,8 @@ def review_market():
         
         # レビューにsummary属性がない場合、contentから生成
         for review in premium_reviews:
-            if not hasattr(review, 'summary') or not review.summary:
-               
+            # contentの代わりにoverall_impressionを使用
+            if not getattr(review, 'overall_impression', None):
                 review.overall_impression = ''
         
         return render_template('review_market.html', 
@@ -3529,19 +3495,19 @@ def admin_users():
         # ページネーション
         pagination = query.order_by(User.created_at.desc()).paginate(
             page=page,
-            per_page=per_page,
+            per_page=20,
             error_out=False
         )
-
-        return render_template(
-            'admin/users.html',
-            users=pagination.items,
-            pagination=pagination
-        )
+        
+        return render_template('admin/users.html',
+                           users=pagination.items,
+                           pagination=pagination)
+                           
     except Exception as e:
         app.logger.error(f"Error in admin users: {str(e)}")
         flash('ユーザー一覧の読み込み中にエラーが発生しました', 'error')
         return redirect(url_for('admin_dashboard'))
+
 @app.route('/admin/races')
 @login_required
 @admin_required
