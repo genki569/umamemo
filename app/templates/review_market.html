@@ -1,62 +1,540 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container mt-4">
-    <h1>回顧ノート市場</h1>
-    
-    <div class="row mt-4">
-        {% if reviews %}
-            {% for review in reviews %}
-                <div class="col-md-4 mb-4">
-                    <div class="card h-100">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ review.race.name }}</h5>
-                            <p class="card-text">
-                                <small class="text-muted">
-                                    {{ review.race.date.strftime('%Y/%m/%d') }} - {{ review.race.venue }}
-                                </small>
-                            </p>
-                            <p class="card-text">
-                                {% if review.overall_impression %}
-                                    {{ review.overall_impression[:100] }}{% if review.overall_impression|length > 100 %}...{% endif %}
-                                {% else %}
-                                    {{ '内容なし' }}
-                                {% endif %}
-                            </p>
-                            <p class="card-text">
-                                <small class="text-muted">
-                                    作成者: {{ review.user.username }} | 
-                                    価格: {{ review.price }}ポイント
-                                </small>
-                            </p>
+<div class="reviews-market-page">
+    <div class="reviews-header">
+        <div class="container">
+            <div class="header-content">
+                <h1>回顧ノート市場</h1>
+                <p class="header-description">
+                    プロの分析と洞察が詰まった回顧ノートを購入して競馬分析力を高めましょう
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- 検索フォーム -->
+        <div class="search-container">
+            <div class="search-box">
+                <form class="search-form" method="get" action="{{ url_for('review_market') }}">
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="fas fa-search"></i>
+                        </span>
+                        <input type="text" 
+                               class="form-control search-input" 
+                               name="search" 
+                               placeholder="レース名で検索..." 
+                               value="{{ request.args.get('search', '') }}">
+                        <div class="input-group-append">
+                            <button class="btn search-btn" type="submit">
+                                検索
+                            </button>
+                            {% if request.args.get('search') %}
+                                <a href="{{ url_for('review_market') }}" class="btn clear-btn">
+                                    <i class="fas fa-times"></i> クリア
+                                </a>
+                            {% endif %}
                         </div>
-                        <div class="card-footer">
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- 回顧ノート一覧 -->
+        <div class="reviews-grid">
+            {% if reviews %}
+                {% for review in reviews %}
+                    <div class="review-card">
+                        <div class="review-header">
+                            <div class="race-date">{{ review.race.date.strftime('%Y/%m/%d') }}</div>
+                            <div class="race-venue">{{ review.race.venue }}</div>
+                        </div>
+                        <h3 class="race-name">{{ review.race.name }}</h3>
+                        <div class="review-content">
+                            {% if review.overall_impression %}
+                                {{ review.overall_impression[:100] }}{% if review.overall_impression|length > 100 %}...{% endif %}
+                            {% else %}
+                                内容なし
+                            {% endif %}
+                        </div>
+                        <div class="review-meta">
+                            <div class="author">
+                                <i class="fas fa-user"></i> {{ review.user.username }}
+                            </div>
+                            <div class="price">
+                                <span class="price-tag">{{ review.price }}</span> ポイント
+                            </div>
+                        </div>
+                        <div class="review-actions">
                             {% if current_user.is_authenticated %}
                                 {% if review.id in purchased_review_ids %}
-                                    <a href="{{ url_for('review_detail', review_id=review.id) }}" class="btn btn-success btn-block">
+                                    <a href="{{ url_for('review_detail', review_id=review.id) }}" class="btn view-btn">
                                         <i class="fas fa-eye"></i> 閲覧する
                                     </a>
                                 {% else %}
-                                    <a href="{{ url_for('purchase_review', review_id=review.id) }}" class="btn btn-primary btn-block">
+                                    <a href="{{ url_for('purchase_review', review_id=review.id) }}" class="btn purchase-btn">
                                         <i class="fas fa-shopping-cart"></i> 購入する
                                     </a>
                                 {% endif %}
                             {% else %}
-                                <a href="{{ url_for('login') }}" class="btn btn-secondary btn-block">
+                                <a href="{{ url_for('login') }}" class="btn login-btn">
                                     <i class="fas fa-sign-in-alt"></i> ログインして購入
                                 </a>
                             {% endif %}
                         </div>
                     </div>
+                {% endfor %}
+            {% else %}
+                <div class="no-reviews">
+                    <i class="fas fa-scroll"></i>
+                    <p>現在、販売中の回顧ノートはありません。</p>
                 </div>
-            {% endfor %}
-        {% else %}
-            <div class="col-12">
-                <div class="alert alert-info">
-                    現在、販売中の回顧ノートはありません。
-                </div>
-            </div>
-        {% endif %}
+            {% endif %}
+        </div>
     </div>
 </div>
+
+<style>
+/**
+ * 回顧ノート市場ページのスタイル定義
+ * モダンでおしゃれなデザインを実現するためのスタイル
+ */
+
+/* ベースとなるページスタイル */
+.reviews-market-page {
+    background-color: #f8fafc;
+    background-image: linear-gradient(to bottom, #f8fafc, #f1f5f9);
+    min-height: 100vh;
+    padding-bottom: 3rem;
+}
+
+/* ヘッダー部分のスタイリング */
+.reviews-header {
+    background: linear-gradient(135deg, #4338ca, #6366f1, #8b5cf6);
+    color: white;
+    padding: 3.5rem 0 2.5rem;
+    position: relative;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 20px rgba(99, 102, 241, 0.25);
+    overflow: hidden;
+}
+
+.reviews-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.08'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    z-index: 0;
+}
+
+.reviews-header::after {
+    content: '';
+    position: absolute;
+    top: -100px;
+    right: -100px;
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    z-index: 0;
+}
+
+.header-content {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    animation: fadeInUp 0.8s ease-out;
+}
+
+.header-content h1 {
+    font-size: 2.8rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    letter-spacing: -0.02em;
+}
+
+.header-description {
+    max-width: 700px;
+    margin: 0 auto;
+    font-size: 1.2rem;
+    opacity: 0.95;
+    line-height: 1.6;
+}
+
+/* 検索コンテナのスタイリング */
+.search-container {
+    position: relative;
+    margin-top: 1.5rem;
+    margin-bottom: 2.5rem;
+    z-index: 10;
+    animation: fadeInUp 0.8s ease-out 0.4s both;
+}
+
+.search-box {
+    max-width: 650px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 60px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+.search-box:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+}
+
+.search-form .input-group {
+    border-radius: 60px;
+    overflow: hidden;
+}
+
+.search-form .input-group-text {
+    background-color: transparent;
+    border: none;
+    color: #6366f1;
+    padding-left: 1.8rem;
+    font-size: 1.1rem;
+}
+
+.search-form .search-input {
+    border: none;
+    padding: 1.4rem 0.5rem;
+    font-size: 1.05rem;
+}
+
+.search-form .search-input:focus {
+    box-shadow: none;
+}
+
+.search-form .search-input::placeholder {
+    color: #a1a1aa;
+    font-weight: 400;
+}
+
+.search-btn {
+    background: linear-gradient(to right, #4f46e5, #6366f1);
+    color: white;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    font-weight: 500;
+    border-radius: 0 60px 60px 0;
+    transition: all 0.3s ease;
+}
+
+.search-btn:hover {
+    background: linear-gradient(to right, #4338ca, #4f46e5);
+    color: white;
+    box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3);
+}
+
+.clear-btn {
+    background-color: #f3f4f6;
+    color: #6b7280;
+    border: none;
+    margin-left: 0.5rem;
+    padding: 0.8rem 1.2rem;
+    font-weight: 500;
+    border-radius: 60px;
+    transition: all 0.3s ease;
+}
+
+.clear-btn:hover {
+    background-color: #e5e7eb;
+    color: #4b5563;
+}
+
+/* 回顧ノートグリッドレイアウト */
+.reviews-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.8rem;
+    margin-bottom: 2.5rem;
+    animation: fadeInUp 0.8s ease-out 0.6s both;
+}
+
+/* 回顧ノートカードスタイル */
+.review-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+    overflow: hidden;
+    border: 1px solid rgba(226, 232, 240, 0.7);
+    transition: all 0.3s ease;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.review-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.08);
+}
+
+.review-header {
+    background: linear-gradient(135deg, rgba(79, 70, 229, 0.05), rgba(139, 92, 246, 0.1));
+    padding: 1rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(226, 232, 240, 0.7);
+}
+
+.race-date {
+    font-weight: 600;
+    color: #4f46e5;
+    font-size: 0.95rem;
+}
+
+.race-venue {
+    color: #6b7280;
+    font-size: 0.95rem;
+}
+
+.race-name {
+    padding: 1.2rem 1.5rem 0.8rem;
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1e293b;
+    line-height: 1.4;
+}
+
+.review-content {
+    padding: 0 1.5rem 1.2rem;
+    color: #6b7280;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    flex-grow: 1;
+}
+
+.review-meta {
+    padding: 1.2rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid rgba(226, 232, 240, 0.7);
+    background: rgba(249, 250, 251, 0.5);
+}
+
+.author {
+    font-size: 0.9rem;
+    color: #4b5563;
+}
+
+.author i {
+    color: #6366f1;
+    margin-right: 0.3rem;
+}
+
+.price {
+    font-size: 0.9rem;
+    color: #4b5563;
+}
+
+.price-tag {
+    background: linear-gradient(135deg, #4f46e5, #6366f1);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.review-actions {
+    padding: 1.2rem 1.5rem;
+    background: white;
+}
+
+.btn {
+    display: block;
+    width: 100%;
+    text-align: center;
+    padding: 0.8rem 0;
+    border-radius: 12px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    font-size: 0.95rem;
+    letter-spacing: 0.01em;
+    border: none;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.purchase-btn {
+    background: linear-gradient(to right, #4f46e5, #6366f1);
+    color: white;
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.15);
+}
+
+.purchase-btn:hover {
+    background: linear-gradient(to right, #4338ca, #4f46e5);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(79, 70, 229, 0.25);
+}
+
+.view-btn {
+    background: linear-gradient(to right, #10b981, #34d399);
+    color: white;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
+}
+
+.view-btn:hover {
+    background: linear-gradient(to right, #059669, #10b981);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(16, 185, 129, 0.25);
+}
+
+.login-btn {
+    background: linear-gradient(to right, #6b7280, #9ca3af);
+    color: white;
+    box-shadow: 0 4px 12px rgba(107, 114, 128, 0.15);
+}
+
+.login-btn:hover {
+    background: linear-gradient(to right, #4b5563, #6b7280);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(107, 114, 128, 0.25);
+}
+
+/* 回顧ノートなしの場合のスタイル */
+.no-reviews {
+    grid-column: 1/-1;
+    background: white;
+    border-radius: 16px;
+    padding: 3rem 2rem;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+    border: 1px solid rgba(226, 232, 240, 0.7);
+}
+
+.no-reviews i {
+    font-size: 3rem;
+    color: #d1d5db;
+    margin-bottom: 1.5rem;
+}
+
+.no-reviews p {
+    font-size: 1.1rem;
+    color: #6b7280;
+    margin-bottom: 0;
+}
+
+/* アニメーション定義 */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+    .reviews-header {
+        padding: 2.5rem 0 2rem;
+    }
+    
+    .header-content h1 {
+        font-size: 2.2rem;
+    }
+    
+    .header-description {
+        font-size: 1.05rem;
+    }
+    
+    .reviews-grid {
+        grid-template-columns: 1fr;
+        gap: 1.3rem;
+    }
+    
+    .review-header,
+    .race-name,
+    .review-content,
+    .review-meta,
+    .review-actions {
+        padding-left: 1.2rem;
+        padding-right: 1.2rem;
+    }
+    
+    .race-name {
+        font-size: 1.15rem;
+    }
+}
+
+/* ダークモード対応 */
+@media (prefers-color-scheme: dark) {
+    .reviews-market-page {
+        background-color: #1a1b26;
+        background-image: linear-gradient(to bottom, #1a1b26, #1e293b);
+    }
+    
+    .review-card,
+    .search-box,
+    .no-reviews {
+        background-color: #1e293b;
+        border-color: rgba(51, 65, 85, 0.5);
+    }
+    
+    .review-header {
+        background: linear-gradient(135deg, rgba(79, 70, 229, 0.1), rgba(139, 92, 246, 0.15));
+        border-bottom-color: rgba(51, 65, 85, 0.5);
+    }
+    
+    .race-name {
+        color: #e2e8f0;
+    }
+    
+    .review-content,
+    .author,
+    .price {
+        color: #cbd5e1;
+    }
+    
+    .review-meta {
+        background: rgba(30, 41, 59, 0.7);
+        border-top-color: rgba(51, 65, 85, 0.5);
+    }
+    
+    .review-actions {
+        background: #1e293b;
+    }
+    
+    .search-form .search-input {
+        color: #e2e8f0;
+        background-color: #1e293b;
+    }
+    
+    .search-form .search-input::placeholder {
+        color: #64748b;
+    }
+    
+    .clear-btn {
+        background-color: #334155;
+        color: #e2e8f0;
+    }
+    
+    .clear-btn:hover {
+        background-color: #475569;
+    }
+    
+    .no-reviews i {
+        color: #475569;
+    }
+    
+    .no-reviews p {
+        color: #cbd5e1;
+    }
+}
+</style>
 {% endblock %} 
