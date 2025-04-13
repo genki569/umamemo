@@ -1,122 +1,671 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container py-4">
-    <div class="row">
-        <div class="col">
-            <h1 class="mb-4">{{ horse.name }}</h1>
-            
-            <!-- お気に入りボタン -->
-            <button class="btn btn-outline-danger favorite-btn mb-3" 
+<div class="horse-detail-page">
+    <!-- ヘッダー部分 -->
+    <div class="horse-header">
+        <div class="container">
+            <div class="header-content">
+                <h1>{{ horse.name }}</h1>
+                <div class="horse-attributes">
+                    <span class="horse-attribute 
+                        {% if horse.sex == '牡' %}male{% 
+                        elif horse.sex == '牝' %}female{% 
+                        elif horse.sex == 'セ' %}gelding{% 
+                        else %}other{% endif %}">
+                        {{ horse.sex }}
+                    </span>
+                    {% if horse.age %}
+                    <span class="horse-attribute age">{{ horse.age }}歳</span>
+                    {% endif %}
+                    {% if horse.trainer %}
+                    <span class="horse-attribute trainer">調教師: {{ horse.trainer }}</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container main-content">
+        <!-- お気に入りボタン -->
+        <div class="favorite-section">
+            <button class="favorite-btn" 
                     onclick="{% if current_user.is_authenticated %}toggleFavorite(this){% else %}window.location.href='{{ url_for('login') }}'{% endif %}"
                     data-horse-id="{{ horse.id }}">
-                <i class="fas fa-heart"></i>
+                <i class="fas {% if is_favorite %}fa-heart{% else %}fa-heart-o{% endif %}"></i>
                 {% if current_user.is_authenticated %}
-                    {% if is_favorite %}お気に入り解除{% else %}お気に入り登録{% endif %}
+                    {% if is_favorite %}お気に入りから削除{% else %}お気に入りに追加{% endif %}
                 {% else %}
-                    お気に入り登録
+                    お気に入りに追加
                 {% endif %}
             </button>
+        </div>
 
-            <!-- メモ機能 -->
-            <div class="memo-section mb-4">
-                {% if current_user.is_authenticated %}
+        <!-- メモ機能 -->
+        <div class="memo-section">
+            <div class="section-header">
+                <h2><i class="fas fa-sticky-note"></i> メモ</h2>
+            </div>
+            
+            {% if current_user.is_authenticated %}
+                <div class="memo-form-container">
                     <form method="POST" action="{{ url_for('save_horse_memo', horse_id=horse.id) }}">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                        <div class="form-group">
-                            <textarea name="content" class="form-control" rows="3" placeholder="メモを入力..."></textarea>
+                        <div class="memo-input">
+                            <textarea name="content" placeholder="メモを入力..."></textarea>
                         </div>
-                        <button type="submit" class="btn btn-primary mt-2">
+                        <button type="submit" class="save-btn">
                             <i class="fas fa-save"></i> 保存
                         </button>
                     </form>
-                    
-                    <!-- メモ一覧の表示部分を追加 -->
-                    {% if memos %}
-                        <div class="memos-list mt-3">
-                            {% for memo in memos|reverse %}
-                                <div class="memo-item card mb-2">
-                                    <div class="card-body py-2">
-                                        <p class="mb-1">{{ memo.content }}</p>
-                                        <small class="text-muted">{{ memo.created_at }}</small>
-                                    </div>
+                </div>
+                
+                <!-- メモ一覧 -->
+                {% if memos %}
+                    <div class="memos-list">
+                        {% for memo in memos|reverse %}
+                            <div class="memo-card">
+                                <div class="memo-content">{{ memo.content }}</div>
+                                <div class="memo-meta">
+                                    <div class="memo-date">{{ memo.created_at.strftime('%Y/%m/%d %H:%M') }}</div>
+                                    <form method="POST" action="{{ url_for('delete_horse_memo', horse_id=horse.id, memo_id=memo.id) }}" class="delete-form">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <button type="submit" class="delete-btn" onclick="return confirm('このメモを削除しますか？')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
                                 </div>
-                            {% endfor %}
-                        </div>
-                    {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
                 {% else %}
-                    <div class="memo-input-placeholder" onclick="window.location.href='{{ url_for('login') }}'" style="cursor: pointer">
-                        <div class="form-control text-muted" style="height: 80px; background-color: #f8f9fa;">
-                            クリックしてログイン後、メモを追加できます
-                        </div>
+                    <div class="no-memos">
+                        <i class="fas fa-clipboard"></i>
+                        <p>メモがまだありません。最初のメモを追加しましょう！</p>
                     </div>
                 {% endif %}
-            </div>
-
-            <!-- レース履歴は常に表示 -->
-            <div class="race-history mt-4">
-                <div class="card shadow-sm">
-                    <div class="card-header bg-primary text-white">
-                        <h5 class="card-title mb-0">
-                            <i class="fas fa-history me-2"></i>レース履歴
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>日付/レース名</th>
-                                        <th>馬番</th>
-                                        <th>騎手</th>
-                                        <th>タイム</th>
-                                        <th>体重</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for entry in entries %}
-                                    <tr>
-                                        <td>
-                                            <a href="{{ url_for('race_view', race_id=entry.race.id) }}" class="text-decoration-none">
-                                                {{ entry.race.date.strftime('%Y/%m/%d') }} {{ entry.race.name }}
-                                            </a>
-                                        </td>
-                                        <td>{{ entry.horse_number }}</td>
-                                        <td>{{ entry.jockey.name if entry.jockey else '不明' }}</td>
-                                        <td>{{ entry.time }}</td>
-                                        <td>{{ entry.weight }}{% if entry.weight_change %}({{ entry.weight_change }}){% endif %}</td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <!-- 戻るボタンは条件付きで表示 -->
-                        {% if entries and entries|length > 0 and entries[0].race %}
-                            <div class="mt-4 text-end">
-                                <a href="{{ url_for('race_view', race_id=entries[0].race.id) }}" class="btn btn-outline-secondary">
-                                    <i class="fas fa-arrow-left me-2"></i>レース結果に戻る
-                                </a>
-                            </div>
-                        {% endif %}
-                    </div>
+            {% else %}
+                <div class="login-to-memo">
+                    <i class="fas fa-lock"></i>
+                    <p>メモを追加するには<a href="{{ url_for('login') }}">ログイン</a>してください</p>
                 </div>
+            {% endif %}
+        </div>
+
+        <!-- レース履歴 -->
+        <div class="race-history-section">
+            <div class="section-header">
+                <h2><i class="fas fa-history"></i> レース履歴</h2>
             </div>
+            
+            {% if entries %}
+                <div class="race-table-container">
+                    <table class="race-table">
+                        <thead>
+                            <tr>
+                                <th>日付/レース名</th>
+                                <th>馬番</th>
+                                <th>騎手</th>
+                                <th>タイム</th>
+                                <th>体重</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for entry in entries %}
+                            <tr>
+                                <td>
+                                    <a href="{{ url_for('race_view', race_id=entry.race.id) }}" class="race-link">
+                                        <div class="race-date">{{ entry.race.date.strftime('%Y/%m/%d') }}</div>
+                                        <div class="race-name">{{ entry.race.name }}</div>
+                                    </a>
+                                </td>
+                                <td class="text-center">{{ entry.horse_number }}</td>
+                                <td>{{ entry.jockey.name if entry.jockey else '不明' }}</td>
+                                <td>{{ entry.time }}</td>
+                                <td>{{ entry.weight }}{% if entry.weight_change %}<span class="weight-change">({{ entry.weight_change }})</span>{% endif %}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- 戻るボタン -->
+                {% if entries and entries|length > 0 and entries[0].race %}
+                    <div class="back-button-container">
+                        <a href="{{ url_for('race_view', race_id=entries[0].race.id) }}" class="back-btn">
+                            <i class="fas fa-arrow-left"></i> レース結果に戻る
+                        </a>
+                    </div>
+                {% endif %}
+            {% else %}
+                <div class="no-races">
+                    <i class="fas fa-calendar-times"></i>
+                    <p>レース履歴がありません。</p>
+                </div>
+            {% endif %}
         </div>
     </div>
 </div>
 
 <style>
-.memo-input-placeholder {
-    border: 1px dashed #ccc;
-    border-radius: 4px;
-    padding: 10px;
+/**
+ * 馬詳細ページのスタイル定義
+ * モダンでおしゃれなデザインを実現するためのスタイル
+ */
+
+/* ベースとなるページスタイル */
+.horse-detail-page {
+    background-color: #f8fafc;
+    background-image: linear-gradient(to bottom, #f8fafc, #f1f5f9);
+    min-height: 100vh;
+    padding-bottom: 3rem;
+}
+
+/* ヘッダー部分のスタイリング */
+.horse-header {
+    background: linear-gradient(135deg, #4338ca, #6366f1, #8b5cf6);
+    color: white;
+    padding: 3.5rem 0 2.5rem;
+    position: relative;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 20px rgba(99, 102, 241, 0.25);
+    overflow: hidden;
+}
+
+.horse-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.08'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    z-index: 0;
+}
+
+.horse-header::after {
+    content: '';
+    position: absolute;
+    top: -100px;
+    right: -100px;
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    z-index: 0;
+}
+
+.header-content {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    animation: fadeInUp 0.8s ease-out;
+}
+
+.header-content h1 {
+    font-size: 2.8rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    letter-spacing: -0.02em;
+}
+
+.horse-attributes {
+    display: flex;
+    justify-content: center;
+    gap: 0.8rem;
+    margin-top: 1rem;
+}
+
+.horse-attribute {
+    padding: 0.4rem 0.8rem;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease;
 }
 
-.memo-input-placeholder:hover {
-    background-color: #f0f0f0;
-    border-color: #999;
+/* 牡馬の色 */
+.horse-attribute.male {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(37, 99, 235, 0.25));
+    color: #ffffff;
+    border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+/* 牝馬の色 */
+.horse-attribute.female {
+    background: linear-gradient(135deg, rgba(236, 72, 153, 0.2), rgba(219, 39, 119, 0.25));
+    color: #ffffff;
+    border: 1px solid rgba(236, 72, 153, 0.3);
+}
+
+/* セン馬の色 */
+.horse-attribute.gelding {
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(22, 163, 74, 0.25));
+    color: #ffffff;
+    border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+/* その他の属性 */
+.horse-attribute.other, 
+.horse-attribute.age, 
+.horse-attribute.trainer {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.15));
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* メインコンテンツ部分 */
+.main-content {
+    margin-top: 2rem;
+}
+
+/* お気に入りボタン */
+.favorite-section {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.favorite-btn {
+    background: white;
+    border: 2px solid #e11d48;
+    color: #e11d48;
+    padding: 0.7rem 1.5rem;
+    border-radius: 50px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(225, 29, 72, 0.1);
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.favorite-btn:hover {
+    background: #e11d48;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(225, 29, 72, 0.2);
+}
+
+.favorite-btn i {
+    margin-right: 0.5rem;
+}
+
+/* セクション共通スタイル */
+.memo-section, 
+.race-history-section {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+    margin-bottom: 2rem;
+    overflow: hidden;
+    border: 1px solid rgba(226, 232, 240, 0.7);
+    animation: fadeInUp 0.8s ease-out both;
+}
+
+.section-header {
+    padding: 1.2rem 1.5rem;
+    border-bottom: 1px solid rgba(226, 232, 240, 0.7);
+    background: linear-gradient(to right, #f8fafc, #f1f5f9);
+}
+
+.section-header h2 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0;
+    display: flex;
+    align-items: center;
+}
+
+.section-header h2 i {
+    color: #6366f1;
+    margin-right: 0.7rem;
+    font-size: 1.2rem;
+}
+
+/* メモフォーム */
+.memo-form-container {
+    padding: 1.5rem;
+    border-bottom: 1px solid rgba(226, 232, 240, 0.7);
+}
+
+.memo-input {
+    margin-bottom: 1rem;
+}
+
+.memo-input textarea {
+    width: 100%;
+    padding: 1rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    resize: vertical;
+    min-height: 100px;
+    transition: all 0.3s ease;
+    font-size: 0.95rem;
+}
+
+.memo-input textarea:focus {
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.save-btn {
+    background: linear-gradient(to right, #4f46e5, #6366f1);
+    color: white;
+    border: none;
+    padding: 0.7rem 1.5rem;
+    border-radius: 10px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(99, 102, 241, 0.1);
+}
+
+.save-btn:hover {
+    background: linear-gradient(to right, #4338ca, #4f46e5);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 10px rgba(99, 102, 241, 0.2);
+}
+
+/* メモカード */
+.memos-list {
+    padding: 1.5rem;
+}
+
+.memo-card {
+    background: #f8fafc;
+    border-radius: 10px;
+    padding: 1.2rem;
+    margin-bottom: 1rem;
+    border: 1px solid rgba(226, 232, 240, 0.7);
+    transition: all 0.3s ease;
+}
+
+.memo-card:hover {
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    transform: translateY(-2px);
+}
+
+.memo-content {
+    color: #334155;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 0.8rem;
+    white-space: pre-line;
+}
+
+.memo-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid rgba(226, 232, 240, 0.7);
+    padding-top: 0.8rem;
+}
+
+.memo-date {
+    color: #94a3b8;
+    font-size: 0.8rem;
+}
+
+.delete-btn {
+    background: none;
+    border: none;
+    color: #ef4444;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+    padding: 0.3rem 0.5rem;
+    border-radius: 4px;
+}
+
+.delete-btn:hover {
+    background: rgba(239, 68, 68, 0.1);
+    color: #dc2626;
+}
+
+.no-memos, .login-to-memo, .no-races {
+    text-align: center;
+    padding: 3rem 1.5rem;
+    color: #94a3b8;
+}
+
+.no-memos i, .login-to-memo i, .no-races i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: #cbd5e1;
+}
+
+.no-memos p, .login-to-memo p, .no-races p {
+    font-size: 1.05rem;
+}
+
+.login-to-memo a {
+    color: #6366f1;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.login-to-memo a:hover {
+    text-decoration: underline;
+}
+
+/* レース履歴テーブル */
+.race-table-container {
+    padding: 1.5rem;
+    overflow-x: auto;
+}
+
+.race-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.race-table th {
+    background: #f8fafc;
+    color: #475569;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-align: left;
+    padding: 1rem;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.race-table td {
+    padding: 1rem;
+    border-bottom: 1px solid #e2e8f0;
+    vertical-align: middle;
+}
+
+.race-table tr:hover {
+    background-color: rgba(99, 102, 241, 0.05);
+}
+
+.race-table tr:last-child td {
+    border-bottom: none;
+}
+
+.race-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    transition: all 0.2s ease;
+}
+
+.race-link:hover {
+    color: #6366f1;
+}
+
+.race-date {
+    font-size: 0.85rem;
+    color: #64748b;
+    margin-bottom: 0.3rem;
+}
+
+.race-name {
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.weight-change {
+    color: #64748b;
+    font-size: 0.9rem;
+}
+
+/* 戻るボタン */
+.back-button-container {
+    padding: 1rem 1.5rem 1.5rem;
+    text-align: right;
+}
+
+.back-btn {
+    display: inline-block;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    color: #475569;
+    padding: 0.7rem 1.2rem;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.back-btn:hover {
+    background: #f1f5f9;
+    color: #1e293b;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.back-btn i {
+    margin-right: 0.5rem;
+}
+
+/* アニメーション定義 */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+    .horse-header {
+        padding: 2.5rem 0 2rem;
+    }
+    
+    .header-content h1 {
+        font-size: 2.2rem;
+    }
+    
+    .horse-attributes {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .race-table th,
+    .race-table td {
+        padding: 0.8rem 0.5rem;
+        font-size: 0.9rem;
+    }
+    
+    .section-header h2 {
+        font-size: 1.2rem;
+    }
+}
+
+/* ダークモード対応 */
+@media (prefers-color-scheme: dark) {
+    .horse-detail-page {
+        background-color: #1a1b26;
+        background-image: linear-gradient(to bottom, #1a1b26, #1e293b);
+    }
+    
+    .memo-section, 
+    .race-history-section {
+        background-color: #1e293b;
+        border-color: rgba(51, 65, 85, 0.5);
+    }
+    
+    .section-header {
+        background: linear-gradient(to right, #1e1e2d, #1e293b);
+        border-bottom-color: rgba(51, 65, 85, 0.5);
+    }
+    
+    .section-header h2 {
+        color: #e2e8f0;
+    }
+    
+    .memo-input textarea {
+        background-color: #1a1b26;
+        border-color: #334155;
+        color: #e2e8f0;
+    }
+    
+    .memo-card {
+        background-color: #1a1b26;
+        border-color: rgba(51, 65, 85, 0.5);
+    }
+    
+    .memo-content {
+        color: #e2e8f0;
+    }
+    
+    .memo-meta {
+        border-top-color: rgba(51, 65, 85, 0.5);
+    }
+    
+    .race-table th {
+        background-color: #1a1b26;
+        color: #cbd5e1;
+        border-bottom-color: #334155;
+    }
+    
+    .race-table td {
+        border-bottom-color: #334155;
+    }
+    
+    .race-table tr:hover {
+        background-color: rgba(99, 102, 241, 0.1);
+    }
+    
+    .race-name {
+        color: #e2e8f0;
+    }
+    
+    .race-date,
+    .weight-change {
+        color: #94a3b8;
+    }
+    
+    .back-btn {
+        background-color: #1a1b26;
+        border-color: #334155;
+        color: #cbd5e1;
+    }
+    
+    .back-btn:hover {
+        background-color: #252538;
+        color: #f8fafc;
+    }
+    
+    .no-memos i, 
+    .login-to-memo i, 
+    .no-races i {
+        color: #475569;
+    }
+    
+    .no-memos p, 
+    .login-to-memo p, 
+    .no-races p {
+        color: #cbd5e1;
+    }
 }
 </style>
 
