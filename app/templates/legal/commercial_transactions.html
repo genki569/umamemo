@@ -1,112 +1,155 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container my-4">
-    <h1 class="mb-4">特定商取引法に基づく表記</h1>
+<div class="container my-5">
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold mb-3">特定商取引法に基づく表記</h1>
+        <p class="text-muted">ATG合同会社が提供するサービスに関する重要な情報をご案内いたします。</p>
+    </div>
     
-    <div class="card">
-        <div class="card-body">
-            <table class="table table-bordered">
-                <tbody>
-                    <tr>
-                        <th class="bg-light" style="width: 25%">販売事業者名</th>
-                        <td>ATG合同会社</td>
-                    </tr>
-                    <tr>
-                        <th class="bg-light">運営事業責任者</th>
-                        <td>齊藤元気</td>
-                    </tr>
-                    <tr>
-                        <th class="bg-light">所在地</th>
-                        <td>〒277-0005<br>
-                            千葉県柏市柏3-8-5 MHBLDG3F</td>
-                    </tr>
-                    <tr>
-                        <th class="bg-light">電話番号</th>
-                        <td>03-1234-5678</td>
-                    </tr>
-                    <tr>
-                        <th class="bg-light">メールアドレス</th>
-                        <td>info@umamemo.co</td>
-                    </tr>
-                    <tr>
-                        <th class="bg-light">サービス名</th>
-                        <td>馬メモ</td>
-                    </tr>
-                    <tr>
-                        <th class="bg-light">販売価格</th>
-                        <td>
-                            <strong>プレミアム会員プラン：</strong><br>
-                            月額980円（税込）<br>
-                            年額9,800円（税込）※約2ヶ月分お得<br>
-                            <br>
-                            <strong>ポイントチャージ：</strong><br>
-                            500円（500ポイント）<br>
-                            1,000円（1,000ポイント）<br>
-                            2,000円（2,000ポイント）<br>
-                            3,000円（3,000ポイント）<br>
-                            5,000円（5,000ポイント）<br>
-                            10,000円（10,000ポイント）<br>
-                            20,000円（20,000ポイント）<br>
-                            30,000円（30,000ポイント）<br>
-                            50,000円（50,000ポイント）<br>
-                            ※表示価格は全て税込みです。
-                        </td>
-                    </tr>
-                    <tr>
-                        <th class="bg-light">商品代金以外の必要料金</th>
-                        <td>クレジットカード決済の場合、決済手数料は無料です。</td>
-                    </tr>
-                    <tr>
-                        <th class="bg-light">お支払い方法</th>
-                        <td>クレジットカード決済</td>
-                    </tr>
-                    <tr>
-                        <th class="bg-light">代金の支払い時期</th>
-                        <td>
-                            <strong>プレミアム会員：</strong><br>
-                            ・月額プラン：ご登録時に即時決済、以降毎月自動更新<br>
-                            ・年額プラン：ご登録時に即時決済、以降1年ごとに自動更新<br>
-                            <br>
-                            <strong>ポイントチャージ：</strong><br>
-                            ・購入時に即時決済
-                        </td>
-                    </tr>
-                    <tr>
-                        <th class="bg-light">商品の提供時期</th>
-                        <td>
-                            <strong>プレミアム会員：</strong><br>
-                            ・ご登録完了後、即時にサービスを提供開始いたします。<br>
-                            <br>
-                            <strong>ポイントチャージ：</strong><br>
-                            ・ご購入手続き完了後、即時にポイントを付与いたします。
-                        </td>
-                    </tr>
-                    <tr>
-                        <th class="bg-light">返品・交換・キャンセル・解約について</th>
-                        <td>
-                            <strong>プレミアム会員：</strong><br>
-                            ・契約期間中はマイページよりいつでも解約手続きが可能です。<br>
-                            ・解約手続きをいただいた当月末までサービスを提供し、翌月以降のサービス提供及びご請求を停止いたします。<br>
-                            ・年額プランの途中解約による返金はお受けできません。<br>
-                            <br>
-                            <strong>ポイントチャージ：</strong><br>
-                            ・デジタルコンテンツの性質上、購入完了後の返金・キャンセルはお受けできません。
-                        </td>
-                    </tr>
-                    <tr>
-                        <th class="bg-light">動作環境</th>
-                        <td>
-                            推奨ブラウザ：<br>
-                            - Google Chrome 最新版<br>
-                            - Mozilla Firefox 最新版<br>
-                            - Safari 最新版<br>
-                            - Microsoft Edge 最新版<br>
-                            ※ JavaScript を有効にする必要があります。
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+    <div class="card shadow-sm border-0 rounded-3">
+        <div class="card-body p-4">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <tbody>
+                        <tr>
+                            <th class="bg-light text-dark py-3 ps-4" style="width: 25%; background-color: #f8f9fa !important;">販売事業者名</th>
+                            <td class="py-3">ATG合同会社</td>
+                        </tr>
+                        <tr>
+                            <th class="bg-light text-dark py-3 ps-4" style="background-color: #f8f9fa !important;">運営事業責任者</th>
+                            <td class="py-3">齊藤元気</td>
+                        </tr>
+                        <tr>
+                            <th class="bg-light text-dark py-3 ps-4" style="background-color: #f8f9fa !important;">所在地</th>
+                            <td class="py-3">
+                                <span class="badge bg-secondary mb-2">〒277-0005</span><br>
+                                千葉県柏市柏3-8-5 MHBLDG3F
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="bg-light text-dark py-3 ps-4" style="background-color: #f8f9fa !important;">電話番号</th>
+                            <td class="py-3">03-1234-5678</td>
+                        </tr>
+                        <tr>
+                            <th class="bg-light text-dark py-3 ps-4" style="background-color: #f8f9fa !important;">メールアドレス</th>
+                            <td class="py-3">
+                                <a href="mailto:info@umamemo.co" class="text-primary text-decoration-none">info@umamemo.co</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="bg-light text-dark py-3 ps-4" style="background-color: #f8f9fa !important;">サービス名</th>
+                            <td class="py-3">馬メモ</td>
+                        </tr>
+                        <tr>
+                            <th class="bg-light text-dark py-3 ps-4" style="background-color: #f8f9fa !important;">販売価格</th>
+                            <td class="py-3">
+                                <div class="mb-4">
+                                    <h5 class="mb-3">プレミアム会員プラン</h5>
+                                    <div class="ms-3">
+                                        <div class="d-flex align-items-center mb-2">
+                                            <span class="badge bg-primary me-2">月額</span>
+                                            <span class="h5 mb-0">980円（税込）</span>
+                                        </div>
+                                        <div class="d-flex align-items-center">
+                                            <span class="badge bg-success me-2">年額</span>
+                                            <span class="h5 mb-0">9,800円（税込）</span>
+                                            <span class="ms-2 text-success">※約2ヶ月分お得</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <h5 class="mb-3">ポイントチャージ</h5>
+                                    <div class="row row-cols-1 row-cols-md-2 g-3 ms-2">
+                                        <div class="col"><span class="badge bg-secondary me-2">500P</span> 500円</div>
+                                        <div class="col"><span class="badge bg-secondary me-2">1,000P</span> 1,000円</div>
+                                        <div class="col"><span class="badge bg-secondary me-2">2,000P</span> 2,000円</div>
+                                        <div class="col"><span class="badge bg-secondary me-2">3,000P</span> 3,000円</div>
+                                        <div class="col"><span class="badge bg-secondary me-2">5,000P</span> 5,000円</div>
+                                        <div class="col"><span class="badge bg-secondary me-2">10,000P</span> 10,000円</div>
+                                        <div class="col"><span class="badge bg-secondary me-2">20,000P</span> 20,000円</div>
+                                        <div class="col"><span class="badge bg-secondary me-2">30,000P</span> 30,000円</div>
+                                        <div class="col"><span class="badge bg-secondary me-2">50,000P</span> 50,000円</div>
+                                    </div>
+                                    <small class="text-muted d-block mt-3">※表示価格は全て税込みです。</small>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="bg-light text-dark py-3 ps-4" style="background-color: #f8f9fa !important;">商品代金以外の必要料金</th>
+                            <td class="py-3">クレジットカード決済の場合、決済手数料は無料です。</td>
+                        </tr>
+                        <tr>
+                            <th class="bg-light text-dark py-3 ps-4" style="background-color: #f8f9fa !important;">お支払い方法</th>
+                            <td class="py-3">
+                                <span class="badge bg-info">クレジットカード決済</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="bg-light text-dark py-3 ps-4" style="background-color: #f8f9fa !important;">代金の支払い時期</th>
+                            <td class="py-3">
+                                <div class="mb-3">
+                                    <h6 class="mb-2">プレミアム会員</h6>
+                                    <ul class="list-unstyled ms-3 mb-0">
+                                        <li class="mb-2">・月額プラン：ご登録時に即時決済、以降毎月自動更新</li>
+                                        <li>・年額プラン：ご登録時に即時決済、以降1年ごとに自動更新</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h6 class="mb-2">ポイントチャージ</h6>
+                                    <ul class="list-unstyled ms-3 mb-0">
+                                        <li>・購入時に即時決済</li>
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="bg-light text-dark py-3 ps-4" style="background-color: #f8f9fa !important;">商品の提供時期</th>
+                            <td class="py-3">
+                                <div class="mb-3">
+                                    <h6 class="mb-2">プレミアム会員</h6>
+                                    <p class="ms-3 mb-0">・ご登録完了後、即時にサービスを提供開始いたします。</p>
+                                </div>
+                                <div>
+                                    <h6 class="mb-2">ポイントチャージ</h6>
+                                    <p class="ms-3 mb-0">・ご購入手続き完了後、即時にポイントを付与いたします。</p>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="bg-light text-dark py-3 ps-4" style="background-color: #f8f9fa !important;">返品・交換・キャンセル・解約について</th>
+                            <td class="py-3">
+                                <div class="mb-3">
+                                    <h6 class="mb-2">プレミアム会員</h6>
+                                    <ul class="list-unstyled ms-3 mb-0">
+                                        <li class="mb-2">・契約期間中はマイページよりいつでも解約手続きが可能です。</li>
+                                        <li class="mb-2">・解約手続きをいただいた当月末までサービスを提供し、翌月以降のサービス提供及びご請求を停止いたします。</li>
+                                        <li>・年額プランの途中解約による返金はお受けできません。</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h6 class="mb-2">ポイントチャージ</h6>
+                                    <p class="ms-3 mb-0">・デジタルコンテンツの性質上、購入完了後の返金・キャンセルはお受けできません。</p>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="bg-light text-dark py-3 ps-4" style="background-color: #f8f9fa !important;">動作環境</th>
+                            <td class="py-3">
+                                <p class="mb-2">推奨ブラウザ：</p>
+                                <div class="d-flex flex-wrap gap-2 ms-3">
+                                    <span class="badge bg-dark">Google Chrome 最新版</span>
+                                    <span class="badge bg-dark">Mozilla Firefox 最新版</span>
+                                    <span class="badge bg-dark">Safari 最新版</span>
+                                    <span class="badge bg-dark">Microsoft Edge 最新版</span>
+                                </div>
+                                <small class="text-muted d-block mt-3">※ JavaScript を有効にする必要があります。</small>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
