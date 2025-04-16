@@ -829,7 +829,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRFToken': '{{ csrf_token() }}'
+                    'X-CSRFToken': '{{ csrf_token() }}',
+                    'X-Requested-With': 'XMLHttpRequest'
                 },
                 credentials: 'same-origin'
             })
@@ -840,13 +841,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 return response.json();
             })
             .then(data => {
-                if (data.success) {
-                    // アイコンとテキストを更新
-                    if (data.is_favorite) {
-                        this.innerHTML = '<i class="fas fa-heart me-2"></i>お気に入りから削除';
-                    } else {
-                        this.innerHTML = '<i class="far fa-heart me-2"></i>お気に入りに追加';
-                    }
+                // APIは 'status' フィールドを返す
+                if (data.status === 'success') {
+                    // アイコンとテキストを更新 - is_favoriteを使用
+                    const buttonContent = data.is_favorite ? 
+                        '<i class="fas fa-heart me-2"></i>お気に入りから削除' : 
+                        '<i class="far fa-heart me-2"></i>お気に入りに追加';
+                    
+                    // innerHTML を使用してボタンの内容を更新
+                    this.innerHTML = buttonContent;
+                    
+                    // 成功メッセージは表示しない（UI変化で十分）
+                    console.log(data.message); // コンソールにだけ出力
                 } else {
                     console.error('お気に入りの更新に失敗:', data.message || '不明なエラー');
                     alert('お気に入りの更新に失敗しました。再度お試しください。');
