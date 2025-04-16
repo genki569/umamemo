@@ -30,20 +30,28 @@
                             <td>{{ user.email }}</td>
                             <td>{{ user.created_at.strftime('%Y/%m/%d %H:%M') }}</td>
                             <td>
-                                <span class="badge {% if user.is_active %}bg-success{% else %}bg-danger{% endif %}">
-                                    {{ '有効' if user.is_active else '無効' }}
-                                </span>
+                                <div class="d-flex align-items-center">
+                                    {% if user.is_active %}
+                                        <span class="badge bg-success px-3 py-2">有効</span>
+                                    {% else %}
+                                        <span class="badge bg-danger px-3 py-2">無効</span>
+                                    {% endif %}
+                                    
+                                    {% if user.is_premium %}
+                                        <span class="badge bg-primary ms-2 px-3 py-2">プレミアム</span>
+                                    {% endif %}
+                                </div>
                             </td>
                             <td>
-                                <div class="btn-group btn-group-sm">
+                                <div class="d-flex">
                                     <a href="{{ url_for('admin_user_detail', user_id=user.id) }}" 
-                                       class="btn btn-outline-primary">
-                                        <i class="fas fa-eye"></i>
+                                       class="btn btn-sm btn-primary me-2">
+                                        <i class="fas fa-eye me-1"></i> 詳細
                                     </a>
                                     <button type="button" 
-                                            class="btn btn-outline-danger"
+                                            class="btn btn-sm btn-danger"
                                             onclick="confirmDelete({{ user.id }})">
-                                        <i class="fas fa-trash"></i>
+                                        <i class="fas fa-trash me-1"></i> 削除
                                     </button>
                                 </div>
                             </td>

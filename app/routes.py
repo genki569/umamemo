@@ -2669,21 +2669,25 @@ def search_users():
 @login_required
 @admin_required
 def admin_user_detail(user_id):
-    """管理者用ーザー詳細ペジ"""
+    """管理者用ユーザー詳細ページ"""
     try:
+        # 必要なモデルをローカルにインポート
+        from app.models import UserPointLog, LoginHistory
+        
         user = User.query.get_or_404(user_id)
         
-        # UserPoint → UserPointLogに変更
+        # ポイント履歴を取得
         point_history = UserPointLog.query\
             .filter_by(user_id=user.id)\
             .order_by(UserPointLog.created_at.desc())\
             .all()
         
-        # ビュー購入履歴を取得
+        # レビュー購入履歴を取得
         review_purchases = ReviewPurchase.query\
             .filter_by(user_id=user.id)\
-            .all()  # 並び順の指定一時的に削除
+            .all()
             
+        # ログイン履歴を取得
         login_history = LoginHistory.query\
             .filter_by(user_id=user.id)\
             .order_by(LoginHistory.timestamp.desc())\
@@ -2698,7 +2702,7 @@ def admin_user_detail(user_id):
                              
     except Exception as e:
         app.logger.error(f"Error in admin_user_detail: {str(e)}")
-        flash('ユーザー情報取得中にエラーが発生しした。', 'error')
+        flash('ユーザー情報取得中にエラーが発生しました。', 'error')
         return redirect(url_for('admin_users'))
 
 @app.route('/admin/users/<int:user_id>/support-history')
