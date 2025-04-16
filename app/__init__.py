@@ -42,6 +42,11 @@ def create_app(config_name=None):
     
     app = Flask(__name__)
     
+    # デバッグモードとエラー処理設定
+    app.config['DEBUG'] = os.environ.get('FLASK_DEBUG', 'True').lower() == 'true'
+    app.config['PROPAGATE_EXCEPTIONS'] = True  # エラーを伝播させる
+    app.config['PRESERVE_CONTEXT_ON_EXCEPTION'] = True  # 例外発生時にコンテキストを保持
+    
     # 環境に応じた設定を適用
     if not config_name:
         config_name = os.environ.get('FLASK_ENV', 'default')
@@ -84,20 +89,10 @@ def create_app(config_name=None):
     app.config['WTF_CSRF_SSL_STRICT'] = False  # 開発環境ではSSL制限を無効化
     app.config['WTF_CSRF_SECRET_KEY'] = app.config['SECRET_KEY']  # 専用のシークレットキーを使用
     
-    # セッション設定の明示的指定
-    app.config['SESSION_TYPE'] = 'filesystem'
-    app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=1)  # セッションを1日有効
-    app.config['SESSION_USE_SIGNER'] = True  # セッションデータにサインを追加
-    app.config['SESSION_KEY_PREFIX'] = 'umamemo_'  # セッションキーのプレフィックス
-    
-    # セッションファイルの保存場所を/tmpに変更（権限問題を解決）
-    session_dir = '/tmp/flask_session'
-    if not os.path.exists(session_dir):
-        try:
-            os.makedirs(session_dir, mode=0o770, exist_ok=True)
-        except Exception as e:
-            print(f"セッションディレクトリの作成に失敗: {e}")
-    app.config['SESSION_FILE_DIR'] = session_dir
+    # セッション設定の簡素化 - Cookieベースのセッションに変更
+    app.config['SESSION_TYPE'] = 'null'  # サーバーサイドセッションを無効化
+    app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=1)
+    app.config['SESSION_USE_SIGNER'] = True
     
     # CSRF保護を有効にするための秘密鍵設定を確認
     if 'SECRET_KEY' not in app.config or not app.config['SECRET_KEY']:
