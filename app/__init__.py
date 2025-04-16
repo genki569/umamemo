@@ -25,6 +25,18 @@ def create_app(config_name=None):
     """アプリケーションファクトリ関数 - 設定に基づいてアプリインスタンスを作成"""
     global app
     
+    # .envファイルの読み込み
+    try:
+        from dotenv import load_dotenv
+        dotenv_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), '.env')
+        if os.path.exists(dotenv_path):
+            load_dotenv(dotenv_path)
+            print(f"環境変数を{dotenv_path}から読み込みました")
+    except ImportError:
+        print("python-dotenvがインストールされていません。pip install python-dotenvを実行してください")
+    except Exception as e:
+        print(f".envファイルの読み込みに失敗しました: {str(e)}")
+    
     app = Flask(__name__)
     
     # 環境に応じた設定を適用
