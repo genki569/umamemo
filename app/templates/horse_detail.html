@@ -18,7 +18,15 @@
                 <div class="horse-attributes">
                     {% if horse.sex %}
                     <div class="horse-attribute sex">
-                        <i class="fas {% if horse.sex == '牡' %}fa-mars{% elif horse.sex == '牝' %}fa-venus{% else %}fa-genderless{% endif %} me-1"></i>
+                        {% if horse.sex == '牡' %}
+                            <i class="fas fa-mars me-1"></i>
+                        {% elif horse.sex == '牝' %}
+                            <i class="fas fa-venus me-1"></i>
+                        {% elif horse.sex == 'セ' %}
+                            <i class="fas fa-genderless me-1"></i>
+                        {% else %}
+                            <i class="fas fa-question me-1"></i>
+                        {% endif %}
                         {{ horse.sex }}
                     </div>
                     {% endif %}
@@ -45,14 +53,16 @@
         <!-- お気に入りボタン -->
         <div class="favorite-section">
             {% if current_user.is_authenticated %}
-                <button class="favorite-btn" id="favoriteButton" data-horse-id="{{ horse.id }}" data-is-favorite="{{ 'true' if is_favorite else 'false' }}">
-                    <i class="{% if is_favorite %}fas fa-heart{% else %}far fa-heart{% endif %} me-1"></i>
-                    {% if is_favorite %}お気に入りから削除{% else %}お気に入りに追加{% endif %}
+                <button type="button" class="favorite-btn" id="favoriteButton" data-horse-id="{{ horse.id }}">
+                    {% if is_favorite %}
+                        <i class="fas fa-heart me-2"></i>お気に入りから削除
+                    {% else %}
+                        <i class="far fa-heart me-2"></i>お気に入りに追加
+                    {% endif %}
                 </button>
             {% else %}
                 <a href="{{ url_for('login') }}" class="favorite-btn">
-                    <i class="far fa-heart me-1"></i>
-                    ログインしてお気に入りに追加
+                    <i class="far fa-heart me-2"></i>ログインしてお気に入りに追加
                 </a>
             {% endif %}
         </div>
@@ -810,55 +820,46 @@ document.addEventListener('DOMContentLoaded', function() {
     const favoriteButton = document.getElementById('favoriteButton');
     if (favoriteButton) {
         favoriteButton.addEventListener('click', function() {
-            toggleFavorite(this);
-        });
-    }
-    
-    function toggleFavorite(button) {
-        const horseId = button.getAttribute('data-horse-id');
-        const isFavorite = button.getAttribute('data-is-favorite') === 'true';
-        
-        fetch(`/toggle_favorite/${horseId}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': '{{ csrf_token() }}'
-            },
-            credentials: 'same-origin'
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
-            if (data.success) {
-                // お気に入り状態を切り替える
-                const newState = !isFavorite;
-                button.setAttribute('data-is-favorite', newState ? 'true' : 'false');
-                
-                // アイコンとテキストを更新
-                const icon = button.querySelector('i');
-                if (newState) {
-                    icon.className = 'fas fa-heart me-1';
-                    button.innerHTML = '';
-                    button.appendChild(icon);
-                    button.insertAdjacentText('beforeend', ' お気に入りから削除');
-                } else {
-                    icon.className = 'far fa-heart me-1';
-                    button.innerHTML = '';
-                    button.appendChild(icon);
-                    button.insertAdjacentText('beforeend', ' お気に入りに追加');
+            const horseId = this.getAttribute('data-horse-id');
+            
+            // ボタンの状態を一時的に無効化（連打防止）
+            this.disabled = true;
+            
+            fetch(`/toggle_favorite/${horseId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token() }}'
+                },
+                credentials: 'same-origin'
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
                 }
-            } else {
-                console.error('お気に入りの更新に失敗:', data.message || '不明なエラー');
-                alert('お気に入りの更新に失敗しました。再度お試しください。');
-            }
-        })
-        .catch(error => {
-            console.error('エラー:', error);
-            alert('エラーが発生しました。再度お試しください。');
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    // アイコンとテキストを更新
+                    if (data.is_favorite) {
+                        this.innerHTML = '<i class="fas fa-heart me-2"></i>お気に入りから削除';
+                    } else {
+                        this.innerHTML = '<i class="far fa-heart me-2"></i>お気に入りに追加';
+                    }
+                } else {
+                    console.error('お気に入りの更新に失敗:', data.message || '不明なエラー');
+                    alert('お気に入りの更新に失敗しました。再度お試しください。');
+                }
+            })
+            .catch(error => {
+                console.error('エラー:', error);
+                alert('エラーが発生しました。再度お試しください。');
+            })
+            .finally(() => {
+                // ボタンを再度有効化
+                this.disabled = false;
+            });
         });
     }
 });
