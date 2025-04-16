@@ -398,20 +398,29 @@ class Jockey(db.Model):
         return f'<Jockey {self.name}>'
 
 class User(UserMixin, db.Model):
-    __tablename__ = 'users'
+    """
+    ユーザー情報を管理するモデルクラス
     
-    # 基本情報
+    ユーザーのプロフィール情報、ポイント情報、会員ステータスなどを管理し、
+    ポイント加算/使用や会員ステータスの変更などの機能を提供します。
+    """
+    __tablename__ = 'users'
+
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(128))
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    last_login = db.Column(db.DateTime, default=datetime.now)
+    points = db.Column(db.Integer, default=0)
+    is_premium = db.Column(db.Boolean, default=False)
+    is_master = db.Column(db.Boolean, default=False)  # マスタープレミアム会員フラグ
+    premium_expires_at = db.Column(db.DateTime, nullable=True)
+    is_admin = db.Column(db.Boolean, default=False)
+    created_at = db.Column(db.DateTime, default=datetime.now)
+    updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
     
     # ステータス関連
-    is_admin = db.Column(db.Boolean, default=False)
-    is_premium = db.Column(db.Boolean, default=False)
     membership_type = db.Column(db.String(20), default='free')  # 'free', 'premium', 'master'
-    premium_expires_at = db.Column(db.DateTime)
     point_balance = db.Column(db.Integer, default=0)
     
     # プロフィール関
@@ -444,54 +453,207 @@ class User(UserMixin, db.Model):
     def get_point_balance(self):
         return self.point_balance
     
-    def add_points(self, points, type='manual', reference_id=None, description=None):
-        """ポイントを追加する（ログ記録付き）"""
-        self.point_balance += points
+    def add_points(self, amount, reason=None):
+        """
+        ユーザーにポイントを追加する
+        
+        Args:
+            amount: 追加するポイント数
+            reason: ポイント追加の理由
+            
+        Returns:
+            bool: ポイント追加が成功したかどうか
+        """
+        if amount <= 0:
+            return False
+            
+        self.points += amount
         
         # ポイント履歴を記録
         point_log = UserPointLog(
             user_id=self.id,
-            points=points,
-            action_type=type,
-            description=description
+            points=amount,
+            action='add',
+            reason=reason or 'システム付与'
         )
         db.session.add(point_log)
-        
-        return True
+        try:
+            db.session.commit()
+            return True
+        except Exception as e:
+            db.session.rollback()
+            app.logger.error(f"ポイント追加エラー: {e}")
+            return False
     
-    def use_points(self, points, type='use', reference_id=None, description=None):
-        """ポイントを使用する（ログ記録付き）"""
-        if self.point_balance >= points:
-            self.point_balance -= points
+    def use_points(self, amount, reason=None):
+        """
+        ユーザーのポイントを使用する
+        
+        Args:
+            amount: 使用するポイント数
+            reason: ポイント使用の理由
             
-            # ポイント履歴を記録
-            point_log = UserPointLog(
+        Returns:
+            bool: ポイント使用が成功したかどうか
+        """
+        if amount <= 0 or self.points < amount:
+            return False
+            
+        self.points -= amount
+        
+        # ポイント履歴を記録
+        point_log = UserPointLog(
+            user_id=self.id,
+            points=amount,
+            action='use',
+            reason=reason or 'ポイント使用'
+        )
+        db.session.add(point_log)
+        try:
+            db.session.commit()
+            return True
+        except Exception as e:
+            db.session.rollback()
+            app.logger.error(f"ポイント使用エラー: {e}")
+            return False
+            
+    def get_membership_type(self):
+        """
+        ユーザーの会員種別を取得する
+        
+        Returns:
+            str: 会員種別 (free, premium, master)
+        """
+        if self.is_master:
+            return 'master'
+        elif self.is_premium:
+            return 'premium'
+        else:
+            return 'free'
+            
+    def is_premium_active(self):
+        """
+        プレミアム会員が有効かどうかを確認する
+        
+        Returns:
+            bool: プレミアム会員が有効かどうか
+        """
+        return self.is_premium and (self.premium_expires_at is None or self.premium_expires_at > datetime.now())
+            
+    def is_master_active(self):
+        """
+        マスタープレミアム会員が有効かどうかを確認する
+        
+        Returns:
+            bool: マスタープレミアム会員が有効かどうか
+        """
+        return self.is_master and (self.premium_expires_at is None or self.premium_expires_at > datetime.now())
+            
+    def set_premium_status(self, status, duration_days=30, changed_by=None, reason=None):
+        """
+        ユーザーの会員ステータスを設定する
+        
+        Args:
+            status: 設定する会員ステータス ('free', 'premium', 'master')
+            duration_days: プレミアム会員の有効期間（日数）
+            changed_by: 変更を行ったユーザーID（None=システム変更）
+            reason: 変更理由
+            
+        Returns:
+            bool: 変更が成功したかどうか
+        """
+        try:
+            # 現在のステータスを取得
+            old_status = self.get_membership_type()
+            
+            # ステータスが同じ場合は何もしない（期間延長の場合を除く）
+            if old_status == status and status == 'free':
+                return True
+                
+            # 有効期限の計算
+            expires_at = None
+            if status in ['premium', 'master']:
+                # 現在の有効期限がある場合はそこから延長、なければ現在から設定
+                if self.premium_expires_at and self.premium_expires_at > datetime.now():
+                    expires_at = self.premium_expires_at + timedelta(days=duration_days)
+                else:
+                    expires_at = datetime.now() + timedelta(days=duration_days)
+            
+            # ステータスの更新
+            if status == 'master':
+                self.is_premium = True
+                self.is_master = True
+                self.premium_expires_at = expires_at
+            elif status == 'premium':
+                self.is_premium = True
+                self.is_master = False
+                self.premium_expires_at = expires_at
+            else:  # free
+                self.is_premium = False
+                self.is_master = False
+                self.premium_expires_at = None
+            
+            # 変更ログを記録
+            log = MembershipChangeLog(
                 user_id=self.id,
-                points=-points,
-                action_type=type,
-                description=description
+                old_status=old_status,
+                new_status=status,
+                changed_by=changed_by,
+                reason=reason,
+                expires_at=expires_at
             )
-            db.session.add(point_log)
+            db.session.add(log)
+            db.session.commit()
             
             return True
+        except Exception as e:
+            db.session.rollback()
+            print(f"Error setting premium status: {e}")
+            return False
+    
+    def check_and_update_membership_status(self):
+        """
+        会員ステータスを確認し、期限切れの場合は自動的に更新する
+        
+        Returns:
+            bool: ステータスが変更されたかどうか
+        """
+        # 期限切れでない場合は何もしない
+        if not self.is_premium or not self.premium_expires_at:
+            return False
+            
+        # 期限切れの場合
+        if self.premium_expires_at < datetime.now():
+            current_status = self.get_membership_type()
+            self.is_premium = False
+            self.is_master = False
+            self.premium_expires_at = None
+            
+            # 変更ログを記録
+            log = MembershipChangeLog(
+                user_id=self.id,
+                old_status=current_status,
+                new_status='free',
+                reason='自動更新: 会員期限切れ',
+                expires_at=None
+            )
+            db.session.add(log)
+            db.session.commit()
+            return True
+            
         return False
-    
-    def has_enough_points(self, points):
-        return self.point_balance >= points
 
-    def is_master_premium(self):
-        """マスタープレミアム会員かどうかを確認"""
-        return self.is_premium and self.membership_type == 'master'
-    
-    def can_withdraw_points(self, amount):
-        """指定されたポイント数を現金に換金できるかチェック"""
-        return self.point_balance >= amount and amount >= 5000  # 最低換金額を5000ポイントに設定
-    
-    def get_withdrawal_fee_rate(self):
-        """換金手数料率を取得"""
-        if self.membership_type == 'master':
-            return 0.10  # マスタープレミアムは10%
-        return 0.15  # 通常は15%
+    def get_membership_history(self, limit=10):
+        """
+        ユーザーの会員ステータス変更履歴を取得する
+        
+        Args:
+            limit: 取得する履歴の最大数
+            
+        Returns:
+            list: 会員ステータス変更履歴のリスト
+        """
+        return MembershipChangeLog.get_user_membership_history(self.id, limit)
 
     def __repr__(self):
         return f'<User {self.username}>'
@@ -751,69 +913,112 @@ class SupportResponse(db.Model):
                               foreign_keys=[created_by])
 
 class MembershipChangeLog(db.Model):
+    """
+    会員ステータス変更履歴を管理するモデルクラス
+    
+    ユーザーの会員種別変更に関する履歴を記録し、
+    変更日時、変更前後のステータス、有効期限などを追跡します。
+    """
     __tablename__ = 'membership_change_logs'
     
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    changed_by = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    changed_at = db.Column(db.DateTime, default=datetime.utcnow)
+    changed_by = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
     old_status = db.Column(db.String(20), nullable=False)
     new_status = db.Column(db.String(20), nullable=False)
     reason = db.Column(db.String(255))
     expires_at = db.Column(db.DateTime, nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.now)
     
-    # リーシンシップの修正
-    user = db.relationship('User', foreign_keys=[user_id], 
-                          backref=db.backref('membership_changes', lazy='dynamic'))
-    admin = db.relationship('User', foreign_keys=[changed_by],
-                          backref=db.backref('membership_changes_made', lazy='dynamic'))
+    # リレーションシップ
+    user = db.relationship('User', foreign_keys=[user_id], backref=db.backref('membership_logs', lazy='dynamic'))
+    changer = db.relationship('User', foreign_keys=[changed_by])
+    
+    def __init__(self, user_id, old_status, new_status, changed_by=None, reason=None, expires_at=None):
+        """
+        会員ステータス変更ログの初期化
+        
+        Args:
+            user_id: ユーザーID
+            old_status: 変更前のステータス
+            new_status: 変更後のステータス
+            changed_by: 変更を行ったユーザーID（None=システム変更）
+            reason: 変更理由
+            expires_at: 会員資格の有効期限
+        """
+        self.user_id = user_id
+        self.old_status = old_status
+        self.new_status = new_status
+        self.changed_by = changed_by
+        self.reason = reason
+        self.expires_at = expires_at
+    
+    @staticmethod
+    def get_user_membership_history(user_id, limit=10):
+        """
+        特定ユーザーの会員ステータス変更履歴を取得
+        
+        Args:
+            user_id: 履歴を取得するユーザーID
+            limit: 取得する履歴の最大数
+            
+        Returns:
+            list: 会員ステータス変更履歴のリスト
+        """
+        return MembershipChangeLog.query.filter_by(user_id=user_id)\
+            .order_by(MembershipChangeLog.created_at.desc())\
+            .limit(limit).all()
 
 class PaymentLog(db.Model):
-    __tablename__ = 'payment_logs'
+    """
+    支払いログを管理するモデルクラス
     
+    ユーザーの支払い履歴を記録し、プレミアム会員と
+    マスタープレミアム会員の支払い状況を追跡します。
+    """
+    __tablename__ = 'payment_logs'
+
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     amount = db.Column(db.Integer, nullable=False)
-    plan_type = db.Column(db.String(20), nullable=False)
+    plan_type = db.Column(db.String(20), nullable=False, default='premium')  # premium または master
     duration_days = db.Column(db.Integer, nullable=False)
-    payment_date = db.Column(db.DateTime)
-    status = db.Column(db.String(20))
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    
-    # リレーションシップ
-    user = db.relationship('User', backref=db.backref('payment_logs', lazy='dynamic'))
-    
-    # 表示用プロパティ
-    @property
-    def status_display(self):
-        status_map = {
-            'completed': '完了',
-            'pending': '処理中',
-            'failed': '失敗',
-            'refunded': '返金済み'
-        }
-        return status_map.get(self.status, self.status)
-    
-    @property
-    def status_color(self):
-        color_map = {
-            'completed': 'success',
-            'pending': 'warning',
-            'failed': 'danger',
-            'refunded': 'info'
-        }
-        return color_map.get(self.status, 'secondary')
+    status = db.Column(db.String(20), nullable=False, default='pending')  # pending, completed, failed, refunded
+    payment_date = db.Column(db.DateTime, default=datetime.now, nullable=False)
+    transaction_id = db.Column(db.String(100), nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.now)
+    updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
+
+    user = db.relationship('User', backref=db.backref('payment_logs', lazy=True))
+
+    def __init__(self, user_id, amount, plan_type='premium', duration_days=30, status='pending', payment_date=None, transaction_id=None):
+        """
+        PaymentLogオブジェクトの初期化
         
-    @property
-    def type_display(self):
-        """取引種別の表示名を返す"""
-        type_map = {
-            'point': 'ポイント購入',
-            'premium': 'プレミアム会員',
-            'master': 'マスタープレミアム会員',
-            'review': 'レビュー購入'
-        }
-        return type_map.get(self.plan_type, self.plan_type)
+        Args:
+            user_id: ユーザーID
+            amount: 支払い金額
+            plan_type: プランタイプ（'premium'または'master'）
+            duration_days: プラン期間（日数）
+            status: 支払い状態
+            payment_date: 支払い日時
+            transaction_id: トランザクションID
+        """
+        self.user_id = user_id
+        self.amount = amount
+        self.plan_type = plan_type
+        self.duration_days = duration_days
+        self.status = status
+        self.payment_date = payment_date or datetime.now()
+        self.transaction_id = transaction_id
+
+    def __repr__(self):
+        """オブジェクトの文字列表現を返す"""
+        return f'<PaymentLog {self.id} {self.user_id} {self.plan_type} {self.status}>'
+    
+    def is_master_plan(self):
+        """マスタープレミアムプランかどうかを確認する"""
+        return self.plan_type == 'master'
 
 # 既存のモデルの後に追加
 class HorseMemo(db.Model):

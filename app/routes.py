@@ -1306,41 +1306,54 @@ def premium_complete():
 @app.route('/premium/subscribe', methods=['POST'])
 @login_required
 def premium_subscribe():
-    """プレミアム会員への登録処理"""
+    """
+    プレミアム会員への登録処理
+    
+    フロントエンドから送信されたplan_typeとplanTypeに基づいて、
+    プレミアムまたはマスタープレミアム会員への登録処理を行います。
+    """
     try:
         data = request.get_json()
-        plan_type = data.get('plan', 'premium')  # premium または master
+        plan_type = data.get('plan')  # premium または master
+        planType = data.get('planType', 'premium')  # フロントエンドからのplanType値
         
-        # 支払い実際にはStripeなの決済サービスを使用）
-        payment_successful = process_payment(data)  # この関は実装が必要
+        # 支払い処理（実際にはStripeなどの決済サービスを使用）
+        payment_result = process_payment(data)
         
-        if payment_successful:
+        if payment_result['success']:
             # ユーザーのプレミアム状態を更新
             current_user.is_premium = True
-            current_user.membership_type = plan_type
+            current_user.membership_type = planType
             current_user.premium_expires_at = datetime.now() + timedelta(days=int(data['duration']))
             
             # 支払い履歴を記録
             payment_log = PaymentLog(
                 user_id=current_user.id,
-                amount=data['price'],
-                plan_type=plan_type,
-                duration_days=data['duration']
+                amount=int(data['price']),
+                plan_type=planType,
+                duration_days=int(data['duration']),
+                status='completed',
+                payment_date=datetime.now()
             )
             db.session.add(payment_log)
             
             # 変更履歴を記録
+            old_status = 'free'
+            if current_user.is_premium:
+                old_status = current_user.membership_type
+                
             membership_change = MembershipChangeLog(
                 user_id=current_user.id,
                 changed_by=current_user.id,
-                old_status='normal' if not current_user.is_premium else current_user.membership_type,
-                new_status=plan_type,
-                reason='ユーザーによる購入'
+                old_status=old_status,
+                new_status=planType,
+                reason='ユーザーによる購入',
+                expires_at=current_user.premium_expires_at
             )
             db.session.add(membership_change)
             
             # ボーナスポイントの付与（マスタープレミアム会員のみ）
-            if plan_type == 'master':
+            if planType == 'master':
                 # 3000ポイントのボーナス
                 current_user.add_points(
                     3000, 
@@ -1350,14 +1363,22 @@ def premium_subscribe():
             
             db.session.commit()
             
+            flash_message = 'プレミアム会員登録が完了しました'
+            if planType == 'master':
+                flash_message = 'マスタープレミアム会員登録が完了しました（3,000ptのボーナスが付与されました）'
+                
+            flash(flash_message, 'success')
+            
             return jsonify({
                 'success': True,
-                'message': f'{plan_type.capitalize()}会員登録が完了しました'
+                'message': flash_message,
+                'transaction_id': payment_result.get('transaction_id', '')
             })
         else:
             return jsonify({
                 'success': False,
-                'message': '支払い処理に失敗しました'
+                'message': payment_result.get('message', '支払い処理に失敗しました'),
+                'error_code': payment_result.get('error_code', 'payment_failed')
             }), 400
             
     except Exception as e:
@@ -1365,8 +1386,48 @@ def premium_subscribe():
         app.logger.error(f"Error in premium subscription: {str(e)}")
         return jsonify({
             'success': False,
-            'message': 'エーが発生しました'
+            'message': 'エラーが発生しました: ' + str(e),
+            'error_code': 'server_error'
         }), 500
+
+# テスト用支払い処理関数（実際の実装では決済サービスAPIを使用）
+def process_payment(data):
+    """
+    支払い処理をシミュレート（テスト用）
+    
+    実際の環境ではStripeなどの決済サービスAPIを使用して決済処理を行います。
+    テスト環境では常に成功を返します。
+    
+    Args:
+        data: フロントエンドから送信された支払い情報
+        
+    Returns:
+        dict: 処理結果を含む辞書
+    """
+    try:
+        # 本番環境では実際の決済処理を実装
+        # テスト環境では常に成功を返す
+        plan_type = data.get('planType', 'premium')
+        
+        # 支払い情報をログに記録（本番環境では削除すること）
+        app.logger.info(f"Processing payment for {plan_type} plan: {data.get('price')} yen")
+        
+        # テスト用のトランザクションID生成
+        import uuid
+        transaction_id = f"test_{uuid.uuid4().hex[:10]}"
+        
+        return {
+            'success': True,
+            'transaction_id': transaction_id,
+            'message': '支払いが完了しました'
+        }
+    except Exception as e:
+        app.logger.error(f"Error processing payment: {str(e)}")
+        return {
+            'success': False,
+            'message': f'支払い処理でエラーが発生しました: {str(e)}',
+            'error_code': 'payment_processing_error'
+        }
 
 # マスタープレミアム会員権限チェック用デコレータ
 def master_premium_required(f):

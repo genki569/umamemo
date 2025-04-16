@@ -13,45 +13,36 @@
                 </div>
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-md-4 mb-3">
+                        <div class="col-md-6 mb-3">
                             <div class="card h-100">
                                 <div class="card-body text-center">
-                                    <h5 class="card-title">1ヶ月プラン</h5>
-                                    <h2 class="price mb-3">¥980</h2>
+                                    <h5 class="card-title">プレミアム会員</h5>
+                                    <h2 class="price mb-3">¥980<small>/月</small></h2>
+                                    <p class="text-muted">基本的な予想機能とデータ分析</p>
                                     <button class="btn btn-outline-primary select-plan" 
-                                            data-plan="monthly" 
+                                            data-plan="premium" 
                                             data-price="980"
-                                            data-duration="30">
+                                            data-duration="30"
+                                            data-type="premium">
                                         選択する
                                     </button>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-4 mb-3">
-                            <div class="card h-100 border-primary">
-                                <div class="card-body text-center">
-                                    <h5 class="card-title">6ヶ月プラン</h5>
-                                    <h2 class="price mb-3">¥4,980</h2>
-                                    <p class="text-success">15%お得！</p>
-                                    <button class="btn btn-primary select-plan" 
-                                            data-plan="half_yearly" 
-                                            data-price="4980"
-                                            data-duration="180">
-                                        選択する
-                                    </button>
+                        <div class="col-md-6 mb-3">
+                            <div class="card h-100 border-warning">
+                                <div class="card-header bg-warning text-dark">
+                                    <h6 class="mb-0 text-center">おすすめ</h6>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <div class="card h-100">
                                 <div class="card-body text-center">
-                                    <h5 class="card-title">1年プラン</h5>
-                                    <h2 class="price mb-3">¥9,800</h2>
-                                    <p class="text-success">17%お得！</p>
-                                    <button class="btn btn-outline-primary select-plan" 
-                                            data-plan="yearly" 
-                                            data-price="9800"
-                                            data-duration="365">
+                                    <h5 class="card-title">マスタープレミアム会員</h5>
+                                    <h2 class="price mb-3">¥2,980<small>/月</small></h2>
+                                    <p class="text-muted">全機能利用可能＋登録ボーナス3,000pt付与</p>
+                                    <button class="btn btn-warning select-plan" 
+                                            data-plan="master" 
+                                            data-price="2980"
+                                            data-duration="30"
+                                            data-type="master">
                                         選択する
                                     </button>
                                 </div>
@@ -92,7 +83,7 @@
 
         <!-- 特典説明 -->
         <div class="col-md-4">
-            <div class="card">
+            <div class="card mb-4">
                 <div class="card-header">
                     <h5 class="mb-0">プレミアム会員特典</h5>
                 </div>
@@ -103,6 +94,21 @@
                         <li class="mb-2">✓ レース分析レポートの閲覧</li>
                         <li class="mb-2">✓ 予想の投稿機能</li>
                         <li class="mb-2">✓ メモ機能の利用</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">マスタープレミアム会員特典</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled">
+                        <li class="mb-2">✓ プレミアム会員の全ての特典</li>
+                        <li class="mb-2">✓ 他ユーザーのレビュー無料閲覧</li>
+                        <li class="mb-2">✓ 登録ボーナス3,000ポイント付与</li>
+                        <li class="mb-2">✓ ポイント換金手数料10%（通常15%）</li>
+                        <li class="mb-2">✓ 優先サポート対応</li>
                     </ul>
                 </div>
             </div>
@@ -124,16 +130,28 @@ document.addEventListener('DOMContentLoaded', function() {
             selectedPlan = {
                 type: this.dataset.plan,
                 price: this.dataset.price,
-                duration: this.dataset.duration
+                duration: this.dataset.duration,
+                planType: this.dataset.type
             };
             
             // 選択状態の更新
             document.querySelectorAll('.select-plan').forEach(btn => {
-                btn.classList.remove('btn-primary');
-                btn.classList.add('btn-outline-primary');
+                if (btn.dataset.type === 'premium') {
+                    btn.classList.remove('btn-primary');
+                    btn.classList.add('btn-outline-primary');
+                } else {
+                    btn.classList.remove('btn-warning');
+                    btn.classList.add('btn-outline-warning');
+                }
             });
-            this.classList.remove('btn-outline-primary');
-            this.classList.add('btn-primary');
+            
+            if (this.dataset.type === 'premium') {
+                this.classList.remove('btn-outline-primary');
+                this.classList.add('btn-primary');
+            } else {
+                this.classList.remove('btn-outline-warning');
+                this.classList.add('btn-warning');
+            }
             
             // 支払いフォームの表示
             document.getElementById('paymentForm').style.display = 'block';
@@ -160,6 +178,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     plan: selectedPlan.type,
                     duration: selectedPlan.duration,
                     price: selectedPlan.price,
+                    planType: selectedPlan.planType,
                     // 実際の決済処理では、カード情報も送信
                     cardNumber: document.getElementById('cardNumber').value,
                     cardExpiry: document.getElementById('cardExpiry').value,
