@@ -1842,27 +1842,33 @@ def mypage_settings():
         return redirect(url_for('mypage_home'))
 
 
-# プレミアム機能へのリダイレト
+# premiumリダイレクト用デコレータ
 @app.route('/premium/redirect')
 @custom_login_required
 def premium_redirect():
-    return redirect(url_for('premium_features'))  # 'premium'から'premium_features'に変更
+    next = request.args.get('next')
+    if next:
+        return redirect(next)
+    return redirect(url_for('premium'))
 
-# レミアム機能のクセスチェック
 def premium_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
+        if not current_user.is_authenticated:
+            flash('ログインが必要です。', 'warning')
+            return redirect(url_for('login', next=request.url))
+        
         if not current_user.is_premium:
-            flash('この機能はプレミアム会員専です', 'warning')
-            return redirect(url_for('premium_features'))  # 'premium'から'premium_features'に変更
+            flash('この機能はプレミアム会員専用です。プレミアム会員にアップグレードしてください。', 'info')
+            return redirect(url_for('premium'))
+            
         return f(*args, **kwargs)
     return decorated_function
 
-# レビュー関連のルートを加
 @app.route('/races/<int:race_id>/review/create', methods=['GET', 'POST'])
 @login_required
 def create_review(race_id):
-    """レビューの作成・編集"""
+    """レビュー作成ページ"""
     race = Race.query.get_or_404(race_id)
     
     if request.method == 'POST':
@@ -2184,9 +2190,14 @@ def from_json(value):
 def admin_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if not current_user.is_authenticated or not current_user.is_admin:
-            flash('管理権限が必要です。', 'danger')
+        if not current_user.is_authenticated:
+            flash('ログインが必要です。', 'warning')
+            return redirect(url_for('login', next=request.url))
+        
+        if not current_user.is_admin:
+            flash('この機能は管理者専用です。', 'danger')
             return redirect(url_for('index'))
+            
         return f(*args, **kwargs)
     return decorated_function
 
@@ -2815,6 +2826,10 @@ def withdraw_points():
         fee_amount = int(amount * fee_rate)
         net_amount = amount - fee_amount
         
+        # フォームから銀行情報とメモを取得
+        bank_account = request.form.get('bank_account', '')
+        note = request.form.get('note', '')
+        
         # 換金リクエストを記録
         withdrawal = PointWithdrawal(
             user_id=current_user.id,
@@ -2822,7 +2837,9 @@ def withdraw_points():
             fee_amount=fee_amount,
             net_amount=net_amount,
             fee_rate=fee_rate,
-            status='pending'
+            status='pending',
+            bank_info=bank_account,  # 銀行口座情報を保存
+            request_note=note  # ユーザーメモを保存
         )
         db.session.add(withdrawal)
         

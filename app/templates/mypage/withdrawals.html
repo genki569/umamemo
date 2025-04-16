@@ -101,6 +101,22 @@
                             {% endif %}
                         </div>
                         
+                        {% if withdrawal.bank_info %}
+                        <hr>
+                        <div class="mt-2">
+                            <h6>振込先口座情報:</h6>
+                            <pre class="mb-0 bg-light p-2 rounded">{{ withdrawal.bank_info }}</pre>
+                        </div>
+                        {% endif %}
+                        
+                        {% if withdrawal.request_note %}
+                        <hr>
+                        <div class="mt-2">
+                            <h6>ユーザーメモ:</h6>
+                            <p class="mb-0">{{ withdrawal.request_note }}</p>
+                        </div>
+                        {% endif %}
+                        
                         {% if withdrawal.admin_note %}
                         <hr>
                         <div class="mt-2">
