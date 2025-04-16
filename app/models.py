@@ -803,6 +803,17 @@ class PaymentLog(db.Model):
             'refunded': 'info'
         }
         return color_map.get(self.status, 'secondary')
+        
+    @property
+    def type_display(self):
+        """取引種別の表示名を返す"""
+        type_map = {
+            'point': 'ポイント購入',
+            'premium': 'プレミアム会員',
+            'master': 'マスタープレミアム会員',
+            'review': 'レビュー購入'
+        }
+        return type_map.get(self.plan_type, self.plan_type)
 
 # 既存のモデルの後に追加
 class HorseMemo(db.Model):

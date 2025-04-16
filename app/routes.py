@@ -3734,10 +3734,12 @@ def admin_sales():
         last_month = this_month - timedelta(days=1)
         last_month = datetime(last_month.year, last_month.month, 1)
         
+        # 今月の売上
         monthly_sales = db.session.query(func.sum(PaymentLog.amount)).filter(
             PaymentLog.created_at >= this_month
         ).scalar() or 0
         
+        # 先月の売上
         last_monthly_sales = db.session.query(func.sum(PaymentLog.amount)).filter(
             PaymentLog.created_at >= last_month,
             PaymentLog.created_at < this_month
@@ -3745,13 +3747,48 @@ def admin_sales():
         
         monthly_diff = monthly_sales - last_monthly_sales
         
-        # ダミーデータ（points関連）
-        monthly_points = 1000
-        monthly_points_diff = 200
-        monthly_reviews = 50
-        monthly_reviews_diff = 10
-        monthly_premium = 20
-        monthly_premium_diff = 5
+        # 今月のポイント購入合計
+        monthly_points = db.session.query(func.sum(PaymentLog.amount)).filter(
+            PaymentLog.created_at >= this_month,
+            PaymentLog.plan_type == 'point'
+        ).scalar() or 0
+        
+        # 先月のポイント購入合計
+        last_monthly_points = db.session.query(func.sum(PaymentLog.amount)).filter(
+            PaymentLog.created_at >= last_month,
+            PaymentLog.created_at < this_month,
+            PaymentLog.plan_type == 'point'
+        ).scalar() or 0
+        
+        monthly_points_diff = monthly_points - last_monthly_points
+        
+        # 今月のレビュー購入数
+        monthly_reviews = ReviewPurchase.query.filter(
+            ReviewPurchase.purchased_at >= this_month
+        ).count()
+        
+        # 先月のレビュー購入数
+        last_monthly_reviews = ReviewPurchase.query.filter(
+            ReviewPurchase.purchased_at >= last_month,
+            ReviewPurchase.purchased_at < this_month
+        ).count()
+        
+        monthly_reviews_diff = monthly_reviews - last_monthly_reviews
+        
+        # 今月のプレミアム登録数
+        monthly_premium = MembershipChangeLog.query.filter(
+            MembershipChangeLog.changed_at >= this_month,
+            MembershipChangeLog.new_status.in_(['premium', 'master'])
+        ).count()
+        
+        # 先月のプレミアム登録数
+        last_monthly_premium = MembershipChangeLog.query.filter(
+            MembershipChangeLog.changed_at >= last_month,
+            MembershipChangeLog.changed_at < this_month,
+            MembershipChangeLog.new_status.in_(['premium', 'master'])
+        ).count()
+        
+        monthly_premium_diff = monthly_premium - last_monthly_premium
         
         return render_template('admin/sales.html', 
                               sales=sales, 
@@ -3805,6 +3842,20 @@ def admin_sales_stats():
             PaymentLog.created_at >= start_date
         ).group_by('date').order_by('date').all()
         
+        # プラン種別ごとの売上データ
+        plan_sales_data = {}
+        for plan_type in ['point', 'premium', 'master']:
+            plan_data = db.session.query(
+                date_trunc.label('date'),
+                func.sum(PaymentLog.amount).label('amount')
+            ).filter(
+                PaymentLog.status == 'completed',
+                PaymentLog.created_at >= start_date,
+                PaymentLog.plan_type == plan_type
+            ).group_by('date').order_by('date').all()
+            
+            plan_sales_data[plan_type] = plan_data
+        
         # データの整形
         labels = []
         sales = []
@@ -3813,9 +3864,30 @@ def admin_sales_stats():
             labels.append(data.date.strftime(format_str))
             sales.append(float(data.amount))
         
+        # プラン別データの整形
+        plan_datasets = {}
+        for plan_type, data_list in plan_sales_data.items():
+            plan_datasets[plan_type] = []
+            
+            # 日付ごとのデータを初期化
+            date_map = {label: 0 for label in labels}
+            
+            # 存在するデータで上書き
+            for item in data_list:
+                date_str = item.date.strftime(format_str)
+                if date_str in date_map:
+                    date_map[date_str] = float(item.amount)
+            
+            # ラベルに合わせて順序付きリストを作成
+            for label in labels:
+                plan_datasets[plan_type].append(date_map[label])
+        
         return jsonify({
             'labels': labels,
-            'sales': sales
+            'sales': sales,
+            'point_sales': plan_datasets.get('point', []),
+            'premium_sales': plan_datasets.get('premium', []),
+            'master_sales': plan_datasets.get('master', [])
         })
         
     except Exception as e:
@@ -3835,11 +3907,10 @@ def admin_payment_log_detail(log_id):
             'username': log.user.username,
             'type_display': log.type_display,
             'amount': f"¥{log.amount:,}",
-            'points': log.points,
+            'plan_type': log.plan_type,
             'status_display': log.status_display,
             'status_color': log.status_color,
-            'payment_id': log.payment_id,
-            'memo': log.memo
+            'payment_date': log.payment_date.strftime('%Y/%m/%d %H:%M') if log.payment_date else None
         })
         
     except Exception as e:
