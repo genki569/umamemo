@@ -2796,7 +2796,7 @@ def toggle_premium_status(user_id):
 @app.route('/admin/review-purchases')
 @login_required
 @admin_required
-def admin_review_purchases():
+def admin_review_purchases_list():
     try:
         purchases = ReviewPurchase.query\
             .join(User)\
@@ -2808,7 +2808,7 @@ def admin_review_purchases():
                              purchases=purchases)
                              
     except Exception as e:
-        app.logger.error(f"Error in admin_review_purchases: {str(e)}")
+        app.logger.error(f"Error in admin_review_purchases_list: {str(e)}")
         return render_template('admin/review_purchases.html', 
                              purchases=[],
                              error="購入履の取得中にエラーが発生しました。")
