@@ -32,7 +32,7 @@ import os
 import calendar
 from app.email_utils import send_confirmation_email
 
-# カスタムコレータの定義（ファイルの先頭付近に配置）
+# カスタムデコレータの定義
 def custom_login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -2216,20 +2216,7 @@ def premium_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
-# マスタープレミアム会員権限チェック用デコレータ
-def master_premium_required(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if not current_user.is_authenticated:
-            flash('ログインが必要です。', 'warning')
-            return redirect(url_for('login', next=request.url))
-        
-        if not current_user.is_premium or current_user.membership_type != 'master':
-            flash('この機能はマスタープレミアム会員専用です。マスタープレミアム会員にアップグレードしてください。', 'info')
-            return redirect(url_for('premium'))
-            
-        return f(*args, **kwargs)
-    return decorated_function
+
 
 # 管画面のルート
 @app.route('/admin')
