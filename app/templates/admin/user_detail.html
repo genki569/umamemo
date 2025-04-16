@@ -48,7 +48,7 @@
                         <tr>
                             <th>ポイント残高</th>
                             <td>
-                                {{ user.point }} pt
+                                {{ user.point_balance }} pt
                                 <button type="button" class="btn btn-sm btn-outline-primary ms-2" 
                                         data-bs-toggle="modal" data-bs-target="#addPointModal">
                                     <i class="fas fa-plus"></i> ポイント追加
@@ -79,15 +79,15 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for log in point_logs %}
+                        {% for log in point_history %}
                         <tr>
                             <td>{{ log.created_at.strftime('%Y/%m/%d %H:%M') }}</td>
-                            <td class="{{ 'text-success' if log.amount > 0 else 'text-danger' }}">
-                                {{ '+' if log.amount > 0 else '' }}{{ log.amount }}
+                            <td class="{{ 'text-success' if log.points > 0 else 'text-danger' }}">
+                                {{ '+' if log.points > 0 else '' }}{{ log.points }}
                             </td>
-                            <td>{{ log.type }}</td>
+                            <td>{{ log.action_type }}</td>
                             <td>{{ log.description }}</td>
-                            <td>{{ log.balance }}</td>
+                            <td>{{ log.points }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -108,17 +108,17 @@
                         <tr>
                             <th>日時</th>
                             <th>レース</th>
-                            <th>評価</th>
+                            <th>タイトル</th>
                             <th>ステータス</th>
                             <th>操作</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% for review in user.reviews %}
+                        {% for review in user.race_reviews %}
                         <tr>
                             <td>{{ review.created_at.strftime('%Y/%m/%d %H:%M') }}</td>
                             <td>{{ review.race.name }}</td>
-                            <td>{{ review.rating }}/5</td>
+                            <td>{{ review.title }}</td>
                             <td>
                                 <span class="badge {% if review.is_public %}bg-success{% else %}bg-warning{% endif %}">
                                     {{ '公開' if review.is_public else '非公開' }}
@@ -132,6 +132,81 @@
                             </td>
                         </tr>
                         {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- レビュー購入履歴 -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>レビュー購入履歴</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>購入日時</th>
+                            <th>レース</th>
+                            <th>販売者</th>
+                            <th>価格</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for purchase in review_purchases %}
+                        <tr>
+                            <td>{{ purchase.purchased_at.strftime('%Y/%m/%d %H:%M') }}</td>
+                            <td>{{ purchase.review.race.name }}</td>
+                            <td>{{ purchase.review.user.username }}</td>
+                            <td>{{ purchase.price }} pt</td>
+                            <td>
+                                <a href="{{ url_for('review_detail', review_id=purchase.review_id) }}" 
+                                   class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-eye"></i> 詳細
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        {% if not review_purchases %}
+                        <tr>
+                            <td colspan="5" class="text-center">購入履歴はありません</td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- ログイン履歴 -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>ログイン履歴</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>日時</th>
+                            <th>IPアドレス</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for log in login_history %}
+                        <tr>
+                            <td>{{ log.timestamp.strftime('%Y/%m/%d %H:%M') }}</td>
+                            <td>{{ log.ip_address }}</td>
+                        </tr>
+                        {% endfor %}
+                        {% if not login_history %}
+                        <tr>
+                            <td colspan="2" class="text-center">ログイン履歴はありません</td>
+                        </tr>
+                        {% endif %}
                     </tbody>
                 </table>
             </div>
