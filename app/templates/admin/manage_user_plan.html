@@ -1,0 +1,166 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+<div class="admin-manage-user-plan">
+    <!-- ヘッダー部分 -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4>ユーザープラン管理</h4>
+        <div class="actions">
+            <a href="{{ url_for('admin_user_detail', user_id=user.id) }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> ユーザー詳細に戻る
+            </a>
+        </div>
+    </div>
+
+    <!-- ユーザー基本情報 -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>ユーザー情報</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <table class="table table-borderless">
+                        <tr>
+                            <th style="width: 150px;">ユーザーID</th>
+                            <td>{{ user.id }}</td>
+                        </tr>
+                        <tr>
+                            <th>ユーザー名</th>
+                            <td>{{ user.username }}</td>
+                        </tr>
+                        <tr>
+                            <th>メールアドレス</th>
+                            <td>{{ user.email }}</td>
+                        </tr>
+                        <tr>
+                            <th>現在のプラン</th>
+                            <td>
+                                {% if user.is_premium %}
+                                    {% if user.membership_type == 'master' %}
+                                        <span class="badge bg-warning text-dark">マスタープレミアム</span>
+                                    {% else %}
+                                        <span class="badge bg-primary">プレミアム</span>
+                                    {% endif %}
+                                    {% if user.premium_expires_at %}
+                                        <span class="text-muted ms-2">
+                                            (有効期限: {{ user.premium_expires_at.strftime('%Y/%m/%d') }})
+                                        </span>
+                                    {% endif %}
+                                {% else %}
+                                    <span class="badge bg-secondary">無料会員</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- プラン変更フォーム -->
+    <div class="card">
+        <div class="card-header">
+            <h5>プラン変更</h5>
+        </div>
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('admin_manage_user_plan', user_id=user.id) }}">
+                <div class="mb-3">
+                    <label for="plan_type" class="form-label">プラン種別</label>
+                    <select class="form-select" id="plan_type" name="plan_type" required>
+                        <option value="free" {% if not user.is_premium %}selected{% endif %}>無料会員</option>
+                        <option value="premium" {% if user.is_premium and user.membership_type == 'premium' %}selected{% endif %}>プレミアム会員</option>
+                        <option value="master" {% if user.is_premium and user.membership_type == 'master' %}selected{% endif %}>マスタープレミアム会員</option>
+                    </select>
+                </div>
+                
+                <div class="mb-3" id="duration_field">
+                    <label for="duration_days" class="form-label">有効期間（日数）</label>
+                    <input type="number" class="form-control" id="duration_days" name="duration_days" 
+                           min="1" value="30" required>
+                    <div class="form-text">プレミアム会員の有効期間を日数で指定します。</div>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="reason" class="form-label">変更理由</label>
+                    <textarea class="form-control" id="reason" name="reason" rows="3" required></textarea>
+                </div>
+                
+                <div class="mb-4">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="add_bonus_points" name="add_bonus_points">
+                        <label class="form-check-label" for="add_bonus_points">
+                            マスタープレミアム会員へのアップグレード時にボーナスポイント(3,000pt)を付与する
+                        </label>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">
+                    プランを変更する
+                </button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- 変更履歴 -->
+    <div class="card mt-4">
+        <div class="card-header">
+            <h5>プラン変更履歴</h5>
+        </div>
+        <div class="card-body">
+            {% if membership_logs %}
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>変更日時</th>
+                                <th>変更前</th>
+                                <th>変更後</th>
+                                <th>理由</th>
+                                <th>有効期限</th>
+                                <th>変更者</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for log in membership_logs %}
+                            <tr>
+                                <td>{{ log.changed_at.strftime('%Y/%m/%d %H:%M') }}</td>
+                                <td>{{ log.old_status }}</td>
+                                <td>{{ log.new_status }}</td>
+                                <td>{{ log.reason }}</td>
+                                <td>{{ log.expires_at.strftime('%Y/%m/%d') if log.expires_at else '無期限' }}</td>
+                                <td>{{ log.admin.username }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="text-muted">変更履歴はありません。</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+    // 無料会員の場合は期間設定フィールドを非表示にする
+    document.addEventListener('DOMContentLoaded', function() {
+        const planTypeSelect = document.getElementById('plan_type');
+        const durationField = document.getElementById('duration_field');
+        const bonusPointsCheck = document.getElementById('add_bonus_points');
+        
+        function updateVisibility() {
+            if (planTypeSelect.value === 'free') {
+                durationField.style.display = 'none';
+                bonusPointsCheck.disabled = true;
+            } else {
+                durationField.style.display = 'block';
+                bonusPointsCheck.disabled = (planTypeSelect.value !== 'master');
+            }
+        }
+        
+        planTypeSelect.addEventListener('change', updateVisibility);
+        updateVisibility();
+    });
+</script>
+{% endblock %} 

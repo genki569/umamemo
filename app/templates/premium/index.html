@@ -1,202 +1,282 @@
 {% extends "base.html" %}
 
+{% block title %}プレミアム会員登録{% endblock %}
+
 {% block styles %}
 {{ super() }}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/premium.css') }}">
+<style>
+    .premium-page {
+        padding: 2rem 0;
+    }
+    
+    .plan-comparison {
+        margin-top: 2rem;
+        margin-bottom: 3rem;
+    }
+    
+    .plan-card {
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        padding: 2rem;
+        text-align: center;
+        transition: all 0.3s ease;
+        margin-bottom: 1.5rem;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .plan-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    .plan-free {
+        background-color: #f8f9fa;
+    }
+    
+    .plan-premium {
+        background-color: #f0f8ff;
+        border-color: #007bff;
+    }
+    
+    .plan-master {
+        background: linear-gradient(135deg, #fff8e1, #ffecc7);
+        border-color: #DAA520;
+    }
+    
+    .plan-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+    
+    .plan-price {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+    
+    .plan-price small {
+        font-size: 1rem;
+        color: #6c757d;
+    }
+    
+    .plan-features {
+        list-style: none;
+        padding: 0;
+        margin-bottom: 2rem;
+        text-align: left;
+    }
+    
+    .plan-features li {
+        padding: 0.5rem 0;
+        position: relative;
+        padding-left: 1.5rem;
+    }
+    
+    .plan-features li:before {
+        content: '✓';
+        position: absolute;
+        left: 0;
+        color: #28a745;
+    }
+    
+    .plan-features li.disabled {
+        color: #6c757d;
+        text-decoration: line-through;
+    }
+    
+    .plan-features li.disabled:before {
+        content: '✕';
+        color: #dc3545;
+    }
+    
+    .plan-badge {
+        position: absolute;
+        top: 0;
+        right: 0;
+        background: #dc3545;
+        color: white;
+        padding: 0.5rem 1rem;
+        font-size: 0.8rem;
+        font-weight: 600;
+        transform: rotate(45deg) translate(25%, -50%);
+        width: 150px;
+        text-align: center;
+    }
+    
+    .master-badge {
+        background: linear-gradient(90deg, #8B4513, #DAA520);
+    }
+    
+    .btn-subscribe {
+        border-radius: 50px;
+        padding: 0.75rem 2rem;
+        font-weight: 600;
+        margin-top: 1rem;
+    }
+    
+    .btn-master {
+        background: linear-gradient(90deg, #8B4513, #DAA520);
+        border: none;
+        color: white;
+    }
+    
+    .btn-master:hover {
+        background: linear-gradient(90deg, #693411, #b7860b);
+        color: white;
+    }
+</style>
 {% endblock %}
 
 {% block content %}
-<div class="premium-page">
-    <div class="premium-header">
-        <div class="container">
-            <h2 class="premium-title">
-                プレミアム会員の特典 <i class="fas fa-crown" style="color: #FFD700;"></i>
-            </h2>
-            <p class="premium-description">より深い競馬分析のための機能が使い放題</p>
+<div class="container premium-page">
+    <div class="premium-header text-center">
+        <h1 class="premium-title">プレミアム会員プラン</h1>
+        <p class="premium-description">
+            より詳細な競馬情報とツールにアクセスして、競馬予想の精度を高めましょう。
+            あなたのニーズに合わせた最適なプランをお選びください。
+        </p>
+    </div>
+    
+    <div class="row plan-comparison">
+        <!-- 無料プラン -->
+        <div class="col-md-4">
+            <div class="plan-card plan-free">
+                <h3 class="plan-title">無料会員</h3>
+                <div class="plan-price">
+                    ¥0<small>/月</small>
+                </div>
+                <ul class="plan-features">
+                    <li>基本的なレース情報の閲覧</li>
+                    <li>お気に入り馬登録（最大10頭まで）</li>
+                    <li>レース回顧の投稿（無料公開のみ）</li>
+                    <li class="disabled">広告表示あり</li>
+                    <li class="disabled">レビューの有料販売</li>
+                    <li class="disabled">お気に入り馬の制限なし</li>
+                    <li class="disabled">ポイント換金手数料15%</li>
+                    <li class="disabled">プロの回顧ノート</li>
+                </ul>
+                <p class="text-muted">現在のプラン</p>
+            </div>
+        </div>
+        
+        <!-- プレミアムプラン -->
+        <div class="col-md-4">
+            <div class="plan-card plan-premium">
+                <div class="plan-badge">おすすめ</div>
+                <h3 class="plan-title">プレミアム会員</h3>
+                <div class="plan-price">
+                    ¥980<small>/月</small>
+                </div>
+                <ul class="plan-features">
+                    <li>基本的なレース情報の閲覧</li>
+                    <li>お気に入り馬登録（無制限）</li>
+                    <li>レース回顧の投稿（有料販売可能）</li>
+                    <li>広告表示なし</li>
+                    <li>レビューの有料販売</li>
+                    <li>お気に入り馬の制限なし</li>
+                    <li class="disabled">ポイント換金手数料15%</li>
+                    <li class="disabled">プロの回顧ノート</li>
+                </ul>
+                <a href="{{ url_for('premium_payment', plan='premium') }}" class="btn btn-primary btn-subscribe">
+                    プレミアム会員に登録
+                </a>
+            </div>
+        </div>
+        
+        <!-- マスタープレミアムプラン -->
+        <div class="col-md-4">
+            <div class="plan-card plan-master">
+                <div class="plan-badge master-badge">マスター</div>
+                <h3 class="plan-title">マスタープレミアム</h3>
+                <div class="plan-price">
+                    ¥1,980<small>/月</small>
+                </div>
+                <ul class="plan-features">
+                    <li>基本的なレース情報の閲覧</li>
+                    <li>お気に入り馬登録（無制限）</li>
+                    <li>レース回顧の投稿（有料販売可能）</li>
+                    <li>広告表示なし</li>
+                    <li>レビューの有料販売</li>
+                    <li>お気に入り馬の制限なし</li>
+                    <li>ポイント換金手数料10%</li>
+                    <li>プロの回顧ノート（毎日更新）</li>
+                    <li>3,000ポイントのボーナス</li>
+                </ul>
+                <a href="{{ url_for('premium_payment', plan='master') }}" class="btn btn-master btn-subscribe">
+                    マスタープレミアムに登録
+                </a>
+            </div>
         </div>
     </div>
-
-    <div class="container">
-        <!-- プラン比較表 -->
-        <div class="row justify-content-center mb-5">
-            <div class="col-12">
-                <div class="table-responsive">
-                    <table class="table plan-comparison">
-                        <thead>
-                            <tr>
-                                <th>機能</th>
-                                <th class="text-center">無料プラン</th>
-                                <th class="text-center">
-                                    <span class="premium-badge">プレミアム</span>
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>基本的なメモ機能</td>
-                                <td class="text-center"><i class="fas fa-check"></i></td>
-                                <td class="text-center"><i class="fas fa-check"></i></td>
-                            </tr>
-                            <tr>
-                                <td>詳細なラップ分析</td>
-                                <td class="text-center">月3回まで</td>
-                                <td class="text-center">無制限</td>
-                            </tr>
-                            <tr>
-                                <td>血統適性診断</td>
-                                <td class="text-center"><i class="fas fa-times"></i></td>
-                                <td class="text-center"><i class="fas fa-check"></i></td>
-                            </tr>
-                            <tr>
-                                <td>プロの回顧閲覧</td>
-                                <td class="text-center">一部のみ</td>
-                                <td class="text-center">全て閲覧可能</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+    
+    <div class="row">
+        <div class="col-md-12 text-center">
+            <h3 class="mb-4">プレミアム会員の特典</h3>
+            <p class="text-muted mb-5">プレミアム会員になると、以下の特典が利用できます。</p>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="feature-card text-center p-4">
+                <i class="fas fa-ad fa-3x mb-3 text-danger"></i>
+                <h5>広告なしで快適に</h5>
+                <p>サイト内のすべての広告が非表示になり、より快適に競馬情報を閲覧できます。</p>
             </div>
         </div>
-
-        <!-- 料金プラン -->
-        <div class="row justify-content-center g-4 mb-5">
-            <!-- 無料プラン -->
-            <div class="col-md-6 col-lg-4">
-                <div class="card plan-card shadow-sm">
-                    <div class="card-body text-center p-4">
-                        <div class="plan-header">
-                            <div class="premium-badge invisible d-inline-block mb-2">非表示用</div><!-- 高さ揃え用 -->
-                            <h5 class="fw-bold mb-4">無料プラン</h5>
-                            <div class="price-tag">
-                                <span class="amount free-price">0</span>
-                                <span class="currency">円</span>
-                                <span class="period">ずっと無料</span>
-                            </div>
-                        </div>
-                        <ul class="list-unstyled plan-features mb-4">
-                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>基本的なメモ機能</li>
-                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>レース結果の閲覧</li>
-                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>基本的な回顧機能</li>
-                            <li class="mb-2 text-muted"><i class="fas fa-times me-2"></i>詳細なラップ分析</li>
-                            <li class="mb-2 text-muted"><i class="fas fa-times me-2"></i>血統適性診断</li>
-                            <li class="mb-2 text-muted"><i class="fas fa-times me-2"></i>プロの回顧閲覧</li>
-                        </ul>
-                        <div class="plan-action mt-auto">
-                            <p class="text-muted mb-3">
-                                <small><i class="fas fa-info-circle me-1"></i>基本機能が無料で使えます</small>
-                            </p>
-                            <a href="{{ url_for('register') }}" class="btn btn-outline-primary btn-lg w-100 rounded-pill">
-                                無料で始める
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- プレミアムプラン -->
-            <div class="col-md-6 col-lg-4">
-                <div class="card plan-card featured shadow-sm">
-                    <div class="card-body text-center p-4">
-                        <div class="plan-header">
-                            <div class="premium-badge d-inline-block mb-2">おすすめ</div>
-                            <h5 class="fw-bold mb-4">プレミアムプラン</h5>
-                            <div class="price-tag">
-                                <span class="amount">980</span>
-                                <span class="currency">円</span>
-                                <span class="period">月額（税込）</span>
-                            </div>
-                        </div>
-                        <ul class="list-unstyled plan-features mb-4">
-                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>基本的なメモ機能</li>
-                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>レース結果の閲覧</li>
-                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>基本的な回顧機能</li>
-                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>詳細なラップ分析</li>
-                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>血統適性診断</li>
-                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>プロの回顧閲覧</li>
-                        </ul>
-                        <div class="plan-action mt-auto">
-                            <p class="text-muted mb-3">
-                                <small><i class="fas fa-info-circle me-1"></i>いつでも解約可能</small>
-                            </p>
-                            {% if current_user.is_authenticated %}
-                                <a href="{{ url_for('start_trial') }}" class="btn btn-gradient btn-lg w-100 rounded-pill">
-                                    14日間無料トライアル
-                                </a>
-                            {% else %}
-                                {% if debug %}
-                                    <a href="{{ url_for('create_debug_user') }}?next={{ url_for('start_trial') }}" 
-                                       class="btn btn-gradient btn-lg w-100 rounded-pill">
-                                        デバッグユーザーでログイン
-                                    </a>
-                                {% else %}
-                                    <a href="{{ url_for('login') }}" class="btn btn-gradient btn-lg w-100 rounded-pill">
-                                        ログインして始める
-                                    </a>
-                                {% endif %}
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
+        
+        <div class="col-md-4">
+            <div class="feature-card text-center p-4">
+                <i class="fas fa-horse fa-3x mb-3 text-primary"></i>
+                <h5>お気に入り馬の制限なし</h5>
+                <p>お気に入りの馬を無制限に登録可能。注目の馬をすべて管理できます。</p>
             </div>
         </div>
-
-        <!-- 機能詳細 -->
-        <div class="premium-features mb-5">
-            <h4 class="text-center fw-bold mb-4">プレミアム機能の詳細</h4>
-            <div class="row g-4">
-                <!-- ラップ分析 -->
-                <div class="col-md-4">
-                    <div class="card feature-card shadow-sm">
-                        <div class="card-body p-4">
-                            <div class="feature-icon">
-                                <i class="fas fa-chart-line"></i>
-                            </div>
-                            <h5 class="fw-bold mb-3">詳細ラップ分析</h5>
-                            <p class="text-muted mb-3">各馬のラップタイム詳細分析</p>
-                            <ul class="list-unstyled">
-                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i>区間ラップ比較</li>
-                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i>位置取り評価</li>
-                                <li><i class="fas fa-check text-success me-2"></i>脚質適性診断</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 血統分析 -->
-                <div class="col-md-4">
-                    <div class="card feature-card shadow-sm">
-                        <div class="card-body p-4">
-                            <div class="feature-icon">
-                                <i class="fas fa-dna"></i>
-                            </div>
-                            <h5 class="fw-bold mb-3">血統適性診断</h5>
-                            <p class="text-muted mb-3">血統からみる適性評価</p>
-                            <ul class="list-unstyled">
-                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i>距離適性診断</li>
-                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i>血統適性の詳細な情報</li>
-                                <li><i class="fas fa-check text-success me-2"></i>血統適性の詳細な分析</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- プロの回顧閲覧 -->
-                <div class="col-md-4">
-                    <div class="card feature-card shadow-sm">
-                        <div class="card-body p-4">
-                            <div class="feature-icon">
-                                <i class="fas fa-eye"></i>
-                            </div>
-                            <h5 class="fw-bold mb-3">プロの回顧閲覧</h5>
-                            <p class="text-muted mb-3">プロの回顧閲覧の詳細な情報を提供</p>
-                            <ul class="list-unstyled">
-                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i>プロの回顧閲覧の詳細な情報</li>
-                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i>プロの回顧閲覧の詳細な分析</li>
-                                <li><i class="fas fa-check text-success me-2"></i>プロの回顧閲覧の詳細な診断</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
+        
+        <div class="col-md-4">
+            <div class="feature-card text-center p-4">
+                <i class="fas fa-coins fa-3x mb-3 text-warning"></i>
+                <h5>レビューの販売で収益化</h5>
+                <p>あなたの競馬知識やレース分析を販売して、ポイントを獲得できます。</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-5">
+        <div class="col-md-12 text-center">
+            <h3 class="mb-4">マスタープレミアム会員限定特典</h3>
+            <p class="text-muted mb-5">マスタープレミアム会員だけの特別な特典をご紹介します。</p>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="feature-card text-center p-4">
+                <i class="fas fa-book fa-3x mb-3" style="color: #DAA520;"></i>
+                <h5>プロの回顧ノートが毎日読み放題</h5>
+                <p>競馬のプロフェッショナルによる詳細なレース分析と回顧が毎日更新されます。次走の狙い目や馬場傾向の分析など、貴重な情報が満載です。</p>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="feature-card text-center p-4">
+                <i class="fas fa-percentage fa-3x mb-3" style="color: #8B4513;"></i>
+                <h5>ポイント換金手数料が10%に</h5>
+                <p>ポイントを現金に換金する際の手数料が15%から10%に削減されます。より多くのポイントを現金化できるようになります。</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-5">
+        <div class="col-md-12 text-center">
+            <p class="text-muted">
+                ※いつでもプランの変更や解約が可能です。解約した場合も、期間満了までサービスをご利用いただけます。<br>
+                ※マスタープレミアム会員の特典は、登録後すぐにご利用いただけます。
+            </p>
+            
+            <div class="mt-4">
+                <a href="{{ url_for('premium_features') }}" class="btn btn-outline-secondary">
+                    詳しい機能比較を見る
+                </a>
             </div>
         </div>
     </div>

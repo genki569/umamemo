@@ -5,7 +5,7 @@ from app.models import (
     RaceReview, RaceMemo, UserSettings, ReviewPurchase, 
     Notification, LoginHistory, SupportTicket, 
     MembershipChangeLog, PaymentLog, ShutubaEntry,
-    HorseMemo, AccessLog  # AccessLog を追加
+    HorseMemo, AccessLog, PointWithdrawal  # AccessLog を追加, PointWithdrawal を追加
 )
 from datetime import datetime, timedelta
 from flask_wtf import FlaskForm
@@ -1138,6 +1138,22 @@ def toggle_favorite(horse_id):
             message = '馬をお気入りから削除しました'
             is_favorite = False
         else:
+            # 無料会員の場合、お気に入り数制限をチェック
+            if not current_user.is_premium:
+                # 既存のお気に入り数を取得
+                favorites_count = Favorite.query.filter_by(user_id=current_user.id).count()
+                
+                # 10件以上の場合は追加できない
+                if favorites_count >= 10:
+                    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                        return jsonify({
+                            'status': 'error',
+                            'message': 'お気に入りは無料会員は10件までです。プレミアム会員にアップグレードすると制限なく登録できます。',
+                            'redirect_url': url_for('premium')
+                        }), 403
+                    flash('お気に入りは無料会員は10件までです。プレミアム会員にアップグレードしてください。', 'warning')
+                    return redirect(url_for('premium'))
+            
             favorite = Favorite(
                 user_id=current_user.id,
                 horse_id=horse_id
@@ -1246,7 +1262,8 @@ def premium_features():
 @login_required
 def premium_payment():
     """プレミアム会員支払いペー"""
-    return render_template('premium/payment.html')
+    plan_type = request.args.get('plan', 'premium')
+    return render_template('premium/payment.html', plan_type=plan_type)
 
 # プレミアム登録完了ページ
 @app.route('/premium/complete')
@@ -1262,6 +1279,7 @@ def premium_subscribe():
     """プレミアム会員への登録処理"""
     try:
         data = request.get_json()
+        plan_type = data.get('plan', 'premium')  # premium または master
         
         # 支払い実際にはStripeなの決済サービスを使用）
         payment_successful = process_payment(data)  # この関は実装が必要
@@ -1269,13 +1287,14 @@ def premium_subscribe():
         if payment_successful:
             # ユーザーのプレミアム状態を更新
             current_user.is_premium = True
+            current_user.membership_type = plan_type
             current_user.premium_expires_at = datetime.now() + timedelta(days=int(data['duration']))
             
             # 支払い履歴を記録
             payment_log = PaymentLog(
                 user_id=current_user.id,
                 amount=data['price'],
-                plan_type=data['plan'],
+                plan_type=plan_type,
                 duration_days=data['duration']
             )
             db.session.add(payment_log)
@@ -1284,17 +1303,26 @@ def premium_subscribe():
             membership_change = MembershipChangeLog(
                 user_id=current_user.id,
                 changed_by=current_user.id,
-                old_status='normal',
-                new_status='premium',
+                old_status='normal' if not current_user.is_premium else current_user.membership_type,
+                new_status=plan_type,
                 reason='ユーザーによる購入'
             )
             db.session.add(membership_change)
+            
+            # ボーナスポイントの付与（マスタープレミアム会員のみ）
+            if plan_type == 'master':
+                # 3000ポイントのボーナス
+                current_user.add_points(
+                    3000, 
+                    type='signup_bonus', 
+                    description='マスタープレミアム登録ボーナス'
+                )
             
             db.session.commit()
             
             return jsonify({
                 'success': True,
-                'message': 'プレミア会員が了しました'
+                'message': f'{plan_type.capitalize()}会員登録が完了しました'
             })
         else:
             return jsonify({
@@ -1309,6 +1337,27 @@ def premium_subscribe():
             'success': False,
             'message': 'エーが発生しました'
         }), 500
+
+# マスタープレミアム専用コンテンツページ
+@app.route('/master-premium/daily-reviews')
+@master_premium_required
+def master_premium_daily_reviews():
+    """マスタープレミアム会員専用のプロ回顧ノートページ"""
+    try:
+        # 最近のプロによるレビューを取得
+        pro_reviews = RaceReview.query\
+            .join(User)\
+            .filter(User.is_admin == True)\
+            .order_by(RaceReview.created_at.desc())\
+            .limit(10)\
+            .all()
+            
+        return render_template('premium/master/daily_reviews.html',
+                             pro_reviews=pro_reviews)
+    except Exception as e:
+        app.logger.error(f"Error in master premium daily reviews: {str(e)}")
+        flash('データの取得中にエラーが発生しました。', 'error')
+        return redirect(url_for('index'))
 
 # デッグ用簡易ログイン
 @app.route('/debug-login')
@@ -1817,6 +1866,16 @@ def create_review(race_id):
     race = Race.query.get_or_404(race_id)
     
     if request.method == 'POST':
+        # 無料会員が有料販売しようとしていないかチェック
+        can_sell, message = check_free_user_can_sell_review(current_user)
+        sale_status = request.form.get('sale_status', 'free')
+        price = request.form.get('price', type=int, default=0)
+        
+        # 無料会員が有料販売しようとしている場合
+        if sale_status != 'free' and price > 0 and not can_sell:
+            flash(message, 'warning')
+            return redirect(url_for('premium'))
+        
         review = RaceReview(
             race_id=race_id,
             user_id=current_user.id,
@@ -1830,8 +1889,8 @@ def create_review(race_id):
             notable_performances=request.form['notable_performances'],
             future_prospects=request.form['future_prospects'],
             is_public=request.form.get('is_public', type=bool),
-            sale_status=request.form.get('sale_status', 'free'),
-            price=request.form.get('price', type=int, default=0),
+            sale_status=sale_status if can_sell else 'free',  # 無料会員は強制的に無料設定
+            price=price if can_sell else 0,  # 無料会員は価格を0に設定
             description=request.form.get('description', '')
         )  # ここに閉じ括弧を追加
         db.session.add(review)
@@ -1843,7 +1902,13 @@ def create_review(race_id):
         flash('レビューを作成しました', 'success')
         return redirect(url_for('view_review', race_id=race_id, review_id=review.id))
     
-    return render_template('review/create.html', race=race)
+    # 無料会員が有料販売できるかチェック（テンプレートへ渡す）
+    can_sell, message = check_free_user_can_sell_review(current_user)
+    
+    return render_template('review/create.html', 
+                         race=race, 
+                         can_sell=can_sell, 
+                         premium_required_message=message)
 
 @app.route('/races/<int:race_id>/review/<int:review_id>', methods=['GET'])
 def view_review(race_id, review_id):
@@ -2122,6 +2187,36 @@ def admin_required(f):
         if not current_user.is_authenticated or not current_user.is_admin:
             flash('管理権限が必要です。', 'danger')
             return redirect(url_for('index'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+# プレミアム会員権限チェック用デコレータ
+def premium_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not current_user.is_authenticated:
+            flash('ログインが必要です。', 'warning')
+            return redirect(url_for('login', next=request.url))
+        
+        if not current_user.is_premium:
+            flash('この機能はプレミアム会員専用です。プレミアム会員にアップグレードしてください。', 'info')
+            return redirect(url_for('premium'))
+            
+        return f(*args, **kwargs)
+    return decorated_function
+
+# マスタープレミアム会員権限チェック用デコレータ
+def master_premium_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not current_user.is_authenticated:
+            flash('ログインが必要です。', 'warning')
+            return redirect(url_for('login', next=request.url))
+        
+        if not current_user.is_premium or current_user.membership_type != 'master':
+            flash('この機能はマスタープレミアム会員専用です。マスタープレミアム会員にアップグレードしてください。', 'info')
+            return redirect(url_for('premium'))
+            
         return f(*args, **kwargs)
     return decorated_function
 
@@ -2692,6 +2787,83 @@ def mypage_point_history():
     except Exception as e:
         app.logger.error(f"Error in point history: {str(e)}")
         flash('履歴の取得中にエラーが発生ました。', 'error')
+        return redirect(url_for('mypage_home'))
+
+# ポイント換金リクエスト
+@app.route('/mypage/withdraw-points', methods=['GET', 'POST'])
+@login_required
+def withdraw_points():
+    """ポイントを現金に換金するリクエストを送信"""
+    if request.method == 'GET':
+        # 手数料率を取得
+        fee_rate = current_user.get_withdrawal_fee_rate()
+        
+        return render_template('mypage/withdraw_points.html', 
+                             point_balance=current_user.point_balance,
+                             fee_rate=fee_rate)
+    
+    # POSTリクエストの処理
+    try:
+        amount = int(request.form.get('amount', 0))
+        
+        if not current_user.can_withdraw_points(amount):
+            flash('換金額が不正です。最低5000ポイント以上、残高以下の金額を指定してください。', 'warning')
+            return redirect(url_for('withdraw_points'))
+        
+        # 手数料率を取得して適用
+        fee_rate = current_user.get_withdrawal_fee_rate()
+        fee_amount = int(amount * fee_rate)
+        net_amount = amount - fee_amount
+        
+        # 換金リクエストを記録
+        withdrawal = PointWithdrawal(
+            user_id=current_user.id,
+            requested_amount=amount,
+            fee_amount=fee_amount,
+            net_amount=net_amount,
+            fee_rate=fee_rate,
+            status='pending'
+        )
+        db.session.add(withdrawal)
+        
+        # ポイントを差し引く
+        current_user.use_points(
+            amount, 
+            type='withdrawal', 
+            description=f'ポイント換金リクエスト: {amount}ポイント（手数料: {fee_amount}ポイント、受取額: {net_amount}円）'
+        )
+        
+        db.session.commit()
+        
+        flash(f'{amount}ポイントの換金リクエストを受け付けました。確認後、指定の口座に振り込まれます。', 'success')
+        return redirect(url_for('mypage_withdrawals'))
+        
+    except ValueError:
+        flash('不正な入力値です。', 'danger')
+        return redirect(url_for('withdraw_points'))
+    except Exception as e:
+        db.session.rollback()
+        app.logger.error(f"Error in withdraw_points: {str(e)}")
+        flash('エラーが発生しました。', 'danger')
+        return redirect(url_for('withdraw_points'))
+
+# 換金履歴表示
+@app.route('/mypage/withdrawals')
+@login_required
+def mypage_withdrawals():
+    """換金リクエスト履歴を表示"""
+    try:
+        withdrawals = PointWithdrawal.query\
+            .filter_by(user_id=current_user.id)\
+            .order_by(PointWithdrawal.created_at.desc())\
+            .all()
+        
+        return render_template('mypage/withdrawals.html',
+                            withdrawals=withdrawals)
+                             
+    except Exception as e:
+        app.logger.error(f"Error in withdrawal history: {str(e)}")
+        flash('履歴の取得中にエラーが発生しました。', 'error')
         return redirect(url_for('mypage_home'))
 
 # お気に入り機能の追加
@@ -4598,3 +4770,155 @@ def robots_txt():
         response = make_response(content)
         response.headers["Content-Type"] = "text/plain"
         return response
+
+# 無料会員のレビュー販売制限チェック関数
+def check_free_user_can_sell_review(user):
+    """無料会員がレビューを販売できるかチェック"""
+    if user.is_premium:
+        return True, ""  # プレミアム会員は制限なし
+    
+    # 無料会員は有料販売不可
+    return False, "無料会員は有料でレビューを販売できません。プレミアム会員にアップグレードしてください。"
+
+# 広告表示制御用関数
+def should_show_ads(user):
+    """広告を表示すべきかどうかを判定"""
+    # 未ログインまたは無料会員の場合のみ広告表示
+    return not user.is_authenticated or not user.is_premium
+
+# ユーザープラン管理
+@app.route('/admin/users/<int:user_id>/manage-plan', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def admin_manage_user_plan(user_id):
+    """ユーザーのプラン管理"""
+    user = User.query.get_or_404(user_id)
+    
+    # プラン変更履歴を取得
+    membership_logs = MembershipChangeLog.query\
+        .filter_by(user_id=user.id)\
+        .order_by(MembershipChangeLog.changed_at.desc())\
+        .all()
+    
+    if request.method == 'POST':
+        plan_type = request.form.get('plan_type', 'free')
+        duration_days = int(request.form.get('duration_days', 30))
+        
+        # 古いステータスを記録
+        old_status = user.membership_type
+        
+        # 新しいステータスを適用
+        user.membership_type = plan_type
+        if plan_type != 'free':
+            user.is_premium = True
+            user.premium_expires_at = datetime.now() + timedelta(days=duration_days)
+        else:
+            user.is_premium = False
+            user.premium_expires_at = None
+        
+        # 変更履歴を記録
+        membership_change = MembershipChangeLog(
+            user_id=user.id,
+            changed_by=current_user.id,
+            old_status=old_status,
+            new_status=plan_type,
+            reason=request.form.get('reason', '管理者による変更'),
+            expires_at=user.premium_expires_at
+        )
+        db.session.add(membership_change)
+        
+        # マスタープレミアムにアップグレードする場合、ボーナスポイントを付与
+        if plan_type == 'master' and request.form.get('add_bonus_points') == 'on':
+            user.add_points(
+                3000,
+                type='master_upgrade_bonus',
+                description='マスタープレミアム会員登録ボーナス'
+            )
+            flash('マスタープレミアム登録ボーナスポイント(3,000pt)を付与しました', 'success')
+        
+        db.session.commit()
+        
+        flash(f'ユーザー「{user.username}」のプランを「{plan_type}」に変更しました', 'success')
+        return redirect(url_for('admin_user_detail', user_id=user.id))
+    
+    return render_template('admin/manage_user_plan.html', user=user, membership_logs=membership_logs)
+
+# 換金リクエスト管理ページ
+@app.route('/admin/withdrawals')
+@login_required
+@admin_required
+def admin_withdrawals():
+    """換金リクエスト一覧"""
+    status = request.args.get('status', '')
+    query = PointWithdrawal.query
+    
+    if status:
+        query = query.filter_by(status=status)
+        
+    withdrawals = query.order_by(PointWithdrawal.created_at.desc()).all()
+    
+    return render_template('admin/withdrawals.html', 
+                          withdrawals=withdrawals,
+                          current_status=status)
+
+# 換金リクエスト処理ページ
+@app.route('/admin/withdrawals/<int:withdrawal_id>/process', methods=['POST'])
+@login_required
+@admin_required
+def process_withdrawal(withdrawal_id):
+    """換金リクエスト処理"""
+    withdrawal = PointWithdrawal.query.get_or_404(withdrawal_id)
+    action = request.form.get('action')
+    admin_note = request.form.get('admin_note', '')
+    
+    if action == 'approve':
+        withdrawal.status = 'approved'
+        withdrawal.admin_id = current_user.id
+        withdrawal.admin_note = admin_note
+        flash('換金リクエストを承認しました', 'success')
+        
+    elif action == 'reject':
+        # リジェクトの場合はポイントを返還
+        withdrawal.status = 'rejected'
+        withdrawal.admin_id = current_user.id
+        withdrawal.admin_note = admin_note
+        
+        # ユーザーにポイントを返還
+        user = User.query.get(withdrawal.user_id)
+        user.add_points(
+            withdrawal.requested_amount, 
+            type='withdrawal_rejected', 
+            description=f'換金リクエスト却下によるポイント返還: {withdrawal.requested_amount}ポイント'
+        )
+        
+        flash('換金リクエストを却下し、ポイントを返還しました', 'success')
+        
+    elif action == 'complete':
+        withdrawal.status = 'completed'
+        withdrawal.admin_id = current_user.id
+        withdrawal.admin_note = admin_note
+        withdrawal.completed_at = datetime.now()
+        flash('換金処理を完了としてマークしました', 'success')
+    
+    db.session.commit()
+    return redirect(url_for('admin_withdrawals'))
+
+@app.route('/admin/review-purchases')
+@login_required
+@admin_required
+def admin_review_purchases():
+    try:
+        purchases = ReviewPurchase.query\
+            .join(User)\
+            .join(RaceReview)\
+            .order_by(ReviewPurchase.created_at.desc())\
+            .all()
+            
+        return render_template('admin/review_purchases.html', 
+                             purchases=purchases)
+                             
+    except Exception as e:
+        app.logger.error(f"Error in admin_review_purchases: {str(e)}")
+        return render_template('admin/review_purchases.html', 
+                             purchases=[],
+                             error="購入履の取得中にエラーが発生しました。")

@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block title %}ポイント換金履歴{% endblock %}
+
+{% block styles %}
+<style>
+    .status-badge {
+        font-size: 0.8rem;
+        padding: 0.25rem 0.5rem;
+    }
+    
+    .withdraw-card {
+        margin-bottom: 1.5rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    .withdraw-card .card-header {
+        padding: 0.75rem 1.25rem;
+        background-color: #f8f9fa;
+        border-bottom: 1px solid rgba(0,0,0,0.125);
+    }
+    
+    .withdraw-details {
+        display: flex;
+        flex-wrap: wrap;
+        margin-top: 0.5rem;
+    }
+    
+    .withdraw-detail-item {
+        margin-right: 1.5rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .withdraw-detail-label {
+        font-weight: bold;
+        display: block;
+        font-size: 0.8rem;
+        color: #6c757d;
+        margin-bottom: 0.2rem;
+    }
+    
+    .withdraw-detail-value {
+        font-size: 0.95rem;
+    }
+    
+    .empty-history {
+        text-align: center;
+        padding: 2rem;
+        background-color: #f8f9fa;
+        border-radius: 0.25rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="mb-4">ポイント換金履歴</h1>
+            
+            <div class="mb-4">
+                <a href="{{ url_for('withdraw_points') }}" class="btn btn-primary">
+                    <i class="fas fa-exchange-alt mr-1"></i> 新規換金リクエスト
+                </a>
+                <a href="{{ url_for('mypage_point_history') }}" class="btn btn-outline-secondary ml-2">
+                    <i class="fas fa-history mr-1"></i> ポイント履歴を見る
+                </a>
+            </div>
+            
+            {% if withdrawals %}
+                {% for withdrawal in withdrawals %}
+                <div class="card withdraw-card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="badge badge-{{ withdrawal.status_color }} status-badge">{{ withdrawal.status_display }}</span>
+                            <strong class="ml-2">{{ withdrawal.requested_amount | format_number }} ポイント換金</strong>
+                        </div>
+                        <div>
+                            <small class="text-muted">{{ withdrawal.created_at.strftime('%Y年%m月%d日 %H:%M') }}</small>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="withdraw-details">
+                            <div class="withdraw-detail-item">
+                                <span class="withdraw-detail-label">リクエスト額</span>
+                                <span class="withdraw-detail-value">{{ withdrawal.requested_amount | format_number }} ポイント</span>
+                            </div>
+                            <div class="withdraw-detail-item">
+                                <span class="withdraw-detail-label">手数料 ({{ (withdrawal.fee_rate * 100) | int }}%)</span>
+                                <span class="withdraw-detail-value">{{ withdrawal.fee_amount | format_number }} ポイント</span>
+                            </div>
+                            <div class="withdraw-detail-item">
+                                <span class="withdraw-detail-label">振込予定額</span>
+                                <span class="withdraw-detail-value">{{ withdrawal.net_amount | format_number }} 円</span>
+                            </div>
+                            {% if withdrawal.completed_at %}
+                            <div class="withdraw-detail-item">
+                                <span class="withdraw-detail-label">振込完了日</span>
+                                <span class="withdraw-detail-value">{{ withdrawal.completed_at.strftime('%Y年%m月%d日') }}</span>
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        {% if withdrawal.admin_note %}
+                        <hr>
+                        <div class="mt-2">
+                            <h6>管理者メモ:</h6>
+                            <p class="mb-0">{{ withdrawal.admin_note }}</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-history">
+                    <i class="fas fa-info-circle fa-2x mb-3 text-info"></i>
+                    <h5>換金履歴はありません</h5>
+                    <p class="text-muted mb-0">ポイントを貯めて、換金リクエストを送信しましょう。</p>
+                    <p class="text-muted">最低換金額は5,000ポイントからです。</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %} 

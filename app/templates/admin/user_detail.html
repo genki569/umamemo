@@ -144,6 +144,17 @@
             <h5>管理アクション</h5>
         </div>
         <div class="card-body">
+            <div class="row mb-4">
+                <div class="col-12">
+                    <a href="{{ url_for('admin_manage_user_plan', user_id=user.id) }}" class="btn btn-primary">
+                        <i class="fas fa-id-card"></i> プラン管理
+                    </a>
+                    <button type="button" class="btn btn-success ms-2" data-bs-toggle="modal" data-bs-target="#addPointModal">
+                        <i class="fas fa-coins"></i> ポイント追加
+                    </button>
+                </div>
+            </div>
+
             <form method="POST" action="{{ url_for('admin_user_update', user_id=user.id) }}" class="mb-3">
                 <div class="row g-3">
                     <div class="col-md-6">

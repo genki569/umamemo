@@ -410,6 +410,7 @@ class User(UserMixin, db.Model):
     # ステータス関連
     is_admin = db.Column(db.Boolean, default=False)
     is_premium = db.Column(db.Boolean, default=False)
+    membership_type = db.Column(db.String(20), default='free')  # 'free', 'premium', 'master'
     premium_expires_at = db.Column(db.DateTime)
     point_balance = db.Column(db.Integer, default=0)
     
@@ -442,20 +443,54 @@ class User(UserMixin, db.Model):
     def get_point_balance(self):
         return self.point_balance
     
-    def add_points(self, points):
+    def add_points(self, points, type='manual', reference_id=None, description=None):
+        """ポイントを追加する（ログ記録付き）"""
         self.point_balance += points
-        db.session.commit()
+        
+        # ポイント履歴を記録
+        point_log = UserPointLog(
+            user_id=self.id,
+            points=points,
+            action_type=type,
+            description=description
+        )
+        db.session.add(point_log)
+        
         return True
     
-    def use_points(self, points):
+    def use_points(self, points, type='use', reference_id=None, description=None):
+        """ポイントを使用する（ログ記録付き）"""
         if self.point_balance >= points:
             self.point_balance -= points
-            db.session.commit()
+            
+            # ポイント履歴を記録
+            point_log = UserPointLog(
+                user_id=self.id,
+                points=-points,
+                action_type=type,
+                description=description
+            )
+            db.session.add(point_log)
+            
             return True
         return False
     
     def has_enough_points(self, points):
         return self.point_balance >= points
+
+    def is_master_premium(self):
+        """マスタープレミアム会員かどうかを確認"""
+        return self.is_premium and self.membership_type == 'master'
+    
+    def can_withdraw_points(self, amount):
+        """指定されたポイント数を現金に換金できるかチェック"""
+        return self.point_balance >= amount and amount >= 5000  # 最低換金額を5000ポイントに設定
+    
+    def get_withdrawal_fee_rate(self):
+        """換金手数料率を取得"""
+        if self.membership_type == 'master':
+            return 0.10  # マスタープレミアムは10%
+        return 0.15  # 通常は15%
 
     def __repr__(self):
         return f'<User {self.username}>'
@@ -846,4 +881,50 @@ class AccessLog(db.Model):
     
     # リレーションシップ
     user = db.relationship('User', backref=db.backref('access_logs', lazy='dynamic'))
+
+# ポイント換金リクエストモデル
+class PointWithdrawal(db.Model):
+    __tablename__ = 'point_withdrawals'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    requested_amount = db.Column(db.Integer, nullable=False)  # リクエスト金額
+    fee_amount = db.Column(db.Integer, nullable=False)  # 手数料
+    fee_rate = db.Column(db.Float, nullable=False)  # 手数料率（0.15 または 0.10）
+    net_amount = db.Column(db.Integer, nullable=False)  # 実際の換金額
+    status = db.Column(db.String(20), default='pending')  # pending, approved, rejected, completed
+    request_note = db.Column(db.Text)  # ユーザーからのメモ
+    admin_note = db.Column(db.Text)  # 管理者メモ
+    admin_id = db.Column(db.Integer, db.ForeignKey('users.id'))  # 処理した管理者
+    bank_info = db.Column(db.Text)  # 銀行情報（JSON形式で保存）
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    completed_at = db.Column(db.DateTime)  # 換金処理完了日時
+    
+    # リレーションシップ
+    user = db.relationship('User', foreign_keys=[user_id], backref=db.backref('withdrawals', lazy='dynamic'))
+    admin = db.relationship('User', foreign_keys=[admin_id], backref=db.backref('processed_withdrawals', lazy='dynamic'))
+    
+    def __repr__(self):
+        return f'<PointWithdrawal {self.id}: {self.user_id} - {self.requested_amount}pts>'
+        
+    @property
+    def status_display(self):
+        status_map = {
+            'pending': '処理待ち',
+            'approved': '承認済み',
+            'rejected': '却下',
+            'completed': '振込完了'
+        }
+        return status_map.get(self.status, self.status)
+        
+    @property
+    def status_color(self):
+        status_color_map = {
+            'pending': 'warning',
+            'approved': 'info',
+            'rejected': 'danger',
+            'completed': 'success'
+        }
+        return status_color_map.get(self.status, 'secondary')
 

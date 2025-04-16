@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block title %}ポイント換金リクエスト{% endblock %}
+
+{% block styles %}
+<style>
+    .fee-info {
+        padding: 15px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+        background-color: #f8f9fa;
+        border-left: 4px solid #17a2b8;
+    }
+    
+    .fee-rate {
+        font-weight: bold;
+        color: #dc3545;
+    }
+    
+    .calculation-preview {
+        margin-top: 15px;
+        padding: 10px;
+        border: 1px solid #dee2e6;
+        border-radius: 5px;
+        background-color: #f8f9fa;
+    }
+    
+    .withdraw-form {
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    
+    .points-icon {
+        color: #ffc107;
+        margin-right: 5px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <h1 class="mb-4">ポイント換金リクエスト</h1>
+            
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">現在のポイント残高</h5>
+                </div>
+                <div class="card-body">
+                    <h3><i class="fas fa-coins points-icon"></i>{{ point_balance | format_number }} ポイント</h3>
+                </div>
+            </div>
+            
+            <div class="fee-info">
+                <h5>手数料のご案内</h5>
+                <p>ポイント換金には<span class="fee-rate">{{ (fee_rate * 100) | int }}%</span>の手数料がかかります。</p>
+                <p>マスタープレミアム会員は手数料率が10%に優遇されます（通常会員は15%）。</p>
+                <p>最低換金額は5,000ポイントからです。</p>
+            </div>
+            
+            <div class="withdraw-form">
+                <form method="POST" action="{{ url_for('withdraw_points') }}">
+                    <div class="mb-3">
+                        <label for="amount" class="form-label">換金ポイント数</label>
+                        <input type="number" class="form-control" id="amount" name="amount" 
+                               min="5000" max="{{ point_balance }}" step="1000" required
+                               placeholder="5000ポイント以上を入力してください"
+                               oninput="calculateNetAmount(this.value)">
+                        <small class="form-text text-muted">5,000ポイント以上、{{ point_balance | format_number }}ポイントまで</small>
+                    </div>
+                    
+                    <div class="calculation-preview" id="calculation">
+                        <h5>換金シミュレーション</h5>
+                        <p>換金ポイント: <span id="withdraw-amount">0</span> ポイント</p>
+                        <p>手数料 ({{ (fee_rate * 100) | int }}%): <span id="fee-amount">0</span> ポイント</p>
+                        <p>受取金額: <span id="net-amount">0</span> 円</p>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="bank_account" class="form-label">振込先口座情報</label>
+                        <textarea class="form-control" id="bank_account" name="bank_account" rows="3" required
+                                  placeholder="銀行名、支店名、口座種別、口座番号、口座名義人をご記入ください"></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="note" class="form-label">備考（任意）</label>
+                        <textarea class="form-control" id="note" name="note" rows="2"
+                                  placeholder="何かございましたらご記入ください"></textarea>
+                    </div>
+                    
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="agreement" required>
+                        <label class="form-check-label" for="agreement">
+                            換金手数料と処理には数営業日かかることに同意します
+                        </label>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary" {% if point_balance < 5000 %}disabled{% endif %}>
+                        換金リクエストを送信
+                    </button>
+                    
+                    {% if point_balance < 5000 %}
+                    <div class="alert alert-warning mt-3">
+                        換金には最低5,000ポイント必要です。さらにポイントを貯めてください。
+                    </div>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block scripts %}
+<script>
+    function calculateNetAmount(amount) {
+        const feeRate = {{ fee_rate }};
+        const withdrawAmount = parseInt(amount) || 0;
+        const feeAmount = Math.floor(withdrawAmount * feeRate);
+        const netAmount = withdrawAmount - feeAmount;
+        
+        document.getElementById('withdraw-amount').textContent = withdrawAmount.toLocaleString();
+        document.getElementById('fee-amount').textContent = feeAmount.toLocaleString();
+        document.getElementById('net-amount').textContent = netAmount.toLocaleString();
+    }
+</script>
+{% endblock %}
+{% endblock %} 

@@ -1,0 +1,209 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+<div class="admin-withdrawals">
+    <!-- ヘッダー部分 -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4>ポイント換金リクエスト管理</h4>
+        <div class="actions">
+            <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-tachometer-alt"></i> ダッシュボードに戻る
+            </a>
+        </div>
+    </div>
+
+    <!-- フィルター部分 -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="GET" action="{{ url_for('admin_withdrawals') }}" class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <label for="status" class="form-label">ステータス</label>
+                    <select class="form-select" id="status" name="status">
+                        <option value="" {% if not current_status %}selected{% endif %}>すべて</option>
+                        <option value="pending" {% if current_status == 'pending' %}selected{% endif %}>処理待ち</option>
+                        <option value="approved" {% if current_status == 'approved' %}selected{% endif %}>承認済み</option>
+                        <option value="rejected" {% if current_status == 'rejected' %}selected{% endif %}>却下</option>
+                        <option value="completed" {% if current_status == 'completed' %}selected{% endif %}>振込完了</option>
+                    </select>
+                </div>
+                <div class="col-md-auto">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-filter"></i> フィルター
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 換金リクエスト一覧 -->
+    <div class="card">
+        <div class="card-header">
+            <h5>
+                換金リクエスト一覧
+                {% if current_status %}
+                    <span class="badge bg-info ms-2">{{ current_status }}</span>
+                {% endif %}
+            </h5>
+        </div>
+        <div class="card-body">
+            {% if withdrawals %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>ユーザー</th>
+                                <th>リクエスト日時</th>
+                                <th>リクエスト額</th>
+                                <th>手数料</th>
+                                <th>振込額</th>
+                                <th>ステータス</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for withdrawal in withdrawals %}
+                            <tr>
+                                <td>{{ withdrawal.id }}</td>
+                                <td>
+                                    <a href="{{ url_for('admin_user_detail', user_id=withdrawal.user_id) }}">
+                                        {{ withdrawal.user.username }}
+                                    </a>
+                                </td>
+                                <td>{{ withdrawal.created_at.strftime('%Y/%m/%d %H:%M') }}</td>
+                                <td>{{ withdrawal.requested_amount | format_number }}pt</td>
+                                <td>{{ withdrawal.fee_amount | format_number }}pt ({{ (withdrawal.fee_rate * 100) | int }}%)</td>
+                                <td>{{ withdrawal.net_amount | format_number }}円</td>
+                                <td>
+                                    <span class="badge bg-{{ withdrawal.status_color }}">
+                                        {{ withdrawal.status_display }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-sm btn-primary" 
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#processModal{{ withdrawal.id }}">
+                                        <i class="fas fa-cog"></i> 処理
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- 換金リクエスト処理モーダル -->
+                {% for withdrawal in withdrawals %}
+                <div class="modal fade" id="processModal{{ withdrawal.id }}" tabindex="-1">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">換金リクエスト #{{ withdrawal.id }} 処理</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row mb-4">
+                                    <div class="col-md-6">
+                                        <h6>ユーザー情報</h6>
+                                        <dl class="row">
+                                            <dt class="col-sm-4">ユーザー名</dt>
+                                            <dd class="col-sm-8">{{ withdrawal.user.username }}</dd>
+                                            <dt class="col-sm-4">メールアドレス</dt>
+                                            <dd class="col-sm-8">{{ withdrawal.user.email }}</dd>
+                                            <dt class="col-sm-4">会員種別</dt>
+                                            <dd class="col-sm-8">
+                                                {% if withdrawal.user.is_premium %}
+                                                    {% if withdrawal.user.membership_type == 'master' %}
+                                                        <span class="badge bg-warning text-dark">マスタープレミアム</span>
+                                                    {% else %}
+                                                        <span class="badge bg-primary">プレミアム</span>
+                                                    {% endif %}
+                                                {% else %}
+                                                    <span class="badge bg-secondary">無料会員</span>
+                                                {% endif %}
+                                            </dd>
+                                        </dl>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6>リクエスト詳細</h6>
+                                        <dl class="row">
+                                            <dt class="col-sm-4">リクエスト日時</dt>
+                                            <dd class="col-sm-8">{{ withdrawal.created_at.strftime('%Y/%m/%d %H:%M') }}</dd>
+                                            <dt class="col-sm-4">リクエスト額</dt>
+                                            <dd class="col-sm-8">{{ withdrawal.requested_amount | format_number }}pt</dd>
+                                            <dt class="col-sm-4">手数料</dt>
+                                            <dd class="col-sm-8">{{ withdrawal.fee_amount | format_number }}pt ({{ (withdrawal.fee_rate * 100) | int }}%)</dd>
+                                            <dt class="col-sm-4">振込額</dt>
+                                            <dd class="col-sm-8">{{ withdrawal.net_amount | format_number }}円</dd>
+                                            <dt class="col-sm-4">現在のステータス</dt>
+                                            <dd class="col-sm-8">
+                                                <span class="badge bg-{{ withdrawal.status_color }}">
+                                                    {{ withdrawal.status_display }}
+                                                </span>
+                                            </dd>
+                                        </dl>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <h6>銀行情報</h6>
+                                    <div class="border p-3 bg-light">
+                                        <pre class="mb-0">{{ withdrawal.bank_info or 'なし' }}</pre>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <h6>ユーザーメモ</h6>
+                                    <div class="border p-3 bg-light">
+                                        <pre class="mb-0">{{ withdrawal.request_note or 'なし' }}</pre>
+                                    </div>
+                                </div>
+                                
+                                <form method="POST" action="{{ url_for('process_withdrawal', withdrawal_id=withdrawal.id) }}">
+                                    <div class="mb-3">
+                                        <label for="admin_note{{ withdrawal.id }}" class="form-label">管理者メモ</label>
+                                        <textarea class="form-control" id="admin_note{{ withdrawal.id }}" 
+                                                  name="admin_note" rows="3">{{ withdrawal.admin_note or '' }}</textarea>
+                                    </div>
+                                    
+                                    <div class="d-flex justify-content-end gap-2">
+                                        {% if withdrawal.status == 'pending' %}
+                                            <button type="submit" name="action" value="approve" class="btn btn-success">
+                                                <i class="fas fa-check"></i> 承認する
+                                            </button>
+                                            <button type="submit" name="action" value="reject" class="btn btn-danger">
+                                                <i class="fas fa-times"></i> 却下する
+                                            </button>
+                                        {% elif withdrawal.status == 'approved' %}
+                                            <button type="submit" name="action" value="complete" class="btn btn-primary">
+                                                <i class="fas fa-check-double"></i> 振込完了
+                                            </button>
+                                            <button type="submit" name="action" value="reject" class="btn btn-danger">
+                                                <i class="fas fa-times"></i> 却下する
+                                            </button>
+                                        {% endif %}
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                            閉じる
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                
+            {% else %}
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    {% if current_status %}
+                        {{ current_status }} 状態の換金リクエストはありません。
+                    {% else %}
+                        換金リクエストはありません。
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %} 
