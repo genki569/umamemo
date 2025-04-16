@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager, current_user
 from flask_wtf.csrf import CSRFProtect
+from flask_session import Session
 from config import config_by_name
 import logging
 from logging.handlers import RotatingFileHandler
@@ -17,6 +18,7 @@ login = LoginManager()
 login.login_view = 'login'
 csrf = CSRFProtect()
 mail = Mail()
+sess = Session()
 
 # アプリケーションのグローバルインスタンス
 # 既存コードとの互換性のために維持
@@ -79,10 +81,21 @@ def create_app(config_name=None):
     app.config['WTF_CSRF_ENABLED'] = True
     app.config['WTF_CSRF_CHECK_DEFAULT'] = True
     app.config['WTF_CSRF_TIME_LIMIT'] = 3600  # 1時間
+    app.config['WTF_CSRF_SSL_STRICT'] = False  # 開発環境ではSSL制限を無効化
     
     # セッション設定の明示的指定
     app.config['SESSION_TYPE'] = 'filesystem'
-    app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=1)  # セッションを1日で有効期限切れに
+    app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=1)  # セッションを1日有効
+    app.config['SESSION_USE_SIGNER'] = True  # セッションデータにサインを追加
+    app.config['SESSION_KEY_PREFIX'] = 'umamemo_'  # セッションキーのプレフィックス
+    
+    # CSRF保護を有効にするための秘密鍵設定を確認
+    if 'SECRET_KEY' not in app.config or not app.config['SECRET_KEY']:
+        app.config['SECRET_KEY'] = os.urandom(24).hex()
+        print("警告: SECRET_KEYが設定されていないため、ランダムな値を生成しました。サーバー再起動時に変わります。")
+    
+    # セッションの初期化
+    sess.init_app(app)
     
     # データベース接続のデバッグ情報を表示
     db_uri = app.config['SQLALCHEMY_DATABASE_URI']

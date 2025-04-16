@@ -146,19 +146,19 @@
 - お気に入り馬の出走通知
 
 # Web Framework
-Flask==2.3.3
+Flask==2.2.3
 Werkzeug==2.3.7
 Jinja2==3.1.2
 itsdangerous==2.1.2
 
 # Database
-Flask-SQLAlchemy==3.1.1
-Flask-Migrate==4.0.5
+Flask-SQLAlchemy==3.0.3
+Flask-Migrate==4.0.4
 psycopg2-binary==2.9.9
 
 # Forms and Authentication
-Flask-WTF==1.2.1
-Flask-Login==0.6.3
+Flask-WTF==1.1.1
+Flask-Login==0.6.2
 email-validator==2.1.0
 
 # Environment Variables
@@ -173,3 +173,6 @@ beautifulsoup4==4.12.2
 pandas==2.1.3
 pillow==10.1.0
 stripe==7.7.0
+
+# Session
+Flask-Session==0.4.0
