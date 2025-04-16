@@ -2686,7 +2686,7 @@ def admin_user_detail(user_id):
             
         login_history = LoginHistory.query\
             .filter_by(user_id=user.id)\
-            .order_by(LoginHistory.login_at.desc())\
+            .order_by(LoginHistory.timestamp.desc())\
             .limit(10)\
             .all()
         
@@ -4968,3 +4968,46 @@ def admin_withdrawals_list():
     return render_template('admin/withdrawals.html', 
                           withdrawals=withdrawals,
                           current_status=status)
+
+@app.route('/admin/users/<int:user_id>/update', methods=['POST'])
+@login_required
+@admin_required
+def admin_user_update(user_id):
+    """管理者によるユーザー情報の更新"""
+    try:
+        user = User.query.get_or_404(user_id)
+        
+        # チェックボックスの状態を取得
+        is_premium = 'is_premium' in request.form
+        is_active = 'is_active' in request.form
+        
+        # 変更前の状態を記録
+        old_premium_status = user.is_premium
+        old_active_status = user.is_active
+        
+        # 値を更新
+        user.is_premium = is_premium
+        user.is_active = is_active
+        
+        # プレミアム状態が変わった場合は履歴に記録
+        if old_premium_status != is_premium:
+            membership_change = MembershipChangeLog(
+                user_id=user.id,
+                changed_by=current_user.id,
+                old_status='premium' if old_premium_status else 'free',
+                new_status='premium' if is_premium else 'free',
+                reason='管理者による手動更新',
+                expires_at=user.premium_expires_at if is_premium else None
+            )
+            db.session.add(membership_change)
+        
+        # 変更を保存
+        db.session.commit()
+        
+        flash(f'ユーザー「{user.username}」の情報を更新しました。', 'success')
+    except Exception as e:
+        db.session.rollback()
+        app.logger.error(f"Error in admin_user_update: {str(e)}")
+        flash('ユーザー情報の更新中にエラーが発生しました。', 'error')
+    
+    return redirect(url_for('admin_user_detail', user_id=user.id))
