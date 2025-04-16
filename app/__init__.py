@@ -54,6 +54,10 @@ def create_app(config_name=None):
     # 設定を取得して適用
     app.config.from_object(config_by_name[config_name])
     
+    # シークレットキーを明示的に設定（必須）
+    app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', '3110Genki=')
+    print(f"SECRET_KEY設定済み: {'*' * 5}")
+    
     # PostgreSQL接続文字列を明示的に設定（パスワード認証の問題を解決）
     # 環境変数から取得、なければ設定ファイルから、それもなければデフォルト値
     db_user = os.environ.get('DB_USER') or app.config.get('DB_USER', 'umamemo')
@@ -90,9 +94,25 @@ def create_app(config_name=None):
     app.config['WTF_CSRF_SECRET_KEY'] = app.config['SECRET_KEY']  # 専用のシークレットキーを使用
     
     # セッション設定の簡素化 - Cookieベースのセッションに変更
-    app.config['SESSION_TYPE'] = 'null'  # サーバーサイドセッションを無効化
+    app.config['SESSION_TYPE'] = 'filesystem'  # ファイルシステムベースのセッションを使用
     app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=1)
     app.config['SESSION_USE_SIGNER'] = True
+    
+    # セッションディレクトリの設定
+    session_dir = '/tmp/flask_session'
+    try:
+        # ディレクトリが存在しなければ作成
+        if not os.path.exists(session_dir):
+            os.makedirs(session_dir, mode=0o777, exist_ok=True)
+            print(f"セッションディレクトリを作成しました: {session_dir}")
+        
+        # 既存のディレクトリのパーミッションを変更
+        os.chmod(session_dir, 0o777)
+        print(f"セッションディレクトリのパーミッションを設定しました: {session_dir}")
+    except Exception as e:
+        print(f"セッションディレクトリの設定に失敗: {e}")
+    
+    app.config['SESSION_FILE_DIR'] = session_dir
     
     # CSRF保護を有効にするための秘密鍵設定を確認
     if 'SECRET_KEY' not in app.config or not app.config['SECRET_KEY']:
