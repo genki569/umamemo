@@ -4916,6 +4916,13 @@ def should_show_ads(user):
 @admin_required
 def admin_manage_user_plan(user_id):
     """ユーザーのプラン管理"""
+    from flask_wtf import FlaskForm
+    
+    # 簡易フォームをCSRFトークン用に作成
+    class PlanForm(FlaskForm):
+        pass
+    
+    form = PlanForm()
     user = User.query.get_or_404(user_id)
     
     # プラン変更履歴を取得
@@ -4924,9 +4931,9 @@ def admin_manage_user_plan(user_id):
         .order_by(MembershipChangeLog.changed_at.desc())\
         .all()
     
-    if request.method == 'POST':
+    if request.method == 'POST' and form.validate_on_submit():
         plan_type = request.form.get('plan_type', 'free')
-        duration_days = int(request.form.get('duration_days', 30))
+        duration = int(request.form.get('duration', 30))
         
         # 古いステータスを記録
         old_status = user.membership_type
@@ -4935,7 +4942,7 @@ def admin_manage_user_plan(user_id):
         user.membership_type = plan_type
         if plan_type != 'free':
             user.is_premium = True
-            user.premium_expires_at = datetime.now() + timedelta(days=duration_days)
+            user.premium_expires_at = datetime.now() + timedelta(days=duration)
         else:
             user.is_premium = False
             user.premium_expires_at = None
@@ -4965,7 +4972,7 @@ def admin_manage_user_plan(user_id):
         flash(f'ユーザー「{user.username}」のプランを「{plan_type}」に変更しました', 'success')
         return redirect(url_for('admin_user_detail', user_id=user.id))
     
-    return render_template('admin/manage_user_plan.html', user=user, membership_logs=membership_logs)
+    return render_template('admin/manage_user_plan.html', user=user, membership_logs=membership_logs, form=form)
 
 # 換金リクエスト管理ページ
 @app.route('/admin/withdrawals')

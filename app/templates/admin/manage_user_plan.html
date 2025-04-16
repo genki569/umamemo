@@ -65,18 +65,19 @@
         </div>
         <div class="card-body">
             <form method="POST" action="{{ url_for('admin_manage_user_plan', user_id=user.id) }}">
+                {{ form.csrf_token }}
                 <div class="mb-3">
-                    <label for="plan_type" class="form-label">プラン種別</label>
+                    <label for="plan_type" class="form-label">会員プラン</label>
                     <select class="form-select" id="plan_type" name="plan_type" required>
-                        <option value="free" {% if not user.is_premium %}selected{% endif %}>無料会員</option>
-                        <option value="premium" {% if user.is_premium and user.membership_type == 'premium' %}selected{% endif %}>プレミアム会員</option>
-                        <option value="master" {% if user.is_premium and user.membership_type == 'master' %}selected{% endif %}>マスタープレミアム会員</option>
+                        <option value="free" {% if user.membership_type == 'free' %}selected{% endif %}>無料会員</option>
+                        <option value="premium" {% if user.membership_type == 'premium' %}selected{% endif %}>プレミアム会員</option>
+                        <option value="master" {% if user.membership_type == 'master' %}selected{% endif %}>マスタープレミアム会員</option>
                     </select>
                 </div>
                 
                 <div class="mb-3" id="duration_field">
-                    <label for="duration_days" class="form-label">有効期間（日数）</label>
-                    <input type="number" class="form-control" id="duration_days" name="duration_days" 
+                    <label for="duration" class="form-label">有効期間（日数）</label>
+                    <input type="number" class="form-control" id="duration" name="duration" 
                            min="1" value="30" required>
                     <div class="form-text">プレミアム会員の有効期間を日数で指定します。</div>
                 </div>
