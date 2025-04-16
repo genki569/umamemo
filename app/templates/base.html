@@ -6,6 +6,29 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>{% block title %}馬メモ - 競馬ファンのための情報共有プラットフォーム{% endblock %}</title>
     
+    <!-- SEO関連のメタタグ -->
+    <meta name="description" content="{% block meta_description %}馬メモは競馬ファンのための情報共有プラットフォームです。レース情報、出馬表、馬データ、騎手情報などをチェックして、メモを残したり、回顧ノートで知見を共有しましょう。{% endblock %}">
+    <meta name="keywords" content="{% block meta_keywords %}競馬,馬メモ,レース情報,出馬表,競馬予想,馬柱,回顧ノート,JRA,地方競馬{% endblock %}">
+    <meta name="author" content="馬メモ運営チーム">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="{{ request.url }}">
+    
+    <!-- OGPタグ -->
+    <meta property="og:title" content="{% block og_title %}馬メモ - 競馬ファンのための情報共有プラットフォーム{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}馬メモは競馬ファンのための情報共有プラットフォームです。レース情報、出馬表、馬データ、騎手情報などをチェックして、メモを残したり、回顧ノートで知見を共有しましょう。{% endblock %}">
+    <meta property="og:type" content="{% block og_type %}website{% endblock %}">
+    <meta property="og:url" content="{{ request.url }}">
+    <meta property="og:image" content="{{ url_for('static', filename='images/umamemologo.png', _external=True) }}">
+    <meta property="og:site_name" content="馬メモ">
+    <meta property="og:locale" content="ja_JP">
+    
+    <!-- Twitterカード -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:site" content="@umamemokeiba">
+    <meta name="twitter:title" content="{% block twitter_title %}馬メモ - 競馬ファンのための情報共有プラットフォーム{% endblock %}">
+    <meta name="twitter:description" content="{% block twitter_description %}馬メモは競馬ファンのための情報共有プラットフォームです。レース情報、出馬表、馬データなどをチェックして記録しよう！{% endblock %}">
+    <meta name="twitter:image" content="{{ url_for('static', filename='images/umamemologo.png', _external=True) }}">
+    
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-KZT9FF309C"></script>
     <script>
@@ -21,6 +44,7 @@
     
     <!-- Favicon -->
     <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/umamemologo.png') }}">
     
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">

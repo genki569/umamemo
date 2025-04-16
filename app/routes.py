@@ -4434,11 +4434,9 @@ def sitemap():
         # 静的ページ（変更頻度が低い）
         static_pages = [
             'index',
-            'about',
             'privacy',
             'terms',
             'commercial_transactions',
-            'contact',
             'login',
             'register'
         ]
@@ -4462,70 +4460,61 @@ def sitemap():
                         'changefreq': 'monthly',
                         'priority': '0.8'
                     })
-                except:
+                except Exception as e:
                     # URLの生成に失敗した場合はスキップ
-                    app.logger.warning(f"サイトマップ生成: {rule}のURL生成に失敗しました")
+                    app.logger.warning(f"サイトマップ生成: {rule}のURL生成に失敗しました: {str(e)}")
         
-        # 動的ページ（レース情報など）
-        # レース一覧
-        pages.append({
-            'loc': host_base + url_for('races'),
-            'lastmod': datetime.now().strftime('%Y-%m-%d'),
-            'changefreq': 'daily',
-            'priority': '0.9'
-        })
+        # 動的ページ（レース情報など）- 主要ページ
+        main_pages = [
+            ('races', 'daily', '0.9'),
+            ('shutuba_list', 'daily', '0.9'),
+            ('horses', 'weekly', '0.8'),
+            ('jockeys', 'weekly', '0.8'),
+            ('review_market', 'daily', '0.9')
+        ]
         
-        # 出馬表一覧
-        pages.append({
-            'loc': host_base + url_for('shutuba_list'),
-            'lastmod': datetime.now().strftime('%Y-%m-%d'),
-            'changefreq': 'daily', 
-            'priority': '0.9'
-        })
-        
-        # 馬一覧
-        pages.append({
-            'loc': host_base + url_for('horses'),
-            'lastmod': datetime.now().strftime('%Y-%m-%d'),
-            'changefreq': 'weekly',
-            'priority': '0.8'
-        })
-        
-        # 騎手一覧
-        pages.append({
-            'loc': host_base + url_for('jockeys'),
-            'lastmod': datetime.now().strftime('%Y-%m-%d'),
-            'changefreq': 'weekly',
-            'priority': '0.8'
-        })
-        
-        # 回顧ノート一覧
-        pages.append({
-            'loc': host_base + url_for('review_market'),
-            'lastmod': datetime.now().strftime('%Y-%m-%d'),
-            'changefreq': 'daily',
-            'priority': '0.9'
-        })
+        for rule, changefreq, priority in main_pages:
+            try:
+                pages.append({
+                    'loc': host_base + url_for(rule),
+                    'lastmod': datetime.now().strftime('%Y-%m-%d'),
+                    'changefreq': changefreq,
+                    'priority': priority
+                })
+            except Exception as e:
+                app.logger.warning(f"サイトマップ生成: {rule}のURL生成に失敗しました: {str(e)}")
         
         # 個別の馬情報（最新50件）
-        horses = Horse.query.order_by(Horse.updated_at.desc()).limit(50).all()
-        for horse in horses:
-            pages.append({
-                'loc': host_base + url_for('horse_detail', horse_id=horse.id),
-                'lastmod': horse.updated_at.strftime('%Y-%m-%d') if horse.updated_at else datetime.now().strftime('%Y-%m-%d'),
-                'changefreq': 'weekly',
-                'priority': '0.7'
-            })
+        try:
+            horses = Horse.query.order_by(Horse.updated_at.desc()).limit(50).all()
+            for horse in horses:
+                try:
+                    pages.append({
+                        'loc': host_base + url_for('horse_detail', horse_id=horse.id),
+                        'lastmod': horse.updated_at.strftime('%Y-%m-%d') if horse.updated_at else datetime.now().strftime('%Y-%m-%d'),
+                        'changefreq': 'weekly',
+                        'priority': '0.7'
+                    })
+                except Exception as e:
+                    app.logger.warning(f"サイトマップ生成: 馬ID {horse.id} のURL生成に失敗しました: {str(e)}")
+        except Exception as e:
+            app.logger.error(f"サイトマップ生成: 馬リストの取得に失敗しました: {str(e)}")
             
         # 個別のレース情報（最新50件）
-        races = Race.query.order_by(Race.date.desc()).limit(50).all()
-        for race in races:
-            pages.append({
-                'loc': host_base + url_for('race_view', race_id=race.id),
-                'lastmod': race.date.strftime('%Y-%m-%d'),
-                'changefreq': 'weekly',
-                'priority': '0.7'
-            })
+        try:
+            races = Race.query.order_by(Race.date.desc()).limit(50).all()
+            for race in races:
+                try:
+                    pages.append({
+                        'loc': host_base + url_for('race_view', race_id=race.id),
+                        'lastmod': race.date.strftime('%Y-%m-%d'),
+                        'changefreq': 'weekly',
+                        'priority': '0.7'
+                    })
+                except Exception as e:
+                    app.logger.warning(f"サイトマップ生成: レースID {race.id} のURL生成に失敗しました: {str(e)}")
+        except Exception as e:
+            app.logger.error(f"サイトマップ生成: レースリストの取得に失敗しました: {str(e)}")
         
         # XMLテンプレートを使用してサイトマップを生成
         sitemap_xml = render_template('sitemap.xml', pages=pages)
@@ -4536,3 +4525,54 @@ def sitemap():
     except Exception as e:
         app.logger.error(f"サイトマップ生成エラー: {str(e)}")
         return "サイトマップの生成中にエラーが発生しました", 500
+
+# キャッシュ制御のためのミドルウェア
+@app.after_request
+def add_cache_headers(response):
+    """静的ファイルとHTMLレスポンスにキャッシュ制御ヘッダーを追加するミドルウェア"""
+    # レスポンスがあり、HTTPステータスコードが200の場合のみ処理
+    if response.status_code == 200:
+        # CSSやJavaScriptなどの静的ファイル
+        if request.path.startswith('/static/'):
+            # 画像、CSS、JSファイルは長期間キャッシュを有効にする
+            if any(request.path.endswith(ext) for ext in ['.css', '.js', '.png', '.jpg', '.jpeg', '.gif', '.ico', '.svg']):
+                # 30日間のキャッシュを設定
+                max_age = 60 * 60 * 24 * 30  # 30日間（秒単位）
+                response.headers['Cache-Control'] = f'public, max-age={max_age}'
+                expires_date = datetime.now() + timedelta(seconds=max_age)
+                response.headers['Expires'] = expires_date.strftime('%a, %d %b %Y %H:%M:%S GMT')
+        else:
+            # HTMLレスポンスはキャッシュを無効にする（常に最新のコンテンツを表示）
+            if 'text/html' in response.content_type:
+                response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+                response.headers['Pragma'] = 'no-cache'
+                response.headers['Expires'] = '0'
+                
+            # JSON APIレスポンスは短時間のキャッシュを設定
+            elif 'application/json' in response.content_type:
+                response.headers['Cache-Control'] = 'public, max-age=60'  # 60秒間
+                
+        # CSP (Content Security Policy) ヘッダーを追加してセキュリティを強化
+        response.headers['X-Content-Type-Options'] = 'nosniff'
+        response.headers['X-Frame-Options'] = 'SAMEORIGIN'
+    
+    return response
+
+@app.route('/robots.txt')
+def robots_txt():
+    """robots.txtファイルを提供するルート"""
+    try:
+        # robots.txtの内容を取得して返す
+        with open('robots.txt', 'r') as f:
+            content = f.read()
+        
+        response = make_response(content)
+        response.headers["Content-Type"] = "text/plain"
+        return response
+    except Exception as e:
+        app.logger.error(f"robots.txtの提供エラー: {str(e)}")
+        # エラーの場合はシンプルなrobots.txtを生成して返す
+        content = "User-agent: *\nAllow: /\nSitemap: https://umamemo.net/sitemap.xml"
+        response = make_response(content)
+        response.headers["Content-Type"] = "text/plain"
+        return response

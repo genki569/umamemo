@@ -1,5 +1,13 @@
 {% extends "base.html" %}
 
+{% block title %}{{ race.name }} ({{ race.date.strftime('%Y/%m/%d') }}) | {{ race.venue_name }} | 馬メモ{% endblock %}
+{% block meta_description %}{{ race.venue_name }}で開催された{{ race.name }}({{ race.date.strftime('%Y/%m/%d') }})のレース結果、出走馬、騎手情報、タイム、ユーザーの回顧ノートを見ることができます。{% endblock %}
+{% block meta_keywords %}{{ race.name }},{{ race.venue_name }},レース結果,出走馬,タイム,競馬,馬メモ{% endblock %}
+
+{% block og_title %}{{ race.name }} ({{ race.date.strftime('%Y/%m/%d') }}) | {{ race.venue_name }} | 馬メモ{% endblock %}
+{% block og_description %}{{ race.venue_name }}で開催された{{ race.name }}のレース結果と出走馬情報を確認できます。{% endblock %}
+{% block og_type %}article{% endblock %}
+
 {% block styles %}
 {{ super() }}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/race_detail.css') }}">
@@ -1052,7 +1060,40 @@
         </div>
     </div>
 </div>
-{% endblock content %}
+
+<!-- JSON-LDスキーママークアップ -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SportsEvent",
+  "name": "{{ race.name }}",
+  "description": "{{ race.venue_name }}で開催された{{ race.name }}({{ race.date.strftime('%Y/%m/%d') }})のレース情報",
+  "startDate": "{{ race.date.strftime('%Y-%m-%d') }}",
+  "location": {
+    "@type": "Place",
+    "name": "{{ race.venue_name }}"
+  },
+  "organizer": {
+    "@type": "Organization",
+    "name": "{% if 'ウインズ' in race.venue_name or 'JRA' in race.venue_name %}JRA{% else %}地方競馬{% endif %}"
+  },
+  "competitor": [
+    {% for entry in race.entries %}
+    {
+      "@type": "SportsTeam",
+      "name": "{{ entry.horse.name }}",
+      "member": [
+        {
+          "@type": "Person",
+          "name": "{{ entry.jockey.name if entry.jockey else '騎手未定' }}"
+        }
+      ]
+    }{% if not loop.last %},{% endif %}
+    {% endfor %}
+  ]
+}
+</script>
+{% endblock %}
 
 {% block scripts %}
 {{ super() }}

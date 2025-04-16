@@ -1,5 +1,13 @@
 {% extends "base.html" %}
 
+{% block title %}{{ horse.name }} | 馬詳細情報 | 馬メモ{% endblock %}
+{% block meta_description %}{{ horse.name }}の基本情報、レース履歴、ユーザーメモを確認できます。性別：{{ horse.sex }}{% if horse.age %}、{{ horse.age }}歳{% endif %}{% if horse.trainer %}、調教師：{{ horse.trainer }}{% endif %}{% endblock %}
+{% block meta_keywords %}{{ horse.name }},競走馬,レース成績,馬詳細,馬メモ,競馬{% endblock %}
+
+{% block og_title %}{{ horse.name }} | 馬詳細情報 | 馬メモ{% endblock %}
+{% block og_description %}{{ horse.name }}の基本情報、レース履歴、ユーザーメモを確認できます。{% endblock %}
+{% block og_type %}article{% endblock %}
+
 {% block content %}
 <div class="horse-detail-page">
     <!-- ヘッダー部分 -->
@@ -8,18 +16,25 @@
             <div class="header-content">
                 <h1>{{ horse.name }}</h1>
                 <div class="horse-attributes">
-                    <span class="horse-attribute 
-                        {% if horse.sex == '牡' %}male{% 
-                        elif horse.sex == '牝' %}female{% 
-                        elif horse.sex == 'セ' %}gelding{% 
-                        else %}other{% endif %}">
+                    {% if horse.sex %}
+                    <div class="horse-attribute sex">
+                        <i class="fas {% if horse.sex == '牡' %}fa-mars{% elif horse.sex == '牝' %}fa-venus{% else %}fa-genderless{% endif %} me-1"></i>
                         {{ horse.sex }}
-                    </span>
-                    {% if horse.age %}
-                    <span class="horse-attribute age">{{ horse.age }}歳</span>
+                    </div>
                     {% endif %}
+                    
+                    {% if horse.age %}
+                    <div class="horse-attribute age">
+                        <i class="fas fa-birthday-cake me-1"></i>
+                        {{ horse.age }}歳
+                    </div>
+                    {% endif %}
+                    
                     {% if horse.trainer %}
-                    <span class="horse-attribute trainer">調教師: {{ horse.trainer }}</span>
+                    <div class="horse-attribute trainer">
+                        <i class="fas fa-user-tie me-1"></i>
+                        {{ horse.trainer }}
+                    </div>
                     {% endif %}
                 </div>
             </div>
@@ -150,6 +165,36 @@
         </div>
     </div>
 </div>
+
+<!-- JSON-LDスキーママークアップ -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "{{ request.url }}"
+  },
+  "headline": "{{ horse.name }} | 馬詳細情報",
+  "description": "{{ horse.name }}の基本情報、レース履歴、ユーザーメモを確認できます。",
+  "image": "{{ url_for('static', filename='images/umamemologo.png', _external=True) }}",
+  "author": {
+    "@type": "Organization",
+    "name": "馬メモ",
+    "url": "{{ url_for('index', _external=True) }}"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "馬メモ",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "{{ url_for('static', filename='images/umamemologo.png', _external=True) }}"
+    }
+  },
+  "datePublished": "{% if horse.created_at %}{{ horse.created_at.strftime('%Y-%m-%d') }}{% else %}{{ now.strftime('%Y-%m-%d') }}{% endif %}",
+  "dateModified": "{% if horse.updated_at %}{{ horse.updated_at.strftime('%Y-%m-%d') }}{% else %}{{ now.strftime('%Y-%m-%d') }}{% endif %}"
+}
+</script>
 
 <style>
 /**

@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+
+# ログインや管理画面へのアクセスを制限
+Disallow: /login
+Disallow: /register
+Disallow: /admin/
+Disallow: /mypage/
+Disallow: /add_memo
+Disallow: /edit_memo
+Disallow: /delete_memo
+
+# サイトマップ
+Sitemap: https://umamemo.net/sitemap.xml 
