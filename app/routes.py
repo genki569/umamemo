@@ -1,4 +1,4 @@
-from flask import render_template, request, jsonify, redirect, url_for, flash, current_app, session, abort
+from flask import render_template, request, jsonify, redirect, url_for, flash, current_app, session, abort, make_response
 from app import app, db
 from app.models import (
     Horse, Race, Entry, Jockey, User, Favorite, 
@@ -4421,3 +4421,118 @@ def confirm_email(token):
     
     flash('メールアドレスの確認が完了しました。ログインしてください。', 'success')
     return redirect(url_for('login'))
+
+@app.route('/sitemap.xml')
+def sitemap():
+    """XMLサイトマップを生成する"""
+    try:
+        # サイトマップに含めるURLのリストを作成
+        pages = []
+        # ベースURL
+        host_base = request.host_url.rstrip('/')
+        
+        # 静的ページ（変更頻度が低い）
+        static_pages = [
+            'index',
+            'about',
+            'privacy',
+            'terms',
+            'commercial_transactions',
+            'contact',
+            'login',
+            'register'
+        ]
+        
+        for rule in static_pages:
+            # トップページは優先度を高く
+            if rule == 'index':
+                pages.append({
+                    'loc': host_base,
+                    'lastmod': datetime.now().strftime('%Y-%m-%d'),
+                    'changefreq': 'daily',
+                    'priority': '1.0'
+                })
+            else:
+                # その他の静的ページ
+                try:
+                    url = host_base + url_for(rule)
+                    pages.append({
+                        'loc': url,
+                        'lastmod': datetime.now().strftime('%Y-%m-%d'),
+                        'changefreq': 'monthly',
+                        'priority': '0.8'
+                    })
+                except:
+                    # URLの生成に失敗した場合はスキップ
+                    app.logger.warning(f"サイトマップ生成: {rule}のURL生成に失敗しました")
+        
+        # 動的ページ（レース情報など）
+        # レース一覧
+        pages.append({
+            'loc': host_base + url_for('races'),
+            'lastmod': datetime.now().strftime('%Y-%m-%d'),
+            'changefreq': 'daily',
+            'priority': '0.9'
+        })
+        
+        # 出馬表一覧
+        pages.append({
+            'loc': host_base + url_for('shutuba_list'),
+            'lastmod': datetime.now().strftime('%Y-%m-%d'),
+            'changefreq': 'daily', 
+            'priority': '0.9'
+        })
+        
+        # 馬一覧
+        pages.append({
+            'loc': host_base + url_for('horses'),
+            'lastmod': datetime.now().strftime('%Y-%m-%d'),
+            'changefreq': 'weekly',
+            'priority': '0.8'
+        })
+        
+        # 騎手一覧
+        pages.append({
+            'loc': host_base + url_for('jockeys'),
+            'lastmod': datetime.now().strftime('%Y-%m-%d'),
+            'changefreq': 'weekly',
+            'priority': '0.8'
+        })
+        
+        # 回顧ノート一覧
+        pages.append({
+            'loc': host_base + url_for('review_market'),
+            'lastmod': datetime.now().strftime('%Y-%m-%d'),
+            'changefreq': 'daily',
+            'priority': '0.9'
+        })
+        
+        # 個別の馬情報（最新50件）
+        horses = Horse.query.order_by(Horse.updated_at.desc()).limit(50).all()
+        for horse in horses:
+            pages.append({
+                'loc': host_base + url_for('horse_detail', horse_id=horse.id),
+                'lastmod': horse.updated_at.strftime('%Y-%m-%d') if horse.updated_at else datetime.now().strftime('%Y-%m-%d'),
+                'changefreq': 'weekly',
+                'priority': '0.7'
+            })
+            
+        # 個別のレース情報（最新50件）
+        races = Race.query.order_by(Race.date.desc()).limit(50).all()
+        for race in races:
+            pages.append({
+                'loc': host_base + url_for('race_view', race_id=race.id),
+                'lastmod': race.date.strftime('%Y-%m-%d'),
+                'changefreq': 'weekly',
+                'priority': '0.7'
+            })
+        
+        # XMLテンプレートを使用してサイトマップを生成
+        sitemap_xml = render_template('sitemap.xml', pages=pages)
+        response = make_response(sitemap_xml)
+        response.headers["Content-Type"] = "application/xml"
+        
+        return response
+    except Exception as e:
+        app.logger.error(f"サイトマップ生成エラー: {str(e)}")
+        return "サイトマップの生成中にエラーが発生しました", 500
