@@ -113,7 +113,6 @@
                                 <th>馬番</th>
                                 <th>騎手</th>
                                 <th>タイム</th>
-                                <th>体重</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -128,7 +127,6 @@
                                 <td class="text-center">{{ entry.horse_number }}</td>
                                 <td>{{ entry.jockey.name if entry.jockey else '不明' }}</td>
                                 <td>{{ entry.time }}</td>
-                                <td>{{ entry.weight }}{% if entry.weight_change %}<span class="weight-change">({{ entry.weight_change }})</span>{% endif %}</td>
                             </tr>
                             {% endfor %}
                         </tbody>
