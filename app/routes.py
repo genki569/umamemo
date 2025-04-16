@@ -4901,7 +4901,7 @@ def process_withdrawal(withdrawal_id):
         flash('換金処理を完了としてマークしました', 'success')
     
     db.session.commit()
-    return redirect(url_for('admin_withdrawals'))
+    return redirect(url_for('admin_withdrawals_list'))
 
 @app.route('/admin/review-purchases')
 @login_required
@@ -4922,3 +4922,20 @@ def admin_review_purchases():
         return render_template('admin/review_purchases.html', 
                              purchases=[],
                              error="購入履の取得中にエラーが発生しました。")
+
+@app.route('/admin/withdrawals-list')
+@login_required
+@admin_required
+def admin_withdrawals_list():
+    """換金リクエスト一覧（別名ルート）"""
+    status = request.args.get('status', '')
+    query = PointWithdrawal.query
+    
+    if status:
+        query = query.filter_by(status=status)
+        
+    withdrawals = query.order_by(PointWithdrawal.created_at.desc()).all()
+    
+    return render_template('admin/withdrawals.html', 
+                          withdrawals=withdrawals,
+                          current_status=status)

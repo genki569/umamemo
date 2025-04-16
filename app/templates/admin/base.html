@@ -78,8 +78,8 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {% if request.endpoint == 'admin_withdrawals' %}active{% endif %}" 
-                           href="{{ url_for('admin_withdrawals') }}">
+                        <a class="nav-link {% if request.endpoint == 'admin_withdrawals' or request.endpoint == 'admin_withdrawals_list' %}active{% endif %}" 
+                           href="{{ url_for('admin_withdrawals_list') }}">
                             <i class="fas fa-money-bill-wave me-2"></i>換金リクエスト
                         </a>
                     </li>

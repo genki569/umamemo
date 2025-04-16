@@ -2,6 +2,33 @@
 
 {% block content %}
 <div class="admin-dashboard">
+    <!-- クイックアクセスボタン -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5>クイックアクセス</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex flex-wrap gap-2">
+                        <a href="{{ url_for('admin_users') }}" class="btn btn-primary">
+                            <i class="fas fa-users me-2"></i>ユーザー管理
+                        </a>
+                        <a href="{{ url_for('admin_reviews') }}" class="btn btn-info text-white">
+                            <i class="fas fa-star me-2"></i>レビュー管理
+                        </a>
+                        <a href="{{ url_for('admin_races') }}" class="btn btn-secondary">
+                            <i class="fas fa-flag-checkered me-2"></i>レース管理
+                        </a>
+                        <a href="{{ url_for('admin_withdrawals_list') }}" class="btn btn-warning text-dark">
+                            <i class="fas fa-money-bill-wave me-2"></i>換金リクエスト
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <!-- 統計概要 -->
     <div class="row mb-4">
         <div class="col-md-4">
