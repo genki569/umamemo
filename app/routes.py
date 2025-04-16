@@ -4952,26 +4952,6 @@ def process_withdrawal(withdrawal_id):
     db.session.commit()
     return redirect(url_for('admin_withdrawals_list'))
 
-@app.route('/admin/review-purchases')
-@login_required
-@admin_required
-def admin_review_purchases_list():
-    try:
-        purchases = ReviewPurchase.query\
-            .join(User)\
-            .join(RaceReview)\
-            .order_by(ReviewPurchase.created_at.desc())\
-            .all()
-            
-        return render_template('admin/review_purchases.html', 
-                             purchases=purchases)
-                             
-    except Exception as e:
-        app.logger.error(f"Error in admin_review_purchases_list: {str(e)}")
-        return render_template('admin/review_purchases.html', 
-                             purchases=[],
-                             error="購入履の取得中にエラーが発生しました。")
-
 @app.route('/admin/withdrawals-list')
 @login_required
 @admin_required
