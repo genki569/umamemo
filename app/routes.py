@@ -41,6 +41,36 @@ def custom_login_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
+# 管理者権限チェック用デコレーター
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not current_user.is_authenticated:
+            flash('ログインが必要です。', 'warning')
+            return redirect(url_for('login', next=request.url))
+            
+        if not current_user.is_admin:
+            flash('管理者権限が必要です。', 'warning')
+            return redirect(url_for('index'))
+            
+        return f(*args, **kwargs)
+    return decorated_function
+
+# マスタープレミアム会員権限チェック用デコレータ
+def master_premium_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not current_user.is_authenticated:
+            flash('ログインが必要です。', 'warning')
+            return redirect(url_for('login', next=request.url))
+        
+        if not current_user.is_premium or current_user.membership_type != 'master':
+            flash('この機能はマスタープレミアム会員専用です。マスタープレミアム会員にアップグレードしてください。', 'info')
+            return redirect(url_for('premium'))
+            
+        return f(*args, **kwargs)
+    return decorated_function
+
 # ルートの定義
 @app.route('/')
 @app.route('/index')
@@ -1337,6 +1367,21 @@ def premium_subscribe():
             'success': False,
             'message': 'エーが発生しました'
         }), 500
+
+# マスタープレミアム会員権限チェック用デコレータ
+def master_premium_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not current_user.is_authenticated:
+            flash('ログインが必要です。', 'warning')
+            return redirect(url_for('login', next=request.url))
+        
+        if not current_user.is_premium or current_user.membership_type != 'master':
+            flash('この機能はマスタープレミアム会員専用です。マスタープレミアム会員にアップグレードしてください。', 'info')
+            return redirect(url_for('premium'))
+            
+        return f(*args, **kwargs)
+    return decorated_function
 
 # マスタープレミアム専用コンテンツページ
 @app.route('/master-premium/daily-reviews')
