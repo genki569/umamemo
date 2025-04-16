@@ -57,19 +57,22 @@
     <div class="container position-relative" style="z-index: 10;">
         <div class="row">
             <div class="col-lg-8 mx-auto text-center text-white animate-fade-in">
+                <img src="{{ url_for('static', filename='images/umamemologo.png') }}" alt="馬メモ" class="mb-4" style="height: 80px; width: auto; filter: drop-shadow(0 2px 5px rgba(0,0,0,0.2));">
                 <h1 class="display-2 fw-bold mb-4" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.5); letter-spacing: -1px;">馬メモ</h1>
                 <p class="lead fs-3 mb-5" style="text-shadow: 1px 1px 3px rgba(0,0,0,0.5); font-weight: 300;">競馬ファンのための情報共有プラットフォーム</p>
                 
                 <!-- ボタングループをモバイルで縦積みになるように修正 -->
-                <div class="d-flex flex-column flex-md-row justify-content-center gap-3 gap-md-4">
+                <div class="d-flex flex-column flex-md-row justify-content-center gap-2 gap-md-4">
                     <a href="{{ url_for('races') }}" class="btn btn-primary btn-lg px-5 py-3 rounded-pill fw-bold mb-3 mb-md-0" style="background: linear-gradient(to right, #3563E9, #4F46E5); border: none; box-shadow: 0 10px 20px rgba(53, 99, 233, 0.3);">レース情報を見る</a>
                     {% if not current_user.is_authenticated %}
-                        <a href="{{ url_for('register') }}" class="btn btn-outline-light btn-lg px-5 py-3 rounded-pill fw-bold" style="backdrop-filter: blur(5px); background-color: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2);">新規登録</a>
+                        <a href="{{ url_for('register') }}" class="btn btn-light btn-lg px-5 py-3 rounded-pill fw-bold" style="box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05); border: none;">新規登録する</a>
+                    {% else %}
+                        <a href="{{ url_for('mypage_home') }}" class="btn btn-light btn-lg px-5 py-3 rounded-pill fw-bold" style="box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05); border: none;">マイページへ</a>
                     {% endif %}
                 </div>
             </div>
         </div>
-</div>
+    </div>
     
     <!-- スクロールダウン矢印 -->
     <div class="position-absolute bottom-0 start-50 translate-middle-x mb-4 text-white animate-bounce" style="z-index: 10;">

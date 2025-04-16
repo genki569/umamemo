@@ -642,6 +642,18 @@
       text-decoration: underline;
       transform: translateY(-2px);
     }
+
+    .umamemo-logo {
+        height: 40px;
+        width: auto;
+        object-fit: contain;
+    }
+    
+    .footer-logo {
+        height: 25px;
+        width: auto;
+        object-fit: contain;
+    }
     </style>
     {% endblock %}
 </head>
@@ -652,7 +664,8 @@
             <nav class="umamemo-navbar">
                 <div class="d-flex justify-content-between align-items-center w-100">
                     <a class="umamemo-brand" href="{{ url_for('index') }}">
-                        <i class="fas fa-horse-head"></i>馬メモ
+                        <img src="{{ url_for('static', filename='images/umamemologo.png') }}" alt="馬メモ" class="umamemo-logo">
+                        <span class="ms-2">馬メモ</span>
                     </a>
                     
                     <button class="mobile-menu-button" type="button" id="mobileMenuButton">
@@ -807,7 +820,10 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-4 mb-4 mb-md-0">
-                    <h5>馬メモ</h5>
+                    <h5>
+                        <img src="{{ url_for('static', filename='images/umamemologo.png') }}" alt="馬メモ" class="footer-logo me-2">
+                        馬メモ
+                    </h5>
                     <p>競馬ファンのための情報共有プラットフォーム</p>
                     <div class="umamemo-social-icons">
                         <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
