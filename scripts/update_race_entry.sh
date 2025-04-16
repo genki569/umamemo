@@ -85,24 +85,34 @@ CSV_DIR="$APP_DIR/data/race_entries"
 TODAY=$(date '+%Y%m%d')
 YESTERDAY=$(date -d "yesterday" '+%Y%m%d')
 TOMORROW=$(date -d "tomorrow" '+%Y%m%d')
+DAY_AFTER_TOMORROW=$(date -d "tomorrow + 1 day" '+%Y%m%d')
+
+log "処理対象日: 今日=${TODAY}, 明日=${TOMORROW}, 明後日=${DAY_AFTER_TOMORROW}"
 
 # 3日分のCSVファイルを処理
-for DATE in $YESTERDAY $TODAY $TOMORROW
+for DATE in $TODAY $TOMORROW $DAY_AFTER_TOMORROW
 do
     CSV_FILE="$CSV_DIR/nar_race_entries_${DATE}.csv"
     
     # ファイルが存在するか確認
     if [ -f "$CSV_FILE" ]; then
-        log "${DATE}のデータをデータベースに保存します..."
-        python -m scripts.csv_shutuba "$CSV_FILE"
+        # ファイルのサイズをチェック
+        FILE_SIZE=$(stat -c%s "$CSV_FILE" 2>/dev/null || stat -f%z "$CSV_FILE")
         
-        if [ $? -eq 0 ]; then
-            log "${DATE}のデータの保存が完了しました"
+        if [ "$FILE_SIZE" -gt 100 ]; then  # 100バイト以上あれば処理する
+            log "${DATE}のNARデータ（${FILE_SIZE}バイト）をデータベースに保存します..."
+            python -m scripts.csv_shutuba "$CSV_FILE"
+            
+            if [ $? -eq 0 ]; then
+                log "${DATE}のNARデータの保存が完了しました"
+            else
+                log "${DATE}のNARデータの保存でエラーが発生しました"
+            fi
         else
-            log "${DATE}のデータの保存でエラーが発生しました"
+            log "${DATE}のNAR CSVファイルは空か破損しています: $CSV_FILE（${FILE_SIZE}バイト）"
         fi
     else
-        log "${DATE}のCSVファイルが見つかりません: $CSV_FILE"
+        log "${DATE}のNAR CSVファイルが見つかりません: $CSV_FILE"
     fi
 done
 
