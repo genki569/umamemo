@@ -56,7 +56,9 @@ def create_app(config_name=None):
     
     # シークレットキーを明示的に設定（必須）
     app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', '3110Genki=')
-    print(f"SECRET_KEY設定済み: {'*' * 5}")
+    # シークレットキーが正しく設定されているか確認するためのデバッグ出力
+    print(f"【重要】SECRET_KEY設定: {'設定済み' if app.config.get('SECRET_KEY') else '未設定！'}")
+    print(f"SECRET_KEY長さ: {len(app.config.get('SECRET_KEY', ''))}文字")
     
     # PostgreSQL接続文字列を明示的に設定（パスワード認証の問題を解決）
     # 環境変数から取得、なければ設定ファイルから、それもなければデフォルト値
@@ -93,33 +95,22 @@ def create_app(config_name=None):
     app.config['WTF_CSRF_SSL_STRICT'] = False  # 開発環境ではSSL制限を無効化
     app.config['WTF_CSRF_SECRET_KEY'] = app.config['SECRET_KEY']  # 専用のシークレットキーを使用
     
-    # セッション設定の簡素化 - Cookieベースのセッションに変更
-    app.config['SESSION_TYPE'] = 'filesystem'  # ファイルシステムベースのセッションを使用
-    app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=1)
-    app.config['SESSION_USE_SIGNER'] = True
-    
-    # セッションディレクトリの設定
-    session_dir = '/tmp/flask_session'
-    try:
-        # ディレクトリが存在しなければ作成
-        if not os.path.exists(session_dir):
-            os.makedirs(session_dir, mode=0o777, exist_ok=True)
-            print(f"セッションディレクトリを作成しました: {session_dir}")
-        
-        # 既存のディレクトリのパーミッションを変更
-        os.chmod(session_dir, 0o777)
-        print(f"セッションディレクトリのパーミッションを設定しました: {session_dir}")
-    except Exception as e:
-        print(f"セッションディレクトリの設定に失敗: {e}")
-    
-    app.config['SESSION_FILE_DIR'] = session_dir
-    
     # CSRF保護を有効にするための秘密鍵設定を確認
     if 'SECRET_KEY' not in app.config or not app.config['SECRET_KEY']:
         app.config['SECRET_KEY'] = os.urandom(24).hex()
         print("警告: SECRET_KEYが設定されていないため、ランダムな値を生成しました。サーバー再起動時に変わります。")
     
-    # セッションの初期化
+    # セッション管理をFlaskの標準機能に切り替え（Cookieベース）
+    app.config.update(
+        SESSION_COOKIE_SECURE=False,
+        SESSION_COOKIE_HTTPONLY=True,
+        SESSION_COOKIE_SAMESITE='Lax',
+        PERMANENT_SESSION_LIFETIME=timedelta(days=1),
+        SESSION_TYPE=None  # Flask-Sessionを無効化し、標準のFlaskセッションを使用
+    )
+    
+    # セッション管理の初期化
+    # Flask-Sessionをロードするが、実際は標準のFlaskセッションが使用される
     sess.init_app(app)
     
     # データベース接続のデバッグ情報を表示
