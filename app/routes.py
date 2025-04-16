@@ -4529,7 +4529,7 @@ def sitemap():
 # キャッシュ制御のためのミドルウェア
 @app.after_request
 def add_cache_headers(response):
-    """静的ファイルとHTMLレスポンスにキャッシュ制御ヘッダーを追加するミドルウェア"""
+    """静的ファイルとHTMLレスポンスにキャッシュ制御ヘッダーとセキュリティヘッダーを追加するミドルウェア"""
     # レスポンスがあり、HTTPステータスコードが200の場合のみ処理
     if response.status_code == 200:
         # CSSやJavaScriptなどの静的ファイル
@@ -4552,9 +4552,31 @@ def add_cache_headers(response):
             elif 'application/json' in response.content_type:
                 response.headers['Cache-Control'] = 'public, max-age=60'  # 60秒間
                 
-        # CSP (Content Security Policy) ヘッダーを追加してセキュリティを強化
+        # セキュリティヘッダーを追加
+        # 1. Content-Security-Policy (CSP) - XSS攻撃の防止
+        csp_directives = [
+            "default-src 'self'",
+            "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://code.jquery.com https://js.stripe.com",
+            "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com",
+            "img-src 'self' data: https://cdn.jsdelivr.net",
+            "font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net",
+            "connect-src 'self'",
+            "frame-src 'self' https://js.stripe.com",
+            "object-src 'none'"
+        ]
+        response.headers['Content-Security-Policy'] = "; ".join(csp_directives)
+        
+        # 2. X-Content-Type-Options - MIMEタイプスニッフィング攻撃の防止
         response.headers['X-Content-Type-Options'] = 'nosniff'
+        
+        # 3. X-Frame-Options - クリックジャッキング攻撃の防止
         response.headers['X-Frame-Options'] = 'SAMEORIGIN'
+        
+        # 4. X-XSS-Protection - XSS攻撃の防止
+        response.headers['X-XSS-Protection'] = '1; mode=block'
+        
+        # 5. Referrer-Policy - プライバシー保護
+        response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
     
     return response
 
