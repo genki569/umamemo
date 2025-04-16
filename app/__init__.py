@@ -82,12 +82,22 @@ def create_app(config_name=None):
     app.config['WTF_CSRF_CHECK_DEFAULT'] = True
     app.config['WTF_CSRF_TIME_LIMIT'] = 3600  # 1時間
     app.config['WTF_CSRF_SSL_STRICT'] = False  # 開発環境ではSSL制限を無効化
+    app.config['WTF_CSRF_SECRET_KEY'] = app.config['SECRET_KEY']  # 専用のシークレットキーを使用
     
     # セッション設定の明示的指定
     app.config['SESSION_TYPE'] = 'filesystem'
     app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=1)  # セッションを1日有効
     app.config['SESSION_USE_SIGNER'] = True  # セッションデータにサインを追加
     app.config['SESSION_KEY_PREFIX'] = 'umamemo_'  # セッションキーのプレフィックス
+    
+    # セッションファイルの保存場所を/tmpに変更（権限問題を解決）
+    session_dir = '/tmp/flask_session'
+    if not os.path.exists(session_dir):
+        try:
+            os.makedirs(session_dir, mode=0o770, exist_ok=True)
+        except Exception as e:
+            print(f"セッションディレクトリの作成に失敗: {e}")
+    app.config['SESSION_FILE_DIR'] = session_dir
     
     # CSRF保護を有効にするための秘密鍵設定を確認
     if 'SECRET_KEY' not in app.config or not app.config['SECRET_KEY']:
