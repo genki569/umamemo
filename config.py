@@ -14,7 +14,7 @@ class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY', os.urandom(24).hex())
     
     # データベース設定
-    DB_USER = os.environ.get('DB_USER', 'postgres')
+    DB_USER = os.environ.get('DB_USER', 'umamemo')
     DB_PASSWORD = os.environ.get('DB_PASSWORD', '3110Genki')
     DB_HOST = os.environ.get('DB_HOST', 'localhost')
     DB_NAME = os.environ.get('DB_NAME', 'umamemo')

@@ -47,14 +47,16 @@ def create_app(config_name=None):
     app.config.from_object(config_by_name[config_name])
     
     # PostgreSQL接続文字列を明示的に設定（パスワード認証の問題を解決）
-    db_user = os.environ.get('DB_USER', app.config.get('DB_USER', 'umamemo')) 
-    db_password = os.environ.get('DB_PASSWORD', app.config.get('DB_PASSWORD', '3110Genki'))
-    db_host = os.environ.get('DB_HOST', app.config.get('DB_HOST', 'localhost'))
-    db_name = os.environ.get('DB_NAME', app.config.get('DB_NAME', 'umamemo'))
+    # 環境変数から取得、なければ設定ファイルから、それもなければデフォルト値
+    db_user = os.environ.get('DB_USER') or app.config.get('DB_USER', 'umamemo')
+    db_password = os.environ.get('DB_PASSWORD') or app.config.get('DB_PASSWORD', '3110Genki')
+    db_host = os.environ.get('DB_HOST') or app.config.get('DB_HOST', 'localhost')
+    db_name = os.environ.get('DB_NAME') or app.config.get('DB_NAME', 'umamemo')
     
-    # 接続文字列を直接構築（URI形式）
-    app.config['SQLALCHEMY_DATABASE_URI'] = f"postgresql://{db_user}:{db_password}@{db_host}/{db_name}"
+    # 明示的に接続文字列を設定
+    app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://{db_user}:{db_password}@{db_host}/{db_name}'
     
+    print(f"【データベース設定】: DB_USER={db_user}, DB_PASSWORD={'*' * len(db_password)}, DB_HOST={db_host}, DB_NAME={db_name}")
     print(f"【接続文字列】: postgresql://{db_user}:{'*' * len(db_password)}@{db_host}/{db_name}")
     
     # メール設定の初期化（環境変数から取得）
