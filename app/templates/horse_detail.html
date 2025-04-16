@@ -44,16 +44,17 @@
     <div class="container main-content">
         <!-- お気に入りボタン -->
         <div class="favorite-section">
-            <button class="favorite-btn" 
-                    onclick="{% if current_user.is_authenticated %}toggleFavorite(this){% else %}window.location.href='{{ url_for('login') }}'{% endif %}"
-                    data-horse-id="{{ horse.id }}">
-                <i class="fas {% if is_favorite %}fa-heart{% else %}fa-heart-o{% endif %}"></i>
-                {% if current_user.is_authenticated %}
+            {% if current_user.is_authenticated %}
+                <button class="favorite-btn" id="favoriteButton" data-horse-id="{{ horse.id }}" data-is-favorite="{{ 'true' if is_favorite else 'false' }}">
+                    <i class="fas {% if is_favorite %}fa-heart{% else %}fa-heart-o{% endif %}"></i>
                     {% if is_favorite %}お気に入りから削除{% else %}お気に入りに追加{% endif %}
-                {% else %}
-                    お気に入りに追加
-                {% endif %}
-            </button>
+                </button>
+            {% else %}
+                <a href="{{ url_for('login') }}" class="favorite-btn">
+                    <i class="far fa-heart"></i>
+                    ログインしてお気に入りに追加
+                </a>
+            {% endif %}
         </div>
 
         <!-- メモ機能 -->
@@ -632,52 +633,100 @@
 /* ダークモード対応 */
 @media (prefers-color-scheme: dark) {
     .horse-detail-page {
-        background-color: #1a1b26;
-        background-image: linear-gradient(to bottom, #1a1b26, #1e293b);
+        background-color: #111827;
+        background-image: linear-gradient(to bottom, #111827, #1f2937);
+        color: #e5e7eb;
+    }
+    
+    .horse-header {
+        background: linear-gradient(135deg, #4338ca, #6366f1);
+        box-shadow: 0 4px 20px rgba(79, 70, 229, 0.3);
+    }
+    
+    .favorite-btn {
+        background: #1f2937;
+        color: #f87171;
+        border-color: #f87171;
+    }
+    
+    .favorite-btn:hover {
+        background: #f87171;
+        color: #1f2937;
     }
     
     .memo-section, 
     .race-history-section {
-        background-color: #1e293b;
-        border-color: rgba(51, 65, 85, 0.5);
+        background-color: #1f2937;
+        border-color: #374151;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     }
     
     .section-header {
-        background: linear-gradient(to right, #1e1e2d, #1e293b);
-        border-bottom-color: rgba(51, 65, 85, 0.5);
+        background: linear-gradient(to right, #111827, #1f2937);
+        border-bottom-color: #374151;
     }
     
     .section-header h2 {
-        color: #e2e8f0;
+        color: #f3f4f6;
+    }
+    
+    .section-header h2 i {
+        color: #818cf8;
     }
     
     .memo-input textarea {
-        background-color: #1a1b26;
-        border-color: #334155;
-        color: #e2e8f0;
+        background-color: #111827;
+        border-color: #374151;
+        color: #f3f4f6;
+    }
+    
+    .memo-input textarea:focus {
+        border-color: #818cf8;
+        box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.2);
+    }
+    
+    .save-btn {
+        background: linear-gradient(to right, #4f46e5, #6366f1);
+    }
+    
+    .save-btn:hover {
+        background: linear-gradient(to right, #4338ca, #4f46e5);
     }
     
     .memo-item {
-        background-color: #1a1b26;
-        border-color: rgba(51, 65, 85, 0.5);
+        background-color: #111827;
+        border-color: #374151;
     }
     
     .memo-text {
-        color: #e2e8f0;
+        color: #f3f4f6;
     }
     
     .memo-meta {
-        border-top-color: rgba(51, 65, 85, 0.5);
+        border-top-color: #374151;
+    }
+    
+    .memo-date {
+        color: #9ca3af;
+    }
+    
+    .delete-btn {
+        color: #f87171;
+    }
+    
+    .delete-btn:hover {
+        background: rgba(248, 113, 113, 0.1);
+        color: #ef4444;
     }
     
     .race-table th {
-        background-color: #1a1b26;
-        color: #cbd5e1;
-        border-bottom-color: #334155;
+        background-color: #111827;
+        color: #d1d5db;
+        border-bottom-color: #374151;
     }
     
     .race-table td {
-        border-bottom-color: #334155;
+        border-bottom-color: #374151;
     }
     
     .race-table tr:hover {
@@ -685,39 +734,105 @@
     }
     
     .race-name {
-        color: #e2e8f0;
+        color: #f3f4f6;
     }
     
-    .race-date,
-    .weight-change {
-        color: #94a3b8;
+    .race-date {
+        color: #9ca3af;
+    }
+    
+    .race-link:hover {
+        color: #818cf8;
     }
     
     .back-btn {
-        background-color: #1a1b26;
-        border-color: #334155;
-        color: #cbd5e1;
+        background-color: #111827;
+        border-color: #374151;
+        color: #d1d5db;
     }
     
     .back-btn:hover {
-        background-color: #252538;
-        color: #f8fafc;
+        background-color: #1f2937;
+        color: #f3f4f6;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
     
     .no-memos i, 
     .login-to-memo i, 
     .no-races i {
-        color: #475569;
+        color: #6b7280;
     }
     
     .no-memos p, 
     .login-to-memo p, 
     .no-races p {
-        color: #cbd5e1;
+        color: #d1d5db;
+    }
+    
+    .login-to-memo a {
+        color: #818cf8;
+    }
+    
+    .login-to-memo a:hover {
+        color: #a5b4fc;
     }
 }
 </style>
 
 <!-- JavaScriptの読み込み -->
 <script src="{{ url_for('static', filename='js/favorite.js') }}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const favoriteButton = document.getElementById('favoriteButton');
+    if (favoriteButton) {
+        favoriteButton.addEventListener('click', function() {
+            const horseId = this.getAttribute('data-horse-id');
+            toggleFavorite(this);
+        });
+    }
+    
+    function toggleFavorite(button) {
+        const horseId = button.getAttribute('data-horse-id');
+        const isFavorite = button.getAttribute('data-is-favorite') === 'true';
+        
+        fetch(`/toggle_favorite/${horseId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token() }}'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // お気に入り状態を切り替える
+                const newState = !isFavorite;
+                button.setAttribute('data-is-favorite', newState ? 'true' : 'false');
+                
+                // アイコンとテキストを更新
+                const icon = button.querySelector('i');
+                if (newState) {
+                    icon.classList.remove('fa-heart-o');
+                    icon.classList.add('fa-heart');
+                    button.textContent = '';
+                    button.appendChild(icon);
+                    button.append(' お気に入りから削除');
+                } else {
+                    icon.classList.remove('fa-heart');
+                    icon.classList.add('fa-heart-o');
+                    button.textContent = '';
+                    button.appendChild(icon);
+                    button.append(' お気に入りに追加');
+                }
+            } else {
+                alert('お気に入りの更新に失敗しました。再度お試しください。');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('エラーが発生しました。再度お試しください。');
+        });
+    }
+});
+</script>
 {% endblock %}
