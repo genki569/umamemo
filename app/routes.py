@@ -1278,14 +1278,14 @@ def mypage_favorites():
 # プアム機能のメインージ
 @app.route('/premium')
 def premium():
-    """プレミアムプランのトップページ"""
-    return render_template('premium/index.html')
+    """プレミアムプランのページ（決済ページにリダイレクト）"""
+    return redirect(url_for('premium_payment'))
 
 # プレミアム機能の詳細ページ
 @app.route('/premium/features')
 def premium_features():
-    """プレアム機能の詳細ペー"""
-    return render_template('premium/features.html')
+    """プレミアムプランの特徴ページ（決済ページにリダイレクト）"""
+    return redirect(url_for('premium_payment'))
 
 # プレミアムの支払ページ
 @app.route('/premium/payment', methods=['GET', 'POST'])
