@@ -46,6 +46,17 @@ def create_app(config_name=None):
     # 設定を取得して適用
     app.config.from_object(config_by_name[config_name])
     
+    # PostgreSQL接続文字列を明示的に設定（パスワード認証の問題を解決）
+    db_user = os.environ.get('DB_USER', app.config.get('DB_USER', 'umamemo')) 
+    db_password = os.environ.get('DB_PASSWORD', app.config.get('DB_PASSWORD', '3110Genki'))
+    db_host = os.environ.get('DB_HOST', app.config.get('DB_HOST', 'localhost'))
+    db_name = os.environ.get('DB_NAME', app.config.get('DB_NAME', 'umamemo'))
+    
+    # 接続文字列を直接構築（URI形式）
+    app.config['SQLALCHEMY_DATABASE_URI'] = f"postgresql://{db_user}:{db_password}@{db_host}/{db_name}"
+    
+    print(f"【接続文字列】: postgresql://{db_user}:{'*' * len(db_password)}@{db_host}/{db_name}")
+    
     # メール設定の初期化（環境変数から取得）
     app.config['MAIL_SERVER'] = os.environ.get('MAIL_SERVER', app.config.get('MAIL_SERVER'))
     app.config['MAIL_PORT'] = int(os.environ.get('MAIL_PORT', app.config.get('MAIL_PORT')))
@@ -60,6 +71,17 @@ def create_app(config_name=None):
     
     # 各種拡張機能の初期化
     csrf.init_app(app)
+    
+    # データベース接続のデバッグ情報を表示
+    db_uri = app.config['SQLALCHEMY_DATABASE_URI']
+    if 'postgresql' in db_uri:
+        # パスワードを隠した接続情報を表示
+        masked_uri = db_uri.replace(app.config['DB_PASSWORD'], '********') if app.config['DB_PASSWORD'] else db_uri
+        print(f"データベース接続情報: {masked_uri}")
+        print(f"DB_USER: {app.config['DB_USER']}")
+        print(f"DB_HOST: {app.config['DB_HOST']}")
+        print(f"DB_NAME: {app.config['DB_NAME']}")
+    
     db.init_app(app)
     migrate.init_app(app, db)
     login.init_app(app)
