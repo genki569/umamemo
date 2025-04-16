@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager, current_user
 from flask_wtf.csrf import CSRFProtect
-from flask_session import Session
+# from flask_session import Session  # 不要なので無効化
 from config import config_by_name
 import logging
 from logging.handlers import RotatingFileHandler
@@ -18,7 +18,7 @@ login = LoginManager()
 login.login_view = 'login'
 csrf = CSRFProtect()
 mail = Mail()
-sess = Session()
+# sess = Session()  # 不要なので無効化
 
 # アプリケーションのグローバルインスタンス
 # 既存コードとの互換性のために維持
@@ -54,9 +54,8 @@ def create_app(config_name=None):
     # 設定を取得して適用
     app.config.from_object(config_by_name[config_name])
     
-    # シークレットキーを明示的に設定（必須）
+    # 重要: シークレットキーを最優先で設定（セッション初期化の前に必要）
     app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', '3110Genki=')
-    # シークレットキーが正しく設定されているか確認するためのデバッグ出力
     print(f"【重要】SECRET_KEY設定: {'設定済み' if app.config.get('SECRET_KEY') else '未設定！'}")
     print(f"SECRET_KEY長さ: {len(app.config.get('SECRET_KEY', ''))}文字")
     
@@ -88,30 +87,26 @@ def create_app(config_name=None):
     # 各種拡張機能の初期化
     csrf.init_app(app)
     
-    # CSRFトークンの設定 - エラー処理方法を変更
+    # CSRFトークン設定
     app.config['WTF_CSRF_ENABLED'] = True
-    app.config['WTF_CSRF_CHECK_DEFAULT'] = True
-    app.config['WTF_CSRF_TIME_LIMIT'] = 3600  # 1時間
-    app.config['WTF_CSRF_SSL_STRICT'] = False  # 開発環境ではSSL制限を無効化
-    app.config['WTF_CSRF_SECRET_KEY'] = app.config['SECRET_KEY']  # 専用のシークレットキーを使用
+    app.config['WTF_CSRF_SECRET_KEY'] = app.config['SECRET_KEY']
     
-    # CSRF保護を有効にするための秘密鍵設定を確認
-    if 'SECRET_KEY' not in app.config or not app.config['SECRET_KEY']:
-        app.config['SECRET_KEY'] = os.urandom(24).hex()
-        print("警告: SECRET_KEYが設定されていないため、ランダムな値を生成しました。サーバー再起動時に変わります。")
+    # CSRFトークンが正しく動作するか確認
+    from flask_wtf.csrf import generate_csrf
+    try:
+        test_token = generate_csrf()
+        print(f"CSRFトークンテスト: 生成成功 (長さ: {len(test_token)} 文字)")
+    except Exception as e:
+        print(f"CSRFトークンテスト: 生成失敗 - {str(e)}")
     
-    # セッション管理をFlaskの標準機能に切り替え（Cookieベース）
-    app.config.update(
-        SESSION_COOKIE_SECURE=False,
-        SESSION_COOKIE_HTTPONLY=True,
-        SESSION_COOKIE_SAMESITE='Lax',
-        PERMANENT_SESSION_LIFETIME=timedelta(days=1),
-        SESSION_TYPE=None  # Flask-Sessionを無効化し、標準のFlaskセッションを使用
-    )
+    # セッション設定 - 標準のFlaskセッションを使用
+    app.config['SESSION_COOKIE_SECURE'] = False
+    app.config['SESSION_COOKIE_HTTPONLY'] = True
+    app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+    app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=1)
     
-    # セッション管理の初期化
-    # Flask-Sessionをロードするが、実際は標準のFlaskセッションが使用される
-    sess.init_app(app)
+    # Flask-Sessionは使用しない - 通常のFlaskセッションを使用
+    # sess.init_app(app)
     
     # データベース接続のデバッグ情報を表示
     db_uri = app.config['SQLALCHEMY_DATABASE_URI']
