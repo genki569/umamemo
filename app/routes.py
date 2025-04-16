@@ -2793,7 +2793,7 @@ def toggle_premium_status(user_id):
             'message': 'エラが発生しました。'
         }), 500
 
-@app.route('/admin/review-purchases-list')
+@app.route('/admin/review-purchases-list', endpoint='admin_review_purchases_list_alt')
 @login_required
 @admin_required
 def admin_review_purchases_list():
