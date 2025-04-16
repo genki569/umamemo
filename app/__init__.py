@@ -8,6 +8,7 @@ import logging
 from logging.handlers import RotatingFileHandler
 import os
 from flask_mail import Mail
+from datetime import timedelta
 
 # 拡張機能のインスタンス作成
 db = SQLAlchemy()
@@ -73,6 +74,15 @@ def create_app(config_name=None):
     
     # 各種拡張機能の初期化
     csrf.init_app(app)
+    
+    # CSRFトークンの設定 - エラー処理方法を変更
+    app.config['WTF_CSRF_ENABLED'] = True
+    app.config['WTF_CSRF_CHECK_DEFAULT'] = True
+    app.config['WTF_CSRF_TIME_LIMIT'] = 3600  # 1時間
+    
+    # セッション設定の明示的指定
+    app.config['SESSION_TYPE'] = 'filesystem'
+    app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=1)  # セッションを1日で有効期限切れに
     
     # データベース接続のデバッグ情報を表示
     db_uri = app.config['SQLALCHEMY_DATABASE_URI']

@@ -432,7 +432,8 @@ class User(UserMixin, db.Model):
     # リレーションシップ
     user_settings = db.relationship('UserSettings', 
                                   backref=db.backref('user_ref', uselist=False),
-                                  uselist=False)
+                                  uselist=False,
+                                  overlaps="user_settings,user_ref")
 
     # レビュー関連のリレーションシップを追加
     reviews = db.relationship('RaceReview', backref='author', lazy='dynamic')
@@ -643,7 +644,9 @@ class ReviewPurchase(db.Model):
     
     # リレーションシップ（既存のまま）
     user = db.relationship('User', backref=db.backref('review_purchase_history', lazy='dynamic'))
-    review = db.relationship('RaceReview', backref=db.backref('purchase_history', lazy='dynamic'))
+    review = db.relationship('RaceReview', 
+                           backref=db.backref('purchase_history', lazy='dynamic'),
+                           overlaps="purchases,target_review")
 
 class RaceMemo(db.Model):
     __tablename__ = 'race_memos'
@@ -673,7 +676,9 @@ class UserSettings(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
-    user = db.relationship('User', backref=db.backref('settings', uselist=False))
+    user = db.relationship('User', 
+                           backref=db.backref('settings', uselist=False),
+                           overlaps="user_settings,user_ref")
 
 class Notification(db.Model):
     __tablename__ = 'notifications'
