@@ -53,6 +53,10 @@ def create_app(config_name=None):
     login.init_app(app)
     mail.init_app(app)
     
+    # ログインメッセージを日本語に変更
+    login.login_message = 'このページにアクセスするにはログインが必要です。'
+    login.login_message_category = 'info'
+    
     # ベースディレクトリの設定
     BASE_DIR = os.path.abspath(os.path.dirname(__file__))
     LOG_DIR = os.path.join(os.path.dirname(BASE_DIR), 'logs')

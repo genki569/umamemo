@@ -251,7 +251,7 @@
             </div>
         </div>
         <div class="row g-4 justify-content-center">
-            <div class="col-lg-5">
+            <div class="col-lg-4">
                 <div class="card border-0 shadow-sm rounded-4 h-100">
                     <div class="card-body p-5">
                         <h5 class="text-center mb-4 fw-bold">無料プラン</h5>
@@ -287,7 +287,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg-5">
+            <div class="col-lg-4">
                 <div class="card border-0 shadow-lg rounded-4 h-100" style="transform: scale(1.05);">
                     <div class="card-header text-center py-3 bg-primary text-white border-0">
                         <span class="badge bg-warning text-dark fw-bold px-3 py-2 rounded-pill">おすすめ</span>
@@ -322,6 +322,45 @@
                 </ul>
                         <div class="text-center">
                             <a href="{{ url_for('premium') }}" class="btn btn-primary rounded-pill px-5 py-2 fw-bold">アップグレード</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-lg rounded-4 h-100">
+                    <div class="card-header text-center py-3 bg-warning text-dark border-0">
+                        <span class="badge bg-dark text-white fw-bold px-3 py-2 rounded-pill">マスター</span>
+                    </div>
+                    <div class="card-body p-5">
+                        <h5 class="text-center mb-4 fw-bold">マスタープレミアム</h5>
+                        <div class="text-center mb-4">
+                            <span class="display-4 fw-bold">¥2,980</span>
+                            <span class="text-muted">/月</span>
+                        </div>
+                        <ul class="list-unstyled mb-5">
+                            <li class="mb-3 d-flex align-items-center">
+                                <i class="fas fa-check text-success me-3"></i>
+                                <span>プレミアムの全機能</span>
+                            </li>
+                            <li class="mb-3 d-flex align-items-center">
+                                <i class="fas fa-check text-success me-3"></i>
+                                <span>プロの回顧ノート（毎日更新）</span>
+                            </li>
+                            <li class="mb-3 d-flex align-items-center">
+                                <i class="fas fa-check text-success me-3"></i>
+                                <span>ポイント換金手数料10%</span>
+                            </li>
+                            <li class="mb-3 d-flex align-items-center">
+                                <i class="fas fa-check text-success me-3"></i>
+                                <span>3,000ポイントのボーナス</span>
+                            </li>
+                            <li class="mb-3 d-flex align-items-center">
+                                <i class="fas fa-check text-success me-3"></i>
+                                <span>最優先サポート</span>
+                            </li>
+                        </ul>
+                        <div class="text-center">
+                            <a href="{{ url_for('premium_payment', plan='master') }}" class="btn btn-warning text-dark rounded-pill px-5 py-2 fw-bold">マスターになる</a>
                         </div>
                     </div>
                 </div>
