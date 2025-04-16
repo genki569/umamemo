@@ -15,7 +15,7 @@ class Config:
     
     # データベース設定
     DB_USER = os.environ.get('DB_USER', 'postgres')
-    DB_PASSWORD = os.environ.get('DB_PASSWORD', '')
+    DB_PASSWORD = os.environ.get('DB_PASSWORD', '3110Genki')
     DB_HOST = os.environ.get('DB_HOST', 'localhost')
     DB_NAME = os.environ.get('DB_NAME', 'umamemo')
     
