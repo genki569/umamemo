@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block title %}競馬ラボ - 競馬の知識と分析のための総合情報サイト | 馬メモ{% endblock %}
+
+{% block meta_description %}競馬ラボでは初心者から上級者まで役立つ競馬知識、分析手法、予想のコツなど様々なコンテンツを提供。JRAや地方競馬の基礎知識から的中率を上げるための実践的な情報まで幅広く網羅しています。{% endblock %}
+
+{% block meta_keywords %}競馬,競馬ラボ,馬券,予想法,血統,調教,馬メモ,JRA,地方競馬,レース分析{% endblock %}
+
+{% block og_title %}競馬ラボ - 競馬の知識と分析のための総合情報サイト | 馬メモ{% endblock %}
+{% block og_description %}競馬ラボでは初心者から上級者まで役立つ競馬知識、分析手法、予想のコツなど様々なコンテンツを提供。JRAや地方競馬の基礎知識から的中率を上げるための実践的な情報まで幅広く網羅しています。{% endblock %}
+{% block og_type %}article{% endblock %}
+
+{% block twitter_title %}競馬ラボ - 競馬の知識と分析のための総合情報サイト | 馬メモ{% endblock %}
+{% block twitter_description %}競馬ラボでは初心者から上級者まで役立つ競馬知識、分析手法、予想のコツなど様々なコンテンツを提供。JRAや地方競馬の基礎知識から的中率を上げるための実践的な情報まで幅広く網羅しています。{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="mb-3 display-5 fw-bold text-primary">競馬ラボ</h1>
+            <p class="lead">競馬の知識と分析のための総合情報サイト</p>
+            <div class="card shadow-sm mb-4 border-0">
+                <div class="card-body">
+                    <p>競馬ラボでは、初心者の方から上級者の方まで役立つ競馬に関する様々な知識や分析方法、予想のコツなどを詳しく解説しています。JRAや地方競馬の基礎知識から的中率を上げるための実践的な情報まで、幅広いコンテンツを提供しています。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-md-6 mb-4">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body">
+                    <h2 class="h4 card-title">初心者向けガイド</h2>
+                    <p class="card-text">競馬を始めたばかりの方に向けた基礎知識や用語解説、馬券の買い方など</p>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item bg-transparent border-0 ps-0">
+                            <a href="{{ url_for('keiba_lab_content', content_path='beginners/what-is-keiba') }}" class="text-decoration-none">
+                                <i class="fas fa-chevron-right text-primary me-2"></i>競馬とは？基本的な仕組みと楽しみ方
+                            </a>
+                        </li>
+                        <li class="list-group-item bg-transparent border-0 ps-0">
+                            <a href="{{ url_for('keiba_lab_content', content_path='beginners/racing-terms') }}" class="text-decoration-none">
+                                <i class="fas fa-chevron-right text-primary me-2"></i>競馬用語集：初心者が知っておきたい基本用語
+                            </a>
+                        </li>
+                        <li class="list-group-item bg-transparent border-0 ps-0">
+                            <a href="{{ url_for('keiba_lab_content', content_path='beginners/how-to-bet') }}" class="text-decoration-none">
+                                <i class="fas fa-chevron-right text-primary me-2"></i>馬券の種類と購入方法ガイド
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body">
+                    <h2 class="h4 card-title">競馬分析の基礎</h2>
+                    <p class="card-text">競馬予想に役立つ基本的な分析方法やデータの見方など</p>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item bg-transparent border-0 ps-0">
+                            <a href="{{ url_for('keiba_lab_content', content_path='analysis/race-card-reading') }}" class="text-decoration-none">
+                                <i class="fas fa-chevron-right text-primary me-2"></i>出馬表の読み方とポイント解説
+                            </a>
+                        </li>
+                        <li class="list-group-item bg-transparent border-0 ps-0">
+                            <a href="{{ url_for('keiba_lab_content', content_path='analysis/course-characteristics') }}" class="text-decoration-none">
+                                <i class="fas fa-chevron-right text-primary me-2"></i>競馬場別コース特性と攻略法
+                            </a>
+                        </li>
+                        <li class="list-group-item bg-transparent border-0 ps-0">
+                            <a href="{{ url_for('keiba_lab_content', content_path='analysis/pace-and-race-development') }}" class="text-decoration-none">
+                                <i class="fas fa-chevron-right text-primary me-2"></i>レースのペースと展開の読み方
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body">
+                    <h2 class="h4 card-title">血統と配合の知識</h2>
+                    <p class="card-text">血統の基礎知識や配合理論、主要血統の特徴など</p>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item bg-transparent border-0 ps-0">
+                            <a href="{{ url_for('keiba_lab_content', content_path='breeding/bloodline-basics') }}" class="text-decoration-none">
+                                <i class="fas fa-chevron-right text-primary me-2"></i>血統の基礎知識：予想に活かすポイント
+                            </a>
+                        </li>
+                        <li class="list-group-item bg-transparent border-0 ps-0">
+                            <a href="{{ url_for('keiba_lab_content', content_path='breeding/major-bloodlines') }}" class="text-decoration-none">
+                                <i class="fas fa-chevron-right text-primary me-2"></i>日本競馬の主要血統と特徴解説
+                            </a>
+                        </li>
+                        <li class="list-group-item bg-transparent border-0 ps-0">
+                            <a href="{{ url_for('keiba_lab_content', content_path='breeding/breeding-theories') }}" class="text-decoration-none">
+                                <i class="fas fa-chevron-right text-primary me-2"></i>血統による適性：距離・脚質・馬場状態
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body">
+                    <h2 class="h4 card-title">予想理論と戦略</h2>
+                    <p class="card-text">的中率アップにつながる様々な予想理論や戦略的な馬券購入法</p>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item bg-transparent border-0 ps-0">
+                            <a href="{{ url_for('keiba_lab_content', content_path='strategy/handicapping-methods') }}" class="text-decoration-none">
+                                <i class="fas fa-chevron-right text-primary me-2"></i>代表的な予想法と適した使い分け
+                            </a>
+                        </li>
+                        <li class="list-group-item bg-transparent border-0 ps-0">
+                            <a href="{{ url_for('keiba_lab_content', content_path='strategy/betting-strategies') }}" class="text-decoration-none">
+                                <i class="fas fa-chevron-right text-primary me-2"></i>資金管理と戦略的な馬券購入術
+                            </a>
+                        </li>
+                        <li class="list-group-item bg-transparent border-0 ps-0">
+                            <a href="{{ url_for('keiba_lab_content', content_path='strategy/value-betting') }}" class="text-decoration-none">
+                                <i class="fas fa-chevron-right text-primary me-2"></i>オッズの見方とバリューベッティング
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm border-0 bg-light">
+                <div class="card-body">
+                    <h2 class="h4">コンテンツについて</h2>
+                    <p>競馬ラボでは、定期的に新しいコンテンツを追加していきます。最新の情報や分析記事をお見逃しなく！また、ご要望のあるトピックがございましたら、お気軽にお問い合わせください。</p>
+                    <p>※競馬ラボのコンテンツは情報提供を目的としており、馬券の的中を保証するものではありません。馬券の購入は自己責任でお願いいたします。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

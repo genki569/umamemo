@@ -4827,7 +4827,8 @@ def sitemap():
             ('shutuba_list', 'daily', '0.9'),
             ('horses', 'weekly', '0.8'),
             ('jockeys', 'weekly', '0.8'),
-            ('review_market', 'daily', '0.9')
+            ('review_market', 'daily', '0.9'),
+            ('keiba_lab_index', 'weekly', '0.8')
         ]
         
         for rule, changefreq, priority in main_pages:
@@ -5154,3 +5155,30 @@ def admin_user_update(user_id):
         flash('ユーザー情報の更新中にエラーが発生しました。', 'error')
     
     return redirect(url_for('admin_user_detail', user_id=user.id))
+
+# 競馬ラボコンテンツ集のルート
+@app.route('/keiba-lab')
+def keiba_lab_index():
+    """
+    競馬ラボのインデックスページ
+    競馬に関する様々な知識・情報を集約したコンテンツ集
+    """
+    return render_template('keiba_lab/index.html')
+
+@app.route('/keiba-lab/<path:content_path>')
+def keiba_lab_content(content_path):
+    """
+    競馬ラボの個別コンテンツページ
+    URLパスによって異なるコンテンツを表示する
+    
+    Args:
+        content_path: コンテンツのパス
+    """
+    # コンテンツのパスに基づいてテンプレートを選択
+    template_path = f'keiba_lab/{content_path}.html'
+    
+    try:
+        return render_template(template_path)
+    except:
+        # テンプレートが見つからない場合は404を返す
+        return render_template('errors/404.html'), 404

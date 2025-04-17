@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+
+{% block title %}競馬とは？基本的な仕組みと楽しみ方 | 競馬ラボ | 馬メモ{% endblock %}
+
+{% block meta_description %}競馬の基本的な仕組みや歴史、競走馬や騎手の役割、レースの種類、馬券の購入方法まで初心者にもわかりやすく解説。これから競馬を始める方はぜひご覧ください。{% endblock %}
+
+{% block meta_keywords %}競馬,初心者,馬券,JRA,地方競馬,競走馬,騎手,レース,G1,クラシック{% endblock %}
+
+{% block og_title %}競馬とは？基本的な仕組みと楽しみ方 | 競馬ラボ | 馬メモ{% endblock %}
+{% block og_description %}競馬の基本的な仕組みや歴史、競走馬や騎手の役割、レースの種類、馬券の購入方法まで初心者にもわかりやすく解説。これから競馬を始める方はぜひご覧ください。{% endblock %}
+{% block og_type %}article{% endblock %}
+
+{% block twitter_title %}競馬とは？基本的な仕組みと楽しみ方 | 競馬ラボ | 馬メモ{% endblock %}
+{% block twitter_description %}競馬の基本的な仕組みや歴史、競走馬や騎手の役割、レースの種類、馬券の購入方法まで初心者にもわかりやすく解説。これから競馬を始める方はぜひご覧ください。{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('index') }}">ホーム</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('keiba_lab_index') }}">競馬ラボ</a></li>
+            <li class="breadcrumb-item active" aria-current="page">競馬とは？基本的な仕組みと楽しみ方</li>
+        </ol>
+    </nav>
+
+    <div class="row mb-4">
+        <div class="col-lg-8">
+            <article>
+                <header class="mb-4">
+                    <h1 class="display-5 fw-bold text-primary">競馬とは？基本的な仕組みと楽しみ方</h1>
+                    <p class="lead text-muted">競馬初心者の方に向けた、競馬の基本情報をわかりやすく解説</p>
+                    <div class="d-flex align-items-center text-muted small mb-2">
+                        <i class="far fa-calendar-alt me-1"></i>
+                        <span>公開日: 2024年11月20日</span>
+                        <span class="mx-2">|</span>
+                        <i class="far fa-clock me-1"></i>
+                        <span>読了時間: 約10分</span>
+                    </div>
+                </header>
+
+                <section class="card shadow-sm mb-5 border-0">
+                    <div class="card-body">
+                        <h2 class="h3 text-primary mb-3">競馬の基本と歴史</h2>
+                        <p>競馬（けいば）とは、サラブレッドと呼ばれる競走馬が速さを競う競技・スポーツです。騎手（ジョッキー）と呼ばれる選手が競走馬に騎乗し、決められたコースを走り、着順を競います。</p>
+                        
+                        <h3 class="h5 mt-4">競馬の起源と日本での発展</h3>
+                        <p>競馬の起源は古代に遡り、古代オリンピックでも馬術競技が行われていました。近代競馬はイギリスで18世紀に形式が整えられ、世界各国に広まりました。</p>
+                        <p>日本での近代競馬は明治時代に始まり、1954年に日本中央競馬会（JRA）が設立され、公営ギャンブルとして制度が確立されました。現在では、JRAが運営する中央競馬と、地方自治体が運営する地方競馬があります。</p>
+
+                        <h3 class="h5 mt-4">競馬の魅力</h3>
+                        <p>競馬の魅力は多岐にわたります。競走馬の美しい走りや力強さ、騎手の技術や戦略、そして何より、予想を楽しみながら応援する興奮があります。また、桜花賞やダービーなどの伝統あるレースでは、歴史的な名馬や名勝負が語り継がれ、ファンを魅了し続けています。</p>
+                    </div>
+                </section>
+
+                <section class="card shadow-sm mb-5 border-0">
+                    <div class="card-body">
+                        <h2 class="h3 text-primary mb-3">競馬の仕組み</h2>
+                        
+                        <h3 class="h5 mt-4">競走馬と騎手</h3>
+                        <p>競走馬はサラブレッドと呼ばれる品種が主に使用され、2歳から走り始め、多くは7〜8歳程度で引退します。競走馬は牧場で育てられ、調教師のもとでトレーニングを積みます。</p>
+                        <p>騎手（ジョッキー）は競走馬に騎乗する選手で、JRAの免許を取得するためには厳しい試験と訓練が必要です。体重制限があり、日々の体重管理も重要な仕事の一つです。</p>
+
+                        <h3 class="h5 mt-4">競馬場とコース</h3>
+                        <p>JRAが運営する主な競馬場は10カ所あり、東京・中山・阪神・京都・中京などが代表的です。競馬場によってコースの形状や特性が異なり、直線の長さや坂の有無など、それぞれ特徴があります。</p>
+                        <p>コースには芝コースとダートコース（砂）があり、レースの距離も短距離（1000m〜1400m）、マイル（1600m前後）、中距離（1800m〜2200m）、長距離（2400m以上）と様々です。</p>
+
+                        <h3 class="h5 mt-4">レースの種類とグレード</h3>
+                        <p>競馬のレースはクラス分けされており、重賞と呼ばれる格の高いレースと、一般競走に大別されます。重賞の中でも特に格の高いものを「GI（グレード1）」と呼び、日本ダービーや有馬記念などが該当します。その下に「GII」「GIII」があります。</p>
+                        <p>また、対象となる馬の年齢や性別によってもレースは分けられています。例えば、3歳馬限定のクラシック三冠（皐月賞・日本ダービー・菊花賞）や、3歳牝馬（メス）限定の牝馬クラシック三冠（桜花賞・オークス・秋華賞）などがあります。</p>
+                    </div>
+                </section>
+
+                <section class="card shadow-sm mb-5 border-0">
+                    <div class="card-body">
+                        <h2 class="h3 text-primary mb-3">競馬の楽しみ方</h2>
+                        
+                        <h3 class="h5 mt-4">馬券の種類と買い方</h3>
+                        <p>競馬の楽しみ方の一つが馬券を購入して予想を楽しむことです。主な馬券の種類には以下があります：</p>
+                        <ul>
+                            <li><strong>単勝</strong>：1着になる馬を当てる</li>
+                            <li><strong>複勝</strong>：3着以内に入る馬を当てる</li>
+                            <li><strong>馬連</strong>：1着と2着になる2頭の馬の組み合わせを当てる（順不同）</li>
+                            <li><strong>馬単</strong>：1着と2着になる2頭の馬の組み合わせと着順を当てる</li>
+                            <li><strong>ワイド</strong>：3着以内に入る2頭の馬の組み合わせを当てる</li>
+                            <li><strong>三連複</strong>：1着、2着、3着になる3頭の馬の組み合わせを当てる（順不同）</li>
+                            <li><strong>三連単</strong>：1着、2着、3着になる3頭の馬の組み合わせと着順を当てる</li>
+                        </ul>
+                        <p>馬券は競馬場の窓口や自動販売機、ウインズ（場外馬券売り場）、インターネット（JRA-PAT、楽天競馬など）で購入できます。</p>
+
+                        <h3 class="h5 mt-4">競馬観戦の楽しみ方</h3>
+                        <p>競馬場に行って生で競馬を観戦するのも大きな楽しみの一つです。レース前のパドックでは馬の状態をチェックしたり、レース後には勝利した騎手や調教師のインタビューを聞いたりすることができます。</p>
+                        <p>競馬場には多くの飲食店やショップもあり、レース間の時間を楽しむことができます。また、初心者向けのガイドツアーやイベントも開催されていることがあります。</p>
+
+                        <h3 class="h5 mt-4">予想と分析の楽しみ</h3>
+                        <p>競馬の醍醐味は、レース前に様々な情報を分析して予想を立てる過程にもあります。出馬表から各馬の過去の成績、血統、調教師、騎手、枠順などの情報を分析し、勝ち馬を予想します。</p>
+                        <p>初心者の方は、まずは競馬新聞やネット上の予想サイト、テレビの競馬番組などを参考にするとよいでしょう。馬メモのレース情報や回顧ノートも参考になります。経験を積むにつれて、自分なりの予想方法を見つけていくのも楽しみの一つです。</p>
+                    </div>
+                </section>
+
+                <section class="card shadow-sm mb-5 border-0">
+                    <div class="card-body">
+                        <h2 class="h3 text-primary mb-3">初心者におすすめのレース観戦方法</h2>
+                        <p>競馬初心者の方には、まずは以下のような観戦方法をおすすめします：</p>
+                        <ol>
+                            <li><strong>GIレースから観戦する</strong>：日本ダービーや有馬記念などの大きなレースは解説も充実しており、初心者でも楽しめます。</li>
+                            <li><strong>テレビ中継で観る</strong>：グリーンチャンネルやBS/地上波での中継では、解説付きでレースを楽しめます。</li>
+                            <li><strong>競馬場の初心者ツアーに参加する</strong>：JRAの競馬場では初心者向けのガイドツアーを実施していることがあります。</li>
+                            <li><strong>友人や家族と一緒に楽しむ</strong>：競馬経験者と一緒に観戦すると、様々なことを教えてもらえます。</li>
+                            <li><strong>少額から馬券を楽しむ</strong>：100円から馬券は購入できるので、少額から予想の楽しさを体験できます。</li>
+                        </ol>
+                        <p>初めは複雑に感じるかもしれませんが、少しずつ知識を増やしていくことで、競馬の奥深さと魅力を感じることができるでしょう。</p>
+                    </div>
+                </section>
+
+                <div class="card shadow-sm mb-5 border-0 bg-light">
+                    <div class="card-body">
+                        <h2 class="h4 text-primary">まとめ</h2>
+                        <p>競馬は長い歴史と伝統を持つスポーツであり、競走馬の走りを楽しむだけでなく、予想を立てて馬券を購入することで、より一層楽しめるエンターテイメントです。初心者の方は、まずは基本的な知識を身につけ、実際にレースを観戦することから始めてみましょう。</p>
+                        <p>次のステップとして、<a href="{{ url_for('keiba_lab_content', content_path='beginners/racing-terms') }}">競馬用語集</a>や<a href="{{ url_for('keiba_lab_content', content_path='beginners/how-to-bet') }}">馬券の種類と購入方法ガイド</a>もぜひご覧ください。</p>
+                        <p>馬メモでは、競馬に関する様々な情報を提供しています。レース情報、出馬表、馬データなど、競馬を楽しむための情報が満載です。ぜひご活用ください。</p>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between mb-5">
+                    <a href="{{ url_for('keiba_lab_index') }}" class="btn btn-outline-primary">&larr; 競馬ラボトップへ戻る</a>
+                    <a href="{{ url_for('keiba_lab_content', content_path='beginners/racing-terms') }}" class="btn btn-primary">次の記事：競馬用語集 &rarr;</a>
+                </div>
+            </article>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="position-sticky" style="top: 2rem;">
+                <div class="card shadow-sm mb-4 border-0">
+                    <div class="card-body">
+                        <h3 class="h5 card-title">目次</h3>
+                        <ul class="list-unstyled mb-0">
+                            <li class="mb-2"><a href="#" class="text-decoration-none">競馬の基本と歴史</a></li>
+                            <li class="mb-2"><a href="#" class="text-decoration-none">競馬の仕組み</a></li>
+                            <li class="mb-2"><a href="#" class="text-decoration-none">競馬の楽しみ方</a></li>
+                            <li><a href="#" class="text-decoration-none">初心者におすすめのレース観戦方法</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm mb-4 border-0">
+                    <div class="card-body">
+                        <h3 class="h5 card-title">関連コンテンツ</h3>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item bg-transparent border-0 ps-0">
+                                <a href="{{ url_for('keiba_lab_content', content_path='beginners/racing-terms') }}" class="text-decoration-none">
+                                    <i class="fas fa-chevron-right text-primary me-2"></i>競馬用語集：初心者が知っておきたい基本用語
+                                </a>
+                            </li>
+                            <li class="list-group-item bg-transparent border-0 ps-0">
+                                <a href="{{ url_for('keiba_lab_content', content_path='beginners/how-to-bet') }}" class="text-decoration-none">
+                                    <i class="fas fa-chevron-right text-primary me-2"></i>馬券の種類と購入方法ガイド
+                                </a>
+                            </li>
+                            <li class="list-group-item bg-transparent border-0 ps-0">
+                                <a href="{{ url_for('keiba_lab_content', content_path='analysis/race-card-reading') }}" class="text-decoration-none">
+                                    <i class="fas fa-chevron-right text-primary me-2"></i>出馬表の読み方とポイント解説
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

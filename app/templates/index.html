@@ -189,6 +189,106 @@
     </div>
 </section>
 
+<!-- 競馬ラボセクション（新規追加） -->
+<section class="py-5" style="background-color: #EFF6FF;">
+    <div class="container py-5">
+        <div class="row align-items-center">
+            <div class="col-lg-6 mb-5 mb-lg-0">
+                <h6 class="text-primary fw-bold mb-3" style="letter-spacing: 2px; text-transform: uppercase;">新着コンテンツ</h6>
+                <h2 class="display-5 mb-4" style="font-weight: 700; color: #1E293B;">競馬ラボ</h2>
+                <p class="lead text-muted mb-4">競馬の知識と分析のための総合情報サイト。初心者から上級者まで役立つコンテンツを提供しています。</p>
+                
+                <div class="mb-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="me-3 p-3 rounded-circle" style="background-color: rgba(79, 70, 229, 0.1);">
+                            <i class="fas fa-graduation-cap text-primary"></i>
+                        </div>
+                        <div>
+                            <h4 class="h5 mb-0">初心者向けガイド</h4>
+                            <p class="mb-0 small text-muted">競馬の基本から馬券の買い方まで</p>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="me-3 p-3 rounded-circle" style="background-color: rgba(79, 70, 229, 0.1);">
+                            <i class="fas fa-chart-bar text-primary"></i>
+                        </div>
+                        <div>
+                            <h4 class="h5 mb-0">競馬分析の基礎</h4>
+                            <p class="mb-0 small text-muted">データの見方やコース特性の解説</p>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex align-items-center">
+                        <div class="me-3 p-3 rounded-circle" style="background-color: rgba(79, 70, 229, 0.1);">
+                            <i class="fas fa-dna text-primary"></i>
+                        </div>
+                        <div>
+                            <h4 class="h5 mb-0">血統と配合の知識</h4>
+                            <p class="mb-0 small text-muted">血統による適性や主要血統の特徴</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <a href="{{ url_for('keiba_lab_index') }}" class="btn btn-primary btn-lg px-4 rounded-pill">
+                    競馬ラボを見る <i class="fas fa-arrow-right ms-2"></i>
+                </a>
+            </div>
+            <div class="col-lg-6">
+                <div class="position-relative p-4">
+                    <div style="position: absolute; top: 0; right: 0; bottom: 0; left: 0; background-color: #4F46E5; border-radius: 16px; transform: rotate(-3deg);"></div>
+                    <div class="card border-0 shadow-lg position-relative" style="border-radius: 16px; overflow: hidden; transform: rotate(3deg);">
+                        <div class="card-body p-5">
+                            <h5 class="mb-4 fw-bold">おすすめコンテンツ</h5>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item bg-transparent border-0 ps-0 py-2">
+                                    <a href="{{ url_for('keiba_lab_content', content_path='beginners/what-is-keiba') }}" class="text-decoration-none">
+                                        <div class="d-flex align-items-center">
+                                            <span class="me-3 d-flex align-items-center justify-content-center rounded-circle" style="width: 40px; height: 40px; background-color: rgba(79, 70, 229, 0.1);">
+                                                <i class="fas fa-chevron-right text-primary"></i>
+                                            </span>
+                                            <div>
+                                                <h6 class="mb-0">競馬とは？基本的な仕組みと楽しみ方</h6>
+                                                <small class="text-muted">初心者向け・基礎知識</small>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li class="list-group-item bg-transparent border-0 ps-0 py-2">
+                                    <a href="{{ url_for('keiba_lab_content', content_path='analysis/race-card-reading') }}" class="text-decoration-none">
+                                        <div class="d-flex align-items-center">
+                                            <span class="me-3 d-flex align-items-center justify-content-center rounded-circle" style="width: 40px; height: 40px; background-color: rgba(79, 70, 229, 0.1);">
+                                                <i class="fas fa-chevron-right text-primary"></i>
+                                            </span>
+                                            <div>
+                                                <h6 class="mb-0">出馬表の読み方とポイント解説</h6>
+                                                <small class="text-muted">分析基礎・データ活用</small>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li class="list-group-item bg-transparent border-0 ps-0 py-2">
+                                    <a href="{{ url_for('keiba_lab_content', content_path='strategy/betting-strategies') }}" class="text-decoration-none">
+                                        <div class="d-flex align-items-center">
+                                            <span class="me-3 d-flex align-items-center justify-content-center rounded-circle" style="width: 40px; height: 40px; background-color: rgba(79, 70, 229, 0.1);">
+                                                <i class="fas fa-chevron-right text-primary"></i>
+                                            </span>
+                                            <div>
+                                                <h6 class="mb-0">資金管理と戦略的な馬券購入術</h6>
+                                                <small class="text-muted">予想理論・戦略</small>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
 <!-- 使い方セクション -->
 <section class="py-5" style="background-color: #fff;">
     <div class="container py-5">
