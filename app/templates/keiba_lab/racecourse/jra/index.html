@@ -1,0 +1,304 @@
+{% extends "keiba_lab/layout.html" %}
+
+{% block title %}JRA主要競馬場ガイド | 中央競馬場の特徴と施設解説【馬メモ】{% endblock %}
+
+{% block meta_description %}東京、中山、阪神、京都など、JRA(中央競馬)の10競馬場の特徴や施設、コース構造、アクセス方法などを初心者にもわかりやすく解説。競馬場選びの参考にどうぞ。{% endblock %}
+
+{% block meta_keywords %}JRA,中央競馬,競馬場,東京競馬場,中山競馬場,阪神競馬場,京都競馬場,中京競馬場,福島競馬場,新潟競馬場,函館競馬場,札幌競馬場,小倉競馬場{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{{ url_for('keiba_lab.index') }}">競馬ラボ</a></li>
+      <li class="breadcrumb-item"><a href="{{ url_for('keiba_lab.racecourse') }}">競馬場ガイド</a></li>
+      <li class="breadcrumb-item active" aria-current="page">JRA主要競馬場</li>
+    </ol>
+  </nav>
+
+  <h1 class="mb-4">JRA主要競馬場ガイド</h1>
+  
+  <p class="lead mb-4">
+    JRA（日本中央競馬会）が運営する中央競馬場は全国に10カ所あります。それぞれの競馬場にはコース構造や特徴があり、レースの展開や結果に大きな影響を与えます。ここでは各競馬場の特徴やコース構造、施設、アクセス方法などを詳しく紹介します。
+  </p>
+
+  <div class="row mb-5">
+    <div class="col-md-6">
+      <div class="card mb-4">
+        <img src="{{ url_for('static', filename='images/keiba_lab/racecourse/tokyo.jpg') }}" class="card-img-top" alt="東京競馬場">
+        <div class="card-body">
+          <h2 class="card-title h4">東京競馬場</h2>
+          <p class="card-text">
+            日本最大の競馬場で、広大な敷地と最大収容人数を誇ります。
+            芝の外回りコース（2,000m）と内回りコース（1,800m）、ダートコース（1,600m）を持ち、
+            最後の直線が長く（525m）上り坂のある特徴的なコース形状です。東京優駿（日本ダービー）などの
+            大レースが行われる名門競馬場です。
+          </p>
+          <h3 class="h6">コース特性</h3>
+          <ul>
+            <li>芝コース：直線が長く上り坂があるため、スタミナと末脚が問われる</li>
+            <li>ダートコース：広いコーナーと長い直線で、差し・追い込み馬も通用する</li>
+          </ul>
+          <h3 class="h6">主な開催レース</h3>
+          <p>日本ダービー、天皇賞（春）、安田記念、ジャパンカップなど</p>
+          <h3 class="h6">アクセス</h3>
+          <p>JR中央線「武蔵小金井駅」または「東小金井駅」からバス</p>
+          <a href="{{ url_for('keiba_lab.racecourse_tokyo') }}" class="btn btn-primary">詳細を見る</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card mb-4">
+        <img src="{{ url_for('static', filename='images/keiba_lab/racecourse/nakayama.jpg') }}" class="card-img-top" alt="中山競馬場">
+        <div class="card-body">
+          <h2 class="card-title h4">中山競馬場</h2>
+          <p class="card-text">
+            千葉県船橋市にある競馬場で、急坂のある独特のコース形状が特徴です。
+            芝の内回りコース（1,800m）と外回りコース（2,200m）、ダートコース（1,800m）を持ち、
+            特に芝の内回りコースの最後の急坂（「中山の坂」）が有名です。
+            有馬記念などの大レースが行われます。
+          </p>
+          <h3 class="h6">コース特性</h3>
+          <ul>
+            <li>芝コース：急坂と短い直線（310m）により位置取りが重要</li>
+            <li>ダートコース：急なカーブと短い直線で内枠有利の傾向</li>
+          </ul>
+          <h3 class="h6">主な開催レース</h3>
+          <p>有馬記念、皐月賞、スプリンターズステークス、中山大障害など</p>
+          <h3 class="h6">アクセス</h3>
+          <p>JR総武線「船橋駅」または京成線「船橋競馬場駅」からバス</p>
+          <a href="{{ url_for('keiba_lab.racecourse_nakayama') }}" class="btn btn-primary">詳細を見る</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mb-5">
+    <div class="col-md-6">
+      <div class="card mb-4">
+        <img src="{{ url_for('static', filename='images/keiba_lab/racecourse/hanshin.jpg') }}" class="card-img-top" alt="阪神競馬場">
+        <div class="card-body">
+          <h2 class="card-title h4">阪神競馬場</h2>
+          <p class="card-text">
+            兵庫県宝塚市にある競馬場で、2006年に大規模リニューアルされました。
+            芝コース（2,000m）とダートコース（1,800m）を持ち、
+            最後の直線が長く（473m）緩やかな上り坂があるのが特徴です。
+            宝塚記念などの大レースが行われます。
+          </p>
+          <h3 class="h6">コース特性</h3>
+          <ul>
+            <li>芝コース：長い直線と緩やかな上り坂で差し・追い込み馬が活躍</li>
+            <li>ダートコース：長い直線があり、末脚のある馬が好走</li>
+          </ul>
+          <h3 class="h6">主な開催レース</h3>
+          <p>宝塚記念、大阪杯、阪神ジュベナイルフィリーズ、高松宮記念など</p>
+          <h3 class="h6">アクセス</h3>
+          <p>阪急今津線「仁川駅」から徒歩約10分</p>
+          <a href="{{ url_for('keiba_lab.racecourse_hanshin') }}" class="btn btn-primary">詳細を見る</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card mb-4">
+        <img src="{{ url_for('static', filename='images/keiba_lab/racecourse/kyoto.jpg') }}" class="card-img-top" alt="京都競馬場">
+        <div class="card-body">
+          <h2 class="card-title h4">京都競馬場</h2>
+          <p class="card-text">
+            京都府京都市にある歴史ある競馬場で、芝の内回りコース（1,800m）と
+            外回りコース（2,000m）、ダートコース（1,800m）を持ちます。
+            最後の直線が長く（404m）、緩やかな下り坂から上り坂に変わる
+            独特のコース形状が特徴です。菊花賞などの大レースが行われます。
+          </p>
+          <h3 class="h6">コース特性</h3>
+          <ul>
+            <li>芝コース：最後の直線の起伏により展開が複雑になりやすい</li>
+            <li>ダートコース：第3コーナーが急で内枠有利の傾向</li>
+          </ul>
+          <h3 class="h6">主な開催レース</h3>
+          <p>菊花賞、天皇賞（秋）、エリザベス女王杯、マイルチャンピオンシップなど</p>
+          <h3 class="h6">アクセス</h3>
+          <p>阪急京都線「桂駅」から徒歩約15分、または地下鉄・阪急から京都市バス</p>
+          <a href="{{ url_for('keiba_lab.racecourse_kyoto') }}" class="btn btn-primary">詳細を見る</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mb-5">
+    <div class="col-md-6">
+      <div class="card mb-4">
+        <img src="{{ url_for('static', filename='images/keiba_lab/racecourse/chukyo.jpg') }}" class="card-img-top" alt="中京競馬場">
+        <div class="card-body">
+          <h2 class="card-title h4">中京競馬場</h2>
+          <p class="card-text">
+            愛知県豊明市にある競馬場で、2012年に大規模リニューアルされました。
+            芝コース（2,000m）とダートコース（1,800m）を持ち、
+            広い走路幅と緩やかなカーブが特徴の近代的な競馬場です。
+            チャンピオンズカップなどの重賞レースが行われます。
+          </p>
+          <h3 class="h6">コース特性</h3>
+          <ul>
+            <li>芝コース：比較的フラットで直線が長く（412m）、公平なレース展開</li>
+            <li>ダートコース：広いコーナーで外差しも決まりやすい</li>
+          </ul>
+          <h3 class="h6">主な開催レース</h3>
+          <p>チャンピオンズカップ、CBC賞、高松宮記念など</p>
+          <h3 class="h6">アクセス</h3>
+          <p>地下鉄鶴舞線「豊明駅」から徒歩約10分</p>
+          <a href="{{ url_for('keiba_lab.racecourse_chukyo') }}" class="btn btn-primary">詳細を見る</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card mb-4">
+        <img src="{{ url_for('static', filename='images/keiba_lab/racecourse/fukushima.jpg') }}" class="card-img-top" alt="福島競馬場">
+        <div class="card-body">
+          <h2 class="card-title h4">福島競馬場</h2>
+          <p class="card-text">
+            福島県福島市にある競馬場で、芝の内回りコース（1,800m）と
+            ダートコース（1,700m）を持ちます。
+            芝コースは直線が短く（300m）最後の直線に上り坂があり、
+            ダートコースは急なカーブが特徴です。
+          </p>
+          <h3 class="h6">コース特性</h3>
+          <ul>
+            <li>芝コース：短い直線と上り坂により前残りになりやすい</li>
+            <li>ダートコース：急なカーブがあり内枠有利の傾向</li>
+          </ul>
+          <h3 class="h6">主な開催レース</h3>
+          <p>七夕賞、福島記念、福島牝馬ステークスなど</p>
+          <h3 class="h6">アクセス</h3>
+          <p>JR東北本線「福島駅」からバス</p>
+          <a href="{{ url_for('keiba_lab.racecourse_fukushima') }}" class="btn btn-primary">詳細を見る</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mb-5">
+    <div class="col-md-6">
+      <div class="card mb-4">
+        <img src="{{ url_for('static', filename='images/keiba_lab/racecourse/niigata.jpg') }}" class="card-img-top" alt="新潟競馬場">
+        <div class="card-body">
+          <h2 class="card-title h4">新潟競馬場</h2>
+          <p class="card-text">
+            新潟県新潟市にある競馬場で、日本唯一の直線1,000mコース「新潟ダッシュ」を
+            有することで有名です。芝の内回りコース（1,800m）と外回りコース（2,000m）、
+            直線コース（1,000m）、ダートコース（1,800m）を持ちます。
+          </p>
+          <h3 class="h6">コース特性</h3>
+          <ul>
+            <li>芝コース：比較的フラットで、特に直線1,000mコースは純粋なスピードが問われる</li>
+            <li>ダートコース：急なカーブがあり内枠有利の傾向</li>
+          </ul>
+          <h3 class="h6">主な開催レース</h3>
+          <p>新潟記念、新潟2歳ステークス、アイビスサマーダッシュなど</p>
+          <h3 class="h6">アクセス</h3>
+          <p>JR上越新幹線「新潟駅」からバス</p>
+          <a href="{{ url_for('keiba_lab.racecourse_niigata') }}" class="btn btn-primary">詳細を見る</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card mb-4">
+        <img src="{{ url_for('static', filename='images/keiba_lab/racecourse/hakodate.jpg') }}" class="card-img-top" alt="函館競馬場">
+        <div class="card-body">
+          <h2 class="card-title h4">函館競馬場</h2>
+          <p class="card-text">
+            北海道函館市にある風光明媚な競馬場で、芝の内回りコース（1,800m）と
+            ダートコース（1,700m）を持ちます。小回りのきいたコンパクトなコース形状が特徴で、
+            夏季のみ開催される特色ある競馬場です。
+          </p>
+          <h3 class="h6">コース特性</h3>
+          <ul>
+            <li>芝コース：小回りで直線が短い（300m）ため、位置取りが重要</li>
+            <li>ダートコース：急なカーブがあり内枠有利の傾向</li>
+          </ul>
+          <h3 class="h6">主な開催レース</h3>
+          <p>函館記念、函館スプリントステークス、函館2歳ステークスなど</p>
+          <h3 class="h6">アクセス</h3>
+          <p>JR函館本線「函館駅」から市電またはバス</p>
+          <a href="{{ url_for('keiba_lab.racecourse_hakodate') }}" class="btn btn-primary">詳細を見る</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mb-5">
+    <div class="col-md-6">
+      <div class="card mb-4">
+        <img src="{{ url_for('static', filename='images/keiba_lab/racecourse/sapporo.jpg') }}" class="card-img-top" alt="札幌競馬場">
+        <div class="card-body">
+          <h2 class="card-title h4">札幌競馬場</h2>
+          <p class="card-text">
+            北海道札幌市にある競馬場で、芝の内回りコース（1,800m）と
+            ダートコース（1,700m）を持ちます。芝コースは平坦で直線が短く（266m）、
+            ダートコースは急なカーブがあるのが特徴です。夏季のみ開催されます。
+          </p>
+          <h3 class="h6">コース特性</h3>
+          <ul>
+            <li>芝コース：平坦で直線が短いため、前残りになりやすい</li>
+            <li>ダートコース：急なカーブがあり内枠有利の傾向</li>
+          </ul>
+          <h3 class="h6">主な開催レース</h3>
+          <p>札幌記念、クイーンステークス、札幌2歳ステークスなど</p>
+          <h3 class="h6">アクセス</h3>
+          <p>JR函館本線「桑園駅」から徒歩約15分</p>
+          <a href="{{ url_for('keiba_lab.racecourse_sapporo') }}" class="btn btn-primary">詳細を見る</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card mb-4">
+        <img src="{{ url_for('static', filename='images/keiba_lab/racecourse/kokura.jpg') }}" class="card-img-top" alt="小倉競馬場">
+        <div class="card-body">
+          <h2 class="card-title h4">小倉競馬場</h2>
+          <p class="card-text">
+            福岡県北九州市にある九州唯一のJRA競馬場で、芝の内回りコース（1,800m）と
+            ダートコース（1,700m）を持ちます。小回りがきいたコンパクトなコース形状が特徴で、
+            夏と冬のシーズンに開催されます。
+          </p>
+          <h3 class="h6">コース特性</h3>
+          <ul>
+            <li>芝コース：小回りで直線が短く（293m）、テンの上がるレース展開になりやすい</li>
+            <li>ダートコース：急なカーブがあり内枠有利の傾向</li>
+          </ul>
+          <h3 class="h6">主な開催レース</h3>
+          <p>小倉記念、小倉大賞典、小倉2歳ステークスなど</p>
+          <h3 class="h6">アクセス</h3>
+          <p>JR鹿児島本線「小倉駅」からバス</p>
+          <a href="{{ url_for('keiba_lab.racecourse_kokura') }}" class="btn btn-primary">詳細を見る</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="card mb-5">
+    <div class="card-body">
+      <h2 class="card-title h4">JRA競馬場を楽しむコツ</h2>
+      <p>
+        JRAの競馬場はそれぞれ特徴が異なるため、訪問前にコース特性を理解しておくと観戦がより楽しくなります。
+        また、各競馬場は施設も充実しており、レース観戦だけでなく、パドック見学、グルメ、ショッピングなども
+        楽しめます。初めて訪れる方は、開門時間より少し早めに到着し、施設内を散策してみることをおすすめします。
+      </p>
+      <h3 class="h6">おすすめポイント</h3>
+      <ul>
+        <li>パドックでの馬の観察：レース前に馬の状態をチェックできる</li>
+        <li>競馬場グルメ：各競馬場には名物グルメがある</li>
+        <li>ウィナーズサークル：勝利馬を間近で見られる</li>
+        <li>競馬博物館：東京競馬場内にある、競馬の歴史を学べる施設</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="alert alert-info" role="alert">
+    <h4 class="alert-heading">コラム：初心者におすすめのJRA競馬場</h4>
+    <p>
+      初めて競馬場に行く方には、アクセスが良く施設が充実している東京、阪神、京都の各競馬場がおすすめです。
+      特に東京競馬場は広大な敷地と充実した施設があり、初心者でも楽しみやすいでしょう。
+      また、G1レース開催日は混雑しますが、特別な雰囲気を味わえます。
+      一方で、平日開催や一般的な週末であれば、比較的ゆったりと競馬場を楽しむことができます。
+    </p>
+  </div>
+</div>
+{% endblock %} 

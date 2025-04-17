@@ -1,0 +1,303 @@
+{% extends "keiba_lab/layout.html" %}
+
+{% block title %}地方競馬場ガイド | 特徴と魅力を解説【馬メモ】{% endblock %}
+
+{% block meta_description %}大井、川崎、船橋、浦和などの主要地方競馬場の特徴や施設、アクセス方法、開催レースなどを初心者にもわかりやすく解説。地方競馬の魅力を知るガイドです。{% endblock %}
+
+{% block meta_keywords %}地方競馬,地方競馬場,大井競馬場,川崎競馬場,船橋競馬場,浦和競馬場,名古屋競馬場,園田競馬場,姫路競馬場,高知競馬場,佐賀競馬場,水沢競馬場,門別競馬場{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{{ url_for('keiba_lab.index') }}">競馬ラボ</a></li>
+      <li class="breadcrumb-item"><a href="{{ url_for('keiba_lab.racecourse') }}">競馬場ガイド</a></li>
+      <li class="breadcrumb-item active" aria-current="page">地方競馬場</li>
+    </ol>
+  </nav>
+
+  <h1 class="mb-4">地方競馬場ガイド</h1>
+  
+  <p class="lead mb-4">
+    地方競馬は全国に15の競馬場があり、それぞれに特色があります。JRAの競馬場とは異なる魅力を持ち、ナイター開催や平日開催が多いのも特徴です。地方競馬場はJRAよりも規模は小さいですが、アットホームな雰囲気で競馬を楽しめます。
+  </p>
+
+  <div class="alert alert-info mb-4" role="alert">
+    <h4 class="alert-heading">地方競馬の魅力</h4>
+    <p>
+      地方競馬はJRA（中央競馬）と比べると、以下のような魅力があります：
+    </p>
+    <ul>
+      <li>ナイター開催が多く、仕事帰りに楽しめる</li>
+      <li>平日開催が中心で、比較的空いている</li>
+      <li>入場料が無料または安価</li>
+      <li>場内の距離が近く、馬を間近で見られる</li>
+      <li>地元色豊かな食事やイベントが楽しめる</li>
+      <li>交流重賞レースではJRA所属馬との対戦も見られる</li>
+    </ul>
+  </div>
+
+  <h2 class="mb-3">南関東の競馬場（TCK）</h2>
+  <p class="mb-4">
+    東京都、千葉県、埼玉県にある4つの競馬場は、「南関東4競馬場」または「TCK」と呼ばれ、連携して競馬を開催しています。
+    年間を通じて平日ナイターを中心に開催され、「東京大賞典」などの大きなレースも行われます。
+  </p>
+
+  <div class="row mb-5">
+    <div class="col-md-6">
+      <div class="card mb-4">
+        <img src="{{ url_for('static', filename='images/keiba_lab/racecourse/ooi.jpg') }}" class="card-img-top" alt="大井競馬場">
+        <div class="card-body">
+          <h3 class="card-title h4">大井競馬場（東京都）</h3>
+          <p class="card-text">
+            東京都品川区にある「東京シティ競馬」の愛称で親しまれる競馬場です。
+            直線が短く内回りのコース形状が特徴で、ダート1,200mと1,800mコースが
+            メインとなっています。東京大賞典（G1）が開催される地方競馬の中心的存在です。
+          </p>
+          <h4 class="h6">コース特性</h4>
+          <ul>
+            <li>ダートコース：急なカーブと短い直線で内枠有利の傾向</li>
+            <li>砂の状態が重くなりやすく、馬場状態が結果に大きく影響</li>
+          </ul>
+          <h4 class="h6">主な開催レース</h4>
+          <p>東京大賞典（G1）、かしわ記念（Jpn1）、東京ダービー、マイルグランプリなど</p>
+          <h4 class="h6">アクセス</h4>
+          <p>京急本線「立会川駅」から徒歩約5分</p>
+          <a href="{{ url_for('keiba_lab.racecourse_ooi') }}" class="btn btn-primary">詳細を見る</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card mb-4">
+        <img src="{{ url_for('static', filename='images/keiba_lab/racecourse/kawasaki.jpg') }}" class="card-img-top" alt="川崎競馬場">
+        <div class="card-body">
+          <h3 class="card-title h4">川崎競馬場（神奈川県）</h3>
+          <p class="card-text">
+            神奈川県川崎市にある競馬場で、小さなコースと急なカーブが特徴です。
+            ダート1,600mコースが主力で、直線が短いため先行有利の傾向があります。
+            ジャパンカップダートの後継レースであるJBCクラシックが開催されます。
+          </p>
+          <h4 class="h6">コース特性</h4>
+          <ul>
+            <li>ダートコース：急なカーブと短い直線で先行馬が有利</li>
+            <li>外枠不利の傾向が強い</li>
+          </ul>
+          <h4 class="h6">主な開催レース</h4>
+          <p>JBCクラシック（Jpn1）、川崎記念（Jpn1）、関東オークス（Jpn2）など</p>
+          <h4 class="h6">アクセス</h4>
+          <p>JR南武線・京急大師線「川崎駅」から徒歩約15分</p>
+          <a href="{{ url_for('keiba_lab.racecourse_kawasaki') }}" class="btn btn-primary">詳細を見る</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mb-5">
+    <div class="col-md-6">
+      <div class="card mb-4">
+        <img src="{{ url_for('static', filename='images/keiba_lab/racecourse/funabashi.jpg') }}" class="card-img-top" alt="船橋競馬場">
+        <div class="card-body">
+          <h3 class="card-title h4">船橋競馬場（千葉県）</h3>
+          <p class="card-text">
+            千葉県船橋市にある競馬場で、300mの短い直線と急なカーブが特徴です。
+            ダート1,200mコースが人気で、内枠有利の傾向があります。
+            船橋ケイバは「フナバシ」の愛称で親しまれ、若手騎手の登竜門としても
+            重要な役割を果たしています。
+          </p>
+          <h4 class="h6">コース特性</h4>
+          <ul>
+            <li>ダートコース：急なカーブと短い直線で内枠有利</li>
+            <li>砂の状態が比較的安定しており、高速馬場になりやすい</li>
+          </ul>
+          <h4 class="h6">主な開催レース</h4>
+          <p>かしわ記念（Jpn1）、JBCレディスクラシック（Jpn1）、クイーン賞（Jpn3）など</p>
+          <h4 class="h6">アクセス</h4>
+          <p>JR総武線「船橋駅」から徒歩約15分、または京成線「船橋競馬場駅」から徒歩約2分</p>
+          <a href="{{ url_for('keiba_lab.racecourse_funabashi') }}" class="btn btn-primary">詳細を見る</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card mb-4">
+        <img src="{{ url_for('static', filename='images/keiba_lab/racecourse/urawa.jpg') }}" class="card-img-top" alt="浦和競馬場">
+        <div class="card-body">
+          <h3 class="card-title h4">浦和競馬場（埼玉県）</h3>
+          <p class="card-text">
+            埼玉県さいたま市にある競馬場で、南関東4場の中で最も小さなコースが特徴です。
+            ダート1,400mコースがメインで、コンパクトなコースレイアウトから
+            先行馬が有利になりやすい傾向があります。
+          </p>
+          <h4 class="h6">コース特性</h4>
+          <ul>
+            <li>ダートコース：非常に小さな周回で内枠有利の傾向が強い</li>
+            <li>直線が短く（約200m）、ポジション取りが重要</li>
+          </ul>
+          <h4 class="h6">主な開催レース</h4>
+          <p>浦和記念（Jpn2）、埼玉栄冠賞、さきたま杯など</p>
+          <h4 class="h6">アクセス</h4>
+          <p>JR京浜東北線「浦和駅」からバス</p>
+          <a href="{{ url_for('keiba_lab.racecourse_urawa') }}" class="btn btn-primary">詳細を見る</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="mb-3">地方主要競馬場</h2>
+  <p class="mb-4">
+    南関東以外にも、全国各地に特色ある地方競馬場があります。それぞれの地域性を生かした競馬開催が行われています。
+  </p>
+
+  <div class="row mb-5">
+    <div class="col-md-6">
+      <div class="card mb-4">
+        <img src="{{ url_for('static', filename='images/keiba_lab/racecourse/nagoya.jpg') }}" class="card-img-top" alt="名古屋競馬場">
+        <div class="card-body">
+          <h3 class="card-title h4">名古屋競馬場（愛知県）</h3>
+          <p class="card-text">
+            愛知県あま市にある競馬場で、小さな周回コースと急なカーブが特徴です。
+            ダート1,400mコースがメインで、2023年からナイター設備が整備され、
+            夏季にはナイター開催も行われるようになりました。
+          </p>
+          <h4 class="h6">主な開催レース</h4>
+          <p>名古屋大賞典（Jpn3）、東海ゴールドカップ、名古屋優駿など</p>
+          <h4 class="h6">アクセス</h4>
+          <p>名鉄津島線「甚目寺駅」から徒歩約15分</p>
+          <a href="{{ url_for('keiba_lab.racecourse_nagoya') }}" class="btn btn-primary">詳細を見る</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card mb-4">
+        <img src="{{ url_for('static', filename='images/keiba_lab/racecourse/sonoda.jpg') }}" class="card-img-top" alt="園田競馬場">
+        <div class="card-body">
+          <h3 class="card-title h4">園田競馬場（兵庫県）</h3>
+          <p class="card-text">
+            兵庫県尼崎市にある競馬場で、小さな周回コースで急なカーブが特徴です。
+            兵庫県競馬組合が運営し、姫路競馬場と連携して開催しています。
+            気さくな雰囲気で地元に根付いた競馬場として知られています。
+          </p>
+          <h4 class="h6">主な開催レース</h4>
+          <p>園田金盃、兵庫チャンピオンシップ、のじぎく賞など</p>
+          <h4 class="h6">アクセス</h4>
+          <p>阪神本線「尼崎駅」または阪急神戸線「武庫之荘駅」からバス</p>
+          <a href="{{ url_for('keiba_lab.racecourse_sonoda') }}" class="btn btn-primary">詳細を見る</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mb-5">
+    <div class="col-md-6">
+      <div class="card mb-4">
+        <img src="{{ url_for('static', filename='images/keiba_lab/racecourse/himeji.jpg') }}" class="card-img-top" alt="姫路競馬場">
+        <div class="card-body">
+          <h3 class="card-title h4">姫路競馬場（兵庫県）</h3>
+          <p class="card-text">
+            兵庫県姫路市にある競馬場で、急なカーブと短い直線が特徴です。
+            兵庫県競馬組合が運営し、園田競馬場と連携して開催しています。
+            姫路城の近くに位置し、地元の観光資源と連携したイベントも多く行われています。
+          </p>
+          <h4 class="h6">主な開催レース</h4>
+          <p>姫路チャレンジカップ、兵庫ジュニアグランプリ、姫山菊花賞など</p>
+          <h4 class="h6">アクセス</h4>
+          <p>JR山陽本線「姫路駅」からバス</p>
+          <a href="{{ url_for('keiba_lab.racecourse_himeji') }}" class="btn btn-primary">詳細を見る</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card mb-4">
+        <img src="{{ url_for('static', filename='images/keiba_lab/racecourse/kochi.jpg') }}" class="card-img-top" alt="高知競馬場">
+        <div class="card-body">
+          <h3 class="card-title h4">高知競馬場（高知県）</h3>
+          <p class="card-text">
+            高知県高知市にある競馬場で、日本最小の競馬場として知られています。
+            ダート1,400mのコースがメインで、急なカーブと非常に短い直線が特徴です。
+            「よさこい祭り」にちなんだレースなど地元色豊かなイベントが多く開催されます。
+          </p>
+          <h4 class="h6">主な開催レース</h4>
+          <p>黒潮マイルチャンピオンシップ、高知優駿、高知市長賞など</p>
+          <h4 class="h6">アクセス</h4>
+          <p>とさでん交通「競馬場前駅」から徒歩約5分</p>
+          <a href="{{ url_for('keiba_lab.racecourse_kochi') }}" class="btn btn-primary">詳細を見る</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mb-5">
+    <div class="col-md-6">
+      <div class="card mb-4">
+        <img src="{{ url_for('static', filename='images/keiba_lab/racecourse/saga.jpg') }}" class="card-img-top" alt="佐賀競馬場">
+        <div class="card-body">
+          <h3 class="card-title h4">佐賀競馬場（佐賀県）</h3>
+          <p class="card-text">
+            佐賀県鳥栖市にある九州唯一の地方競馬場です。
+            ダート1,400mコースがメインで、小回りのきいたコースレイアウトが特徴です。
+            九州の馬産地と連携した取り組みも多く、地域に根差した競馬を展開しています。
+          </p>
+          <h4 class="h6">主な開催レース</h4>
+          <p>佐賀記念、筑紫野賞、玄海皐月賞など</p>
+          <h4 class="h6">アクセス</h4>
+          <p>JR鹿児島本線「鳥栖駅」からバス</p>
+          <a href="{{ url_for('keiba_lab.racecourse_saga') }}" class="btn btn-primary">詳細を見る</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card mb-4">
+        <img src="{{ url_for('static', filename='images/keiba_lab/racecourse/obihiro.jpg') }}" class="card-img-top" alt="帯広競馬場（ばんえい競馬）">
+        <div class="card-body">
+          <h3 class="card-title h4">帯広競馬場（北海道・ばんえい競馬）</h3>
+          <p class="card-text">
+            北海道帯広市にある特殊な競馬「ばんえい競馬」を開催する競馬場です。
+            ばんえい競馬は、体重1トン近いばん馬が1トン近い鉄ぞりを引いて
+            直線200mの砂地の坂を上る競走で、世界でも帯広でしか行われていない
+            貴重な競馬です。
+          </p>
+          <h4 class="h6">特徴</h4>
+          <ul>
+            <li>直線200mのコースに2つの障害（坂）がある</li>
+            <li>速さではなく、馬のパワーと持久力が問われる</li>
+            <li>騎手の指示出しと馬のコントロールが勝負を左右</li>
+          </ul>
+          <h4 class="h6">主な開催レース</h4>
+          <p>ばんえい大賞典、ばんえいダービー、帯広記念など</p>
+          <h4 class="h6">アクセス</h4>
+          <p>JR根室本線「帯広駅」からバス</p>
+          <a href="{{ url_for('keiba_lab.racecourse_obihiro') }}" class="btn btn-primary">詳細を見る</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card mb-5">
+    <div class="card-body">
+      <h2 class="card-title h4">地方競馬場を楽しむコツ</h2>
+      <p>
+        地方競馬場はJRAの競馬場とは違った魅力があります。多くの場合、入場料が無料または安価で、
+        馬や騎手との距離が近く、アットホームな雰囲気が特徴です。
+        また、平日のナイター開催が多いため、仕事帰りに立ち寄ることもできます。
+      </p>
+      <h3 class="h6">おすすめポイント</h3>
+      <ul>
+        <li>パドックが近く、馬の状態が観察しやすい</li>
+        <li>地元の名物グルメを楽しめる場所が多い</li>
+        <li>騎手やトレーナーとの距離が近く、ファンサービスも充実</li>
+        <li>平日ナイター開催が多く、仕事帰りに楽しめる</li>
+        <li>交流重賞レースではJRA所属の名馬も見られる</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="alert alert-info" role="alert">
+    <h4 class="alert-heading">コラム：初心者におすすめの地方競馬場</h4>
+    <p>
+      初めて地方競馬場に行く方には、アクセスが良く施設も充実している大井競馬場（東京シティ競馬）がおすすめです。
+      平日のナイター開催が中心で、仕事帰りに立ち寄りやすいのも魅力です。また、南関東の4競馬場（大井、川崎、船橋、浦和）は
+      相互に連携しており、似たような雰囲気で楽しめます。
+      地方競馬ならではの独特な雰囲気を味わいたい方には、世界で唯一のばんえい競馬を体験できる帯広競馬場もおすすめです。
+    </p>
+  </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,358 @@
+{% extends "base.html" %}
+
+{% block title %}競馬カレンダーの仕組み | 年間レーススケジュール解説【馬メモ】{% endblock %}
+
+{% block meta_description %}競馬の年間スケジュールやシーズン区分、重賞レースのカテゴリ体系を初心者にもわかりやすく解説。JRAと地方競馬のカレンダー構成から主要レースの開催時期まで、競馬ファンに役立つカレンダー知識を網羅。{% endblock %}
+
+{% block meta_keywords %}競馬,カレンダー,スケジュール,重賞,シーズン,年間,開催日程,G1レース,クラシック,有馬記念{% endblock %}
+
+{% block og_title %}競馬カレンダーの仕組み | 年間レーススケジュール解説【馬メモ】{% endblock %}
+{% block og_description %}競馬の年間スケジュールやシーズン区分、重賞レースのカテゴリ体系を初心者にもわかりやすく解説。JRAと地方競馬のカレンダー構成から主要レースの開催時期まで、競馬ファンに役立つカレンダー知識を網羅。{% endblock %}
+{% block og_type %}article{% endblock %}
+
+{% block twitter_title %}競馬カレンダーの仕組み | 年間レーススケジュール解説【馬メモ】{% endblock %}
+{% block twitter_description %}競馬の年間スケジュールやシーズン区分、重賞レースのカテゴリ体系を初心者にもわかりやすく解説。JRAと地方競馬のカレンダー構成から主要レースの開催時期まで、競馬ファンに役立つカレンダー知識を網羅。{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- パンくずリスト -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">ホーム</a></li>
+            <li class="breadcrumb-item"><a href="/keiba_lab/">競馬ラボ</a></li>
+            <li class="breadcrumb-item"><a href="/keiba_lab/basics/">競馬基礎知識</a></li>
+            <li class="breadcrumb-item active" aria-current="page">競馬カレンダーの仕組み</li>
+        </ol>
+    </nav>
+
+    <h1 class="mb-4">競馬カレンダーの仕組み</h1>
+    
+    <div class="row mb-4">
+        <div class="col-lg-8">
+            <p class="lead">競馬は年間を通して様々なレースが開催されています。このページでは、競馬の年間スケジュールやシーズン区分、重賞レースの体系など、競馬カレンダーの仕組みを初心者にもわかりやすく解説します。</p>
+        </div>
+    </div>
+
+    <!-- 目次 -->
+    <div class="card mb-5 shadow-sm">
+        <div class="card-body">
+            <h2 class="h5 mb-3">目次</h2>
+            <ol class="mb-0">
+                <li><a href="#schedule" class="text-decoration-none">年間レーススケジュールの構成</a></li>
+                <li><a href="#season" class="text-decoration-none">シーズン区分の特徴</a></li>
+                <li><a href="#grade" class="text-decoration-none">重賞レースのカテゴリ体系</a></li>
+                <li><a href="#race-types" class="text-decoration-none">平地競走と障害競走</a></li>
+                <li><a href="#age-group" class="text-decoration-none">世代別主要レースの体系</a></li>
+            </ol>
+        </div>
+    </div>
+
+    <!-- 年間レーススケジュールの構成 -->
+    <section id="schedule" class="mb-5">
+        <h2 class="border-bottom pb-2 mb-4">年間レーススケジュールの構成</h2>
+        <div class="row">
+            <div class="col-lg-8">
+                <p>競馬の年間スケジュールは、主に中央競馬（JRA）と地方競馬に分かれており、それぞれ独自の開催体系を持っています。ここでは主に中央競馬（JRA）のスケジュール構成について説明します。</p>
+                
+                <h3 class="h5 mt-4">JRAの年間開催スケジュール</h3>
+                <p>JRA（日本中央競馬会）は、通常、年間約36週の開催日程を組んでいます。毎週土曜・日曜を基本に、祝日にも開催されることがあります。</p>
+                <ul>
+                    <li>基本的に同日に2場所で開催</li>
+                    <li>1日に12レース（1R〜12R）が実施される</li>
+                    <li>年間約3600レースが開催される</li>
+                    <li>開催競馬場は時期によって異なる</li>
+                </ul>
+                
+                <h3 class="h5 mt-4">開催競馬場のローテーション</h3>
+                <p>JRAの10競馬場は、季節や地域特性を考慮したローテーションで年間を通して使用されます。</p>
+                <ul>
+                    <li><strong>関東地区</strong>：東京、中山、新潟、福島</li>
+                    <li><strong>関西地区</strong>：阪神、京都、中京</li>
+                    <li><strong>地方競馬場</strong>：札幌、函館、小倉</li>
+                </ul>
+                <p>例えば、春から夏にかけては東京・阪神・京都・中京を中心に開催され、夏は北海道の札幌・函館、九州の小倉などで開催される傾向があります。</p>
+                
+                <h3 class="h5 mt-4">年間の主要レース配置</h3>
+                <p>年間を通して、様々な重要レース（特にG1レース）が配置されています。</p>
+                <ul>
+                    <li><strong>クラシック三冠</strong>：3歳クラシック三冠（皐月賞、日本ダービー、菊花賞）は春から秋にかけて実施</li>
+                    <li><strong>春のG1シリーズ</strong>：大阪杯、天皇賞（春）、ヴィクトリアマイルなど</li>
+                    <li><strong>秋のG1シリーズ</strong>：天皇賞（秋）、エリザベス女王杯、ジャパンカップなど</li>
+                    <li><strong>年末年始のG1</strong>：有馬記念（12月）、フェブラリーステークス（2月）など</li>
+                </ul>
+                
+                <h3 class="h5 mt-4">地方競馬のスケジュール</h3>
+                <p>地方競馬は主に平日に開催されており、JRAとは異なるスケジュールで運営されています。</p>
+                <ul>
+                    <li>大井、川崎、船橋、浦和（南関東4場）を中心に年間を通して開催</li>
+                    <li>ナイター開催（夜間開催）があるのが特徴</li>
+                    <li>地方競馬の大型重賞も年間スケジュールに組み込まれている（東京大賞典、かしわ記念など）</li>
+                </ul>
+                
+                <div class="alert alert-info">
+                    <p class="mb-0">競馬の年間スケジュールを把握することで、目的のレースやシーズンに合わせた競馬の楽しみ方が広がります。特に重賞レースの開催時期を覚えておくと、レース予想や馬券購入の計画を立てやすくなります。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- シーズン区分の特徴 -->
+    <section id="season" class="mb-5">
+        <h2 class="border-bottom pb-2 mb-4">シーズン区分の特徴</h2>
+        <div class="row">
+            <div class="col-lg-8">
+                <p>競馬界では、年間を通していつかのシーズンに区分されています。それぞれのシーズンには特徴や注目レースがあり、馬の調子や競争の質にも影響します。</p>
+                
+                <h3 class="h5 mt-4">春シーズン（3月〜6月）</h3>
+                <p>春は桜の季節とともに競馬も本格的なシーズンを迎えます。3歳馬の活躍が目立つ時期でもあります。</p>
+                <ul>
+                    <li><strong>クラシックシリーズ</strong>：3歳クラシック路線（桜花賞、皐月賞、オークス、日本ダービー）</li>
+                    <li><strong>古馬G1</strong>：大阪杯、天皇賞（春）、ヴィクトリアマイル</li>
+                    <li><strong>特徴</strong>：3歳馬が台頭し始め、前年活躍した古馬との世代交代が始まる時期</li>
+                    <li><strong>馬場状態</strong>：春先は馬場が多少重くなることがあるが、徐々に良馬場が増える</li>
+                </ul>
+                
+                <h3 class="h5 mt-4">夏シーズン（7月〜8月）</h3>
+                <p>夏は暑さの影響もあり、競走馬にとっては過酷なシーズンになります。地方開催が増える時期でもあります。</p>
+                <ul>
+                    <li><strong>主要レース</strong>：七夕賞、函館記念、中京記念、小倉記念など</li>
+                    <li><strong>特徴</strong>：G1レースは少なく、北海道や九州での開催が中心</li>
+                    <li><strong>馬場状態</strong>：雨の影響も受けやすく、馬場状態が変わりやすい</li>
+                    <li><strong>出走馬の特徴</strong>：暑さに強い馬が好成績を収めることが多い</li>
+                </ul>
+                
+                <h3 class="h5 mt-4">秋シーズン（9月〜11月）</h3>
+                <p>秋は競馬の最盛期とも言われ、多くのG1レースが集中する時期です。実力馬の激突が多く見られます。</p>
+                <ul>
+                    <li><strong>クラシック</strong>：3歳クラシック最終戦（菊花賞、秋華賞）</li>
+                    <li><strong>国際レース</strong>：スプリンターズステークス、天皇賞（秋）、エリザベス女王杯、ジャパンカップ、マイルチャンピオンシップ</li>
+                    <li><strong>特徴</strong>：G1レースが集中し、国際的なレースも多く開催される</li>
+                    <li><strong>馬場状態</strong>：比較的安定した馬場状態で、好タイムが出やすい</li>
+                </ul>
+                
+                <h3 class="h5 mt-4">冬シーズン（12月〜2月）</h3>
+                <p>冬は競馬シーズンの締めくくりと新シーズンの始まりの時期です。年末年始を挟む特別な雰囲気もあります。</p>
+                <ul>
+                    <li><strong>主要レース</strong>：有馬記念（年末最大の祭典）、フェブラリーステークス（新年最初のG1）</li>
+                    <li><strong>特徴</strong>：寒さの影響を受けやすく、体調管理が重要になる</li>
+                    <li><strong>馬場状態</strong>：凍結防止のための水分管理が行われ、やや硬い馬場になることも</li>
+                    <li><strong>出走馬の特徴</strong>：寒さに強い馬が好走する傾向がある</li>
+                </ul>
+                
+                <div class="alert alert-warning">
+                    <p class="mb-0">競馬のシーズン区分を理解することで、各時期に合わせた馬の調子や適性を予想する参考になります。特に馬場状態や気候の影響を受けやすい馬の場合、シーズン特性を考慮した予想が重要です。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 重賞レースのカテゴリ体系 -->
+    <section id="grade" class="mb-5">
+        <h2 class="border-bottom pb-2 mb-4">重賞レースのカテゴリ体系</h2>
+        <div class="row">
+            <div class="col-lg-8">
+                <p>競馬のレースには格付けがあり、特に重要なレースは「重賞レース」として区分されています。ここでは、重賞レースのカテゴリ体系について解説します。</p>
+                
+                <h3 class="h5 mt-4">グレードレースの階層</h3>
+                <p>JRAの重賞レースは、以下のようにグレード（G）によって格付けされています。</p>
+                <ul>
+                    <li><strong>GI（グレード・ワン）</strong>：最高峰のレース。年間24レース程度が指定されています。</li>
+                    <li><strong>GII（グレード・ツー）</strong>：GIに次ぐ格付けのレース。</li>
+                    <li><strong>GIII（グレード・スリー）</strong>：重賞レースの中でGI、GIIに次ぐレース。</li>
+                    <li><strong>リステッド</strong>：グレードレースには満たないが、重要なレースとして位置づけられる特別競走。</li>
+                </ul>
+                
+                <h3 class="h5 mt-4">主要GIレースの分類</h3>
+                <p>GIレースはさらに以下のようなカテゴリに分類できます。</p>
+                <ul>
+                    <li><strong>クラシック三冠</strong>：
+                        <ul>
+                            <li>皐月賞（2000m、中山）</li>
+                            <li>東京優駿（日本ダービー）（2400m、東京）</li>
+                            <li>菊花賞（3000m、京都）</li>
+                        </ul>
+                    </li>
+                    <li><strong>牝馬クラシック三冠</strong>：
+                        <ul>
+                            <li>桜花賞（1600m、阪神）</li>
+                            <li>オークス（優駿牝馬）（2400m、東京）</li>
+                            <li>秋華賞（2000m、京都）</li>
+                        </ul>
+                    </li>
+                    <li><strong>短距離GI</strong>：高松宮記念、スプリンターズステークスなど</li>
+                    <li><strong>マイルGI</strong>：NHKマイルカップ、マイルチャンピオンシップなど</li>
+                    <li><strong>中距離GI</strong>：大阪杯、天皇賞（秋）、ジャパンカップなど</li>
+                    <li><strong>長距離GI</strong>：天皇賞（春）、有馬記念など</li>
+                    <li><strong>ダートGI</strong>：フェブラリーステークス、チャンピオンズカップなど</li>
+                </ul>
+                
+                <h3 class="h5 mt-4">年齢・性別制限</h3>
+                <p>重賞レースには、出走できる馬の年齢や性別に制限があるものがあります。</p>
+                <ul>
+                    <li><strong>3歳限定</strong>：クラシック三冠レース（皐月賞、日本ダービー、菊花賞）など</li>
+                    <li><strong>牝馬限定</strong>：桜花賞、オークス、秋華賞、エリザベス女王杯など</li>
+                    <li><strong>オープン</strong>：年齢・性別を問わず出走できるレース（有馬記念、ジャパンカップなど）</li>
+                    <li><strong>国際オープン</strong>：海外からの遠征馬も参加できる国際レース（ジャパンカップ、安田記念など）</li>
+                </ul>
+                
+                <h3 class="h5 mt-4">地方競馬の重賞体系</h3>
+                <p>地方競馬にも重賞レースがあり、独自の格付け体系を持っています。</p>
+                <ul>
+                    <li><strong>Jpn1</strong>：地方競馬のG1相当。東京大賞典、かしわ記念など</li>
+                    <li><strong>Jpn2</strong>：地方競馬のG2相当</li>
+                    <li><strong>Jpn3</strong>：地方競馬のG3相当</li>
+                    <li><strong>交流重賞</strong>：JRAの馬と地方競馬の馬が同じレースに出走する重賞レース</li>
+                </ul>
+                
+                <div class="alert alert-info">
+                    <p class="mb-0">重賞レースのカテゴリ体系を理解することで、各レースの位置づけや重要性がわかりやすくなります。特にGIレースは競馬界の頂点を決める重要な競争であり、勝利することで馬の価値や評価が大きく高まります。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 平地競走と障害競走 -->
+    <section id="race-types" class="mb-5">
+        <h2 class="border-bottom pb-2 mb-4">平地競走と障害競走</h2>
+        <div class="row">
+            <div class="col-lg-8">
+                <p>競馬には大きく分けて「平地競走」と「障害競走」の2種類があります。それぞれ特徴や開催形態が異なりますので、その違いを理解しましょう。</p>
+                
+                <h3 class="h5 mt-4">平地競走の特徴</h3>
+                <p>平地競走は、障害物のない平らなコースを走るレースで、競馬の主流となっています。</p>
+                <ul>
+                    <li><strong>コース</strong>：芝コースとダートコース（砂や土のコース）の2種類</li>
+                    <li><strong>距離</strong>：短距離（1000m〜1400m）、マイル（1600m前後）、中距離（1800m〜2200m）、長距離（2400m以上）</li>
+                    <li><strong>出走条件</strong>：年齢、性別、戦績などにより細かく分類される</li>
+                    <li><strong>開催頻度</strong>：非常に多く、JRAの開催レースの大部分を占める</li>
+                    <li><strong>人気</strong>：一般的な競馬ファンに最も人気があるタイプのレース</li>
+                </ul>
+                
+                <h3 class="h5 mt-4">障害競走の特徴</h3>
+                <p>障害競走は、コース上に障害物（ハードル）を設置し、馬がそれを飛び越えながら走るレースです。</p>
+                <ul>
+                    <li><strong>コース</strong>：芝コース上に障害物を設置</li>
+                    <li><strong>障害の種類</strong>：固定障害（高さ約1.2m）と置き障害（高さ約1.1m）</li>
+                    <li><strong>距離</strong>：通常は2800m〜4100mの長距離</li>
+                    <li><strong>開催頻度</strong>：平地競走に比べて少なく、特定の日に開催される</li>
+                    <li><strong>特殊性</strong>：障害を飛越する技術が求められ、独特の騎乗技術と馬の適性が必要</li>
+                </ul>
+                
+                <h3 class="h5 mt-4">障害競走のカレンダー</h3>
+                <p>障害競走は専門的な性格を持ち、独自のカレンダーとレース体系を持っています。</p>
+                <ul>
+                    <li><strong>重賞レース</strong>：中山グランドジャンプ（G1）、阪神スプリングジャンプ（G2）、京都ハイジャンプ（G2）など</li>
+                    <li><strong>シーズン</strong>：春と秋に多く開催される傾向</li>
+                    <li><strong>階級</strong>：新馬戦、未勝利戦から始まり、オープン競争へと進む</li>
+                </ul>
+                
+                <h3 class="h5 mt-4">平地競走と障害競走の違い</h3>
+                <p>両者には明確な違いがあり、それぞれ異なる魅力を持っています。</p>
+                <ul>
+                    <li><strong>スピード</strong>：平地競走の方が一般的に速い</li>
+                    <li><strong>技術性</strong>：障害競走は障害を飛越する技術が重要</li>
+                    <li><strong>リスク</strong>：障害競走は障害を飛越する際に落馬のリスクがある</li>
+                    <li><strong>適性馬</strong>：平地競走で活躍できなかった馬が障害競走で才能を開花させることもある</li>
+                    <li><strong>馬齢</strong>：障害競走は比較的高齢の馬も活躍できる</li>
+                </ul>
+                
+                <div class="alert alert-info">
+                    <p class="mb-0">平地競走がスピードと瞬発力を競う競技であるのに対し、障害競走は持久力とジャンプ力を競う競技と言えます。どちらも独自の面白さを持っており、様々な角度から競馬を楽しむことができます。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 世代別主要レースの体系 -->
+    <section id="age-group" class="mb-5">
+        <h2 class="border-bottom pb-2 mb-4">世代別主要レースの体系</h2>
+        <div class="row">
+            <div class="col-lg-8">
+                <p>競馬では馬の年齢（世代）ごとに特徴的なレース体系が組まれています。競走馬の成長に合わせた独自のキャリアパスが存在するのが競馬の魅力の一つです。</p>
+                
+                <h3 class="h5 mt-4">2歳馬のレース体系</h3>
+                <p>2歳は競走馬のデビュー年であり、基礎体力と技術を養う時期です。</p>
+                <ul>
+                    <li><strong>デビュー時期</strong>：通常は6月頃から</li>
+                    <li><strong>ステップアップ</strong>：新馬戦 → 未勝利戦 → 条件戦 → 重賞</li>
+                    <li><strong>主要重賞</strong>：デイリー杯2歳ステークス（G2）、朝日杯フューチュリティステークス（G1）、ホープフルステークス（G1）など</li>
+                    <li><strong>特徴</strong>：馬の才能の片鱗が見え始める時期。将来有望馬が頭角を現す</li>
+                </ul>
+                
+                <h3 class="h5 mt-4">3歳馬のレース体系（クラシック世代）</h3>
+                <p>3歳はクラシックレースという大舞台を迎える、競走馬にとって最も重要な年齢の一つです。</p>
+                <ul>
+                    <li><strong>牡馬クラシック路線</strong>：
+                        <ul>
+                            <li>春：共同通信杯 → 弥生賞 → 皐月賞 → 日本ダービー</li>
+                            <li>秋：神戸新聞杯 → 菊花賞</li>
+                        </ul>
+                    </li>
+                    <li><strong>牝馬クラシック路線</strong>：
+                        <ul>
+                            <li>春：チューリップ賞 → 桜花賞 → オークス</li>
+                            <li>秋：ローズステークス → 秋華賞</li>
+                        </ul>
+                    </li>
+                    <li><strong>特徴</strong>：競走馬として最も成長する時期。クラシック制覇を目指し、一生に一度のチャレンジとなる</li>
+                </ul>
+                
+                <h3 class="h5 mt-4">4歳以上（古馬）のレース体系</h3>
+                <p>4歳以上の馬は「古馬」と呼ばれ、完成された能力でトップレベルの競争を繰り広げます。</p>
+                <ul>
+                    <li><strong>オープン特別・重賞路線</strong>：様々な条件・距離の重賞レースに向けて調整される</li>
+                    <li><strong>国際G1路線</strong>：安田記念、天皇賞（春・秋）、ジャパンカップ、有馬記念など</li>
+                    <li><strong>特徴</strong>：馬の適性（距離・馬場・脚質）が明確になり、それに合わせたレース選択が行われる</li>
+                    <li><strong>引退時期</strong>：多くは5〜7歳頃まで現役を続け、その後は繁殖（種牡馬・繁殖牝馬）に転向</li>
+                </ul>
+                
+                <h3 class="h5 mt-4">年齢による重量調整</h3>
+                <p>年齢の違う馬が同じレースに出走する場合、若い馬は体力的なハンデを考慮して斤量（重量）が軽減されます。</p>
+                <ul>
+                    <li><strong>馬齢重量</strong>：年齢によって斤量が調整される</li>
+                    <li><strong>斤量差</strong>：例えば秋のレースでは3歳馬は4歳以上の馬より2kg程度軽い斤量で出走</li>
+                    <li><strong>牝馬斤量</strong>：牝馬は牡馬より2kg程度軽い斤量が設定される</li>
+                </ul>
+                
+                <div class="alert alert-warning">
+                    <p class="mb-0">競走馬の年齢別レース体系を理解することで、各馬のキャリアプランや目標レースが見えてきます。特に3歳のクラシックレースは競走馬にとって一生に一度のチャンスであり、多くのドラマが生まれる舞台です。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 関連コンテンツ -->
+    <section class="mb-5">
+        <h2 class="border-bottom pb-2 mb-4">関連コンテンツ</h2>
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h3 class="card-title h5">競馬のルール・仕組み</h3>
+                        <p class="card-text">競馬の基本的なルールや仕組みについて解説しています。</p>
+                        <a href="/keiba_lab/basics/rules/" class="btn btn-primary">詳しく見る</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h3 class="card-title h5">競馬用語辞典</h3>
+                        <p class="card-text">競馬で使われる専門用語をわかりやすく解説しています。</p>
+                        <a href="/keiba_lab/basics/terms/" class="btn btn-primary">詳しく見る</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h3 class="card-title h5">競馬場ガイド</h3>
+                        <p class="card-text">全国の主要競馬場の特徴や施設について解説しています。</p>
+                        <a href="/keiba_lab/racecourse/jra/" class="btn btn-primary">詳しく見る</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %} 

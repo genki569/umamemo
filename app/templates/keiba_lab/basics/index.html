@@ -1,0 +1,385 @@
+{% extends "base.html" %}
+
+{% block title %}競馬基礎知識 - 競馬のルール・用語・仕組みを徹底解説 | 競馬ラボ | 馬メモ{% endblock %}
+
+{% block meta_description %}競馬の基本ルールから競馬用語、競馬カレンダーの仕組み、競馬の楽しみ方まで初心者にもわかりやすく解説。これから競馬を始める方も、知識を深めたい方も必見の総合ガイド。{% endblock %}
+
+{% block meta_keywords %}競馬,初心者,入門,ルール,競馬用語,仕組み,競馬カレンダー,G1,クラシック,JRA,地方競馬,競馬場,馬券{% endblock %}
+
+{% block og_title %}競馬基礎知識 - 競馬のルール・用語・仕組みを徹底解説 | 競馬ラボ | 馬メモ{% endblock %}
+{% block og_description %}競馬の基本ルールから競馬用語、競馬カレンダーの仕組み、競馬の楽しみ方まで初心者にもわかりやすく解説。これから競馬を始める方も、知識を深めたい方も必見の総合ガイド。{% endblock %}
+{% block og_type %}article{% endblock %}
+
+{% block twitter_title %}競馬基礎知識 - 競馬のルール・用語・仕組みを徹底解説 | 競馬ラボ | 馬メモ{% endblock %}
+{% block twitter_description %}競馬の基本ルールから競馬用語、競馬カレンダーの仕組み、競馬の楽しみ方まで初心者にもわかりやすく解説。これから競馬を始める方も、知識を深めたい方も必見の総合ガイド。{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('index') }}">ホーム</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('keiba_lab_index') }}">競馬ラボ</a></li>
+            <li class="breadcrumb-item active" aria-current="page">競馬基礎知識</li>
+        </ol>
+    </nav>
+
+    <div class="row mb-5">
+        <div class="col-lg-8">
+            <h1 class="display-5 fw-bold text-primary mb-3">競馬基礎知識</h1>
+            <p class="lead">競馬を楽しむために知っておきたい基本的な知識を網羅的に解説します</p>
+            
+            <div class="card shadow-sm mb-5 border-0">
+                <div class="card-body p-4">
+                    <p>競馬は奥深いスポーツであり、その魅力を十分に楽しむには基本的な知識が欠かせません。このセクションでは、競馬のルールから用語、競馬カレンダーの仕組み、そして競馬の楽しみ方まで、初心者にもわかりやすく解説しています。これから競馬を始める方にも、すでに競馬を楽しんでいる方にも参考になる情報を提供します。</p>
+                </div>
+            </div>
+
+            <!-- 競馬のルールセクション -->
+            <section class="mb-5">
+                <div class="d-flex align-items-center mb-4">
+                    <div class="p-3 rounded-circle me-3" style="background-color: rgba(79, 70, 229, 0.1);">
+                        <i class="fas fa-book text-primary fa-2x"></i>
+                    </div>
+                    <h2 class="h3 mb-0">競馬のルール</h2>
+                </div>
+                
+                <div class="card shadow-sm mb-4 border-0">
+                    <div class="card-body">
+                        <p>競馬の基本的なルールから仕組み、レースの種類、クラス体系、主催団体の違いなどを解説しています。競馬の全体像を把握するのに役立つ情報です。</p>
+                        
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <div class="card h-100 border-0 bg-light">
+                                    <div class="card-body">
+                                        <h3 class="h5 card-title">競馬の基本ルールと仕組み</h3>
+                                        <p class="card-text small">競馬の基本的なルール、競走馬の走る距離、ゴール判定など競馬の根幹となる仕組みを解説します。</p>
+                                        <a href="{{ url_for('keiba_lab_content', content_path='basics/rules/basic-rules') }}" class="btn btn-sm btn-outline-primary mt-2">詳細を見る</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card h-100 border-0 bg-light">
+                                    <div class="card-body">
+                                        <h3 class="h5 card-title">レースの種類と特徴</h3>
+                                        <p class="card-text small">平地競走、障害競走の違いやオープン戦、特別競走、重賞レースなど、様々なレースの種類と特徴を解説します。</p>
+                                        <a href="{{ url_for('keiba_lab_content', content_path='basics/rules/race-types') }}" class="btn btn-sm btn-outline-primary mt-2">詳細を見る</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <div class="card h-100 border-0 bg-light">
+                                    <div class="card-body">
+                                        <h3 class="h5 card-title">競走馬の年齢とクラス体系</h3>
+                                        <p class="card-text small">2歳馬、3歳馬、4歳以上馬の区分や、新馬、未勝利、1勝、2勝、オープンなどの競走クラスについて解説します。</p>
+                                        <a href="{{ url_for('keiba_lab_content', content_path='basics/rules/horse-class') }}" class="btn btn-sm btn-outline-primary mt-2">詳細を見る</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card h-100 border-0 bg-light">
+                                    <div class="card-body">
+                                        <h3 class="h5 card-title">JRAと地方競馬の違い</h3>
+                                        <p class="card-text small">JRA（中央競馬）と地方競馬の違い、運営体制、レベル、賞金、発売される馬券の違いなどを解説します。</p>
+                                        <a href="{{ url_for('keiba_lab_content', content_path='basics/rules/jra-vs-local') }}" class="btn btn-sm btn-outline-primary mt-2">詳細を見る</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <a href="{{ url_for('keiba_lab_content', content_path='basics/rules') }}" class="btn btn-primary">競馬のルールをもっと見る</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 競馬用語辞典セクション -->
+            <section class="mb-5">
+                <div class="d-flex align-items-center mb-4">
+                    <div class="p-3 rounded-circle me-3" style="background-color: rgba(79, 70, 229, 0.1);">
+                        <i class="fas fa-book-open text-primary fa-2x"></i>
+                    </div>
+                    <h2 class="h3 mb-0">競馬用語辞典</h2>
+                </div>
+                
+                <div class="card shadow-sm mb-4 border-0">
+                    <div class="card-body">
+                        <p>競馬中継やレース新聞でよく目にする専門用語を解説しています。競馬をより深く理解するために知っておきたい用語集です。</p>
+                        
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <div class="card h-100 border-0 bg-light">
+                                    <div class="card-body">
+                                        <h3 class="h5 card-title">基本競馬用語集</h3>
+                                        <p class="card-text small">馬番、枠番、馬体重、斤量、騎手、調教師など、競馬の基本的な用語を初心者向けに解説します。</p>
+                                        <a href="{{ url_for('keiba_lab_content', content_path='basics/terms/basic-terms') }}" class="btn btn-sm btn-outline-primary mt-2">詳細を見る</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card h-100 border-0 bg-light">
+                                    <div class="card-body">
+                                        <h3 class="h5 card-title">レース関連用語</h3>
+                                        <p class="card-text small">スタート、コーナリング、直線、差し、追い込み、逃げなど、レースの展開に関わる専門用語を解説します。</p>
+                                        <a href="{{ url_for('keiba_lab_content', content_path='basics/terms/race-terms') }}" class="btn btn-sm btn-outline-primary mt-2">詳細を見る</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <div class="card h-100 border-0 bg-light">
+                                    <div class="card-body">
+                                        <h3 class="h5 card-title">馬体・脚質用語</h3>
+                                        <p class="card-text small">馬の体の各部位の名称や、逃げ、先行、差し、追込などの脚質に関する用語を解説します。</p>
+                                        <a href="{{ url_for('keiba_lab_content', content_path='basics/terms/horse-terms') }}" class="btn btn-sm btn-outline-primary mt-2">詳細を見る</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card h-100 border-0 bg-light">
+                                    <div class="card-body">
+                                        <h3 class="h5 card-title">調教関連用語</h3>
+                                        <p class="card-text small">調教、追い切り、ゲート練習、馬場、ウッドコースなど、競走馬のトレーニングに関する用語を解説します。</p>
+                                        <a href="{{ url_for('keiba_lab_content', content_path='basics/terms/training-terms') }}" class="btn btn-sm btn-outline-primary mt-2">詳細を見る</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <a href="{{ url_for('keiba_lab_content', content_path='basics/terms') }}" class="btn btn-primary">競馬用語辞典をもっと見る</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 競馬カレンダーの仕組みセクション -->
+            <section class="mb-5">
+                <div class="d-flex align-items-center mb-4">
+                    <div class="p-3 rounded-circle me-3" style="background-color: rgba(79, 70, 229, 0.1);">
+                        <i class="fas fa-calendar-alt text-primary fa-2x"></i>
+                    </div>
+                    <h2 class="h3 mb-0">競馬カレンダーの仕組み</h2>
+                </div>
+                
+                <div class="card shadow-sm mb-4 border-0">
+                    <div class="card-body">
+                        <p>競馬のシーズン構成や年間スケジュール、重賞レースの体系などを解説しています。どの時期にどのようなレースが行われるかを理解するのに役立ちます。</p>
+                        
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <div class="card h-100 border-0 bg-light">
+                                    <div class="card-body">
+                                        <h3 class="h5 card-title">年間レーススケジュールの構成</h3>
+                                        <p class="card-text small">JRA中央競馬の年間スケジュールの構成や主要競馬場の開催ローテーションなどを解説します。</p>
+                                        <a href="{{ url_for('keiba_lab_content', content_path='basics/calendar/annual-schedule') }}" class="btn btn-sm btn-outline-primary mt-2">詳細を見る</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card h-100 border-0 bg-light">
+                                    <div class="card-body">
+                                        <h3 class="h5 card-title">シーズン区分の特徴</h3>
+                                        <p class="card-text small">春競馬、夏競馬、秋競馬、冬競馬それぞれの特徴や、シーズンごとの主要レースについて解説します。</p>
+                                        <a href="{{ url_for('keiba_lab_content', content_path='basics/calendar/seasons') }}" class="btn btn-sm btn-outline-primary mt-2">詳細を見る</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <div class="card h-100 border-0 bg-light">
+                                    <div class="card-body">
+                                        <h3 class="h5 card-title">重賞レースのカテゴリ体系</h3>
+                                        <p class="card-text small">G1、G2、G3などの重賞グレードの意味や体系、国際格付け、ローカル重賞について解説します。</p>
+                                        <a href="{{ url_for('keiba_lab_content', content_path='basics/calendar/graded-races') }}" class="btn btn-sm btn-outline-primary mt-2">詳細を見る</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card h-100 border-0 bg-light">
+                                    <div class="card-body">
+                                        <h3 class="h5 card-title">世代別主要レースの体系</h3>
+                                        <p class="card-text small">クラシック三冠、牝馬三冠、古馬三冠など、各世代向けの主要レースシリーズについて解説します。</p>
+                                        <a href="{{ url_for('keiba_lab_content', content_path='basics/calendar/age-group-races') }}" class="btn btn-sm btn-outline-primary mt-2">詳細を見る</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <a href="{{ url_for('keiba_lab_content', content_path='basics/calendar') }}" class="btn btn-primary">競馬カレンダーの仕組みをもっと見る</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 競馬の楽しみ方セクション -->
+            <section class="mb-5">
+                <div class="d-flex align-items-center mb-4">
+                    <div class="p-3 rounded-circle me-3" style="background-color: rgba(79, 70, 229, 0.1);">
+                        <i class="fas fa-smile-beam text-primary fa-2x"></i>
+                    </div>
+                    <h2 class="h3 mb-0">競馬の楽しみ方</h2>
+                </div>
+                
+                <div class="card shadow-sm mb-4 border-0">
+                    <div class="card-body">
+                        <p>競馬場での観戦方法や、テレビ・ネットでの楽しみ方、競馬情報の収集法など、競馬をより楽しむための情報を解説しています。</p>
+                        
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <div class="card h-100 border-0 bg-light">
+                                    <div class="card-body">
+                                        <h3 class="h5 card-title">競馬場での観戦ガイド</h3>
+                                        <p class="card-text small">競馬場での楽しみ方、おすすめの観戦スポット、馬券の買い方、持っていくと便利なものなどを解説します。</p>
+                                        <a href="{{ url_for('keiba_lab_content', content_path='basics/enjoy/racecourse-guide') }}" class="btn btn-sm btn-outline-primary mt-2">詳細を見る</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card h-100 border-0 bg-light">
+                                    <div class="card-body">
+                                        <h3 class="h5 card-title">競馬中継の見方</h3>
+                                        <p class="card-text small">テレビやインターネットでの競馬中継の楽しみ方、注目すべきポイント、解説の聞き方などを紹介します。</p>
+                                        <a href="{{ url_for('keiba_lab_content', content_path='basics/enjoy/watching-broadcast') }}" class="btn btn-sm btn-outline-primary mt-2">詳細を見る</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <div class="card h-100 border-0 bg-light">
+                                    <div class="card-body">
+                                        <h3 class="h5 card-title">競馬情報の収集法</h3>
+                                        <p class="card-text small">競馬新聞、ウェブサイト、スマホアプリなど、競馬を楽しむために役立つ情報源とその活用法を紹介します。</p>
+                                        <a href="{{ url_for('keiba_lab_content', content_path='basics/enjoy/information-gathering') }}" class="btn btn-sm btn-outline-primary mt-2">詳細を見る</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card h-100 border-0 bg-light">
+                                    <div class="card-body">
+                                        <h3 class="h5 card-title">初心者向け競馬入門ステップ</h3>
+                                        <p class="card-text small">競馬を始めたばかりの方向けに、段階を追って競馬の楽しみ方を深めていくステップを解説します。</p>
+                                        <a href="{{ url_for('keiba_lab_content', content_path='basics/enjoy/beginner-steps') }}" class="btn btn-sm btn-outline-primary mt-2">詳細を見る</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <a href="{{ url_for('keiba_lab_content', content_path='basics/enjoy') }}" class="btn btn-primary">競馬の楽しみ方をもっと見る</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- サイドバー -->
+        <div class="col-lg-4">
+            <div class="position-sticky" style="top: 2rem;">
+                <!-- 目次 -->
+                <div class="card shadow-sm mb-4 border-0">
+                    <div class="card-body">
+                        <h3 class="h5 card-title mb-3">このページの目次</h3>
+                        <ul class="list-unstyled">
+                            <li class="mb-2"><a href="#" class="text-decoration-none d-flex align-items-center">
+                                <i class="fas fa-book text-primary me-2"></i>競馬のルール
+                            </a></li>
+                            <li class="mb-2"><a href="#" class="text-decoration-none d-flex align-items-center">
+                                <i class="fas fa-book-open text-primary me-2"></i>競馬用語辞典
+                            </a></li>
+                            <li class="mb-2"><a href="#" class="text-decoration-none d-flex align-items-center">
+                                <i class="fas fa-calendar-alt text-primary me-2"></i>競馬カレンダーの仕組み
+                            </a></li>
+                            <li><a href="#" class="text-decoration-none d-flex align-items-center">
+                                <i class="fas fa-smile-beam text-primary me-2"></i>競馬の楽しみ方
+                            </a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- おすすめコンテンツ -->
+                <div class="card shadow-sm mb-4 border-0">
+                    <div class="card-body">
+                        <h3 class="h5 card-title mb-3">おすすめコンテンツ</h3>
+                        <div class="d-flex mb-3">
+                            <div class="flex-shrink-0">
+                                <div class="rounded p-2" style="background-color: rgba(79, 70, 229, 0.1);">
+                                    <i class="fas fa-star text-primary"></i>
+                                </div>
+                            </div>
+                            <div class="ms-3">
+                                <h4 class="h6 mb-1">初めての競馬場ガイド</h4>
+                                <p class="small text-muted mb-0">初めて競馬場に行く方のための完全ガイド</p>
+                                <a href="{{ url_for('keiba_lab_content', content_path='basics/first-time-guide') }}" class="stretched-link"></a>
+                            </div>
+                        </div>
+                        <div class="d-flex mb-3">
+                            <div class="flex-shrink-0">
+                                <div class="rounded p-2" style="background-color: rgba(79, 70, 229, 0.1);">
+                                    <i class="fas fa-star text-primary"></i>
+                                </div>
+                            </div>
+                            <div class="ms-3">
+                                <h4 class="h6 mb-1">馬券の買い方入門</h4>
+                                <p class="small text-muted mb-0">初心者向け馬券購入の基礎知識</p>
+                                <a href="{{ url_for('keiba_lab_content', content_path='betting/how-to-buy') }}" class="stretched-link"></a>
+                            </div>
+                        </div>
+                        <div class="d-flex">
+                            <div class="flex-shrink-0">
+                                <div class="rounded p-2" style="background-color: rgba(79, 70, 229, 0.1);">
+                                    <i class="fas fa-star text-primary"></i>
+                                </div>
+                            </div>
+                            <div class="ms-3">
+                                <h4 class="h6 mb-1">競馬予想の始め方</h4>
+                                <p class="small text-muted mb-0">予想の基本的な考え方を解説</p>
+                                <a href="{{ url_for('keiba_lab_content', content_path='handicapping/basics') }}" class="stretched-link"></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 他のカテゴリー -->
+                <div class="card shadow-sm border-0">
+                    <div class="card-body">
+                        <h3 class="h5 card-title mb-3">他のカテゴリー</h3>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item bg-transparent border-0 ps-0 py-2">
+                                <a href="{{ url_for('keiba_lab_content', content_path='racecourses/index') }}" class="text-decoration-none">
+                                    <i class="fas fa-chevron-right text-primary me-2"></i>競馬場ガイド
+                                </a>
+                            </li>
+                            <li class="list-group-item bg-transparent border-0 ps-0 py-2">
+                                <a href="{{ url_for('keiba_lab_content', content_path='handicapping/index') }}" class="text-decoration-none">
+                                    <i class="fas fa-chevron-right text-primary me-2"></i>予想の基本理論
+                                </a>
+                            </li>
+                            <li class="list-group-item bg-transparent border-0 ps-0 py-2">
+                                <a href="{{ url_for('keiba_lab_content', content_path='betting/index') }}" class="text-decoration-none">
+                                    <i class="fas fa-chevron-right text-primary me-2"></i>馬券の知識
+                                </a>
+                            </li>
+                            <li class="list-group-item bg-transparent border-0 ps-0 py-2">
+                                <a href="{{ url_for('keiba_lab_content', content_path='pedigree/index') }}" class="text-decoration-none">
+                                    <i class="fas fa-chevron-right text-primary me-2"></i>血統の知識
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

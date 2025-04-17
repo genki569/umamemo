@@ -1,0 +1,378 @@
+{% extends "base.html" %}
+
+{% block title %}馬券の種類と特徴 | 競馬初心者向け馬券ガイド【馬メモ】{% endblock %}
+
+{% block meta_description %}競馬の馬券の種類と特徴を詳しく解説。単勝、複勝、馬連、馬単、ワイド、三連複、三連単など各馬券の買い方や当て方、オッズの特徴まで初心者にもわかりやすく紹介します。{% endblock %}
+
+{% block meta_keywords %}馬券,種類,特徴,単勝,複勝,馬連,馬単,ワイド,三連複,三連単,オッズ,競馬初心者{% endblock %}
+
+{% block og_title %}馬券の種類と特徴 | 競馬初心者向け馬券ガイド【馬メモ】{% endblock %}
+{% block og_description %}競馬の馬券の種類と特徴を詳しく解説。単勝、複勝、馬連、馬単、ワイド、三連複、三連単など各馬券の買い方や当て方、オッズの特徴まで初心者にもわかりやすく紹介します。{% endblock %}
+{% block og_type %}article{% endblock %}
+
+{% block twitter_title %}馬券の種類と特徴 | 競馬初心者向け馬券ガイド【馬メモ】{% endblock %}
+{% block twitter_description %}競馬の馬券の種類と特徴を詳しく解説。単勝、複勝、馬連、馬単、ワイド、三連複、三連単など各馬券の買い方や当て方、オッズの特徴まで初心者にもわかりやすく紹介します。{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- パンくずリスト -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">ホーム</a></li>
+            <li class="breadcrumb-item"><a href="/keiba_lab/">競馬ラボ</a></li>
+            <li class="breadcrumb-item"><a href="/keiba_lab/betting/">馬券の知識</a></li>
+            <li class="breadcrumb-item active" aria-current="page">馬券の種類と特徴</li>
+        </ol>
+    </nav>
+
+    <h1 class="mb-4">馬券の種類と特徴</h1>
+    
+    <div class="row mb-4">
+        <div class="col-lg-8">
+            <p class="lead">競馬の馬券には様々な種類があり、それぞれに特徴があります。このページでは、馬券の種類とその特徴、的中条件などをわかりやすく解説します。初心者の方はもちろん、中級者の方も復習として参考にしてください。</p>
+        </div>
+    </div>
+
+    <!-- 目次 -->
+    <div class="card mb-5 shadow-sm">
+        <div class="card-body">
+            <h2 class="h5 mb-3">目次</h2>
+            <ol class="mb-0">
+                <li><a href="#win" class="text-decoration-none">単勝（タンショウ）</a></li>
+                <li><a href="#place" class="text-decoration-none">複勝（フクショウ）</a></li>
+                <li><a href="#quinella" class="text-decoration-none">馬連（ウマレン）</a></li>
+                <li><a href="#exacta" class="text-decoration-none">馬単（ウマタン）</a></li>
+                <li><a href="#wide" class="text-decoration-none">ワイド</a></li>
+                <li><a href="#trio" class="text-decoration-none">三連複（サンレンフク）</a></li>
+                <li><a href="#trifecta" class="text-decoration-none">三連単（サンレンタン）</a></li>
+                <li><a href="#betting-methods" class="text-decoration-none">馬券の買い方のバリエーション</a></li>
+                <li><a href="#odds" class="text-decoration-none">オッズについて</a></li>
+            </ol>
+        </div>
+    </div>
+
+    <!-- 単勝 -->
+    <section id="win" class="mb-5">
+        <h2 class="border-bottom pb-2 mb-4">単勝（タンショウ）</h2>
+        <div class="row">
+            <div class="col-lg-8">
+                <p>単勝は最もシンプルな馬券で、1着になると予想する馬を1頭選ぶ馬券です。</p>
+                
+                <h3 class="h5 mt-4">的中条件</h3>
+                <p>選んだ馬が1着になれば的中となります。</p>
+                
+                <h3 class="h5 mt-4">特徴</h3>
+                <ul>
+                    <li>初心者にもわかりやすいシンプルな馬券です。</li>
+                    <li>人気のある馬の単勝オッズは低めで、配当も控えめになることが多いです。</li>
+                    <li>穴馬（人気のない馬）が勝利した場合は高配当になることもあります。</li>
+                </ul>
+                
+                <h3 class="h5 mt-4">購入方法の例</h3>
+                <p>例：「3レース、単勝、7番に500円」</p>
+                <p>これは、3レースで7番の馬が1着になると予想して500円分の馬券を購入することを意味します。</p>
+                
+                <div class="alert alert-info mt-3">
+                    <p class="mb-0">単勝は馬券の中で最も的中条件が明確で、初心者が最初に挑戦しやすい馬券です。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 複勝 -->
+    <section id="place" class="mb-5">
+        <h2 class="border-bottom pb-2 mb-4">複勝（フクショウ）</h2>
+        <div class="row">
+            <div class="col-lg-8">
+                <p>複勝は、選んだ馬が3着以内に入れば的中となる馬券です。</p>
+                
+                <h3 class="h5 mt-4">的中条件</h3>
+                <p>選んだ馬が3着以内（出走頭数が7頭以下の場合は2着以内）に入れば的中となります。</p>
+                
+                <h3 class="h5 mt-4">特徴</h3>
+                <ul>
+                    <li>単勝よりも的中率が高い馬券です。</li>
+                    <li>的中率が高い分、配当は単勝より低くなる傾向があります。</li>
+                    <li>人気のある馬の複勝は、配当が100円台という場合もあります。</li>
+                    <li>人気のない馬でも3着に入れば的中するため、穴馬を狙う際にも利用されます。</li>
+                </ul>
+                
+                <h3 class="h5 mt-4">購入方法の例</h3>
+                <p>例：「5レース、複勝、3番に1000円」</p>
+                <p>これは、5レースで3番の馬が3着以内に入ると予想して1000円分の馬券を購入することを意味します。</p>
+                
+                <div class="alert alert-info mt-3">
+                    <p class="mb-0">複勝は初心者でも的中しやすく、資金管理しながら楽しめる馬券です。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 馬連 -->
+    <section id="quinella" class="mb-5">
+        <h2 class="border-bottom pb-2 mb-4">馬連（ウマレン）</h2>
+        <div class="row">
+            <div class="col-lg-8">
+                <p>馬連は、1着と2着になる2頭の馬を選ぶ馬券です。着順は問いません。</p>
+                
+                <h3 class="h5 mt-4">的中条件</h3>
+                <p>選んだ2頭の馬が1着と2着になれば、どちらが1着でもどちらが2着でも的中となります。</p>
+                
+                <h3 class="h5 mt-4">特徴</h3>
+                <ul>
+                    <li>単勝・複勝よりも難しいですが、配当も高くなる傾向があります。</li>
+                    <li>人気のある組み合わせでは数百円程度の配当もありますが、穴馬の組み合わせで数万円の配当になることもあります。</li>
+                    <li>2頭の人気馬を選ぶと的中率は上がりますが、配当は低くなります。</li>
+                </ul>
+                
+                <h3 class="h5 mt-4">購入方法の例</h3>
+                <p>例：「7レース、馬連、1番-6番に300円」</p>
+                <p>これは、7レースで1番と6番の馬が1着と2着になる（順不同）と予想して300円分の馬券を購入することを意味します。</p>
+                
+                <div class="alert alert-info mt-3">
+                    <p class="mb-0">馬連は単勝・複勝に慣れた方が次に挑戦しやすい馬券です。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 馬単 -->
+    <section id="exacta" class="mb-5">
+        <h2 class="border-bottom pb-2 mb-4">馬単（ウマタン）</h2>
+        <div class="row">
+            <div class="col-lg-8">
+                <p>馬単は、1着と2着になる2頭の馬を着順通りに当てる馬券です。</p>
+                
+                <h3 class="h5 mt-4">的中条件</h3>
+                <p>選んだ2頭の馬が、指定した順番通りに1着と2着になれば的中となります。</p>
+                
+                <h3 class="h5 mt-4">特徴</h3>
+                <ul>
+                    <li>馬連より難しく、的中率は下がりますが、配当は高くなる傾向があります。</li>
+                    <li>馬連の約2倍の配当になることが多いです。</li>
+                    <li>着順まで正確に予想する必要があるため、レース展開の予想も重要になります。</li>
+                </ul>
+                
+                <h3 class="h5 mt-4">購入方法の例</h3>
+                <p>例：「4レース、馬単、2番→8番に500円」</p>
+                <p>これは、4レースで2番の馬が1着、8番の馬が2着になると予想して500円分の馬券を購入することを意味します。</p>
+                
+                <div class="alert alert-info mt-3">
+                    <p class="mb-0">馬単は的中が難しい分、高配当を狙える魅力があります。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ワイド -->
+    <section id="wide" class="mb-5">
+        <h2 class="border-bottom pb-2 mb-4">ワイド</h2>
+        <div class="row">
+            <div class="col-lg-8">
+                <p>ワイドは、選んだ2頭の馬が3着以内に入れば的中となる馬券です。</p>
+                
+                <h3 class="h5 mt-4">的中条件</h3>
+                <p>選んだ2頭の馬が共に3着以内に入れば、着順に関わらず的中となります。</p>
+                
+                <h3 class="h5 mt-4">特徴</h3>
+                <ul>
+                    <li>馬連より的中率が高い馬券です。</li>
+                    <li>的中率が高い分、配当は馬連より低くなる傾向があります。</li>
+                    <li>穴馬を絡めると高配当になることもあります。</li>
+                    <li>資金管理を意識したい方に向いている馬券です。</li>
+                </ul>
+                
+                <h3 class="h5 mt-4">購入方法の例</h3>
+                <p>例：「6レース、ワイド、4番-9番に200円」</p>
+                <p>これは、6レースで4番と9番の馬が共に3着以内に入ると予想して200円分の馬券を購入することを意味します。</p>
+                
+                <div class="alert alert-info mt-3">
+                    <p class="mb-0">ワイドは馬連と複勝の中間的な特性を持つ馬券で、資金効率が良いのが特徴です。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 三連複 -->
+    <section id="trio" class="mb-5">
+        <h2 class="border-bottom pb-2 mb-4">三連複（サンレンフク）</h2>
+        <div class="row">
+            <div class="col-lg-8">
+                <p>三連複は、1着、2着、3着になる3頭の馬を当てる馬券です。着順は問いません。</p>
+                
+                <h3 class="h5 mt-4">的中条件</h3>
+                <p>選んだ3頭の馬が1着、2着、3着を独占すれば、着順に関わらず的中となります。</p>
+                
+                <h3 class="h5 mt-4">特徴</h3>
+                <ul>
+                    <li>馬連やワイドより難しく、的中率は下がりますが、配当は高くなる傾向があります。</li>
+                    <li>人気サイドでも数千円の配当になることが多いです。</li>
+                    <li>穴馬が絡むと数万円以上の高配当になることもあります。</li>
+                    <li>「ボックス」で購入することが多い馬券です。</li>
+                </ul>
+                
+                <h3 class="h5 mt-4">購入方法の例</h3>
+                <p>例：「8レース、三連複、3-5-7に100円」</p>
+                <p>これは、8レースで3番、5番、7番の馬が1着、2着、3着になる（順不同）と予想して100円分の馬券を購入することを意味します。</p>
+                
+                <div class="alert alert-info mt-3">
+                    <p class="mb-0">三連複は少額で高配当を狙える魅力がある一方、初心者には難易度の高い馬券です。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 三連単 -->
+    <section id="trifecta" class="mb-5">
+        <h2 class="border-bottom pb-2 mb-4">三連単（サンレンタン）</h2>
+        <div class="row">
+            <div class="col-lg-8">
+                <p>三連単は、1着、2着、3着になる3頭の馬を着順通りに当てる最も難しい馬券です。</p>
+                
+                <h3 class="h5 mt-4">的中条件</h3>
+                <p>選んだ3頭の馬が、指定した順番通りに1着、2着、3着になれば的中となります。</p>
+                
+                <h3 class="h5 mt-4">特徴</h3>
+                <ul>
+                    <li>最も難しい馬券ですが、配当も最も高くなる傾向があります。</li>
+                    <li>数万円の配当が当たり前で、穴馬が絡むと数十万円、時には数百万円の配当になることもあります。</li>
+                    <li>「フォーメーション」や「流し」で購入することが多い馬券です。</li>
+                    <li>1点100円で高額配当を狙える魅力があります。</li>
+                </ul>
+                
+                <h3 class="h5 mt-4">購入方法の例</h3>
+                <p>例：「10レース、三連単、4→7→2に300円」</p>
+                <p>これは、10レースで4番の馬が1着、7番の馬が2着、2番の馬が3着になると予想して300円分の馬券を購入することを意味します。</p>
+                
+                <div class="alert alert-info mt-3">
+                    <p class="mb-0">三連単は最も難しい馬券ですが、最高の高配当を狙える魅力があります。的中した時の喜びも格別です。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 馬券の買い方のバリエーション -->
+    <section id="betting-methods" class="mb-5">
+        <h2 class="border-bottom pb-2 mb-4">馬券の買い方のバリエーション</h2>
+        <div class="row">
+            <div class="col-lg-8">
+                <p>馬券には様々な買い方のバリエーションがあります。主な買い方を紹介します。</p>
+                
+                <h3 class="h5 mt-4">通常買い（単純な組み合わせ）</h3>
+                <p>最もシンプルな買い方で、指定した馬の組み合わせのみを購入します。</p>
+                <p>例：「馬連、6-8」、「三連単、1→4→7」</p>
+                
+                <h3 class="h5 mt-4">ボックス買い</h3>
+                <p>選んだ馬の全ての順序の組み合わせを購入する方法です。主に馬連、馬単、三連複、三連単で利用されます。</p>
+                <ul>
+                    <li><strong>馬連ボックス</strong>：2頭で1組（例：1-2のボックスは1通り）</li>
+                    <li><strong>馬単ボックス</strong>：2頭で2組（例：1→2、2→1の2通り）</li>
+                    <li><strong>三連複ボックス</strong>：3頭で1組（例：1-2-3のボックスは1通り）</li>
+                    <li><strong>三連単ボックス</strong>：3頭で6組（例：1→2→3、1→3→2、2→1→3、2→3→1、3→1→2、3→2→1の6通り）</li>
+                </ul>
+                
+                <h3 class="h5 mt-4">フォーメーション買い</h3>
+                <p>軸となる馬を固定し、他の馬を総当たりで組み合わせる方法です。</p>
+                <p>例：「三連単、1→2,3,4→5,6,7,8」（1番を1着、2,3,4番のいずれかを2着、5,6,7,8番のいずれかを3着と予想）</p>
+                
+                <h3 class="h5 mt-4">流し買い</h3>
+                <p>軸となる馬を1頭または複数頭固定し、残りの馬を総当たりで組み合わせる方法です。</p>
+                <ul>
+                    <li><strong>1頭軸流し</strong>：1頭を軸にして、他の馬を総当たりで組み合わせます。</li>
+                    <li><strong>2頭軸流し</strong>：2頭を軸にして、他の馬を総当たりで組み合わせます。</li>
+                </ul>
+                
+                <h3 class="h5 mt-4">全通り買い</h3>
+                <p>指定した馬の全ての組み合わせを購入する方法です。数が多くなりがちなので、注意が必要です。</p>
+                
+                <div class="alert alert-warning mt-3">
+                    <p class="mb-0">馬券の買い方が複雑になるほど購入点数が増え、必要な金額も増えます。予算に合わせて無理のない範囲で購入しましょう。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- オッズについて -->
+    <section id="odds" class="mb-5">
+        <h2 class="border-bottom pb-2 mb-4">オッズについて</h2>
+        <div class="row">
+            <div class="col-lg-8">
+                <p>オッズとは、馬券が的中した場合の払戻率のことです。馬券選びの重要な指標となります。</p>
+                
+                <h3 class="h5 mt-4">オッズの見方</h3>
+                <p>オッズは「〇〇倍」と表示され、購入金額にこの数字をかけたものが払戻金となります。</p>
+                <p>例：単勝オッズが「5.3倍」の馬に1000円賭けて的中した場合、5.3×1000=5300円の払戻金を受け取れます。</p>
+                
+                <h3 class="h5 mt-4">オッズと人気の関係</h3>
+                <p>一般的に、オッズが低い馬ほど人気があり、勝つ可能性が高いと見られています。逆にオッズが高い馬は穴馬（人気のない馬）と呼ばれます。</p>
+                <ul>
+                    <li><strong>1桁台のオッズ</strong>：人気馬で、勝つ確率が比較的高いと見られています。</li>
+                    <li><strong>10倍〜30倍程度</strong>：中穴馬で、条件が合えば好走する可能性があります。</li>
+                    <li><strong>30倍以上</strong>：大穴馬で、勝つ確率は低いものの、的中すれば高配当が期待できます。</li>
+                </ul>
+                
+                <h3 class="h5 mt-4">オッズの変動</h3>
+                <p>オッズは馬券の購入状況によってリアルタイムで変動します。レース直前になるほど、より多くの情報が反映されたオッズになる傾向があります。</p>
+                
+                <h3 class="h5 mt-4">返還率</h3>
+                <p>JRAの馬券の控除率は約25%で、75%が払戻金として還元されます。つまり長期的に見ると、投資額の約75%が返ってくる計算になります。</p>
+                
+                <div class="alert alert-info mt-3">
+                    <p class="mb-0">オッズは大事な指標ですが、必ずしもオッズ通りの結果になるとは限りません。自分の予想と合わせて馬券を選ぶことが大切です。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- まとめ -->
+    <section class="mb-5">
+        <div class="card bg-light">
+            <div class="card-body">
+                <h2 class="h4 mb-3">まとめ</h2>
+                <p>競馬の馬券は様々な種類があり、それぞれに特徴があります。</p>
+                <ul>
+                    <li>初心者は単勝・複勝からスタートし、慣れてきたら馬連・ワイドに挑戦するのがおすすめです。</li>
+                    <li>馬単・三連複・三連単は難易度が高く、高配当を狙える馬券です。</li>
+                    <li>ボックスやフォーメーションなど、様々な買い方を工夫することで的中率を高めることができます。</li>
+                    <li>オッズをよく見て、自分の予想との兼ね合いで馬券を選ぶことが大切です。</li>
+                </ul>
+                <p>競馬は予想を楽しむエンターテイメントです。様々な馬券を試しながら、自分に合った楽しみ方を見つけてください。</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 関連コンテンツ -->
+    <section class="mb-5">
+        <h2 class="border-bottom pb-2 mb-4">関連コンテンツ</h2>
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h3 class="card-title h5">馬券の買い方</h3>
+                        <p class="card-text">競馬場、ウインズ、インターネットなどでの馬券購入方法を解説しています。</p>
+                        <a href="/keiba_lab/betting/how-to-buy/" class="btn btn-primary">詳しく見る</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h3 class="card-title h5">馬券の組み立て方</h3>
+                        <p class="card-text">馬券の組み合わせ方や、的中率を高めるための戦略を紹介しています。</p>
+                        <a href="/keiba_lab/betting/structure/" class="btn btn-primary">詳しく見る</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h3 class="card-title h5">競馬のルール・仕組み</h3>
+                        <p class="card-text">競馬の基本的なルールや仕組みについて解説しています。</p>
+                        <a href="/keiba_lab/basics/rules/" class="btn btn-primary">詳しく見る</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %} 

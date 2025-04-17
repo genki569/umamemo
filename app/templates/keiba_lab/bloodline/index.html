@@ -1,0 +1,355 @@
+{% extends "keiba_lab/layout.html" %}
+
+{% block title %}競馬の血統知識 | 血統による特徴と能力予測【馬メモ】{% endblock %}
+
+{% block meta_description %}競走馬の血統に関する基礎知識から実践的な活用法まで初心者にもわかりやすく解説。父系・母系の特徴、サンデーサイレンス系、ノーザンダンサー系、ミスタープロスペクター系などの主要血統や、距離適性との関係も詳しく紹介します。{% endblock %}
+
+{% block meta_keywords %}競馬,血統,血統表,種牡馬,父系,母系,サンデーサイレンス系,ノーザンダンサー系,ミスタープロスペクター系,ニックス,距離適性{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{{ url_for('keiba_lab.index') }}">競馬ラボ</a></li>
+      <li class="breadcrumb-item active" aria-current="page">血統の知識</li>
+    </ol>
+  </nav>
+
+  <h1 class="mb-4">競馬の血統知識</h1>
+  
+  <p class="lead mb-4">
+    競走馬の能力や適性は、多くの部分が先祖から受け継がれた遺伝的特徴に由来します。
+    血統を理解することは、馬の潜在能力や特性を予測する上で非常に重要です。
+    このページでは、血統に関する基礎知識から実践的な活用法まで、わかりやすく解説します。
+  </p>
+
+  <div class="alert alert-info mb-4" role="alert">
+    <h4 class="alert-heading">血統分析の重要性</h4>
+    <p>
+      血統は馬の「設計図」とも言えるもので、距離適性、成長曲線、コース適性など、様々な特性に影響を与えます。
+      また、特定の血統同士の掛け合わせ（ニックス）が優れた競走馬を生み出すこともあります。
+      血統を理解することで、馬の将来性や適正レースをより正確に予測できるようになります。
+    </p>
+  </div>
+
+  <div class="row mb-5">
+    <div class="col-lg-6 mb-4">
+      <div class="card h-100">
+        <div class="card-body">
+          <h2 class="card-title h4">血統表の読み方</h2>
+          <p class="card-text">
+            血統表は競走馬の家系図です。通常は3代前（父母、祖父母、曾祖父母）までが記載されています。
+            血統表の見方を理解することで、馬の持つ遺伝的特徴を読み解くことができます。
+          </p>
+          <h3 class="h6">血統表の基本構造</h3>
+          <ul>
+            <li>一番左に当該馬の名前が記載</li>
+            <li>父系（上段）と母系（下段）に分かれる</li>
+            <li>左から右へ世代をさかのぼる形で表示</li>
+            <li>通常3代前までが記載されるが、重要な先祖はさらに遡って確認することも</li>
+          </ul>
+          <p>
+            初心者の方は、まずは父馬（種牡馬）の特徴を覚えることから始めるとよいでしょう。
+            父馬によって、芝・ダートの適性や距離適性などの大まかな傾向がわかります。
+          </p>
+          <a href="{{ url_for('keiba_lab.bloodline_basics') }}" class="btn btn-primary">詳しく見る</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-6 mb-4">
+      <div class="card h-100">
+        <div class="card-body">
+          <h2 class="card-title h4">父系と母系の役割</h2>
+          <p class="card-text">
+            競走馬の能力や特性は、父系と母系からそれぞれ異なる影響を受けると言われています。
+          </p>
+          <h3 class="h6">父系（種牡馬）の影響</h3>
+          <ul>
+            <li>スピードや瞬発力などの基本的な運動能力</li>
+            <li>コース適性（芝・ダート）</li>
+            <li>走法や脚質などの走りの特徴</li>
+          </ul>
+          <h3 class="h6">母系（牝系）の影響</h3>
+          <ul>
+            <li>スタミナや持久力</li>
+            <li>気性や性格</li>
+            <li>体格や体質の丈夫さ</li>
+          </ul>
+          <p>
+            優れた競走馬を生み出すためには、父系と母系の特性をうまく組み合わせることが重要です。
+            相性の良い血統同士の配合は「ニックス」と呼ばれ、注目されています。
+          </p>
+          <a href="{{ url_for('keiba_lab.bloodline_roles') }}" class="btn btn-primary">詳しく見る</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mb-5">
+    <div class="col-lg-6 mb-4">
+      <div class="card h-100">
+        <div class="card-body">
+          <h2 class="card-title h4">主要な父系統</h2>
+          <p class="card-text">
+            現代の競走馬は、いくつかの主要な父系統に分類されます。それぞれの系統には特徴があり、
+            競走能力や適性に大きな影響を与えています。
+          </p>
+          <h3 class="h6">日本の主要な父系統</h3>
+          <ul>
+            <li><strong>サンデーサイレンス系</strong>：芝の中長距離に適性が高く、安定した成績を残す</li>
+            <li><strong>ノーザンダンサー系</strong>：芝の短中距離で活躍することが多く、スピードがある</li>
+            <li><strong>ミスタープロスペクター系</strong>：ダート適性が高く、瞬発力に優れる</li>
+            <li><strong>ロベルト系</strong>：スタミナに優れ、長距離戦で力を発揮する</li>
+            <li><strong>ヘイロー系</strong>：丈夫で長く活躍できる馬が多い</li>
+          </ul>
+          <p>
+            これらの系統の特徴を理解することで、馬の適性や能力の傾向をある程度予測することができます。
+            特に重要なのは、各系統の距離適性やコース適性の違いです。
+          </p>
+          <a href="{{ url_for('keiba_lab.bloodline_sire_lines') }}" class="btn btn-primary">詳しく見る</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-6 mb-4">
+      <div class="card h-100">
+        <div class="card-body">
+          <h2 class="card-title h4">主要な母系統（牝系）</h2>
+          <p class="card-text">
+            母系（牝系）は、競走馬の性格や体質、スタミナなどに大きな影響を与えると言われています。
+            優れた母系から生まれた馬は、代を重ねても良い成績を残すことが多いです。
+          </p>
+          <h3 class="h6">注目すべき母系のポイント</h3>
+          <ul>
+            <li><strong>黒鹿毛系</strong>：基礎体力が高く、長距離適性を持つ傾向</li>
+            <li><strong>ファミリーナンバー</strong>：1〜43までの番号で牝系を分類したもの</li>
+            <li><strong>兄弟・姉妹の活躍</strong>：同じ母馬から生まれた馬の成績は参考になる</li>
+            <li><strong>BMS（母父）の影響</strong>：母方の祖父の影響も大きい</li>
+          </ul>
+          <p>
+            母系の分析は複雑ですが、特に重賞クラスのレースでは重要な要素となります。
+            名牝から続く良血の牝系や、特定の牝系と相性の良い種牡馬の組み合わせに注目しましょう。
+          </p>
+          <a href="{{ url_for('keiba_lab.bloodline_female_lines') }}" class="btn btn-primary">詳しく見る</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mb-5">
+    <div class="col-lg-6 mb-4">
+      <div class="card h-100">
+        <div class="card-body">
+          <h2 class="card-title h4">血統とコース適性の関係</h2>
+          <p class="card-text">
+            血統は馬のコース適性（芝・ダート）に大きな影響を与えます。
+            特定の血統は、芝やダートといった馬場に対して明確な適性を示すことがあります。
+          </p>
+          <h3 class="h6">芝コースに適性が高い血統</h3>
+          <ul>
+            <li>サンデーサイレンス系：日本の芝レースで圧倒的な強さを誇る</li>
+            <li>ノーザンダンサー系：特に芝の短中距離で活躍</li>
+            <li>サドラーズウェルズ系：欧州型の長距離適性を持つ</li>
+          </ul>
+          <h3 class="h6">ダートコースに適性が高い血統</h3>
+          <ul>
+            <li>ミスタープロスペクター系：米国型のダート血統の代表</li>
+            <li>キングマンボ系：ダートで活躍する子孫が多い</li>
+            <li>エーピーインディ系：ダートの中長距離で力を発揮</li>
+          </ul>
+          <p>
+            コース適性を考慮する際は、父系だけでなく母系の影響も重要です。
+            母父（BMS）にダート適性の高い血統を持つ馬は、父系が芝向きでもダートで活躍することがあります。
+          </p>
+          <a href="{{ url_for('keiba_lab.bloodline_course') }}" class="btn btn-primary">詳しく見る</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-6 mb-4">
+      <div class="card h-100">
+        <div class="card-body">
+          <h2 class="card-title h4">血統と距離適性の関係</h2>
+          <p class="card-text">
+            競走馬の距離適性（短距離・マイル・中距離・長距離）は、血統によって大きく左右されます。
+            特定の血統は特定の距離で活躍する傾向があります。
+          </p>
+          <h3 class="h6">短距離（〜1400m）に適性が高い血統</h3>
+          <ul>
+            <li>スピードタイプの種牡馬（ロードカナロア、キンシャサノキセキなど）</li>
+            <li>早熟な特徴を持つ血統</li>
+          </ul>
+          <h3 class="h6">マイル（1600m前後）に適性が高い血統</h3>
+          <ul>
+            <li>バランス型の種牡馬（ディープインパクト、ハーツクライなど）</li>
+            <li>瞬発力とある程度のスタミナを併せ持つ血統</li>
+          </ul>
+          <h3 class="h6">中長距離（2000m〜）に適性が高い血統</h3>
+          <ul>
+            <li>スタミナタイプの種牡馬（ステイゴールド、シンボリクリスエスなど）</li>
+            <li>欧州系の血統を多く持つ馬</li>
+          </ul>
+          <p>
+            距離適性は父系と母系の両方から影響を受けます。父系がスピード型でも、
+            母系にスタミナ要素が強ければ、中距離でも活躍できる場合があります。
+          </p>
+          <a href="{{ url_for('keiba_lab.bloodline_distance') }}" class="btn btn-primary">詳しく見る</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mb-5">
+    <div class="col-lg-6 mb-4">
+      <div class="card h-100">
+        <div class="card-body">
+          <h2 class="card-title h4">ニックス（相性の良い配合）</h2>
+          <p class="card-text">
+            特定の血統同士を掛け合わせることで、優れた競走馬が生まれやすくなることがあります。
+            このような相性の良い血統配合を「ニックス」と呼びます。
+          </p>
+          <h3 class="h6">代表的なニックス</h3>
+          <ul>
+            <li><strong>サンデー系 × ノーザンダンサー系</strong>：日本の重賞で多くの勝ち馬を輩出</li>
+            <li><strong>ディープインパクト × Storm Cat系</strong>：多くのG1馬を生み出している</li>
+            <li><strong>ミスプロ系 × サンデー系</strong>：ダート適性の高い強い馬が生まれやすい</li>
+          </ul>
+          <p>
+            ニックスは配合理論の一つで、必ずしも成功するわけではありませんが、
+            血統を分析する上での重要な視点となります。特に高額な競走馬の購入や
+            馬主として繁殖牝馬の配合を考える際に参考になります。
+          </p>
+          <a href="{{ url_for('keiba_lab.bloodline_nicks') }}" class="btn btn-primary">詳しく見る</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-6 mb-4">
+      <div class="card h-100">
+        <div class="card-body">
+          <h2 class="card-title h4">インブリード（近親交配）</h2>
+          <p class="card-text">
+            血統表の中で、同じ祖先が複数回登場することを「インブリード」と呼びます。
+            インブリードには、特定の能力や特性を強化する効果があるとされています。
+          </p>
+          <h3 class="h6">インブリードの種類</h3>
+          <ul>
+            <li><strong>クロスインブリード</strong>：父系と母系の両方に同じ祖先が現れる</li>
+            <li><strong>ラインブリード</strong>：父系のみ、または母系のみに同じ祖先が複数回現れる</li>
+          </ul>
+          <h3 class="h6">代表的なインブリード対象</h3>
+          <ul>
+            <li><strong>ノーザンダンサー</strong>：多くのG1馬に見られるインブリード</li>
+            <li><strong>サンデーサイレンス</strong>：日本の競走馬に増えつつあるインブリード</li>
+            <li><strong>ミスタープロスペクター</strong>：ダート適性を高める効果がある</li>
+          </ul>
+          <p>
+            インブリードは3×4（3代前と4代前に同じ祖先）や4×5などと表記されます。
+            血統分析の際は、インブリードの対象となっている祖先の特徴に注目しましょう。
+          </p>
+          <a href="{{ url_for('keiba_lab.bloodline_inbreeding') }}" class="btn btn-primary">詳しく見る</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card mb-5">
+    <div class="card-body">
+      <h2 class="card-title h4">主要な種牡馬とその特徴</h2>
+      <p>
+        日本の競馬界で影響力の大きい主要な種牡馬とその特徴を紹介します。
+        これらの種牡馬の子孫たちは、現在の日本競馬の主力となっています。
+      </p>
+      <div class="row">
+        <div class="col-md-6">
+          <h3 class="h6">サンデーサイレンス系</h3>
+          <ul>
+            <li><strong>ディープインパクト</strong>：バランス型で芝の中距離に適性が高い</li>
+            <li><strong>ステイゴールド</strong>：スタミナ豊富で長距離戦や重馬場に強い</li>
+            <li><strong>ハーツクライ</strong>：安定した成績を残す堅実さが特徴</li>
+            <li><strong>ドゥラメンテ</strong>：晩成型で古馬になってから力を発揮する</li>
+          </ul>
+        </div>
+        <div class="col-md-6">
+          <h3 class="h6">その他の主要種牡馬</h3>
+          <ul>
+            <li><strong>キングカメハメハ</strong>：芝・ダート両方に適性があり万能型</li>
+            <li><strong>ロードカナロア</strong>：スピード型で芝の短距離に適性が高い</li>
+            <li><strong>キタサンブラック</strong>：パワーとスタミナを兼ね備えた特徴</li>
+            <li><strong>エピファネイア</strong>：中長距離で活躍する素質を持つ</li>
+          </ul>
+        </div>
+      </div>
+      <a href="{{ url_for('keiba_lab.bloodline_sires') }}" class="btn btn-primary mt-3">主要種牡馬一覧を見る</a>
+    </div>
+  </div>
+
+  <div class="alert alert-warning mb-5" role="alert">
+    <h4 class="alert-heading">血統分析の注意点</h4>
+    <p>
+      血統は競走馬の能力や適性を予測する上で重要な要素ですが、以下の点に注意が必要です：
+    </p>
+    <ul>
+      <li>血統だけで馬の能力が決まるわけではなく、調教法や飼育環境も重要</li>
+      <li>同じ血統でも個体差がある</li>
+      <li>時代によって活躍する血統の傾向が変わる</li>
+      <li>血統理論は絶対的なものではなく、例外も多い</li>
+    </ul>
+    <p>
+      血統分析は、あくまで予想の一要素として捉え、他の要素（調教、馬体、実績など）と
+      組み合わせて総合的に判断することが大切です。
+    </p>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <h2 class="card-title h4">まとめ：血統知識の活かし方</h2>
+      <p>
+        血統知識は、競馬予想において非常に重要な要素の一つです。
+        特に初心者の方は、まずは主要な種牡馬の特徴や、芝・ダートの適性、
+        距離適性などの基本的な知識から身につけることをおすすめします。
+      </p>
+      <p>
+        血統分析に慣れてきたら、より詳細な要素（インブリード、ニックス、母系の影響など）
+        にも目を向けてみましょう。血統の知識を深めることで、馬の潜在能力や
+        適性をより正確に予測できるようになり、予想の精度が高まります。
+      </p>
+      <p>
+        ただし、血統はあくまで「可能性」を示すものであり、実際の馬の能力や状態も
+        重要な要素です。血統分析と実戦データをバランスよく組み合わせることが
+        競馬予想の上達への近道となるでしょう。
+      </p>
+    </div>
+  </div>
+
+  <div class="my-5">
+    <h2 class="h4 mb-4">関連記事</h2>
+    <div class="row">
+      <div class="col-md-4 mb-4">
+        <div class="card">
+          <div class="card-body">
+            <h3 class="card-title h5">血統から見る重賞レースの傾向</h3>
+            <p class="card-text">主要重賞レースで活躍しやすい血統パターンを解説します。</p>
+            <a href="{{ url_for('keiba_lab.bloodline_stakes_races') }}" class="btn btn-outline-primary btn-sm">記事を読む</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4 mb-4">
+        <div class="card">
+          <div class="card-body">
+            <h3 class="card-title h5">新種牡馬の評価方法</h3>
+            <p class="card-text">デビューしたばかりの種牡馬の能力を予測する方法を紹介します。</p>
+            <a href="{{ url_for('keiba_lab.bloodline_new_sires') }}" class="btn btn-outline-primary btn-sm">記事を読む</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4 mb-4">
+        <div class="card">
+          <div class="card-body">
+            <h3 class="card-title h5">海外血統と日本の競馬</h3>
+            <p class="card-text">海外の血統が日本競馬に与える影響と今後の展望について解説します。</p>
+            <a href="{{ url_for('keiba_lab.bloodline_international') }}" class="btn btn-outline-primary btn-sm">記事を読む</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %} 

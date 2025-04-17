@@ -1,0 +1,322 @@
+{% extends "base.html" %}
+
+{% block title %}競馬のルールと仕組み | 初心者にもわかりやすく解説【馬メモ】{% endblock %}
+
+{% block meta_description %}競馬の基本ルールから仕組みまで、初心者の方にもわかりやすく解説。レースの種類や特徴、競走馬のクラス体系、JRAと地方競馬の違いなど、競馬を楽しむために必要な基礎知識を網羅しています。{% endblock %}
+
+{% block meta_keywords %}競馬,ルール,基本,仕組み,レース,クラス,JRA,地方競馬,初心者,競馬入門{% endblock %}
+
+{% block og_title %}競馬のルールと仕組み | 初心者にもわかりやすく解説【馬メモ】{% endblock %}
+{% block og_description %}競馬の基本ルールから仕組みまで、初心者の方にもわかりやすく解説。レースの種類や特徴、競走馬のクラス体系、JRAと地方競馬の違いなど、競馬を楽しむために必要な基礎知識を網羅しています。{% endblock %}
+{% block og_type %}article{% endblock %}
+
+{% block twitter_title %}競馬のルールと仕組み | 初心者にもわかりやすく解説【馬メモ】{% endblock %}
+{% block twitter_description %}競馬の基本ルールから仕組みまで、初心者の方にもわかりやすく解説。レースの種類や特徴、競走馬のクラス体系、JRAと地方競馬の違いなど、競馬を楽しむために必要な基礎知識を網羅しています。{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- パンくずリスト -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">ホーム</a></li>
+            <li class="breadcrumb-item"><a href="/keiba_lab/">競馬ラボ</a></li>
+            <li class="breadcrumb-item"><a href="/keiba_lab/basics/">競馬基礎知識</a></li>
+            <li class="breadcrumb-item active" aria-current="page">競馬のルール</li>
+        </ol>
+    </nav>
+
+    <h1 class="mb-4">競馬のルールと仕組み</h1>
+    
+    <div class="row mb-4">
+        <div class="col-lg-8">
+            <p class="lead">競馬は馬のスピードを競う伝統あるスポーツです。初めて競馬に触れる方でも楽しめるように、基本的なルールから仕組みまで、わかりやすく解説します。</p>
+        </div>
+    </div>
+
+    <!-- 目次 -->
+    <div class="card mb-5 shadow-sm">
+        <div class="card-body">
+            <h2 class="h5 mb-3">目次</h2>
+            <ol class="mb-0">
+                <li><a href="#basic-rules" class="text-decoration-none">競馬の基本ルールと仕組み</a></li>
+                <li><a href="#race-types" class="text-decoration-none">レースの種類と特徴</a></li>
+                <li><a href="#horse-class" class="text-decoration-none">競走馬の年齢とクラス体系</a></li>
+                <li><a href="#jra-local" class="text-decoration-none">JRAと地方競馬の違い</a></li>
+                <li><a href="#history" class="text-decoration-none">競馬の歴史と発展</a></li>
+            </ol>
+        </div>
+    </div>
+
+    <!-- 競馬の基本ルールと仕組み -->
+    <section id="basic-rules" class="mb-5">
+        <h2 class="border-bottom pb-2 mb-4">競馬の基本ルールと仕組み</h2>
+        <div class="row">
+            <div class="col-lg-8">
+                <p>競馬とは、複数の馬が決められたコースを走り、その着順を競うスポーツです。日本では公営競技の一つとして、中央競馬（JRA）と地方競馬の2種類が行われています。</p>
+                
+                <h3 class="h5 mt-4">基本的なルール</h3>
+                <p>競馬のルールはシンプルです。決められたコースを最も速く走った馬が勝ちとなります。</p>
+                <ul>
+                    <li>レースは「発走（スタート）」から始まり、全ての馬がコースを走り終えると終了します。</li>
+                    <li>馬にはジョッキー（騎手）が騎乗し、コースを走ります。</li>
+                    <li>レースの距離や条件は、様々な種類があります。</li>
+                    <li>レース終了後、着順が確定し、的中した馬券の払戻しが行われます。</li>
+                </ul>
+                
+                <h3 class="h5 mt-4">出走馬と騎手</h3>
+                <p>競馬に出走する馬は「競走馬（けいそうば）」と呼ばれ、専門の調教師によって調教されています。</p>
+                <ul>
+                    <li><strong>競走馬</strong>：サラブレッドと呼ばれる品種の馬が主に使用されます。</li>
+                    <li><strong>馬主</strong>：競走馬のオーナー。調教師に馬の管理を委託します。</li>
+                    <li><strong>調教師</strong>：馬の調教や管理を行う専門家。</li>
+                    <li><strong>騎手（ジョッキー）</strong>：レースで馬に騎乗する選手。技術と経験が重要です。</li>
+                </ul>
+                
+                <h3 class="h5 mt-4">レースの流れ</h3>
+                <p>一般的なレースの流れは以下の通りです。</p>
+                <ol>
+                    <li><strong>パドック</strong>：レース前に馬の状態を観察できる場所で、馬が展示されます。</li>
+                    <li><strong>競走馬入場</strong>：パドックから馬場に馬が入場します。</li>
+                    <li><strong>装鞍所</strong>：馬に鞍を付け、騎手が騎乗します。</li>
+                    <li><strong>下見所</strong>：馬場内に設けられた円形のコースで、馬をウォーミングアップさせます。</li>
+                    <li><strong>発走</strong>：全ての馬がスターティングゲートに入り、一斉にスタートします。</li>
+                    <li><strong>レース</strong>：設定された距離を走ります。</li>
+                    <li><strong>ゴール</strong>：1着からの着順が決まります。</li>
+                    <li><strong>検量</strong>：レース後に騎手と鞍の重量を確認します。</li>
+                    <li><strong>着順確定</strong>：正式な着順が発表され、馬券の払戻しが始まります。</li>
+                </ol>
+                <div class="alert alert-info">
+                    <p class="mb-0">競馬では、馬の着順によって賞金が分配されます。また、ファンは「馬券」を購入することで、レース結果を予想して楽しむことができます。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- レースの種類と特徴 -->
+    <section id="race-types" class="mb-5">
+        <h2 class="border-bottom pb-2 mb-4">レースの種類と特徴</h2>
+        <div class="row">
+            <div class="col-lg-8">
+                <p>競馬のレースは様々な条件や格付けによって分類されます。それぞれの特徴を理解することで、より競馬を楽しむことができるでしょう。</p>
+                
+                <h3 class="h5 mt-4">格付けによる分類</h3>
+                <p>JRA（中央競馬）では、レースは以下のように格付けされています。</p>
+                <ul>
+                    <li><strong>GI（グレード・ワン）</strong>：最高峰のレース。日本ダービーや有馬記念などが含まれます。</li>
+                    <li><strong>GII（グレード・ツー）</strong>：GIに次ぐ高格付けのレース。</li>
+                    <li><strong>GIII（グレード・スリー）</strong>：重賞レースの中でGI、GIIに次ぐレース。</li>
+                    <li><strong>リステッド</strong>：重賞に次ぐ格付けのレース。</li>
+                    <li><strong>オープン</strong>：一定以上の条件を満たした馬が出走できるレース。</li>
+                    <li><strong>条件レース</strong>：過去の勝ち数や賞金額などの条件によって出走資格が決まるレース。</li>
+                    <li><strong>新馬戦</strong>：初めて競走に参加する馬（新馬）のみが出走できるレース。</li>
+                    <li><strong>未勝利戦</strong>：まだ勝利していない馬が参加するレース。</li>
+                </ul>
+                
+                <h3 class="h5 mt-4">コースの種類</h3>
+                <p>競馬場のコースは大きく分けて以下の2種類があります。</p>
+                <ul>
+                    <li><strong>芝コース</strong>：芝生が植えられたコース。欧州の競馬の伝統を継ぐもので、技術的な要素が重視されます。</li>
+                    <li><strong>ダートコース</strong>：砂や土などで舗装されたコース。アメリカの競馬の伝統を継ぐもので、パワーが重視されます。</li>
+                </ul>
+                
+                <h3 class="h5 mt-4">距離による分類</h3>
+                <p>レースは走行距離によって以下のように分類されます。</p>
+                <ul>
+                    <li><strong>短距離</strong>：1000m〜1400m</li>
+                    <li><strong>マイル</strong>：1600m前後</li>
+                    <li><strong>中距離</strong>：1800m〜2200m</li>
+                    <li><strong>長距離</strong>：2400m以上</li>
+                </ul>
+                
+                <h3 class="h5 mt-4">特別レース</h3>
+                <p>特別な条件や意義を持つレースもあります。</p>
+                <ul>
+                    <li><strong>重賞レース</strong>：高い賞金と格式を持つ特別なレース。GI、GII、GIIIがこれに含まれます。</li>
+                    <li><strong>クラシックレース</strong>：3歳馬限定の伝統的な重賞レース。日本では「クラシック三冠」として、皐月賞、日本ダービー、菊花賞があります。</li>
+                    <li><strong>ハンデキャップレース</strong>：馬の能力によって、背負う重量（斤量）が調整されるレース。</li>
+                    <li><strong>国際レース</strong>：海外の馬も参加できる国際的なレース。ジャパンカップなどが有名です。</li>
+                </ul>
+                <div class="alert alert-warning">
+                    <p class="mb-0">レースの条件や格付けは、出走する馬の質や競争レベルに大きく影響します。予想をする際は、そのレースの特性を理解することが重要です。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 競走馬の年齢とクラス体系 -->
+    <section id="horse-class" class="mb-5">
+        <h2 class="border-bottom pb-2 mb-4">競走馬の年齢とクラス体系</h2>
+        <div class="row">
+            <div class="col-lg-8">
+                <p>競馬では馬の年齢やこれまでの戦績によって、参加できるレースが異なります。ここでは競走馬の年齢やクラス体系について説明します。</p>
+                
+                <h3 class="h5 mt-4">競走馬の年齢</h3>
+                <p>競走馬の年齢は、北半球では毎年1月1日に一斉に1歳加算されます。これは実際の誕生日とは関係なく、全ての馬に共通して適用されるルールです。</p>
+                <ul>
+                    <li><strong>2歳馬</strong>：基本的にデビューしたばかりの若い馬。2歳の6月頃からレースに出走します。</li>
+                    <li><strong>3歳馬</strong>：クラシックレース（皐月賞、日本ダービー、菊花賞）の主役となる年齢です。</li>
+                    <li><strong>4歳以上</strong>：「古馬（こば）」と呼ばれ、シニア世代として競走します。</li>
+                </ul>
+                
+                <h3 class="h5 mt-4">JRAのクラス体系</h3>
+                <p>JRA（中央競馬）では、競走馬のレベルに応じて以下のようなクラス体系が設けられています。</p>
+                <ul>
+                    <li><strong>新馬戦</strong>：初めて競走に出走する馬（新馬）だけが参加できるレース。</li>
+                    <li><strong>未勝利戦</strong>：まだ1勝もしていない馬が参加するレース。</li>
+                    <li><strong>1勝クラス（旧500万下）</strong>：1勝以上の馬が参加するレース。生涯獲得賞金が500万円以下の馬が対象。</li>
+                    <li><strong>2勝クラス（旧1000万下）</strong>：2勝以上の馬が参加するレース。生涯獲得賞金が1000万円以下の馬が対象。</li>
+                    <li><strong>3勝クラス（旧1600万下）</strong>：3勝以上の馬が参加するレース。生涯獲得賞金が1600万円以下の馬が対象。</li>
+                    <li><strong>オープンクラス</strong>：3勝クラスを卒業した馬が参加する最上位クラス。重賞レースもこのクラスに含まれます。</li>
+                </ul>
+                
+                <h3 class="h5 mt-4">馬の能力と斤量</h3>
+                <p>競馬では馬の能力差を調整するために、「斤量（きんりょう）」と呼ばれる重量ハンデが設定されることがあります。</p>
+                <ul>
+                    <li><strong>斤量</strong>：騎手と鞍などの装具を合わせた重さのこと。</li>
+                    <li><strong>負担重量</strong>：レースで馬が背負う斤量のこと。</li>
+                    <li><strong>ハンデキャップ</strong>：馬の能力に応じて負担重量を調整する方法。能力の高い馬ほど重い斤量が課されます。</li>
+                    <li><strong>馬齢重量</strong>：馬の年齢によって負担重量が決まる方式。年齢が上がるほど重くなります。</li>
+                </ul>
+                <div class="alert alert-info">
+                    <p class="mb-0">競走馬のクラスは基本的に勝ち上がり制で、勝利を重ねるごとに上のクラスへと昇級していきます。優秀な馬ほど上位クラスでレースに参加することになります。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- JRAと地方競馬の違い -->
+    <section id="jra-local" class="mb-5">
+        <h2 class="border-bottom pb-2 mb-4">JRAと地方競馬の違い</h2>
+        <div class="row">
+            <div class="col-lg-8">
+                <p>日本では「中央競馬（JRA）」と「地方競馬」の2つの競馬が行われています。それぞれの特徴や違いを理解しましょう。</p>
+                
+                <h3 class="h5 mt-4">JRA（中央競馬）</h3>
+                <p>日本中央競馬会（JRA）が運営する競馬です。</p>
+                <ul>
+                    <li><strong>開催場所</strong>：全国10カ所の競馬場（東京、中山、阪神、京都、中京、福島、新潟、小倉、札幌、函館）</li>
+                    <li><strong>特徴</strong>：
+                        <ul>
+                            <li>賞金が高額（1レースの1着賞金が数百万円〜数億円）</li>
+                            <li>トップクラスの競走馬と騎手が集まる</li>
+                            <li>GIなどの最高峰レースを開催</li>
+                            <li>土曜・日曜を中心に開催</li>
+                        </ul>
+                    </li>
+                </ul>
+                
+                <h3 class="h5 mt-4">地方競馬</h3>
+                <p>各地方自治体が運営する競馬です。</p>
+                <ul>
+                    <li><strong>開催場所</strong>：全国の地方競馬場（大井、川崎、船橋、浦和、名古屋、園田、姫路、高知、佐賀など）</li>
+                    <li><strong>特徴</strong>：
+                        <ul>
+                            <li>JRAと比べると賞金は低め</li>
+                            <li>平日を中心に開催が多い</li>
+                            <li>ナイター競馬（夜間開催）がある</li>
+                            <li>地域に根ざした特色ある競馬を展開</li>
+                            <li>南関東4場（大井、川崎、船橋、浦和）は「TCK」として統一的な運営</li>
+                        </ul>
+                    </li>
+                </ul>
+                
+                <h3 class="h5 mt-4">JRAと地方競馬の相互交流</h3>
+                <p>近年では、JRAと地方競馬の交流が盛んになっています。</p>
+                <ul>
+                    <li><strong>交流重賞レース</strong>：JRAの馬と地方競馬の馬が同じレースに出走する交流重賞レースが開催されています。</li>
+                    <li><strong>騎手の移籍</strong>：JRAと地方競馬の間で騎手が移籍することもあります。</li>
+                    <li><strong>馬の移籍</strong>：JRAと地方競馬の間で馬が移籍することもあり、「転入」「転出」と呼ばれます。</li>
+                </ul>
+                
+                <h3 class="h5 mt-4">馬券の購入方法</h3>
+                <p>JRAと地方競馬では、馬券の購入システムに違いがあります。</p>
+                <ul>
+                    <li><strong>JRA</strong>：JRA-PAT（インターネット投票）や各競馬場、WINS（場外馬券売り場）などで購入可能。</li>
+                    <li><strong>地方競馬</strong>：各競馬場のほか、SPAT4（地方競馬のインターネット投票サービス）や楽天競馬などで購入可能。</li>
+                </ul>
+                <div class="alert alert-warning">
+                    <p class="mb-0">JRAと地方競馬はそれぞれに魅力があります。JRAは高いレベルの競争が見られる一方、地方競馬はアクセスの良さやナイター開催など、独自の魅力を持っています。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 競馬の歴史と発展 -->
+    <section id="history" class="mb-5">
+        <h2 class="border-bottom pb-2 mb-4">競馬の歴史と発展</h2>
+        <div class="row">
+            <div class="col-lg-8">
+                <p>競馬は長い歴史を持つスポーツであり、世界各国で独自の発展を遂げてきました。日本における競馬の歴史と発展についても理解を深めましょう。</p>
+                
+                <h3 class="h5 mt-4">競馬の起源</h3>
+                <p>競馬の起源は古代にさかのぼり、中央アジアの遊牧民族が馬の速さを競ったことが始まりとされています。その後、古代ギリシャやローマ、中国などでも馬を競わせる競技が行われていました。</p>
+                
+                <h3 class="h5 mt-4">近代競馬の誕生</h3>
+                <p>近代競馬は17〜18世紀のイギリスで誕生しました。サラブレッドという競走馬専用の品種が作られ、現在の競馬のルールや仕組みが整備されました。</p>
+                
+                <h3 class="h5 mt-4">日本競馬の歴史</h3>
+                <p>日本における競馬の歴史は明治時代に始まります。</p>
+                <ul>
+                    <li><strong>明治時代</strong>：西洋式競馬が導入され、軍馬の改良と育成が目的でした。</li>
+                    <li><strong>大正時代</strong>：競馬法が制定され、公営競馬として整備されました。</li>
+                    <li><strong>昭和時代</strong>：日本中央競馬会（JRA）が設立され、現在の中央競馬の礎が築かれました。</li>
+                    <li><strong>平成時代以降</strong>：国際化が進み、日本の競走馬が海外の大レースで活躍するようになりました。インターネット投票の導入など、馬券購入方法も多様化しました。</li>
+                </ul>
+                
+                <h3 class="h5 mt-4">日本競馬の発展</h3>
+                <p>日本の競馬は独自の発展を遂げ、世界的にも高いレベルを誇るようになりました。</p>
+                <ul>
+                    <li><strong>競走馬の質向上</strong>：国内での生産・育成技術の向上や海外からの優良種牡馬の導入により、日本産馬の質が向上しました。</li>
+                    <li><strong>国際化</strong>：日本調教馬が海外GIを勝利するなど、国際的な活躍が目立つようになりました。</li>
+                    <li><strong>ファン層の拡大</strong>：競馬場の設備改善やイベント開催、メディア展開などにより、幅広い層に支持されるようになりました。</li>
+                </ul>
+                
+                <h3 class="h5 mt-4">現代競馬の特徴</h3>
+                <p>現代の競馬は、伝統を守りながらも時代に合わせて進化しています。</p>
+                <ul>
+                    <li><strong>テクノロジーの活用</strong>：映像中継技術やデータ解析などの最新技術が活用されています。</li>
+                    <li><strong>国際交流</strong>：国際競走の開催や海外遠征の増加など、世界的な交流が盛んになっています。</li>
+                    <li><strong>情報の充実</strong>：インターネットやSNSの普及により、競馬情報へのアクセスが容易になっています。</li>
+                </ul>
+                <div class="alert alert-info">
+                    <p class="mb-0">競馬は長い歴史と伝統を持ちながらも、常に進化し続けるスポーツです。歴史を知ることで、より深く競馬を楽しむことができるでしょう。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 関連コンテンツ -->
+    <section class="mb-5">
+        <h2 class="border-bottom pb-2 mb-4">関連コンテンツ</h2>
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h3 class="card-title h5">競馬用語辞典</h3>
+                        <p class="card-text">競馬独特の用語や専門用語をわかりやすく解説しています。</p>
+                        <a href="/keiba_lab/basics/terms/" class="btn btn-primary">詳しく見る</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h3 class="card-title h5">馬券の種類と特徴</h3>
+                        <p class="card-text">様々な馬券の特徴や選び方について詳しく解説しています。</p>
+                        <a href="/keiba_lab/betting/types/" class="btn btn-primary">詳しく見る</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h3 class="card-title h5">競馬場ガイド</h3>
+                        <p class="card-text">全国の主要競馬場の特徴や施設について解説しています。</p>
+                        <a href="/keiba_lab/racecourse/jra/" class="btn btn-primary">詳しく見る</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %} 

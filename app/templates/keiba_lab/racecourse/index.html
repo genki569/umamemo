@@ -1,0 +1,243 @@
+{% extends "keiba_lab/layout.html" %}
+
+{% block title %}競馬場ガイド | 競馬場の特徴や施設を徹底解説【馬メモ】{% endblock %}
+
+{% block meta_description %}JRAの主要競馬場から地方競馬場まで、競馬場の特徴や施設、コース構造などを初心者にもわかりやすく解説。各競馬場の攻略法や予想のポイントも紹介しています。{% endblock %}
+
+{% block meta_keywords %}競馬場,JRA,中央競馬,地方競馬,東京競馬場,中山競馬場,阪神競馬場,京都競馬場,中京競馬場,コース特性{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+  <h1 class="mb-4">競馬場ガイド</h1>
+  
+  <p class="lead mb-4">
+    競馬の醍醐味を味わうためには、各競馬場の特徴を知ることが重要です。コース構造や距離、直線の長さ、坂の有無などの特性によって、レースの展開や得意とする馬のタイプが大きく変わります。このページでは、JRAの主要競馬場から地方競馬場まで、それぞれの特徴を詳しく解説します。
+  </p>
+
+  <div class="row mb-5">
+    <div class="col-md-4">
+      <div class="card mb-4 shadow-sm">
+        <div class="card-body">
+          <h2 class="card-title h5">JRA主要競馬場</h2>
+          <p class="card-text">中央競馬（JRA）の主要競馬場の特徴、施設、アクセス方法などを紹介します。</p>
+          <a href="{{ url_for('keiba_lab.racecourse_jra') }}" class="btn btn-primary">詳細を見る</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card mb-4 shadow-sm">
+        <div class="card-body">
+          <h2 class="card-title h5">地方競馬場ガイド</h2>
+          <p class="card-text">全国の地方競馬場の特徴やコース構造、特色ある施設などを紹介します。</p>
+          <a href="{{ url_for('keiba_lab.racecourse_local') }}" class="btn btn-primary">詳細を見る</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card mb-4 shadow-sm">
+        <div class="card-body">
+          <h2 class="card-title h5">競馬場施設ガイド</h2>
+          <p class="card-text">パドック、グランドスタンド、ウィナーズサークルなど競馬場の主要施設について解説します。</p>
+          <a href="{{ url_for('keiba_lab.racecourse_facilities') }}" class="btn btn-primary">詳細を見る</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="mb-3">JRA主要競馬場の特徴</h2>
+  
+  <div class="row mb-5">
+    <div class="col-lg-6">
+      <div class="card mb-4">
+        <div class="card-body">
+          <h3 class="card-title h5">東京競馬場</h3>
+          <p class="card-text">
+            日本最大の競馬場で、広大な敷地と最大収容人数を誇ります。
+            直線の長い2,000mの芝コースと内回り・外回りのダートコースを持ち、
+            直線が長く上り坂のある芝コースが特徴です。
+          </p>
+          <a href="{{ url_for('keiba_lab.racecourse_tokyo') }}" class="btn btn-outline-primary btn-sm">詳しく見る</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-6">
+      <div class="card mb-4">
+        <div class="card-body">
+          <h3 class="card-title h5">中山競馬場</h3>
+          <p class="card-text">
+            急坂のある独特のコース形状が特徴で、芝の内回り・外回りと直線の短いダートコースがあります。
+            最終コーナーからゴールまでの直線が短く、位置取りが重要な競馬場です。
+          </p>
+          <a href="{{ url_for('keiba_lab.racecourse_nakayama') }}" class="btn btn-outline-primary btn-sm">詳しく見る</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-6">
+      <div class="card mb-4">
+        <div class="card-body">
+          <h3 class="card-title h5">阪神競馬場</h3>
+          <p class="card-text">
+            直線が長く、最後の直線に緩やかな上り坂があるのが特徴です。
+            芝とダートのコースを持ち、特に芝コースは直線の長さを活かした差し・追い込み馬が活躍します。
+          </p>
+          <a href="{{ url_for('keiba_lab.racecourse_hanshin') }}" class="btn btn-outline-primary btn-sm">詳しく見る</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-6">
+      <div class="card mb-4">
+        <div class="card-body">
+          <h3 class="card-title h5">京都競馬場</h3>
+          <p class="card-text">
+            内回り・外回りの芝コースとダートコースを持ち、最後の直線が長く、
+            緩やかな下り坂から上り坂に変わる独特のコース形状が特徴です。
+            多様な距離のレースが行われます。
+          </p>
+          <a href="{{ url_for('keiba_lab.racecourse_kyoto') }}" class="btn btn-outline-primary btn-sm">詳しく見る</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mb-5">
+    <div class="col-lg-6">
+      <div class="card mb-4">
+        <div class="card-body">
+          <h3 class="card-title h5">中京競馬場</h3>
+          <p class="card-text">
+            2012年に大規模リニューアルされた近代的な競馬場。
+            広い走路幅と緩やかなカーブが特徴で、芝とダートのコースを持ちます。
+            比較的フラットなコース形状で公平なレース展開が期待できます。
+          </p>
+          <a href="{{ url_for('keiba_lab.racecourse_chukyo') }}" class="btn btn-outline-primary btn-sm">詳しく見る</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-6">
+      <div class="card mb-4">
+        <div class="card-body">
+          <h3 class="card-title h5">福島競馬場</h3>
+          <p class="card-text">
+            内回りの芝コースと急なカーブのあるダートコースが特徴です。
+            芝コースは直線が短く、最後の直線に上り坂があり、
+            前残りになりやすいコース特性を持っています。
+          </p>
+          <a href="{{ url_for('keiba_lab.racecourse_fukushima') }}" class="btn btn-outline-primary btn-sm">詳しく見る</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-6">
+      <div class="card mb-4">
+        <div class="card-body">
+          <h3 class="card-title h5">新潟競馬場</h3>
+          <p class="card-text">
+            日本唯一の直線1,000mコース「新潟ダッシュ」を有する競馬場。
+            芝コースは内回り・外回りと直線コースがあり、
+            ダートコースは急なカーブが特徴です。
+          </p>
+          <a href="{{ url_for('keiba_lab.racecourse_niigata') }}" class="btn btn-outline-primary btn-sm">詳しく見る</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-6">
+      <div class="card mb-4">
+        <div class="card-body">
+          <h3 class="card-title h5">函館競馬場</h3>
+          <p class="card-text">
+            北海道にある風光明媚な競馬場で、内回りの芝コースと
+            ダートコースを持ちます。小回りのきいたコース形状で、
+            夏季のみ開催される特色ある競馬場です。
+          </p>
+          <a href="{{ url_for('keiba_lab.racecourse_hakodate') }}" class="btn btn-outline-primary btn-sm">詳しく見る</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mb-5">
+    <div class="col-lg-6">
+      <div class="card mb-4">
+        <div class="card-body">
+          <h3 class="card-title h5">札幌競馬場</h3>
+          <p class="card-text">
+            北海道札幌市にある競馬場で、内回りの芝コースとダートコースを持ちます。
+            芝コースは平坦で直線が短く、ダートコースは急なカーブがあり
+            内枠有利の傾向があります。夏季のみ開催されます。
+          </p>
+          <a href="{{ url_for('keiba_lab.racecourse_sapporo') }}" class="btn btn-outline-primary btn-sm">詳しく見る</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-6">
+      <div class="card mb-4">
+        <div class="card-body">
+          <h3 class="card-title h5">小倉競馬場</h3>
+          <p class="card-text">
+            九州唯一のJRA競馬場で、芝の内回りコースとダートコースを持ちます。
+            小回りがきいたコンパクトなコース形状で、
+            夏と冬のシーズンに開催されます。
+          </p>
+          <a href="{{ url_for('keiba_lab.racecourse_kokura') }}" class="btn btn-outline-primary btn-sm">詳しく見る</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="mb-3">コース構造と特性</h2>
+  <p class="mb-4">
+    競馬場のコース構造は、レースの展開や結果に大きな影響を与えます。芝コースとダートコースの違い、直線の長さ、坂の有無などの特性によって、適性のある馬のタイプが変わってきます。
+  </p>
+  
+  <div class="row mb-5">
+    <div class="col-md-6">
+      <div class="card mb-4">
+        <div class="card-body">
+          <h3 class="card-title h5">芝コースの特徴</h3>
+          <p class="card-text">
+            芝コースは馬の脚への負担が少なく、スピードを活かしたレース展開になりやすいのが特徴です。
+            芝の状態（良馬場・稍重・重・不良）によっても適性が変わります。
+          </p>
+          <a href="{{ url_for('keiba_lab.course_turf') }}" class="btn btn-outline-primary btn-sm">詳しく見る</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card mb-4">
+        <div class="card-body">
+          <h3 class="card-title h5">ダートコースの特徴</h3>
+          <p class="card-text">
+            砂を敷き詰めたダートコースは、パワーのある馬が有利になる傾向があります。
+            馬場状態の影響を受けやすく、内外の差が出やすいのも特徴です。
+          </p>
+          <a href="{{ url_for('keiba_lab.course_dirt') }}" class="btn btn-outline-primary btn-sm">詳しく見る</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="mb-3">競馬場巡りのすすめ</h2>
+  <p class="mb-4">
+    競馬をより深く楽しむためには、実際に競馬場に足を運んでみることをおすすめします。各競馬場には独自の雰囲気や名物グルメがあり、レースを現地で観戦する臨場感は格別です。初めて競馬場に行く方のために、競馬場での過ごし方や注意点もご紹介します。
+  </p>
+  
+  <div class="card mb-5">
+    <div class="card-body">
+      <h3 class="card-title h5">初めての競馬場訪問ガイド</h3>
+      <p class="card-text">
+        競馬場の楽しみ方や施設の利用方法、持ち物や服装のアドバイスなど、
+        初めて競馬場を訪れる方に役立つ情報をまとめています。
+      </p>
+      <a href="{{ url_for('keiba_lab.racecourse_first_visit') }}" class="btn btn-outline-primary">詳しく見る</a>
+    </div>
+  </div>
+
+  <div class="alert alert-info" role="alert">
+    <h4 class="alert-heading">コラム：競馬場選びのポイント</h4>
+    <p>
+      競馬場によって特徴や雰囲気が大きく異なります。初心者の方は、アクセスの良さや施設の充実度を考慮して選ぶと良いでしょう。
+      東京・中山・阪神・京都の主要競馬場は施設が充実しており、初めての方でも楽しみやすいです。
+      また、G1レース開催日は混雑しますが、特別な雰囲気を味わえるのでおすすめです。
+    </p>
+  </div>
+</div>
+{% endblock %} 
