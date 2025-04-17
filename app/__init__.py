@@ -10,6 +10,9 @@ from logging.handlers import RotatingFileHandler
 import os
 from flask_mail import Mail
 from datetime import timedelta
+from flask_bootstrap import Bootstrap
+from flask_moment import Moment
+from flask_babel import Babel
 
 # 拡張機能のインスタンス作成
 db = SQLAlchemy()
@@ -18,6 +21,9 @@ login = LoginManager()
 login.login_view = 'login'
 csrf = CSRFProtect()
 mail = Mail()
+bootstrap = Bootstrap()
+moment = Moment()
+babel = Babel()
 # sess = Session()  # 不要なので無効化
 
 # アプリケーションのグローバルインスタンス
@@ -122,6 +128,9 @@ def create_app(config_name=None):
     migrate.init_app(app, db)
     login.init_app(app)
     mail.init_app(app)
+    bootstrap.init_app(app)
+    moment.init_app(app)
+    babel.init_app(app)
     
     # ログインメッセージを日本語に変更
     login.login_message = 'このページにアクセスするにはログインが必要です。'
@@ -199,6 +208,26 @@ def create_app(config_name=None):
     
     # zipフィルターを追加
     app.jinja_env.filters['zip'] = zip
+    
+    # Blueprintの登録
+    from app.errors import bp as errors_bp
+    app.register_blueprint(errors_bp)
+    
+    from app.auth import bp as auth_bp
+    app.register_blueprint(auth_bp, url_prefix='/auth')
+    
+    from app.main import bp as main_bp
+    app.register_blueprint(main_bp)
+    
+    from app.api import bp as api_bp
+    app.register_blueprint(api_bp, url_prefix='/api')
+    
+    from app.admin import bp as admin_bp
+    app.register_blueprint(admin_bp, url_prefix='/admin')
+    
+    # 競馬ラボのBlueprintを登録
+    from app.keiba_lab import bp as keiba_lab_bp
+    app.register_blueprint(keiba_lab_bp, url_prefix='/keiba-lab')
     
     return app
 

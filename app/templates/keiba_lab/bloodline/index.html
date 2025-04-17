@@ -1,16 +1,26 @@
-{% extends "keiba_lab/layout.html" %}
+{% extends "base.html" %}
 
 {% block title %}競馬の血統知識 | 血統による特徴と能力予測【馬メモ】{% endblock %}
 
 {% block meta_description %}競走馬の血統に関する基礎知識から実践的な活用法まで初心者にもわかりやすく解説。父系・母系の特徴、サンデーサイレンス系、ノーザンダンサー系、ミスタープロスペクター系などの主要血統や、距離適性との関係も詳しく紹介します。{% endblock %}
 
+{% block description %}競走馬の血統に関する基礎知識から実践的な活用法まで初心者にもわかりやすく解説。父系・母系の特徴、サンデーサイレンス系、ノーザンダンサー系、ミスタープロスペクター系などの主要血統や、距離適性との関係も詳しく紹介します。{% endblock %}
+
 {% block meta_keywords %}競馬,血統,血統表,種牡馬,父系,母系,サンデーサイレンス系,ノーザンダンサー系,ミスタープロスペクター系,ニックス,距離適性{% endblock %}
+
+{% block og_title %}競馬の血統知識 | 血統による特徴と能力予測【馬メモ】{% endblock %}
+{% block og_description %}競走馬の血統に関する基礎知識から実践的な活用法まで初心者にもわかりやすく解説。父系・母系の特徴、サンデーサイレンス系、ノーザンダンサー系、ミスタープロスペクター系などの主要血統や、距離適性との関係も詳しく紹介します。{% endblock %}
+{% block og_type %}article{% endblock %}
+
+{% block twitter_title %}競馬の血統知識 | 血統による特徴と能力予測【馬メモ】{% endblock %}
+{% block twitter_description %}競走馬の血統に関する基礎知識から実践的な活用法まで初心者にもわかりやすく解説。父系・母系の特徴、サンデーサイレンス系、ノーザンダンサー系、ミスタープロスペクター系などの主要血統や、距離適性との関係も詳しく紹介します。{% endblock %}
 
 {% block content %}
 <div class="container my-5">
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
-      <li class="breadcrumb-item"><a href="{{ url_for('keiba_lab.index') }}">競馬ラボ</a></li>
+      <li class="breadcrumb-item"><a href="/">ホーム</a></li>
+      <li class="breadcrumb-item"><a href="/keiba_lab/">競馬ラボ</a></li>
       <li class="breadcrumb-item active" aria-current="page">血統の知識</li>
     </ol>
   </nav>
@@ -32,9 +42,27 @@
     </p>
   </div>
 
+  <!-- 目次 -->
+  <div class="card mb-5 shadow-sm">
+    <div class="card-body">
+      <h2 class="h5 mb-3">目次</h2>
+      <ol class="mb-0">
+        <li><a href="#basics" class="text-decoration-none">血統表の読み方</a></li>
+        <li><a href="#roles" class="text-decoration-none">父系と母系の役割</a></li>
+        <li><a href="#sire-lines" class="text-decoration-none">主要な父系統</a></li>
+        <li><a href="#female-lines" class="text-decoration-none">主要な母系統（牝系）</a></li>
+        <li><a href="#course" class="text-decoration-none">血統とコース適性の関係</a></li>
+        <li><a href="#distance" class="text-decoration-none">血統と距離適性の関係</a></li>
+        <li><a href="#nicks" class="text-decoration-none">ニックス（相性の良い配合）</a></li>
+        <li><a href="#inbreeding" class="text-decoration-none">インブリード（近親交配）</a></li>
+        <li><a href="#sires" class="text-decoration-none">主要な種牡馬とその特徴</a></li>
+      </ol>
+    </div>
+  </div>
+
   <div class="row mb-5">
     <div class="col-lg-6 mb-4">
-      <div class="card h-100">
+      <div class="card h-100" id="basics">
         <div class="card-body">
           <h2 class="card-title h4">血統表の読み方</h2>
           <p class="card-text">
@@ -52,12 +80,12 @@
             初心者の方は、まずは父馬（種牡馬）の特徴を覚えることから始めるとよいでしょう。
             父馬によって、芝・ダートの適性や距離適性などの大まかな傾向がわかります。
           </p>
-          <a href="{{ url_for('keiba_lab.bloodline_basics') }}" class="btn btn-primary">詳しく見る</a>
+          <a href="/keiba_lab/bloodline/basics/" class="btn btn-primary">詳しく見る</a>
         </div>
       </div>
     </div>
     <div class="col-lg-6 mb-4">
-      <div class="card h-100">
+      <div class="card h-100" id="roles">
         <div class="card-body">
           <h2 class="card-title h4">父系と母系の役割</h2>
           <p class="card-text">
@@ -79,7 +107,7 @@
             優れた競走馬を生み出すためには、父系と母系の特性をうまく組み合わせることが重要です。
             相性の良い血統同士の配合は「ニックス」と呼ばれ、注目されています。
           </p>
-          <a href="{{ url_for('keiba_lab.bloodline_roles') }}" class="btn btn-primary">詳しく見る</a>
+          <a href="/keiba_lab/bloodline/roles/" class="btn btn-primary">詳しく見る</a>
         </div>
       </div>
     </div>
@@ -87,7 +115,7 @@
 
   <div class="row mb-5">
     <div class="col-lg-6 mb-4">
-      <div class="card h-100">
+      <div class="card h-100" id="sire-lines">
         <div class="card-body">
           <h2 class="card-title h4">主要な父系統</h2>
           <p class="card-text">
@@ -106,12 +134,12 @@
             これらの系統の特徴を理解することで、馬の適性や能力の傾向をある程度予測することができます。
             特に重要なのは、各系統の距離適性やコース適性の違いです。
           </p>
-          <a href="{{ url_for('keiba_lab.bloodline_sire_lines') }}" class="btn btn-primary">詳しく見る</a>
+          <a href="/keiba_lab/bloodline/sire-lines/" class="btn btn-primary">詳しく見る</a>
         </div>
       </div>
     </div>
     <div class="col-lg-6 mb-4">
-      <div class="card h-100">
+      <div class="card h-100" id="female-lines">
         <div class="card-body">
           <h2 class="card-title h4">主要な母系統（牝系）</h2>
           <p class="card-text">
@@ -129,7 +157,7 @@
             母系の分析は複雑ですが、特に重賞クラスのレースでは重要な要素となります。
             名牝から続く良血の牝系や、特定の牝系と相性の良い種牡馬の組み合わせに注目しましょう。
           </p>
-          <a href="{{ url_for('keiba_lab.bloodline_female_lines') }}" class="btn btn-primary">詳しく見る</a>
+          <a href="/keiba_lab/bloodline/female-lines/" class="btn btn-primary">詳しく見る</a>
         </div>
       </div>
     </div>
@@ -137,7 +165,7 @@
 
   <div class="row mb-5">
     <div class="col-lg-6 mb-4">
-      <div class="card h-100">
+      <div class="card h-100" id="course">
         <div class="card-body">
           <h2 class="card-title h4">血統とコース適性の関係</h2>
           <p class="card-text">
@@ -160,12 +188,12 @@
             コース適性を考慮する際は、父系だけでなく母系の影響も重要です。
             母父（BMS）にダート適性の高い血統を持つ馬は、父系が芝向きでもダートで活躍することがあります。
           </p>
-          <a href="{{ url_for('keiba_lab.bloodline_course') }}" class="btn btn-primary">詳しく見る</a>
+          <a href="/keiba_lab/bloodline/course/" class="btn btn-primary">詳しく見る</a>
         </div>
       </div>
     </div>
     <div class="col-lg-6 mb-4">
-      <div class="card h-100">
+      <div class="card h-100" id="distance">
         <div class="card-body">
           <h2 class="card-title h4">血統と距離適性の関係</h2>
           <p class="card-text">
@@ -191,7 +219,7 @@
             距離適性は父系と母系の両方から影響を受けます。父系がスピード型でも、
             母系にスタミナ要素が強ければ、中距離でも活躍できる場合があります。
           </p>
-          <a href="{{ url_for('keiba_lab.bloodline_distance') }}" class="btn btn-primary">詳しく見る</a>
+          <a href="/keiba_lab/bloodline/distance/" class="btn btn-primary">詳しく見る</a>
         </div>
       </div>
     </div>
@@ -199,7 +227,7 @@
 
   <div class="row mb-5">
     <div class="col-lg-6 mb-4">
-      <div class="card h-100">
+      <div class="card h-100" id="nicks">
         <div class="card-body">
           <h2 class="card-title h4">ニックス（相性の良い配合）</h2>
           <p class="card-text">
@@ -217,12 +245,12 @@
             血統を分析する上での重要な視点となります。特に高額な競走馬の購入や
             馬主として繁殖牝馬の配合を考える際に参考になります。
           </p>
-          <a href="{{ url_for('keiba_lab.bloodline_nicks') }}" class="btn btn-primary">詳しく見る</a>
+          <a href="/keiba_lab/bloodline/nicks/" class="btn btn-primary">詳しく見る</a>
         </div>
       </div>
     </div>
     <div class="col-lg-6 mb-4">
-      <div class="card h-100">
+      <div class="card h-100" id="inbreeding">
         <div class="card-body">
           <h2 class="card-title h4">インブリード（近親交配）</h2>
           <p class="card-text">
@@ -244,13 +272,13 @@
             インブリードは3×4（3代前と4代前に同じ祖先）や4×5などと表記されます。
             血統分析の際は、インブリードの対象となっている祖先の特徴に注目しましょう。
           </p>
-          <a href="{{ url_for('keiba_lab.bloodline_inbreeding') }}" class="btn btn-primary">詳しく見る</a>
+          <a href="/keiba_lab/bloodline/inbreeding/" class="btn btn-primary">詳しく見る</a>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="card mb-5">
+  <div class="card mb-5" id="sires">
     <div class="card-body">
       <h2 class="card-title h4">主要な種牡馬とその特徴</h2>
       <p>
@@ -277,7 +305,7 @@
           </ul>
         </div>
       </div>
-      <a href="{{ url_for('keiba_lab.bloodline_sires') }}" class="btn btn-primary mt-3">主要種牡馬一覧を見る</a>
+      <a href="/keiba_lab/bloodline/sires/" class="btn btn-primary mt-3">主要種牡馬一覧を見る</a>
     </div>
   </div>
 
@@ -298,7 +326,7 @@
     </p>
   </div>
 
-  <div class="card">
+  <div class="card mb-5">
     <div class="card-body">
       <h2 class="card-title h4">まとめ：血統知識の活かし方</h2>
       <p>
@@ -323,29 +351,29 @@
     <h2 class="h4 mb-4">関連記事</h2>
     <div class="row">
       <div class="col-md-4 mb-4">
-        <div class="card">
+        <div class="card h-100">
           <div class="card-body">
             <h3 class="card-title h5">血統から見る重賞レースの傾向</h3>
             <p class="card-text">主要重賞レースで活躍しやすい血統パターンを解説します。</p>
-            <a href="{{ url_for('keiba_lab.bloodline_stakes_races') }}" class="btn btn-outline-primary btn-sm">記事を読む</a>
+            <a href="/keiba_lab/bloodline/stakes-races/" class="btn btn-outline-primary btn-sm">記事を読む</a>
           </div>
         </div>
       </div>
       <div class="col-md-4 mb-4">
-        <div class="card">
+        <div class="card h-100">
           <div class="card-body">
             <h3 class="card-title h5">新種牡馬の評価方法</h3>
             <p class="card-text">デビューしたばかりの種牡馬の能力を予測する方法を紹介します。</p>
-            <a href="{{ url_for('keiba_lab.bloodline_new_sires') }}" class="btn btn-outline-primary btn-sm">記事を読む</a>
+            <a href="/keiba_lab/bloodline/new-sires/" class="btn btn-outline-primary btn-sm">記事を読む</a>
           </div>
         </div>
       </div>
       <div class="col-md-4 mb-4">
-        <div class="card">
+        <div class="card h-100">
           <div class="card-body">
             <h3 class="card-title h5">海外血統と日本の競馬</h3>
             <p class="card-text">海外の血統が日本競馬に与える影響と今後の展望について解説します。</p>
-            <a href="{{ url_for('keiba_lab.bloodline_international') }}" class="btn btn-outline-primary btn-sm">記事を読む</a>
+            <a href="/keiba_lab/bloodline/international/" class="btn btn-outline-primary btn-sm">記事を読む</a>
           </div>
         </div>
       </div>

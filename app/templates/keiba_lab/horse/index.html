@@ -4,7 +4,7 @@
 
 {% block meta_description %}競走馬の見方や馬体チェックのポイントを初心者向けに解説。パドックでの観察方法や馬体の良し悪しの見分け方、毛艶や筋肉の状態、歩様のチェック方法など、実践的な知識を紹介します。{% endblock %}
 
-{% block meta_keywords %}競走馬,馬体,パドック観察,馬体チェック,歩様,毛艶,筋肉,馬の状態,競馬予想,馬の見方{% endblock %}
+{% block meta_keywords %}競走馬,馬体,パドック観察,馬体チェック,歩様,毛艶,筋肉,馬の状態,競馬予想,馬の見方,馬の気配{% endblock %}
 
 {% block content %}
 <div class="container my-5">
@@ -203,6 +203,75 @@
     </div>
   </div>
 
+  <div class="row mb-5">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-primary text-white">
+          <h2 class="card-title h4 mb-0">馬の気配分析</h2>
+        </div>
+        <div class="card-body">
+          <p class="card-text">
+            競走馬からは「気配」と呼ばれる独特のオーラや雰囲気が発せられています。
+            この気配を読み取ることができれば、その日の調子や勝負度を判断する強力な武器になります。
+          </p>
+          
+          <div class="row">
+            <div class="col-md-6">
+              <h3 class="h6">好気配の特徴</h3>
+              <ul>
+                <li><strong>オーラ（存在感）</strong>：周囲を圧倒するような存在感がある</li>
+                <li><strong>活力感</strong>：生き生きとしていて、エネルギーに満ちている</li>
+                <li><strong>気合い</strong>：集中力があり、体が引き締まって見える</li>
+                <li><strong>視線</strong>：目が輝いていて、先を見据えた眼差し</li>
+                <li><strong>雰囲気の変化</strong>：普段より鋭さや迫力が増している</li>
+              </ul>
+            </div>
+            <div class="col-md-6">
+              <h3 class="h6">悪気配の特徴</h3>
+              <ul>
+                <li><strong>無気力</strong>：全体的にパワーや意欲が感じられない</li>
+                <li><strong>緊張感のなさ</strong>：レースに向けての緊張感や集中力が欠けている</li>
+                <li><strong>気が散っている</strong>：周囲に気を取られ、レースに集中できていない</li>
+                <li><strong>不安感</strong>：落ち着きがなく、何かに怯えているような様子</li>
+                <li><strong>疲労感</strong>：全体的に疲れた印象を受ける</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="alert alert-success mt-3">
+            <h4 class="h6">気配の変化を捉える</h4>
+            <p class="mb-0">
+              馬の気配は、特に以下のタイミングで変化することがあります：
+            </p>
+            <ul class="mb-0">
+              <li>パドックから馬場入場時：闘争心に火がつく馬が多い</li>
+              <li>馬場で駆け足をする瞬間：本来の力強さが現れる</li>
+              <li>ゲート前：緊張感が最高潮に達する場面</li>
+              <li>発走直後：集中力と意欲が最も現れる瞬間</li>
+            </ul>
+          </div>
+
+          <h3 class="h6 mt-4">気配の見方を磨くコツ</h3>
+          <p>
+            気配の読み取りは、直感的な要素も大きく、経験を積むことが重要です。
+            以下のようなポイントを意識して観察を続けてみましょう。
+          </p>
+          <ol>
+            <li><strong>同じ馬を継続的に観察する</strong>：その馬特有の気配の違いがわかるようになる</li>
+            <li><strong>複数の馬を比較する</strong>：パドックの他馬と比べて際立つ気配に注目する</li>
+            <li><strong>総合的に判断する</strong>：馬体や歩様などと合わせて総合的に評価する</li>
+            <li><strong>自分の感覚を信じる</strong>：数値化できない感覚こそが気配読みの本質</li>
+          </ol>
+          <p>
+            気配は主観的な要素も多いですが、競馬の達人たちは微妙な違いを捉えて予想に活かしています。
+            何度も観察するうちに、「この馬は今日走りそうだ」という直感が磨かれていくでしょう。
+          </p>
+          <a href="{{ url_for('keiba_lab.horse_aura') }}" class="btn btn-primary mt-2">詳しく見る</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="card mb-5">
     <div class="card-body">
       <h2 class="card-title h4">レース中の馬の見方</h2>
@@ -316,6 +385,92 @@
           </div>
         </div>
       </div>
+    </div>
+  </div>
+
+  <div class="card bg-light mb-4">
+    <div class="card-body">
+      <h3 class="h5 mb-3">競走馬の見方の基本</h3>
+      <div class="list-group">
+        <a href="{{ url_for('keiba_lab.horse_check') }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+          馬体の見方と調教の評価方法
+          <i class="fas fa-chevron-right text-muted"></i>
+        </a>
+        <a href="{{ url_for('keiba_lab.horse_condition') }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+          馬の調子を見極めるポイント
+          <i class="fas fa-chevron-right text-muted"></i>
+        </a>
+        <a href="{{ url_for('keiba_lab.horse_growth') }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+          馬の成長と適正レース
+          <i class="fas fa-chevron-right text-muted"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- サイトマップリンク -->
+  <div class="card border-primary mb-4">
+    <div class="card-body">
+      <div class="d-flex align-items-center">
+        <div class="flex-shrink-0 me-3">
+          <i class="fas fa-sitemap fa-2x text-primary"></i>
+        </div>
+        <div class="flex-grow-1">
+          <h3 class="h5 mb-1">競馬ラボコンテンツマップ</h3>
+          <p class="mb-2">競馬の基礎から予想法まで、全コンテンツを一覧でチェック</p>
+          <a href="{{ url_for('keiba_lab.guide') }}" class="btn btn-sm btn-outline-primary">
+            コンテンツ一覧を見る <i class="fas fa-arrow-right ms-1"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="h3 mb-4">競走馬に関する専門知識</h2>
+
+  <div class="card mb-5">
+    <div class="card-body">
+      <h2 class="card-title h4">レース中の馬の見方</h2>
+      <p>
+        レース中の馬の動きや状態を観察することで、その馬の特徴や能力をより深く理解することができます。
+      </p>
+      <div class="row">
+        <div class="col-md-6">
+          <h3 class="h6">スタート時のチェックポイント</h3>
+          <ul>
+            <li>ゲートに入る際の様子（暴れる、おとなしいなど）</li>
+            <li>発走のタイミング（飛び出しが良いか悪いか）</li>
+            <li>スタート直後の伸び（加速力があるか）</li>
+          </ul>
+        </div>
+        <div class="col-md-6">
+          <h3 class="h6">レース中盤のチェックポイント</h3>
+          <ul>
+            <li>馬の走り方（力強いか、スムーズか）</li>
+            <li>ポジション取り（内・外どちらを好むか）</li>
+            <li>他馬との競り合い（気が散るか、集中力があるか）</li>
+          </ul>
+        </div>
+      </div>
+      <div class="row mt-3">
+        <div class="col-md-6">
+          <h3 class="h6">最終コーナーからのチェックポイント</h3>
+          <ul>
+            <li>手応えの良し悪し（騎手の動きに注目）</li>
+            <li>直線での伸び（末脚があるか）</li>
+            <li>最後まで粘るかどうか（根性があるか）</li>
+          </ul>
+        </div>
+        <div class="col-md-6">
+          <h3 class="h6">レース後のチェックポイント</h3>
+          <ul>
+            <li>疲労度（息の荒さ、歩き方）</li>
+            <li>汗の量（過度の発汗は調子が悪いサイン）</li>
+            <li>馬の表情（充実感があるか、疲れ切っているか）</li>
+          </ul>
+        </div>
+      </div>
+      <a href="{{ url_for('keiba_lab.horse_racing') }}" class="btn btn-primary mt-3">詳しく見る</a>
     </div>
   </div>
 </div>

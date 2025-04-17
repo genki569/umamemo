@@ -1,16 +1,26 @@
-{% extends "keiba_lab/layout.html" %}
+{% extends "base.html" %}
 
 {% block title %}競馬予想の基本理論 | 初心者でも使える予想方法【馬メモ】{% endblock %}
 
 {% block meta_description %}競馬予想の基本的な考え方や分析方法を初心者向けに解説。脚質、血統、オッズ、調教、馬体、コース適性など、予想に必要な要素を網羅的に紹介します。{% endblock %}
 
+{% block description %}競馬予想の基本的な考え方や分析方法を初心者向けに解説。脚質、血統、オッズ、調教、馬体、コース適性など、予想に必要な要素を網羅的に紹介します。{% endblock %}
+
 {% block meta_keywords %}競馬予想,競馬予想理論,初心者向け競馬予想,脚質分析,血統分析,オッズ分析,調教分析,馬体重,コース適性,タイム分析{% endblock %}
+
+{% block og_title %}競馬予想の基本理論 | 初心者でも使える予想方法【馬メモ】{% endblock %}
+{% block og_description %}競馬予想の基本的な考え方や分析方法を初心者向けに解説。脚質、血統、オッズ、調教、馬体、コース適性など、予想に必要な要素を網羅的に紹介します。{% endblock %}
+{% block og_type %}article{% endblock %}
+
+{% block twitter_title %}競馬予想の基本理論 | 初心者でも使える予想方法【馬メモ】{% endblock %}
+{% block twitter_description %}競馬予想の基本的な考え方や分析方法を初心者向けに解説。脚質、血統、オッズ、調教、馬体、コース適性など、予想に必要な要素を網羅的に紹介します。{% endblock %}
 
 {% block content %}
 <div class="container my-5">
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
-      <li class="breadcrumb-item"><a href="{{ url_for('keiba_lab.index') }}">競馬ラボ</a></li>
+      <li class="breadcrumb-item"><a href="/">ホーム</a></li>
+      <li class="breadcrumb-item"><a href="/keiba_lab/">競馬ラボ</a></li>
       <li class="breadcrumb-item active" aria-current="page">予想の基本理論</li>
     </ol>
   </nav>
@@ -31,9 +41,27 @@
     </p>
   </div>
 
+  <!-- 目次 -->
+  <div class="card mb-5 shadow-sm">
+    <div class="card-body">
+      <h2 class="h5 mb-3">目次</h2>
+      <ol class="mb-0">
+        <li><a href="#basic-approach" class="text-decoration-none">予想の基本アプローチ</a></li>
+        <li><a href="#running-style" class="text-decoration-none">脚質分析の基本</a></li>
+        <li><a href="#bloodline" class="text-decoration-none">血統分析の基本</a></li>
+        <li><a href="#odds" class="text-decoration-none">オッズ分析の基本</a></li>
+        <li><a href="#training" class="text-decoration-none">調教分析の基本</a></li>
+        <li><a href="#horse-condition" class="text-decoration-none">馬体分析の基本</a></li>
+        <li><a href="#course" class="text-decoration-none">コース適性分析</a></li>
+        <li><a href="#time" class="text-decoration-none">タイム分析の基本</a></li>
+        <li><a href="#step-up" class="text-decoration-none">初心者向け予想のステップアップ方法</a></li>
+      </ol>
+    </div>
+  </div>
+
   <div class="row mb-5">
     <div class="col-lg-6 mb-4">
-      <div class="card h-100">
+      <div class="card h-100" id="basic-approach">
         <div class="card-body">
           <h2 class="card-title h4">予想の基本アプローチ</h2>
           <p class="card-text">
@@ -56,12 +84,12 @@
           <p>
             初心者の方は、まずはどちらか一方に偏るのではなく、バランス良く両方の視点を取り入れることをおすすめします。
           </p>
-          <a href="{{ url_for('keiba_lab.prediction_approach') }}" class="btn btn-primary">詳しく見る</a>
+          <a href="/keiba_lab/prediction/approach/" class="btn btn-primary">詳しく見る</a>
         </div>
       </div>
     </div>
     <div class="col-lg-6 mb-4">
-      <div class="card h-100">
+      <div class="card h-100" id="running-style">
         <div class="card-body">
           <h2 class="card-title h4">脚質分析の基本</h2>
           <p class="card-text">
@@ -78,7 +106,7 @@
             レースの距離や馬場状態、出走馬の脚質構成によって、有利になる脚質は変わります。
             脚質を理解することで、レースの流れをイメージしやすくなります。
           </p>
-          <a href="{{ url_for('keiba_lab.prediction_running_style') }}" class="btn btn-primary">詳しく見る</a>
+          <a href="/keiba_lab/prediction/running-style/" class="btn btn-primary">詳しく見る</a>
         </div>
       </div>
     </div>
@@ -86,7 +114,7 @@
 
   <div class="row mb-5">
     <div class="col-lg-6 mb-4">
-      <div class="card h-100">
+      <div class="card h-100" id="bloodline">
         <div class="card-body">
           <h2 class="card-title h4">血統分析の基本</h2>
           <p class="card-text">
@@ -104,12 +132,12 @@
             初心者の方は、まずは有名な種牡馬（父馬）の特徴を覚えることから始めるとよいでしょう。
             それぞれの種牡馬には得意な距離やコースの傾向があります。
           </p>
-          <a href="{{ url_for('keiba_lab.prediction_bloodline') }}" class="btn btn-primary">詳しく見る</a>
+          <a href="/keiba_lab/prediction/bloodline/" class="btn btn-primary">詳しく見る</a>
         </div>
       </div>
     </div>
     <div class="col-lg-6 mb-4">
-      <div class="card h-100">
+      <div class="card h-100" id="odds">
         <div class="card-body">
           <h2 class="card-title h4">オッズ分析の基本</h2>
           <p class="card-text">
@@ -126,7 +154,7 @@
             初心者の方は、まずは単勝オッズの動きを観察することから始めてみましょう。
             大きく下がっている馬や、不自然に上がっている馬には何かしらの理由があるはずです。
           </p>
-          <a href="{{ url_for('keiba_lab.prediction_odds') }}" class="btn btn-primary">詳しく見る</a>
+          <a href="/keiba_lab/prediction/odds/" class="btn btn-primary">詳しく見る</a>
         </div>
       </div>
     </div>
@@ -134,7 +162,7 @@
 
   <div class="row mb-5">
     <div class="col-lg-6 mb-4">
-      <div class="card h-100">
+      <div class="card h-100" id="training">
         <div class="card-body">
           <h2 class="card-title h4">調教分析の基本</h2>
           <p class="card-text">
@@ -152,12 +180,12 @@
             初心者の方は、スポーツ新聞やネット上の調教評価を参考にするところから始めるとよいでしょう。
             徐々に自分で評価できるようになっていきましょう。
           </p>
-          <a href="{{ url_for('keiba_lab.prediction_training') }}" class="btn btn-primary">詳しく見る</a>
+          <a href="/keiba_lab/prediction/training/" class="btn btn-primary">詳しく見る</a>
         </div>
       </div>
     </div>
     <div class="col-lg-6 mb-4">
-      <div class="card h-100">
+      <div class="card h-100" id="horse-condition">
         <div class="card-body">
           <h2 class="card-title h4">馬体分析の基本</h2>
           <p class="card-text">
@@ -175,7 +203,7 @@
             初心者の方は、まずは馬体重の増減に注目してみましょう。
             前走から大きく減った馬や増えた馬には、何かしらの理由があるはずです。
           </p>
-          <a href="{{ url_for('keiba_lab.prediction_horse_condition') }}" class="btn btn-primary">詳しく見る</a>
+          <a href="/keiba_lab/prediction/horse-condition/" class="btn btn-primary">詳しく見る</a>
         </div>
       </div>
     </div>
@@ -183,7 +211,7 @@
 
   <div class="row mb-5">
     <div class="col-lg-6 mb-4">
-      <div class="card h-100">
+      <div class="card h-100" id="course">
         <div class="card-body">
           <h2 class="card-title h4">コース適性分析</h2>
           <p class="card-text">
@@ -201,12 +229,12 @@
             例えば、東京競馬場は直線が長く、末脚の長い馬が有利になります。
             一方、京都競馬場は最後に急坂があり、スタミナのある馬が良い成績を残しやすい傾向にあります。
           </p>
-          <a href="{{ url_for('keiba_lab.prediction_course') }}" class="btn btn-primary">詳しく見る</a>
+          <a href="/keiba_lab/prediction/course/" class="btn btn-primary">詳しく見る</a>
         </div>
       </div>
     </div>
     <div class="col-lg-6 mb-4">
-      <div class="card h-100">
+      <div class="card h-100" id="time">
         <div class="card-body">
           <h2 class="card-title h4">タイム分析の基本</h2>
           <p class="card-text">
@@ -223,13 +251,13 @@
             初心者の方は、まずは「上がり3ハロン」（ゴール前の約600m）のタイムに注目するとよいでしょう。
             これは馬の瞬発力や伸びを示す重要な指標となります。
           </p>
-          <a href="{{ url_for('keiba_lab.prediction_time') }}" class="btn btn-primary">詳しく見る</a>
+          <a href="/keiba_lab/prediction/time/" class="btn btn-primary">詳しく見る</a>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="card mb-5">
+  <div class="card mb-5" id="step-up">
     <div class="card-body">
       <h2 class="card-title h4">初心者向け予想のステップアップ方法</h2>
       <p>
@@ -271,7 +299,7 @@
     </ul>
   </div>
 
-  <div class="card">
+  <div class="card mb-5">
     <div class="card-body">
       <h2 class="card-title h4">まとめ：バランスの取れた予想を心がける</h2>
       <p>
@@ -290,33 +318,73 @@
     <h2 class="h4 mb-4">関連記事</h2>
     <div class="row">
       <div class="col-md-4 mb-4">
-        <div class="card">
+        <div class="card h-100">
           <div class="card-body">
             <h3 class="card-title h5">初心者のための馬券購入ガイド</h3>
             <p class="card-text">初めての方でも安心して馬券を購入できるよう、基本的な買い方を解説します。</p>
-            <a href="{{ url_for('keiba_lab.betting_how_to_buy') }}" class="btn btn-outline-primary btn-sm">記事を読む</a>
+            <a href="/keiba_lab/betting/how-to-buy/" class="btn btn-outline-primary btn-sm">記事を読む</a>
           </div>
         </div>
       </div>
       <div class="col-md-4 mb-4">
-        <div class="card">
+        <div class="card h-100">
           <div class="card-body">
             <h3 class="card-title h5">競馬新聞の読み方ガイド</h3>
             <p class="card-text">競馬新聞の見方や重要な指標の読み解き方について解説します。</p>
-            <a href="{{ url_for('keiba_lab.basics_newspaper') }}" class="btn btn-outline-primary btn-sm">記事を読む</a>
+            <a href="/keiba_lab/basics/newspaper/" class="btn btn-outline-primary btn-sm">記事を読む</a>
           </div>
         </div>
       </div>
       <div class="col-md-4 mb-4">
-        <div class="card">
+        <div class="card h-100">
           <div class="card-body">
             <h3 class="card-title h5">勝率アップのための資金管理術</h3>
             <p class="card-text">長く競馬を楽しむために必要な資金管理の方法について解説します。</p>
-            <a href="{{ url_for('keiba_lab.betting_money_management') }}" class="btn btn-outline-primary btn-sm">記事を読む</a>
+            <a href="/keiba_lab/betting/money-management/" class="btn btn-outline-primary btn-sm">記事を読む</a>
           </div>
         </div>
       </div>
     </div>
   </div>
+
+  <div class="card bg-light mb-4">
+    <div class="card-body">
+      <h3 class="h5 mb-3">予想の基礎を学ぶ</h3>
+      <div class="list-group">
+        <a href="{{ url_for('keiba_lab.prediction_basics') }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+          競馬予想の基本手順
+          <i class="fas fa-chevron-right text-muted"></i>
+        </a>
+        <a href="{{ url_for('keiba_lab.prediction_factors') }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+          予想に必要な要素
+          <i class="fas fa-chevron-right text-muted"></i>
+        </a>
+        <a href="{{ url_for('keiba_lab.prediction_tools') }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+          予想ツールの使い方
+          <i class="fas fa-chevron-right text-muted"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- サイトマップリンク -->
+  <div class="card border-primary mb-4">
+    <div class="card-body">
+      <div class="d-flex align-items-center">
+        <div class="flex-shrink-0 me-3">
+          <i class="fas fa-sitemap fa-2x text-primary"></i>
+        </div>
+        <div class="flex-grow-1">
+          <h3 class="h5 mb-1">競馬ラボコンテンツマップ</h3>
+          <p class="mb-2">競馬の基礎から予想法まで、全コンテンツを一覧でチェック</p>
+          <a href="{{ url_for('keiba_lab.guide') }}" class="btn btn-sm btn-outline-primary">
+            コンテンツ一覧を見る <i class="fas fa-arrow-right ms-1"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="h3 mb-4">予想に役立つ情報源</h2>
 </div>
 {% endblock %} 

@@ -1,0 +1,415 @@
+{% extends "base.html" %}
+
+{% block title %}競馬ラボ サイトマップ | すべてのコンテンツ一覧【馬メモ】{% endblock %}
+
+{% block meta_description %}競馬ラボのすべてのコンテンツを一覧表示するサイトマップです。競馬基礎知識、競馬場ガイド、予想理論、馬券知識、血統知識など、カテゴリー別に整理されたコンテンツにアクセスできます。{% endblock %}
+
+{% block meta_keywords %}競馬,サイトマップ,目次,競馬ラボ,競馬知識,馬券,予想法,血統,競馬場,初心者,馬メモ{% endblock %}
+
+{% block og_title %}競馬ラボ サイトマップ | すべてのコンテンツ一覧【馬メモ】{% endblock %}
+{% block og_description %}競馬ラボのすべてのコンテンツを一覧表示するサイトマップです。競馬基礎知識、競馬場ガイド、予想理論、馬券知識、血統知識など、カテゴリー別に整理されたコンテンツにアクセスできます。{% endblock %}
+{% block og_type %}article{% endblock %}
+
+{% block twitter_title %}競馬ラボ サイトマップ | すべてのコンテンツ一覧【馬メモ】{% endblock %}
+{% block twitter_description %}競馬ラボのすべてのコンテンツを一覧表示するサイトマップです。競馬基礎知識、競馬場ガイド、予想理論、馬券知識、血統知識など、カテゴリー別に整理されたコンテンツにアクセスできます。{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- パンくずリスト -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">ホーム</a></li>
+            <li class="breadcrumb-item"><a href="/keiba_lab/">競馬ラボ</a></li>
+            <li class="breadcrumb-item active" aria-current="page">サイトマップ</li>
+        </ol>
+    </nav>
+
+    <h1 class="mb-4">競馬ラボ コンテンツ一覧</h1>
+    
+    <div class="row mb-4">
+        <div class="col-lg-8">
+            <p class="lead">競馬ラボに掲載されているすべてのコンテンツを一覧で確認できます。お探しの情報に素早くアクセスするためにご活用ください。</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- 競馬基礎知識 -->
+            <section class="mb-5">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="p-2 rounded-circle me-3" style="background-color: rgba(79, 70, 229, 0.1);">
+                        <i class="fas fa-book text-primary"></i>
+                    </div>
+                    <h2 class="h3 mb-0">競馬基礎知識</h2>
+                </div>
+                <div class="card shadow-sm border-0">
+                    <div class="card-body">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item bg-transparent px-0">
+                                <a href="{{ url_for('keiba_lab.basics_rules') }}" class="text-decoration-none">
+                                    <i class="fas fa-chevron-right text-primary me-2"></i>競馬のルールと仕組み
+                                </a>
+                            </li>
+                            <li class="list-group-item bg-transparent px-0">
+                                <a href="{{ url_for('keiba_lab.basics_terms') }}" class="text-decoration-none">
+                                    <i class="fas fa-chevron-right text-primary me-2"></i>競馬用語辞典
+                                </a>
+                            </li>
+                            <li class="list-group-item bg-transparent px-0">
+                                <a href="{{ url_for('keiba_lab.basics_enjoy') }}" class="text-decoration-none">
+                                    <i class="fas fa-chevron-right text-primary me-2"></i>競馬の楽しみ方
+                                </a>
+                            </li>
+                            <li class="list-group-item bg-transparent px-0">
+                                <a href="{{ url_for('keiba_lab.basics_calendar') }}" class="text-decoration-none">
+                                    <i class="fas fa-chevron-right text-primary me-2"></i>競馬カレンダーの仕組み
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 競馬場ガイド -->
+            <section class="mb-5">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="p-2 rounded-circle me-3" style="background-color: rgba(79, 70, 229, 0.1);">
+                        <i class="fas fa-map-marked-alt text-primary"></i>
+                    </div>
+                    <h2 class="h3 mb-0">競馬場ガイド</h2>
+                </div>
+                <div class="card shadow-sm border-0">
+                    <div class="card-body">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item bg-transparent px-0">
+                                <a href="{{ url_for('keiba_lab.racecourse_jra') }}" class="text-decoration-none">
+                                    <i class="fas fa-chevron-right text-primary me-2"></i>JRA主要競馬場ガイド
+                                </a>
+                            </li>
+                            <li class="list-group-item bg-transparent px-0">
+                                <a href="{{ url_for('keiba_lab.racecourse_local') }}" class="text-decoration-none">
+                                    <i class="fas fa-chevron-right text-primary me-2"></i>地方競馬場ガイド
+                                </a>
+                            </li>
+                            <li class="list-group-item bg-transparent px-0">
+                                <a href="{{ url_for('keiba_lab.racecourse_features') }}" class="text-decoration-none">
+                                    <i class="fas fa-chevron-right text-primary me-2"></i>競馬場の設備と特徴
+                                </a>
+                            </li>
+                            <li class="list-group-item bg-transparent px-0">
+                                <a href="{{ url_for('keiba_lab.racecourse_characteristics') }}" class="text-decoration-none">
+                                    <i class="fas fa-chevron-right text-primary me-2"></i>コースの構造と特性
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 予想の基本理論 -->
+            <section class="mb-5">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="p-2 rounded-circle me-3" style="background-color: rgba(79, 70, 229, 0.1);">
+                        <i class="fas fa-chart-line text-primary"></i>
+                    </div>
+                    <h2 class="h3 mb-0">予想の基本理論</h2>
+                </div>
+                <div class="card shadow-sm border-0">
+                    <div class="card-body">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item bg-transparent px-0">
+                                <a href="{{ url_for('keiba_lab.prediction_approach') }}" class="text-decoration-none">
+                                    <i class="fas fa-chevron-right text-primary me-2"></i>予想の基本アプローチ
+                                </a>
+                            </li>
+                            <li class="list-group-item bg-transparent px-0">
+                                <a href="{{ url_for('keiba_lab.prediction_data_analysis') }}" class="text-decoration-none">
+                                    <i class="fas fa-chevron-right text-primary me-2"></i>データ分析の基礎
+                                </a>
+                            </li>
+                            <li class="list-group-item bg-transparent px-0">
+                                <a href="{{ url_for('keiba_lab.prediction_running_style') }}" class="text-decoration-none">
+                                    <i class="fas fa-chevron-right text-primary me-2"></i>脚質データの活用法
+                                </a>
+                            </li>
+                            <li class="list-group-item bg-transparent px-0">
+                                <a href="{{ url_for('keiba_lab.prediction_handicap') }}" class="text-decoration-none">
+                                    <i class="fas fa-chevron-right text-primary me-2"></i>ハンデ戦の予想法
+                                </a>
+                            </li>
+                            <li class="list-group-item bg-transparent px-0">
+                                <a href="{{ url_for('keiba_lab.prediction_pro_tips') }}" class="text-decoration-none">
+                                    <i class="fas fa-chevron-right text-primary me-2"></i>プロが教える馬券の選び方
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 馬券の知識 -->
+            <section class="mb-5">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="p-2 rounded-circle me-3" style="background-color: rgba(79, 70, 229, 0.1);">
+                        <i class="fas fa-ticket-alt text-primary"></i>
+                    </div>
+                    <h2 class="h3 mb-0">馬券の知識</h2>
+                </div>
+                <div class="card shadow-sm border-0">
+                    <div class="card-body">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item bg-transparent px-0">
+                                <a href="{{ url_for('keiba_lab.betting_types') }}" class="text-decoration-none">
+                                    <i class="fas fa-chevron-right text-primary me-2"></i>馬券の種類と特徴
+                                </a>
+                            </li>
+                            <li class="list-group-item bg-transparent px-0">
+                                <a href="{{ url_for('keiba_lab.betting_how_to_buy') }}" class="text-decoration-none">
+                                    <i class="fas fa-chevron-right text-primary me-2"></i>馬券の買い方
+                                </a>
+                            </li>
+                            <li class="list-group-item bg-transparent px-0">
+                                <a href="{{ url_for('keiba_lab.betting_structure') }}" class="text-decoration-none">
+                                    <i class="fas fa-chevron-right text-primary me-2"></i>馬券の組み立て方
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 血統の知識 -->
+            <section class="mb-5">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="p-2 rounded-circle me-3" style="background-color: rgba(79, 70, 229, 0.1);">
+                        <i class="fas fa-dna text-primary"></i>
+                    </div>
+                    <h2 class="h3 mb-0">血統の知識</h2>
+                </div>
+                <div class="card shadow-sm border-0">
+                    <div class="card-body">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item bg-transparent px-0">
+                                <a href="{{ url_for('keiba_lab.bloodline_basics') }}" class="text-decoration-none">
+                                    <i class="fas fa-chevron-right text-primary me-2"></i>競走馬の血統基礎
+                                </a>
+                            </li>
+                            <li class="list-group-item bg-transparent px-0">
+                                <a href="{{ url_for('keiba_lab.bloodline_roles') }}" class="text-decoration-none">
+                                    <i class="fas fa-chevron-right text-primary me-2"></i>父系・母系の役割
+                                </a>
+                            </li>
+                            <li class="list-group-item bg-transparent px-0">
+                                <a href="{{ url_for('keiba_lab.bloodline_surface') }}" class="text-decoration-none">
+                                    <i class="fas fa-chevron-right text-primary me-2"></i>馬場適性と血統
+                                </a>
+                            </li>
+                            <li class="list-group-item bg-transparent px-0">
+                                <a href="{{ url_for('keiba_lab.bloodline_distance') }}" class="text-decoration-none">
+                                    <i class="fas fa-chevron-right text-primary me-2"></i>距離適性と血統
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 競走馬の見方 -->
+            <section class="mb-5">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="p-2 rounded-circle me-3" style="background-color: rgba(79, 70, 229, 0.1);">
+                        <i class="fas fa-horse text-primary"></i>
+                    </div>
+                    <h2 class="h3 mb-0">競走馬の見方</h2>
+                </div>
+                <div class="card shadow-sm border-0">
+                    <div class="card-body">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item bg-transparent px-0">
+                                <a href="{{ url_for('keiba_lab.horse_body') }}" class="text-decoration-none">
+                                    <i class="fas fa-chevron-right text-primary me-2"></i>馬体チェックポイント
+                                </a>
+                            </li>
+                            <li class="list-group-item bg-transparent px-0">
+                                <a href="{{ url_for('keiba_lab.horse_walking') }}" class="text-decoration-none">
+                                    <i class="fas fa-chevron-right text-primary me-2"></i>歩様の見方
+                                </a>
+                            </li>
+                            <li class="list-group-item bg-transparent px-0">
+                                <a href="{{ url_for('keiba_lab.horse_aura') }}" class="text-decoration-none">
+                                    <i class="fas fa-chevron-right text-primary me-2"></i>馬の気配分析
+                                </a>
+                            </li>
+                            <li class="list-group-item bg-transparent px-0">
+                                <a href="{{ url_for('keiba_lab.horse_paddock_check') }}" class="text-decoration-none">
+                                    <i class="fas fa-chevron-right text-primary me-2"></i>パドックでのチェックポイント
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- コース攻略 -->
+            <section class="mb-5">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="p-2 rounded-circle me-3" style="background-color: rgba(79, 70, 229, 0.1);">
+                        <i class="fas fa-route text-primary"></i>
+                    </div>
+                    <h2 class="h3 mb-0">コース攻略</h2>
+                </div>
+                <div class="card shadow-sm border-0">
+                    <div class="card-body">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item bg-transparent px-0">
+                                <a href="{{ url_for('keiba_lab.course_shape') }}" class="text-decoration-none">
+                                    <i class="fas fa-chevron-right text-primary me-2"></i>コース形状と戦略
+                                </a>
+                            </li>
+                            <li class="list-group-item bg-transparent px-0">
+                                <a href="{{ url_for('keiba_lab.course_distance') }}" class="text-decoration-none">
+                                    <i class="fas fa-chevron-right text-primary me-2"></i>距離別攻略法
+                                </a>
+                            </li>
+                            <li class="list-group-item bg-transparent px-0">
+                                <a href="{{ url_for('keiba_lab.course_condition') }}" class="text-decoration-none">
+                                    <i class="fas fa-chevron-right text-primary me-2"></i>馬場状態の理解
+                                </a>
+                            </li>
+                            <li class="list-group-item bg-transparent px-0">
+                                <a href="{{ url_for('keiba_lab.course_season') }}" class="text-decoration-none">
+                                    <i class="fas fa-chevron-right text-primary me-2"></i>季節とコース攻略
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 馬券投資の基本 -->
+            <section class="mb-5">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="p-2 rounded-circle me-3" style="background-color: rgba(79, 70, 229, 0.1);">
+                        <i class="fas fa-chart-pie text-primary"></i>
+                    </div>
+                    <h2 class="h3 mb-0">馬券投資の基本</h2>
+                </div>
+                <div class="card shadow-sm border-0">
+                    <div class="card-body">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item bg-transparent px-0">
+                                <a href="{{ url_for('keiba_lab.investment_money_management') }}" class="text-decoration-none">
+                                    <i class="fas fa-chevron-right text-primary me-2"></i>資金管理の基本
+                                </a>
+                            </li>
+                            <li class="list-group-item bg-transparent px-0">
+                                <a href="{{ url_for('keiba_lab.investment_roi') }}" class="text-decoration-none">
+                                    <i class="fas fa-chevron-right text-primary me-2"></i>回収率の考え方
+                                </a>
+                            </li>
+                            <li class="list-group-item bg-transparent px-0">
+                                <a href="{{ url_for('keiba_lab.investment_strategy') }}" class="text-decoration-none">
+                                    <i class="fas fa-chevron-right text-primary me-2"></i>投資戦略の基礎
+                                </a>
+                            </li>
+                            <li class="list-group-item bg-transparent px-0">
+                                <a href="{{ url_for('keiba_lab.investment_mental') }}" class="text-decoration-none">
+                                    <i class="fas fa-chevron-right text-primary me-2"></i>メンタル管理術
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div class="col-lg-4">
+            <!-- 初心者向けガイドエリア -->
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="h5 mb-0">初心者ガイド</h3>
+                </div>
+                <div class="card-body">
+                    <p>競馬を始めたばかりの方に役立つ情報を集めました。</p>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item bg-transparent px-0">
+                            <a href="{{ url_for('keiba_lab.beginners_what_is_keiba') }}" class="text-decoration-none">
+                                <i class="fas fa-chevron-right text-primary me-2"></i>競馬とは？基本をわかりやすく解説
+                            </a>
+                        </li>
+                        <li class="list-group-item bg-transparent px-0">
+                            <a href="{{ url_for('keiba_lab.basics_enjoy_first_time') }}" class="text-decoration-none">
+                                <i class="fas fa-chevron-right text-primary me-2"></i>初めての競馬観戦ガイド
+                            </a>
+                        </li>
+                        <li class="list-group-item bg-transparent px-0">
+                            <a href="{{ url_for('keiba_lab.betting_how_to_buy') }}" class="text-decoration-none">
+                                <i class="fas fa-chevron-right text-primary me-2"></i>馬券の買い方ガイド
+                            </a>
+                        </li>
+                    </ul>
+                    <a href="{{ url_for('keiba_lab.beginners') }}" class="btn btn-primary btn-sm w-100 mt-3">
+                        初心者向けコンテンツ一覧
+                    </a>
+                </div>
+            </div>
+            
+            <!-- 人気コンテンツエリア -->
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-secondary text-white">
+                    <h3 class="h5 mb-0">人気コンテンツ</h3>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item bg-transparent px-0">
+                            <a href="{{ url_for('keiba_lab.prediction_pro_tips') }}" class="text-decoration-none">
+                                <i class="fas fa-chevron-right text-secondary me-2"></i>プロが教える馬券の選び方
+                            </a>
+                        </li>
+                        <li class="list-group-item bg-transparent px-0">
+                            <a href="{{ url_for('keiba_lab.horse_paddock_check') }}" class="text-decoration-none">
+                                <i class="fas fa-chevron-right text-secondary me-2"></i>パドックでチェックすべきポイント
+                            </a>
+                        </li>
+                        <li class="list-group-item bg-transparent px-0">
+                            <a href="{{ url_for('keiba_lab.bloodline_basics') }}" class="text-decoration-none">
+                                <i class="fas fa-chevron-right text-secondary me-2"></i>競走馬の血統基礎
+                            </a>
+                        </li>
+                        <li class="list-group-item bg-transparent px-0">
+                            <a href="{{ url_for('keiba_lab.course_distance') }}" class="text-decoration-none">
+                                <i class="fas fa-chevron-right text-secondary me-2"></i>距離別攻略法
+                            </a>
+                        </li>
+                        <li class="list-group-item bg-transparent px-0">
+                            <a href="{{ url_for('keiba_lab.investment_money_management') }}" class="text-decoration-none">
+                                <i class="fas fa-chevron-right text-secondary me-2"></i>資金管理の基本
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- レベル別コンテンツガイド -->
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-success text-white">
+                    <h3 class="h5 mb-0">レベル別コンテンツ</h3>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('keiba_lab.beginners') }}" class="btn btn-outline-primary">
+                            <i class="fas fa-user me-2"></i>初心者向け
+                        </a>
+                        <a href="{{ url_for('keiba_lab.intermediate') }}" class="btn btn-outline-primary">
+                            <i class="fas fa-user-graduate me-2"></i>中級者向け
+                        </a>
+                        <a href="{{ url_for('keiba_lab.advanced') }}" class="btn btn-outline-primary">
+                            <i class="fas fa-user-tie me-2"></i>上級者向け
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

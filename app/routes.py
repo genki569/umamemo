@@ -1,4 +1,4 @@
-from flask import render_template, request, jsonify, redirect, url_for, flash, current_app, session, abort, make_response
+from flask import render_template, request, jsonify, redirect, url_for, flash, current_app, session, abort, make_response, Blueprint
 from app import app, db
 from app.models import (
     Horse, Race, Entry, Jockey, User, Favorite, 

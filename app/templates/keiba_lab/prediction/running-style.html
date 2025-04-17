@@ -1,0 +1,728 @@
+{% extends "base.html" %}
+
+{% block title %}脚質分析で的中率アップ | 競馬予想の基本理論【馬メモ】{% endblock %}
+
+{% block description %}競馬の脚質（逃げ・先行・差し・追込）の特徴と分析方法を解説。レース展開予想のコツや各脚質の強み・弱みを理解し、的中率アップにつなげるための基礎知識を紹介します。{% endblock %}
+
+{% block keywords %}脚質,逃げ,先行,差し,追込,レース展開,競馬予想,脚質分析,コーナー位置,馬場状態{% endblock %}
+
+{% block og_title %}脚質分析で的中率アップ | 競馬予想の基本理論【馬メモ】{% endblock %}
+{% block og_description %}競馬の脚質（逃げ・先行・差し・追込）の特徴と分析方法を解説。レース展開予想のコツや各脚質の強み・弱みを理解し、的中率アップにつなげるための基礎知識を紹介します。{% endblock %}
+
+{% block twitter_title %}脚質分析で的中率アップ | 競馬予想の基本理論【馬メモ】{% endblock %}
+{% block twitter_description %}競馬の脚質（逃げ・先行・差し・追込）の特徴と分析方法を解説。レース展開予想のコツや各脚質の強み・弱みを理解し、的中率アップにつなげるための基礎知識を紹介します。{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/keiba_lab/">競馬ラボ</a></li>
+      <li class="breadcrumb-item"><a href="/keiba_lab/prediction/">予想の基本理論</a></li>
+      <li class="breadcrumb-item active" aria-current="page">脚質分析</li>
+    </ol>
+  </nav>
+
+  <h1 class="mb-4">脚質分析で的中率アップ：競馬予想の基本</h1>
+
+  <div class="alert alert-primary" role="alert">
+    <strong>このページのポイント:</strong> 競走馬の脚質（走り方）を理解し、レース展開を予想する方法を解説します。的確な脚質分析はレース予想の精度向上に直結します。
+  </div>
+
+  <div class="table-of-contents mb-5">
+    <div class="card">
+      <div class="card-header">
+        目次
+      </div>
+      <div class="card-body">
+        <ol>
+          <li><a href="#what-is-running-style">脚質とは：競走馬の走り方の特徴</a></li>
+          <li><a href="#types-of-running-style">4つの基本脚質と特徴</a></li>
+          <li><a href="#race-development">脚質から見るレース展開予想のコツ</a></li>
+          <li><a href="#course-and-running-style">コース特性と脚質の相性</a></li>
+          <li><a href="#practical-analysis">実践的な脚質分析の方法</a></li>
+          <li><a href="#summary">まとめ：脚質分析を予想に活かすポイント</a></li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <!-- 以下、コンテンツを追加していきます -->
+
+  <section id="what-is-running-style" class="mb-5">
+    <h2 class="border-bottom pb-2">脚質とは：競走馬の走り方の特徴</h2>
+    <div class="row">
+      <div class="col-md-8">
+        <p>脚質とは、競走馬がレース中にどのようなポジションを取りながら走るかという「走り方の特徴」のことです。馬それぞれに得意な走り方があり、これを理解することは競馬予想において非常に重要な要素となります。</p>
+        <p>脚質は馬の生まれつきの特性、調教方法、騎手の戦術などによって形成され、一頭の馬が複数の脚質を持つこともあります。しかし、多くの場合は特定の脚質が強く現れる傾向があります。</p>
+        <p>脚質を把握することで以下のような予想の精度向上につながります：</p>
+        <ul>
+          <li>レース展開の予測が可能になる</li>
+          <li>馬場状態との相性を判断できる</li>
+          <li>距離適性をより正確に評価できる</li>
+          <li>他馬との位置取りの駆け引きを予測できる</li>
+        </ul>
+      </div>
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-header bg-light">
+            <strong>脚質分析のポイント</strong>
+          </div>
+          <div class="card-body">
+            <p>脚質は固定的なものではなく、以下の要因で変化する可能性があります：</p>
+            <ul>
+              <li>距離の変化</li>
+              <li>馬場状態</li>
+              <li>騎手の戦術</li>
+              <li>出走馬のレベル</li>
+              <li>馬の成長や調子</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="types-of-running-style" class="mb-5">
+    <h2 class="border-bottom pb-2">4つの基本脚質と特徴</h2>
+    <p>競馬における脚質は主に4つに分類されます。それぞれの特徴と強み・弱みを理解することで、レース展開を予測する手がかりになります。</p>
+
+    <div class="card mb-4">
+      <div class="card-header bg-primary text-white">
+        <h3 class="h5 mb-0">1. 逃げ（先頭から主導するタイプ）</h3>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-8">
+            <h4 class="h6">特徴：</h4>
+            <p>スタートから積極的に先頭に立ち、そのままゴールまで先頭をキープしようとするタイプです。スピードとスタミナの両方が求められる走法です。</p>
+            
+            <h4 class="h6">強み：</h4>
+            <ul>
+              <li>自分のペースでレースを進められる</li>
+              <li>内側のポジションを確保しやすい</li>
+              <li>他馬の影響を受けにくい</li>
+              <li>道中の不利を被りにくい</li>
+            </ul>
+            
+            <h4 class="h6">弱み：</h4>
+            <ul>
+              <li>他馬のマークの対象となりやすい</li>
+              <li>ペースが速すぎると後半失速する可能性がある</li>
+              <li>エネルギー消費が大きい</li>
+              <li>他の逃げ馬がいると消耗戦になりやすい</li>
+            </ul>
+          </div>
+          <div class="col-md-4">
+            <div class="alert alert-info">
+              <strong>適性コース例：</strong>
+              <ul>
+                <li>フロンテージの短いコース</li>
+                <li>直線の短いコース</li>
+                <li>内枠有利なコース</li>
+              </ul>
+              <strong>代表的な逃げ馬：</strong>
+              <p>カツラギエース、サトノダイヤモンド（現役時）など</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mb-4">
+      <div class="card-header bg-success text-white">
+        <h3 class="h5 mb-0">2. 先行（上位争いをするタイプ）</h3>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-8">
+            <h4 class="h6">特徴：</h4>
+            <p>スタート後、先頭から2〜3番手につけて、レース後半に先頭を奪いにいくタイプです。バランスの取れた走法で、多くの名馬がこの脚質を持っています。</p>
+            
+            <h4 class="h6">強み：</h4>
+            <ul>
+              <li>逃げ馬の背後から展開を見ながら走れる</li>
+              <li>エネルギー配分が調整しやすい</li>
+              <li>道中の不利を被る可能性が比較的低い</li>
+              <li>様々なレース展開に対応できる</li>
+            </ul>
+            
+            <h4 class="h6">弱み：</h4>
+            <ul>
+              <li>逃げ馬のペースが遅いと後方馬に脅かされる</li>
+              <li>内ポジションを確保できないと不利になる場合がある</li>
+              <li>枠順の影響を受けやすい</li>
+            </ul>
+          </div>
+          <div class="col-md-4">
+            <div class="alert alert-info">
+              <strong>適性コース例：</strong>
+              <ul>
+                <li>バランスの取れたコース設計</li>
+                <li>中距離コース</li>
+                <li>坂のあるコース</li>
+              </ul>
+              <strong>代表的な先行馬：</strong>
+              <p>コントレイル、アーモンドアイ（現役時）など</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mb-4">
+      <div class="card-header bg-warning text-dark">
+        <h3 class="h5 mb-0">3. 差し（中団から追い上げるタイプ）</h3>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-8">
+            <h4 class="h6">特徴：</h4>
+            <p>レース中盤は中団（中程度の位置）につけ、最終コーナーから直線にかけて加速して先頭を目指すタイプです。瞬発力を活かした走法です。</p>
+            
+            <h4 class="h6">強み：</h4>
+            <ul>
+              <li>エネルギーを後半に温存できる</li>
+              <li>加速力と瞬発力を活かせる</li>
+              <li>道中は消耗を抑えられる</li>
+              <li>他馬の動きを見ながら展開できる</li>
+            </ul>
+            
+            <h4 class="h6">弱み：</h4>
+            <ul>
+              <li>前の馬の壁に阻まれる可能性がある</li>
+              <li>遅いペースだとスパートが活きない</li>
+              <li>外を回る分、余計な距離を走ることになる</li>
+              <li>スローペースのレースに弱い傾向がある</li>
+            </ul>
+          </div>
+          <div class="col-md-4">
+            <div class="alert alert-info">
+              <strong>適性コース例：</strong>
+              <ul>
+                <li>直線の長いコース</li>
+                <li>最終コーナーが緩やかなコース</li>
+                <li>外差しが決まりやすいコース</li>
+              </ul>
+              <strong>代表的な差し馬：</strong>
+              <p>エフフォーリア、グランアレグリア（現役時）など</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mb-4">
+      <div class="card-header bg-danger text-white">
+        <h3 class="h5 mb-0">4. 追込（後方から一気に伸びるタイプ）</h3>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-8">
+            <h4 class="h6">特徴：</h4>
+            <p>レース中盤は後方につけ、最終コーナーから直線で一気に加速して先頭を目指すタイプです。最も劇的な走りを見せる脚質です。</p>
+            
+            <h4 class="h6">強み：</h4>
+            <ul>
+              <li>最大限のエネルギーを終盤に温存できる</li>
+              <li>ハイペースのレースで威力を発揮する</li>
+              <li>道中の消耗が少ない</li>
+              <li>直線での伸びが大きい</li>
+            </ul>
+            
+            <h4 class="h6">弱み：</h4>
+            <ul>
+              <li>スローペースのレースに非常に弱い</li>
+              <li>道中のポジション取りで不利になりやすい</li>
+              <li>最終直線で進路が塞がれるリスクが高い</li>
+              <li>外を大きく回る分、余計な距離を走ることになる</li>
+            </ul>
+          </div>
+          <div class="col-md-4">
+            <div class="alert alert-info">
+              <strong>適性コース例：</strong>
+              <ul>
+                <li>直線の長いコース</li>
+                <li>坂のあるコース</li>
+                <li>外差し有利なコース</li>
+              </ul>
+              <strong>代表的な追込馬：</strong>
+              <p>ソダシ、ディープインパクト（現役時）など</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="analyzing-race-development" class="mb-5">
+    <h2 class="border-bottom pb-2">レース展開の分析方法</h2>
+    <p>脚質情報を活用してレース展開を分析することは、予想の精度を高める重要なステップです。以下のポイントに注目して分析しましょう。</p>
+
+    <div class="card mb-4">
+      <div class="card-header bg-light">
+        <h3 class="h5 mb-0">ペース予測の重要性</h3>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-8">
+            <p>レースのペースは結果を大きく左右します。ペース予測の基本手順は以下の通りです：</p>
+            <ol>
+              <li><strong>逃げ・先行馬の特定：</strong> 出走馬の中から逃げ・先行脚質の馬を特定します。</li>
+              <li><strong>頭数と比率の確認：</strong> 逃げ・先行馬の頭数と全体に占める比率を確認します。</li>
+              <li><strong>内枠の逃げ馬の確認：</strong> 特に内枠に逃げ馬がいるかどうかをチェックします。</li>
+              <li><strong>過去のレースでの傾向確認：</strong> 同じ条件のレースでのペース傾向を確認します。</li>
+            </ol>
+            <div class="alert alert-primary">
+              <strong>ペース予測の基本原則：</strong>
+              <ul>
+                <li>逃げ・先行馬が多い → ハイペースになりやすい → 差し・追込馬に有利</li>
+                <li>逃げ・先行馬が少ない → スローペースになりやすい → 逃げ・先行馬に有利</li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card border-info">
+              <div class="card-header bg-info text-white">
+                レースペースの傾向
+              </div>
+              <div class="card-body">
+                <p><strong>ハイペースになりやすい条件：</strong></p>
+                <ul>
+                  <li>短距離レース</li>
+                  <li>多頭数のレース</li>
+                  <li>逃げ馬が複数いる</li>
+                  <li>G1などの重賞レース</li>
+                </ul>
+                <p><strong>スローペースになりやすい条件：</strong></p>
+                <ul>
+                  <li>長距離レース</li>
+                  <li>少頭数のレース</li>
+                  <li>実力のある逃げ馬が1頭だけ</li>
+                  <li>荒れる傾向のあるハンデ戦</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mb-4">
+      <div class="card-header bg-light">
+        <h3 class="h5 mb-0">コースと脚質の相性分析</h3>
+      </div>
+      <div class="card-body">
+        <p>コースによって有利になる脚質は大きく異なります。主な特徴は以下の通りです：</p>
+        <div class="table-responsive">
+          <table class="table table-bordered">
+            <thead class="thead-light">
+              <tr>
+                <th>コース特性</th>
+                <th>有利な脚質</th>
+                <th>理由</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>直線の短いコース</td>
+                <td>逃げ・先行</td>
+                <td>差し・追込馬が伸びる距離が足りない</td>
+              </tr>
+              <tr>
+                <td>直線の長いコース</td>
+                <td>差し・追込</td>
+                <td>長い直線で加速力を活かせる</td>
+              </tr>
+              <tr>
+                <td>内回りコース</td>
+                <td>逃げ・先行</td>
+                <td>コーナーが多く、前で運べる馬が有利</td>
+              </tr>
+              <tr>
+                <td>外回りコース</td>
+                <td>差し・追込</td>
+                <td>直線が長く、外を回っても不利になりにくい</td>
+              </tr>
+              <tr>
+                <td>坂のあるコース</td>
+                <td>先行・差し</td>
+                <td>スタミナと加速力のバランスが重要</td>
+              </tr>
+              <tr>
+                <td>小回りコース</td>
+                <td>逃げ・先行</td>
+                <td>ポジション取りが重要で、前に行ける馬が有利</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="reading-running-style-data" class="mb-5">
+    <h2 class="border-bottom pb-2">脚質データの読み方と活用法</h2>
+    <p>脚質データは競馬新聞やオンラインの競馬情報サイトで確認できます。効果的に活用するためのポイントを解説します。</p>
+
+    <div class="row mb-4">
+      <div class="col-md-6">
+        <div class="card h-100">
+          <div class="card-header bg-light">
+            <h3 class="h5 mb-0">競馬新聞での脚質表記</h3>
+          </div>
+          <div class="card-body">
+            <p>競馬新聞では、馬の脚質を以下のように表記しています：</p>
+            <ul>
+              <li><strong>逃：</strong> 逃げ脚質が主体</li>
+              <li><strong>先：</strong> 先行脚質が主体</li>
+              <li><strong>差：</strong> 差し脚質が主体</li>
+              <li><strong>追：</strong> 追込脚質が主体</li>
+              <li><strong>逃・先：</strong> 逃げと先行の両方の脚質を持つ</li>
+              <li><strong>先・差：</strong> 先行と差しの両方の脚質を持つ</li>
+            </ul>
+            <p>また、「M」（万能型）や「S」（スタミナ型）など、脚質以外の特性を表す記号が併記されることもあります。</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card h-100">
+          <div class="card-header bg-light">
+            <h3 class="h5 mb-0">脚質適性の見極め方</h3>
+          </div>
+          <div class="card-body">
+            <p>馬の脚質適性を見極めるためには、以下の情報を確認しましょう：</p>
+            <ul>
+              <li><strong>過去レースのコーナー通過順位：</strong> 4コーナーごとの通過順位の変化から脚質を把握</li>
+              <li><strong>上がり3ハロンのタイム：</strong> 優れた差し・追込馬は上がりが速い</li>
+              <li><strong>テン（スタート直後）の3ハロン：</strong> 逃げ・先行馬はテンが速い</li>
+              <li><strong>血統背景：</strong> 父母の脚質からある程度傾向が推測できる</li>
+              <li><strong>調教師の傾向：</strong> 特定の脚質に強みを持つ調教師もいる</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mb-4">
+      <div class="card-header bg-light">
+        <h3 class="h5 mb-0">各コーナー通過順位の読み方</h3>
+      </div>
+      <div class="card-body">
+        <p>レース結果に記載されているコーナー通過順位を読み解くことで、馬の位置取りと脚質が分かります。</p>
+        <div class="table-responsive">
+          <table class="table table-bordered">
+            <thead class="thead-light">
+              <tr>
+                <th>コーナー通過パターン例</th>
+                <th>推定される脚質</th>
+                <th>特徴</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1-1-1-1</td>
+                <td>純粋な逃げ馬</td>
+                <td>全コーナーを先頭で通過</td>
+              </tr>
+              <tr>
+                <td>2-2-2-1</td>
+                <td>先行脚質</td>
+                <td>前につけて終盤に先頭を奪取</td>
+              </tr>
+              <tr>
+                <td>5-5-4-2</td>
+                <td>差し脚質</td>
+                <td>中団につけて終盤に上昇</td>
+              </tr>
+              <tr>
+                <td>12-12-10-3</td>
+                <td>追込脚質</td>
+                <td>後方から終盤に大きく伸びる</td>
+              </tr>
+              <tr>
+                <td>3-3-5-8</td>
+                <td>先行したが失速</td>
+                <td>距離適性や調子の問題の可能性</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="alert alert-warning mt-3">
+          <strong>注意点：</strong> 1レースのデータだけでなく、複数レースの傾向から総合的に判断することが重要です。また、馬場状態や距離の変化、騎手交代などによって通過順位のパターンが変わることもあります。
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="practical-techniques" class="mb-5">
+    <h2 class="border-bottom pb-2">脚質を予想に活用する実践テクニック</h2>
+    <p>脚質情報は単に馬の特性を知るだけでなく、的中率を高めるための実践的な分析に活用できます。以下に具体的なテクニックを紹介します。</p>
+
+    <div class="card mb-4">
+      <div class="card-header bg-light">
+        <h3 class="h5 mb-0">脚質と枠番の相関分析</h3>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-8">
+            <p>枠番と脚質の相性は重要な分析ポイントです。基本的な傾向として：</p>
+            <ul>
+              <li><strong>内枠の逃げ馬：</strong> 特に短距離戦では大きなアドバンテージを持ちます。</li>
+              <li><strong>外枠の先行馬：</strong> スタート直後にポジションを取るために消耗する可能性があります。</li>
+              <li><strong>内枠の差し・追込馬：</strong> 内ポケットに閉じ込められるリスクがあります。</li>
+              <li><strong>外枠の差し・追込馬：</strong> 外を回ることになり、余計な距離を走る可能性があります。</li>
+            </ul>
+            <div class="alert alert-success">
+              <strong>実践ポイント：</strong> 内枠の逃げ馬同士が複数いる場合、スタート直後のポジション争いでハイペースになりやすく、差し・追込馬に有利なレース展開になる可能性が高まります。
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card border-secondary">
+              <div class="card-header bg-secondary text-white">
+                コース別・枠番有利不利
+              </div>
+              <div class="card-body">
+                <p><strong>内枠が有利なコース：</strong></p>
+                <ul>
+                  <li>東京の芝1400m</li>
+                  <li>中山のダート1200m</li>
+                  <li>小倉のダート1700m</li>
+                </ul>
+                <p><strong>外枠が有利なコース：</strong></p>
+                <ul>
+                  <li>阪神の芝1400m</li>
+                  <li>新潟の芝1000m直線</li>
+                  <li>京都の芝1200m</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mb-4">
+      <div class="card-header bg-light">
+        <h3 class="h5 mb-0">脚質と馬場状態の関係性</h3>
+      </div>
+      <div class="card-body">
+        <p>馬場状態によって有利になる脚質は大きく変化します。基本的な傾向を把握しておきましょう。</p>
+        <div class="table-responsive">
+          <table class="table table-bordered">
+            <thead class="thead-light">
+              <tr>
+                <th>馬場状態</th>
+                <th>有利な脚質</th>
+                <th>理由</th>
+                <th>注意点</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>良馬場</td>
+                <td>基本的にどの脚質も公平</td>
+                <td>標準的なコンディション</td>
+                <td>コースごとの特性が強く出る</td>
+              </tr>
+              <tr>
+                <td>稍重・重馬場</td>
+                <td>逃げ・先行</td>
+                <td>後方は泥はねが多く、前に行ける馬が有利</td>
+                <td>馬場が荒れて内側が劣化すると内枠不利になることも</td>
+              </tr>
+              <tr>
+                <td>不良馬場</td>
+                <td>逃げ馬</td>
+                <td>馬場の良い部分を選べる</td>
+                <td>底力のある馬が強く、脚質より適性が重要</td>
+              </tr>
+              <tr>
+                <td>乾いた硬い馬場</td>
+                <td>差し・追込</td>
+                <td>速い上がりタイムが出やすい</td>
+                <td>短距離戦では逃げ・先行の恩恵も大きい</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="alert alert-info mt-3">
+          <strong>実戦応用：</strong> 前日から当日にかけての馬場変化を予測し、有利になる脚質の馬を探しましょう。例えば、天気予報で雨が予想される場合、逃げ・先行馬の評価を上げると良いでしょう。
+        </div>
+      </div>
+    </div>
+
+    <div class="card mb-4">
+      <div class="card-header bg-light">
+        <h3 class="h5 mb-0">脚質と騎手の相性分析</h3>
+      </div>
+      <div class="card-body">
+        <p>騎手によって得意とする脚質があります。騎手と脚質の相性を考慮することで予想の精度が上がります。</p>
+        <div class="row">
+          <div class="col-md-6">
+            <h4 class="h6">逃げ・先行に強い騎手の特徴</h4>
+            <ul>
+              <li>スタートの技術が高い</li>
+              <li>ペース配分の感覚が優れている</li>
+              <li>先頭でリズムを作る能力がある</li>
+              <li>前に行くことを躊躇しない決断力がある</li>
+            </ul>
+            <div class="card border-light bg-light mb-3">
+              <div class="card-body">
+                <p class="mb-0"><strong>実例：</strong> 武豊騎手、福永祐一騎手、川田将雅騎手などは逃げ・先行での好騎乗が多い</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <h4 class="h6">差し・追込に強い騎手の特徴</h4>
+            <ul>
+              <li>タイミングの見極めが上手い</li>
+              <li>馬群の中での進路選択が的確</li>
+              <li>終盤の追い方が効果的</li>
+              <li>レースの流れを読む力がある</li>
+            </ul>
+            <div class="card border-light bg-light mb-3">
+              <div class="card-body">
+                <p class="mb-0"><strong>実例：</strong> デムーロ騎手、ルメール騎手、田辺裕信騎手などは追込での好騎乗が目立つ</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="alert alert-warning mt-3">
+          <strong>重要ポイント：</strong> 馬の脚質と騎手の得意脚質が一致しているかどうかをチェックしましょう。不一致の場合、本来の能力を発揮できない可能性があります。
+        </div>
+      </div>
+    </div>
+
+    <div class="card mb-4">
+      <div class="card-header bg-light">
+        <h3 class="h5 mb-0">実践的な脚質分析の手順</h3>
+      </div>
+      <div class="card-body">
+        <p>効果的な脚質分析のために、以下の手順に従って予想を組み立てましょう。</p>
+        <ol>
+          <li>
+            <strong>出走馬の脚質分布を確認</strong>
+            <p>各馬の脚質を競馬新聞やデータベースから確認し、レース全体での脚質分布を把握します。</p>
+          </li>
+          <li>
+            <strong>レースのペース予測</strong>
+            <p>逃げ・先行馬の数と質から、レースのペースを予測します。ハイペースの場合は差し・追込馬を、スローペースの場合は逃げ・先行馬を評価します。</p>
+          </li>
+          <li>
+            <strong>コース特性との相性確認</strong>
+            <p>開催コースの特性（直線の長さ、坂の有無など）と各馬の脚質の相性を確認します。</p>
+          </li>
+          <li>
+            <strong>枠番と脚質の相性チェック</strong>
+            <p>各馬の枠番と脚質の相性を分析し、有利・不利を判断します。</p>
+          </li>
+          <li>
+            <strong>馬場状態の考慮</strong>
+            <p>当日の馬場状態と各脚質の相性を考慮して評価を調整します。</p>
+          </li>
+          <li>
+            <strong>騎手と脚質の相性確認</strong>
+            <p>騎手の得意脚質と馬の脚質が一致しているかを確認します。</p>
+          </li>
+          <li>
+            <strong>過去の同条件レースの傾向確認</strong>
+            <p>同じコース・距離・条件のレースで、どの脚質が好成績を収めているかを調査します。</p>
+          </li>
+        </ol>
+        <div class="card bg-light border-light mt-3">
+          <div class="card-body">
+            <h4 class="h6">実践例：東京芝2000mのレースを分析する場合</h4>
+            <p>東京芝2000mは直線が長く、最後の直線で差し・追込馬が伸びてくるケースが多いです。例えば：</p>
+            <ul>
+              <li>逃げ・先行馬が多い場合：ハイペースになりやすく、スタミナのある差し・追込馬を狙います。</li>
+              <li>有力な逃げ馬が1頭だけの場合：スローペースになりやすく、その逃げ馬と先行馬を評価します。</li>
+              <li>雨で馬場が重くなった場合：差し・追込馬の評価を下げ、速い馬場を先に選べる逃げ・先行馬を評価します。</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="common-mistakes" class="mb-5">
+    <h2 class="border-bottom pb-2">脚質分析でよくある間違いと注意点</h2>
+    <p>初心者がよく陥りがちな脚質分析の間違いと、それを避けるためのポイントを紹介します。</p>
+
+    <div class="alert alert-danger mb-4">
+      <h3 class="h5">脚質だけで馬を評価する</h3>
+      <p>脚質は重要な要素ですが、それだけで馬を評価するのは誤りです。以下の要素も総合的に考慮しましょう：</p>
+      <ul>
+        <li>馬の実力（過去の成績）</li>
+        <li>距離適性</li>
+        <li>馬場適性</li>
+        <li>調子（最近のレースや調教の内容）</li>
+        <li>斤量</li>
+      </ul>
+    </div>
+
+    <div class="alert alert-danger mb-4">
+      <h3 class="h5">固定された脚質だと思い込む</h3>
+      <p>馬の脚質は固定されたものではなく、以下の要因で変化することがあります：</p>
+      <ul>
+        <li>距離の変化（短距離→中距離で逃げから先行に変わるなど）</li>
+        <li>成長による変化（若馬は特に脚質が変わりやすい）</li>
+        <li>騎手交代による戦法の変更</li>
+        <li>レースの展開による臨機応変な対応</li>
+      </ul>
+    </div>
+
+    <div class="alert alert-danger mb-4">
+      <h3 class="h5">レース全体の脚質バランスを見ない</h3>
+      <p>個々の馬の脚質だけでなく、レース全体での脚質分布を見る必要があります：</p>
+      <ul>
+        <li>逃げ馬が複数いると、互いにペースを上げ合い消耗する</li>
+        <li>逃げ馬がいないと、想定外の馬が逃げて波乱が起きやすい</li>
+        <li>先行馬ばかりのレースは、意外と差し・追込馬が好走することがある</li>
+      </ul>
+    </div>
+
+    <div class="alert alert-danger mb-4">
+      <h3 class="h5">データだけに頼りすぎる</h3>
+      <p>脚質データは重要な指標ですが、以下の観点からも馬を評価しましょう：</p>
+      <ul>
+        <li>パドックでの状態（馬の気性や調子）</li>
+        <li>レース直前の様子（発汗状態、歩様など）</li>
+        <li>人気による影響（人気馬が多いと予想外の展開になることも）</li>
+        <li>トレンドの変化（シーズンや時期によって傾向が変わることがある）</li>
+      </ul>
+    </div>
+
+    <div class="card mb-4">
+      <div class="card-header bg-light">
+        <h3 class="h5 mb-0">脚質分析の精度を高めるために</h3>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-6">
+            <h4 class="h6">基本の徹底</h4>
+            <ul>
+              <li>過去5走程度のレース結果を確認し、脚質の一貫性をチェック</li>
+              <li>同条件（コース・距離・馬場）での過去の脚質を特に重視</li>
+              <li>調教師のコメントや騎手の意図を把握</li>
+              <li>馬の気性や成長段階を考慮</li>
+            </ul>
+          </div>
+          <div class="col-md-6">
+            <h4 class="h6">分析の習慣化</h4>
+            <ul>
+              <li>レース前に脚質分布図を自分で作成してみる</li>
+              <li>レース後に予想した展開と実際の展開を比較</li>
+              <li>自分のノートを作成し、間違った分析の原因を記録</li>
+              <li>コース別・条件別の脚質傾向をデータベース化</li>
+            </ul>
+          </div>
+        </div>
+        <div class="alert alert-success mt-3">
+          <strong>最終アドバイス：</strong> 脚質分析は競馬予想の重要な一部ですが、あくまでも予想を組み立てる一要素です。他の要素と組み合わせ、総合的な判断をすることが的中率向上のカギとなります。
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+{% endblock %} 

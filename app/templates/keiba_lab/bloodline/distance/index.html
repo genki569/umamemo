@@ -1,0 +1,1528 @@
+{% extends "base.html" %}
+
+{% block title %}血統と距離適性の関係 | スプリントからステイヤーまで【馬メモ】{% endblock %}
+
+{% block meta_description %}競走馬の血統がどのように距離適性に影響するのか解説。スプリント血統、マイル血統、中距離血統、ステイヤー血統の特徴や見分け方、予想への活かし方まで詳しく紹介します。{% endblock %}
+
+{% block description %}競走馬の血統がどのように距離適性に影響するのか解説。スプリント血統、マイル血統、中距離血統、ステイヤー血統の特徴や見分け方、予想への活かし方まで詳しく紹介します。{% endblock %}
+
+{% block meta_keywords %}競馬,血統,距離適性,スプリント,マイル,中距離,ステイヤー,長距離,短距離,父系,母系{% endblock %}
+
+{% block og_title %}血統と距離適性の関係 | スプリントからステイヤーまで【馬メモ】{% endblock %}
+{% block og_description %}競走馬の血統がどのように距離適性に影響するのか解説。スプリント血統、マイル血統、中距離血統、ステイヤー血統の特徴や見分け方、予想への活かし方まで詳しく紹介します。{% endblock %}
+{% block og_type %}article{% endblock %}
+
+{% block twitter_title %}血統と距離適性の関係 | スプリントからステイヤーまで【馬メモ】{% endblock %}
+{% block twitter_description %}競走馬の血統がどのように距離適性に影響するのか解説。スプリント血統、マイル血統、中距離血統、ステイヤー血統の特徴や見分け方、予想への活かし方まで詳しく紹介します。{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/">ホーム</a></li>
+      <li class="breadcrumb-item"><a href="/keiba_lab/">競馬ラボ</a></li>
+      <li class="breadcrumb-item"><a href="/keiba_lab/bloodline/">血統の知識</a></li>
+      <li class="breadcrumb-item active" aria-current="page">血統と距離適性の関係</li>
+    </ol>
+  </nav>
+
+  <h1 class="mb-4">血統と距離適性の関係</h1>
+  
+  <p class="lead mb-4">
+    競走馬の距離適性は、血統に大きく影響されます。
+    短距離向きの血統、中距離向きの血統、長距離向きの血統など、種牡馬や牝系によって得意とする距離が異なります。
+    このページでは、血統から距離適性を読み解く方法と、それを競馬予想に活かすポイントを解説します。
+  </p>
+
+  <!-- 目次 -->
+  <div class="card mb-5 shadow-sm">
+    <div class="card-body">
+      <h2 class="h5 mb-3">目次</h2>
+      <ol class="mb-0">
+        <li><a href="#basics" class="text-decoration-none">距離適性と血統の基本</a></li>
+        <li><a href="#sprint" class="text-decoration-none">スプリント向き血統(〜1400m)</a></li>
+        <li><a href="#mile" class="text-decoration-none">マイル向き血統(1600m前後)</a></li>
+        <li><a href="#middle" class="text-decoration-none">中距離向き血統(1800m〜2200m)</a></li>
+        <li><a href="#stayer" class="text-decoration-none">ステイヤー向き血統(2400m〜)</a></li>
+        <li><a href="#prediction" class="text-decoration-none">血統から距離適性を予測する方法</a></li>
+        <li><a href="#examples" class="text-decoration-none">実例で見る距離適性と血統の関係</a></li>
+        <li><a href="#tips" class="text-decoration-none">予想に役立てるポイント</a></li>
+      </ol>
+    </div>
+  </div>
+
+  <section id="basics" class="mb-5">
+    <h2 class="border-bottom pb-2">距離適性と血統の基本</h2>
+    <p>
+      競走馬の距離適性は、そのパフォーマンスを最大限に発揮できる距離帯のことです。
+      この適性は、血統（遺伝的要素）によって大きく左右されます。
+      まずは、距離適性と血統の関係性について基本的な考え方を解説します。
+    </p>
+
+    <div class="card mb-4">
+      <div class="card-header bg-light">
+        <h3 class="h5 mb-0">距離適性を決める要素</h3>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-lg-8">
+            <p>馬の距離適性を決める主な要素は以下の通りです：</p>
+            <ul>
+              <li><strong>スピード</strong>：瞬発的な速さ（短距離向き）</li>
+              <li><strong>スタミナ</strong>：持久力（長距離向き）</li>
+              <li><strong>心肺機能</strong>：酸素摂取能力と回復力</li>
+              <li><strong>筋肉タイプ</strong>：速筋（スピード型）と遅筋（持久力型）の比率</li>
+              <li><strong>精神的資質</strong>：粘り強さや闘争心</li>
+              <li><strong>骨格構造</strong>：体のバランスや関節の構造</li>
+            </ul>
+            <p>これらの要素は血統によって大きく影響を受け、特に父系と母系のバランスによって決まることが多いです。</p>
+          </div>
+          <div class="col-lg-4">
+            <div class="card text-white bg-primary h-100">
+              <div class="card-header">
+                <h4 class="h6 mb-0">遺伝と環境の関係</h4>
+              </div>
+              <div class="card-body">
+                <p class="mb-0">距離適性は血統（遺伝）で約70%決まると言われています。残りの30%は以下の要素で変動します：</p>
+                <ul class="mb-0">
+                  <li>調教方法</li>
+                  <li>成長過程</li>
+                  <li>競走経験</li>
+                  <li>騎手の乗り方</li>
+                  <li>馬場状態への適応力</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row mb-4">
+      <div class="col-md-6 mb-3">
+        <div class="card h-100">
+          <div class="card-header bg-light">
+            <h4 class="h6 mb-0">父系の影響</h4>
+          </div>
+          <div class="card-body">
+            <p>父馬（種牡馬）からは主に以下の要素が遺伝する傾向があります：</p>
+            <ul>
+              <li><strong>スピード素質</strong>：瞬発力や加速力</li>
+              <li><strong>筋肉タイプ</strong>：速筋と遅筋の比率</li>
+              <li><strong>走法の特徴</strong>：ストライドや回転率など</li>
+              <li><strong>体格</strong>：骨格のサイズや筋肉量</li>
+            </ul>
+            <p>父系統によって得意な距離帯が大きく異なり、種牡馬選びの重要な基準となります。</p>
+            <div class="alert alert-success">
+              <p class="mb-0 small"><strong>例：</strong>サンデーサイレンス系は中距離適性、キングマンボ系はマイル適性が高い傾向があります。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6 mb-3">
+        <div class="card h-100">
+          <div class="card-header bg-light">
+            <h4 class="h6 mb-0">母系の影響</h4>
+          </div>
+          <div class="card-body">
+            <p>母系（牝系）からは主に以下の要素が遺伝する傾向があります：</p>
+            <ul>
+              <li><strong>スタミナ素質</strong>：持久力や粘り強さ</li>
+              <li><strong>心肺機能</strong>：酸素摂取能力</li>
+              <li><strong>精神的資質</strong>：闘争心や忍耐力</li>
+              <li><strong>回復力</strong>：疲労からの回復スピード</li>
+            </ul>
+            <p>特に母父（BMS）の影響は大きく、父系の距離適性を補完または強化する役割を果たします。</p>
+            <div class="alert alert-success">
+              <p class="mb-0 small"><strong>例：</strong>ステイヤー系の母父を持つ馬は、スピード系の父馬を持っていても中長距離で活躍することがあります。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mb-4">
+      <div class="card-header bg-light">
+        <h3 class="h5 mb-0">代表的な距離適性カテゴリー</h3>
+      </div>
+      <div class="card-body">
+        <p>競馬における距離適性は、主に以下の4つのカテゴリーに分類されます：</p>
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead class="table-light">
+              <tr>
+                <th>カテゴリー</th>
+                <th>距離帯</th>
+                <th>主な特徴</th>
+                <th>代表的な種牡馬（日本）</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>スプリント型</strong></td>
+                <td>〜1400m</td>
+                <td>瞬発力・加速力に優れ、短距離で爆発的な力を発揮</td>
+                <td>ロードカナロア、ダイワメジャー</td>
+              </tr>
+              <tr>
+                <td><strong>マイル型</strong></td>
+                <td>1600m前後</td>
+                <td>スピードとスタミナのバランスが良い</td>
+                <td>モーリス、キングカメハメハ</td>
+              </tr>
+              <tr>
+                <td><strong>中距離型</strong></td>
+                <td>1800m〜2200m</td>
+                <td>持続力があり、安定したペースで長く走れる</td>
+                <td>ディープインパクト、ハーツクライ</td>
+              </tr>
+              <tr>
+                <td><strong>ステイヤー型</strong></td>
+                <td>2400m〜</td>
+                <td>スタミナに優れ、長距離でも粘り強く走れる</td>
+                <td>ステイゴールド、ワークフォース</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="small text-muted mt-2">※種牡馬の例は一般的な傾向であり、例外もあります。また、時代によって評価も変化します。</p>
+      </div>
+    </div>
+
+    <div class="alert alert-info">
+      <h4 class="alert-heading h5">初心者向けアドバイス</h4>
+      <p>血統から距離適性を読み解く際は、まずは父馬の傾向をチェックし、次に母父（BMS）の特徴を確認することをおすすめします。この2つの要素だけでも、おおよその距離適性の予測が可能です。</p>
+      <hr>
+      <p class="mb-0">また、同じ父馬を持つ馬（兄弟・姉妹）の過去の実績も参考になります。どの距離帯で好成績を残しているかをチェックしてみましょう。</p>
+    </div>
+  </section>
+
+  <section id="sprint" class="mb-5">
+    <h2 class="border-bottom pb-2">スプリント向き血統(〜1400m)</h2>
+    <p>
+      スプリント向きの血統は、短距離レースで優れたパフォーマンスを発揮する特徴を持っています。
+      瞬発力や加速力に優れ、短い距離で爆発的なスピードを見せる競走馬を生み出す傾向があります。
+    </p>
+
+    <div class="card mb-4">
+      <div class="card-header bg-light">
+        <h3 class="h5 mb-0">スプリント血統の特徴</h3>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-6">
+            <h4 class="h6">身体的特徴</h4>
+            <ul>
+              <li><strong>筋肉タイプ</strong>：速筋（瞬発力に特化した筋肉）の比率が高い</li>
+              <li><strong>体型</strong>：比較的コンパクトな体型が多い</li>
+              <li><strong>心肺機能</strong>：短時間の無酸素運動に適応している</li>
+              <li><strong>神経系</strong>：反射神経が発達し、スタートダッシュが得意</li>
+              <li><strong>走法</strong>：ストライドよりも回転率が高い傾向</li>
+            </ul>
+          </div>
+          <div class="col-md-6">
+            <h4 class="h6">走りの特徴</h4>
+            <ul>
+              <li><strong>スタート</strong>：発走が早く、初速がある</li>
+              <li><strong>ペース配分</strong>：前半から積極的なペースで展開</li>
+              <li><strong>最終局面</strong>：ラスト1Fでは息が上がりやすい</li>
+              <li><strong>脚質傾向</strong>：逃げ・先行脚質が多い</li>
+              <li><strong>回復</strong>：短距離勝負なら高頻度で走れることも</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row mb-4">
+      <div class="col-lg-6 mb-3">
+        <div class="card h-100">
+          <div class="card-header bg-light">
+            <h3 class="h5 mb-0">代表的なスプリント血統</h3>
+          </div>
+          <div class="card-body">
+            <h4 class="h6">日本の代表的なスプリント系種牡馬</h4>
+            <ul>
+              <li><strong>ロードカナロア</strong>：世界的なスプリンターとして活躍し、産駒も短距離～マイルで活躍</li>
+              <li><strong>ダイワメジャー</strong>：スプリント〜マイルで活躍した名馬。産駒も短距離適性が高い</li>
+              <li><strong>キンシャサノキセキ</strong>：マイル以下の短距離で強い産駒を多く出している</li>
+              <li><strong>ロードカナロアの産駒</strong>：グレーターロンドン、タワーオブロンドンなど</li>
+              <li><strong>サマースコット</strong>：新興勢力だが、短距離の適性が高い産駒を輩出</li>
+            </ul>
+
+            <h4 class="h6 mt-4">海外のスプリント系種牡馬の血統</h4>
+            <ul>
+              <li><strong>Mr. Prospector系</strong>：アメリカのスピード血統の代表格</li>
+              <li><strong>Danzig系</strong>：Northern Dancer系の中でもスピード特化型</li>
+              <li><strong>Dubawi系</strong>：マイル以下で活躍する産駒が多い</li>
+              <li><strong>Exceed And Excel</strong>：オーストラリアのスプリント系種牡馬</li>
+              <li><strong>Not A Single Doubt</strong>：オーストラリアのスピードに特化した血統</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6 mb-3">
+        <div class="card h-100">
+          <div class="card-header bg-light">
+            <h3 class="h5 mb-0">スプリント血統の見分け方</h3>
+          </div>
+          <div class="card-body">
+            <p>血統表からスプリント適性を見分けるポイント：</p>
+            <ol>
+              <li><strong>父馬の競走実績</strong>
+                <ul>
+                  <li>短距離G1（スプリンターズS、高松宮記念など）で活躍した馬</li>
+                  <li>1400m以下のレースで複数勝利している馬</li>
+                </ul>
+              </li>
+              <li><strong>産駒の距離適性傾向</strong>
+                <ul>
+                  <li>短距離レースでの勝利率が高い種牡馬</li>
+                  <li>2歳戦で早くから活躍する産駒が多い種牡馬</li>
+                </ul>
+              </li>
+              <li><strong>母父（BMS）のチェック</strong>
+                <ul>
+                  <li>スプリント系の種牡馬が母父にいる場合、短距離適性が強化される</li>
+                  <li>例：ダイワメジャー×スプリント系母父 → 短距離適性が非常に高い</li>
+                </ul>
+              </li>
+              <li><strong>海外血統の場合</strong>
+                <ul>
+                  <li>アメリカのダート短距離血統</li>
+                  <li>オーストラリアのスプリント血統</li>
+                  <li>イギリスの5〜6ハロングで活躍した血統</li>
+                </ul>
+              </li>
+            </ol>
+            <div class="alert alert-warning mt-3">
+              <p class="mb-0 small"><strong>注意点：</strong>スプリント向き血統でも、母系のスタミナ要素が強い場合、マイル以上の距離でも活躍することがあります。完全に血統だけで判断せず、実際のレース内容も重視しましょう。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mb-4">
+      <div class="card-header bg-light">
+        <h3 class="h5 mb-0">スプリント血統の予想ポイント</h3>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-6">
+            <h4 class="h6">強みを活かせる条件</h4>
+            <ul>
+              <li><strong>距離</strong>：1000m〜1400mの短距離戦</li>
+              <li><strong>コース</strong>：直線の短い急坂コースよりも平坦なコース</li>
+              <li><strong>馬場</strong>：良馬場〜稍重馬場（重馬場は体力を消耗しやすい）</li>
+              <li><strong>レース展開</strong>：ハイペースになりにくいレース</li>
+              <li><strong>馬場位置</strong>：内枠からスムーズに立ち回れる状況</li>
+              <li><strong>馬場バイアス</strong>：先行有利の馬場状態</li>
+            </ul>
+          </div>
+          <div class="col-md-6">
+            <h4 class="h6">不利になりやすい条件</h4>
+            <ul>
+              <li><strong>距離</strong>：1600m以上の中距離以上のレース</li>
+              <li><strong>コース</strong>：急坂のある上り坂コース</li>
+              <li><strong>馬場</strong>：重〜不良の深い馬場状態</li>
+              <li><strong>レース展開</strong>：極端なハイペース</li>
+              <li><strong>出走馬</strong>：同タイプの馬が多数いる状況</li>
+              <li><strong>馬場バイアス</strong>：差し・追込有利の馬場状態</li>
+            </ul>
+          </div>
+        </div>
+        <div class="alert alert-success mt-3">
+          <h4 class="h6">予想のヒント</h4>
+          <p>スプリント血統の馬を予想する際は以下の点に注目しましょう：</p>
+          <ul class="mb-0">
+            <li>前走で距離延長して負けた馬が短縮戦に戻ってくるケース</li>
+            <li>休み明けで状態の良いスプリント血統馬（短距離なら完成度が低くても好勝負可能）</li>
+            <li>短距離戦で内枠を引いたスプリント血統馬（コース取りで有利になりやすい）</li>
+            <li>同じ短距離戦でも、直線の長さによって適性が分かれることがある</li>
+            <li>芝の短距離では欧州系のスプリント血統、ダートの短距離では米国系スプリント血統に注目</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="mile" class="mb-5">
+    <h2 class="border-bottom pb-2">マイル向き血統(1600m前後)</h2>
+    <p>
+      マイル向きの血統は、1600m前後のレースで最も力を発揮する特徴を持っています。
+      スピードとスタミナのバランスが良く、中間距離でハイレベルなパフォーマンスを見せる競走馬を生み出す傾向があります。
+    </p>
+
+    <div class="card mb-4">
+      <div class="card-header bg-light">
+        <h3 class="h5 mb-0">マイル血統の特徴</h3>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-6">
+            <h4 class="h6">身体的特徴</h4>
+            <ul>
+              <li><strong>筋肉タイプ</strong>：速筋と遅筋のバランスが良い</li>
+              <li><strong>体型</strong>：均整の取れた体型が多い</li>
+              <li><strong>心肺機能</strong>：有酸素運動と無酸素運動の切り替えが上手い</li>
+              <li><strong>神経系</strong>：状況判断能力に優れている</li>
+              <li><strong>走法</strong>：回転率とストライドのバランスが良い</li>
+            </ul>
+          </div>
+          <div class="col-md-6">
+            <h4 class="h6">走りの特徴</h4>
+            <ul>
+              <li><strong>スタート</strong>：発走は平均的で徐々にペースを上げる</li>
+              <li><strong>ペース配分</strong>：中盤までリズミカルに走る</li>
+              <li><strong>最終局面</strong>：直線で切れ味を見せることが多い</li>
+              <li><strong>脚質傾向</strong>：先行〜差し脚質が多い</li>
+              <li><strong>回復</strong>：短期間での連戦も可能な場合が多い</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row mb-4">
+      <div class="col-lg-6 mb-3">
+        <div class="card h-100">
+          <div class="card-header bg-light">
+            <h3 class="h5 mb-0">代表的なマイル血統</h3>
+          </div>
+          <div class="card-body">
+            <h4 class="h6">日本の代表的なマイル系種牡馬</h4>
+            <ul>
+              <li><strong>モーリス</strong>：マイルG1を複数勝利し、産駒もマイル適性が高い</li>
+              <li><strong>キングカメハメハ</strong>：ダービー馬ながら産駒はマイル〜中距離で活躍</li>
+              <li><strong>ルーラーシップ</strong>：産駒にマイル〜中距離で活躍する馬が多い</li>
+              <li><strong>エピファネイア</strong>：菊花賞馬だが産駒の中にマイラーも</li>
+              <li><strong>ドゥラメンテ</strong>：中距離血統だが柔軟性のある産駒を出す</li>
+            </ul>
+
+            <h4 class="h6 mt-4">海外のマイル系種牡馬の血統</h4>
+            <ul>
+              <li><strong>キングマンボ系</strong>：世界的に評価の高いマイラー血統</li>
+              <li><strong>Storm Cat系</strong>：米国でマイル適性の高い産駒を多数輩出</li>
+              <li><strong>ギャリレオ系</strong>：欧州でマイル〜中距離の適性を持つ馬を輩出</li>
+              <li><strong>Danehill系</strong>：豪州で活躍し、マイル適性の強い血統として知られる</li>
+              <li><strong>Pivotal系</strong>：英国のマイラー系種牡馬として評価が高い</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6 mb-3">
+        <div class="card h-100">
+          <div class="card-header bg-light">
+            <h3 class="h5 mb-0">マイル血統の見分け方</h3>
+          </div>
+          <div class="card-body">
+            <p>血統表からマイル適性を見分けるポイント：</p>
+            <ol>
+              <li><strong>父馬の競走実績</strong>
+                <ul>
+                  <li>マイルG1（マイルCS、安田記念など）で活躍した馬</li>
+                  <li>1600m前後のレースでの勝利が多い馬</li>
+                  <li>スピードがありながらも1400m以上の距離も対応できた馬</li>
+                </ul>
+              </li>
+              <li><strong>産駒の距離適性傾向</strong>
+                <ul>
+                  <li>マイル戦での勝利率が高い種牡馬</li>
+                  <li>3歳クラシック前哨戦（桜花賞、NHKマイルC等）で好成績を残す産駒が多い</li>
+                </ul>
+              </li>
+              <li><strong>母父（BMS）のチェック</strong>
+                <ul>
+                  <li>スプリント〜マイル系の種牡馬が母父の場合、マイル適性が強化される</li>
+                  <li>中距離〜ステイヤー系の母父の場合、マイルから少し延長した距離にも対応可能</li>
+                </ul>
+              </li>
+              <li><strong>海外血統の場合</strong>
+                <ul>
+                  <li>米国の1マイル（約1600m）G1勝ち馬の血統</li>
+                  <li>欧州のマイルチャンピオンの血統</li>
+                  <li>豪州の1600mグループレースで活躍した血統</li>
+                </ul>
+              </li>
+            </ol>
+            <div class="alert alert-warning mt-3">
+              <p class="mb-0 small"><strong>注意点：</strong>マイル血統は適応範囲が広く、条件によっては1400mの短距離から1800mの中距離まで対応できる柔軟性があります。レース条件と馬の特性を総合的に判断しましょう。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mb-4">
+      <div class="card-header bg-light">
+        <h3 class="h5 mb-0">マイル血統の予想ポイント</h3>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-6">
+            <h4 class="h6">強みを活かせる条件</h4>
+            <ul>
+              <li><strong>距離</strong>：1400m〜1800mのレース</li>
+              <li><strong>コース</strong>：直線の長さが適度なコース</li>
+              <li><strong>馬場</strong>：良馬場〜稍重馬場（極端な馬場状態は不向き）</li>
+              <li><strong>レース展開</strong>：ミドルペースの流れるレース</li>
+              <li><strong>馬場位置</strong>：内〜中程度の枠から自在な競馬が可能</li>
+              <li><strong>レースレベル</strong>：クラシックやG1などの高レベルのレース</li>
+            </ul>
+          </div>
+          <div class="col-md-6">
+            <h4 class="h6">不利になりやすい条件</h4>
+            <ul>
+              <li><strong>距離</strong>：2000m以上の長距離戦や1200m以下の超短距離戦</li>
+              <li><strong>コース</strong>：極端に直線の短いコースや長いコース</li>
+              <li><strong>馬場</strong>：極端な重馬場や硬すぎる馬場</li>
+              <li><strong>レース展開</strong>：スローペースからの瞬発力勝負</li>
+              <li><strong>出走馬</strong>：極端なスピード型やステイヤー型が有利な条件</li>
+              <li><strong>障害</strong>：大外枠からの不利なポジション取り</li>
+            </ul>
+          </div>
+        </div>
+        <div class="alert alert-success mt-3">
+          <h4 class="h6">予想のヒント</h4>
+          <p>マイル血統の馬を予想する際は以下の点に注目しましょう：</p>
+          <ul class="mb-0">
+            <li>前走で距離不適合（長すぎた/短すぎた）だった馬がマイル戦に戻ってくるケース</li>
+            <li>馬場状態の変化に対応できる柔軟性がある（極端な馬場状態を除く）</li>
+            <li>マイル戦は競争質が高く、実力馬が勝ちやすい傾向があるため、実績のある馬を重視</li>
+            <li>マイル適性馬は3歳春〜夏に急成長するケースが多い（NHKマイルC、安田記念など）</li>
+            <li>マイル血統を持つ馬は、大型競馬場（東京、阪神）の1600mと、小回り競馬場（京都、中山）の1600mで適性が分かれることがある</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="middle" class="mb-5">
+    <h2 class="border-bottom pb-2">中距離向き血統(1800m〜2200m)</h2>
+    <p>
+      中距離向きの血統は、1800m〜2200mのレースで最も力を発揮する特徴を持っています。
+      持続力とスピードを併せ持ち、特に日本のクラシックレースで活躍する競走馬を生み出す傾向があります。
+    </p>
+
+    <div class="card mb-4">
+      <div class="card-header bg-light">
+        <h3 class="h5 mb-0">中距離血統の特徴</h3>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-6">
+            <h4 class="h6">身体的特徴</h4>
+            <ul>
+              <li><strong>筋肉タイプ</strong>：遅筋（持久力に特化した筋肉）の比率がやや高い</li>
+              <li><strong>体型</strong>：バランスの取れた均整美に優れた体型が多い</li>
+              <li><strong>心肺機能</strong>：持続的な有酸素運動に適応している</li>
+              <li><strong>神経系</strong>：冷静さと勝負根性を兼ね備えている</li>
+              <li><strong>走法</strong>：大きなストライドでリズミカルに走る</li>
+            </ul>
+          </div>
+          <div class="col-md-6">
+            <h4 class="h6">走りの特徴</h4>
+            <ul>
+              <li><strong>スタート</strong>：発走は平均的で、徐々にポジションを上げる</li>
+              <li><strong>ペース配分</strong>：中盤で力を温存できる</li>
+              <li><strong>最終局面</strong>：直線で伸びるスタミナと切れ味を併せ持つ</li>
+              <li><strong>脚質傾向</strong>：先行〜中団からの差し脚質が多い</li>
+              <li><strong>回復</strong>：レース間隔をある程度必要とする</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row mb-4">
+      <div class="col-lg-6 mb-3">
+        <div class="card h-100">
+          <div class="card-header bg-light">
+            <h3 class="h5 mb-0">代表的な中距離血統</h3>
+          </div>
+          <div class="card-body">
+            <h4 class="h6">日本の代表的な中距離系種牡馬</h4>
+            <ul>
+              <li><strong>ディープインパクト</strong>：三冠馬として活躍し、産駒も中距離戦で活躍</li>
+              <li><strong>ハーツクライ</strong>：産駒は中距離での活躍が顕著</li>
+              <li><strong>オルフェーヴル</strong>：三冠馬で産駒も中距離以上で活躍</li>
+              <li><strong>ドゥラメンテ</strong>：ダービー馬として2000m以上で活躍</li>
+              <li><strong>キズナ</strong>：ダービー馬で産駒も中距離適性が高い</li>
+            </ul>
+
+            <h4 class="h6 mt-4">海外の中距離系種牡馬の血統</h4>
+            <ul>
+              <li><strong>サドラーズウェルズ系</strong>：欧州の中距離レースで圧倒的な成功を収めた血統</li>
+              <li><strong>ガリレオ系</strong>：欧州の中距離G1を席巻した名種牡馬</li>
+              <li><strong>デュバウィ系</strong>：欧州〜中東で高い評価を受ける中距離血統</li>
+              <li><strong>シーザスターン系</strong>：豪州の中距雧レースで活躍する産駒を多数輩出</li>
+              <li><strong>フランケル系</strong>：新興勢力として注目される中距雧血統</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6 mb-3">
+        <div class="card h-100">
+          <div class="card-header bg-light">
+            <h3 class="h5 mb-0">中距雧血統の見分け方</h3>
+          </div>
+          <div class="card-body">
+            <p>血統表から中距雧適性を見分けるポイント：</p>
+            <ol>
+              <li><strong>父馬の競走実績</strong>
+                <ul>
+                  <li>中距雧G1（日本ダービー、天皇賞春秋、有馬記念など）で活躍した馬</li>
+                  <li>1800m〜2400mでの勝利が多い馬</li>
+                  <li>スタミナとスピードのバランスが良かった馬</li>
+                </ul>
+              </li>
+              <li><strong>産駒の距雧適性傾向</strong>
+                <ul>
+                  <li>クラシックレース（ダービー、オークスなど）で活躍する産駒が多い種牡馬</li>
+                  <li>3歳秋以降に力をつけてくる産駒が多い種牡馬</li>
+                </ul>
+              </li>
+              <li><strong>母父（BMS）のチェック</strong>
+                <ul>
+                  <li>マイル〜中距雧系の種牡馬が母父の場合、中距雧適性が強化される</li>
+                  <li>ステイヤー系の母父の場合、2400m以上の長い距雧にも対応可能</li>
+                </ul>
+              </li>
+              <li><strong>海外血統の場合</strong>
+                <ul>
+                  <li>欧州の主要ダービー（英、仏、愛）勝ち馬の血統</li>
+                  <li>ブリーダーズカップターフ（約2000m）で活躍した血統</li>
+                  <li>豪州のコーフィールドカップ、コックスプレートなどの中距雧G1勝ち馬の血統</li>
+                </ul>
+              </li>
+            </ol>
+            <div class="alert alert-warning mt-3">
+              <p class="mb-0 small"><strong>注意点：</strong>中距雧血統は日本の競馬において最も重視される血統の一つですが、父系だけでなく母系のバランスも重要です。両方の要素を見て総合的に判断しましょう。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mb-4">
+      <div class="card-header bg-light">
+        <h3 class="h5 mb-0">中距雧血統の予想ポイント</h3>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-6">
+            <h4 class="h6">強みを活かせる条件</h4>
+            <ul>
+              <li><strong>距離</strong>：1800m〜2400mのレース</li>
+              <li><strong>コース</strong>：直線の長い本格的な競馬場（東京、京都、阪神）</li>
+              <li><strong>馬場</strong>：良馬場〜稍重馬場（馬場適応力が高い傾向）</li>
+              <li><strong>レース展開</strong>：流れるようなミドルペース</li>
+              <li><strong>馬場位置</strong>：内〜中程度の枠からリズムよく運べる状況</li>
+              <li><strong>レースレベル</strong>：G1など競争質の高いレース</li>
+            </ul>
+          </div>
+          <div class="col-md-6">
+            <h4 class="h6">不利になりやすい条件</h4>
+            <ul>
+              <li><strong>距離</strong>：1400m以下の短距離戦</li>
+              <li><strong>コース</strong>：小回りのきつい競馬場</li>
+              <li><strong>馬場</strong>：極端な重馬場（体力を消耗しすぎる）</li>
+              <li><strong>レース展開</strong>：極端なスローペースからの瞬発力勝負</li>
+              <li><strong>出走馬</strong>：スプリンターばかりの短距雧適性レース</li>
+              <li><strong>障害</strong>：極端な大外枠や、内枠でも窮屈なポジション</li>
+            </ul>
+          </div>
+        </div>
+        <div class="alert alert-success mt-3">
+          <h4 class="h6">予想のヒント</h4>
+          <p>中距雧血統の馬を予想する際は以下の点に注目しましょう：</p>
+          <ul class="mb-0">
+            <li>3歳クラシック（皐月賞、ダービー、オークス）は中距雧血統が活きるレース</li>
+            <li>前走より距離が延びる条件で、中距雧血統の強みが出る（距離延長で評価アップ）</li>
+            <li>秋のG1シーズンは、中距雧血統の完成形が見られる時期</li>
+            <li>中距雧血統は4歳以降も安定したパフォーマンスを見せることが多い</li>
+            <li>中距雧血統同士の「血統対決」は、実績や調子など他の要素も重視して判断する</li>
+            <li>欧州輸入馬の場合、日本の中距雧レースに適応できるかがポイント</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="stayer" class="mb-5">
+    <h2 class="border-bottom pb-2">ステイヤー向き血統(2400m〜)</h2>
+    <p>
+      ステイヤー向きの血統は、2400m以上の長距離レースで最も力を発揮する特徴を持っています。
+      優れたスタミナと持久力を持ち、長い距離を安定したペースで走り切ることができる競走馬を生み出す傾向があります。
+    </p>
+
+    <div class="card mb-4">
+      <div class="card-header bg-light">
+        <h3 class="h5 mb-0">ステイヤー血統の特徴</h3>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-6">
+            <h4 class="h6">身体的特徴</h4>
+            <ul>
+              <li><strong>筋肉タイプ</strong>：遅筋（持久力に特化した筋肉）の比率が高い</li>
+              <li><strong>体型</strong>：骨太で胴長、アングルの緩やかな体型が多い</li>
+              <li><strong>心肺機能</strong>：長時間の有酸素運動に優れた能力</li>
+              <li><strong>神経系</strong>：落ち着いた気質で長く力を発揮できる</li>
+              <li><strong>走法</strong>：大きなストライドでエネルギー効率の良い走り</li>
+            </ul>
+          </div>
+          <div class="col-md-6">
+            <h4 class="h6">走りの特徴</h4>
+            <ul>
+              <li><strong>スタート</strong>：ややゆっくりめの発走から徐々にペースを上げる</li>
+              <li><strong>ペース配分</strong>：終始安定したリズムで走る</li>
+              <li><strong>最終局面</strong>：粘り強く走り切る持久力がある</li>
+              <li><strong>脚質傾向</strong>：中団〜後方からの差し・追込脚質が多い</li>
+              <li><strong>回復</strong>：レース後の回復に時間がかかることが多い</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row mb-4">
+      <div class="col-lg-6 mb-3">
+        <div class="card h-100">
+          <div class="card-header bg-light">
+            <h3 class="h5 mb-0">代表的なステイヤー血統</h3>
+          </div>
+          <div class="card-body">
+            <h4 class="h6">日本の代表的なステイヤー系種牡馬</h4>
+            <ul>
+              <li><strong>ステイゴールド</strong>：日本を代表するステイヤー系種牡馬、産駒も長距離で活躍</li>
+              <li><strong>ゴールドシップ</strong>：有馬記念、菊花賞勝ち馬で長距離適性が高い</li>
+              <li><strong>シンボリクリスエス</strong>：有馬記念連覇馬で産駒も長距離で活躍</li>
+              <li><strong>ワークフォース</strong>：凱旋門賞勝ち馬で産駒の長距離適性が高い</li>
+              <li><strong>トーセンジョーダン</strong>：菊花賞勝ち馬で長距離血統として評価</li>
+            </ul>
+
+            <h4 class="h6 mt-4">海外のステイヤー系種牡馬の血統</h4>
+            <ul>
+              <li><strong>モンジュー系</strong>：欧州の長距雧レースで顕著な活躍を見せた血統</li>
+              <li><strong>シーザサイド系</strong>：豪州のメルボルンカップなど長距雧レースで活躍</li>
+              <li><strong>アファームド系</strong>：米国のスタミナ血統として知られる</li>
+              <li><strong>ハイチャパラル系</strong>：愛ダービー、英ダービー連覇の実績を持つ血統</li>
+              <li><strong>テオフィロ系</strong>：豪州で長距雧産駒を多く輩出している血統</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6 mb-3">
+        <div class="card h-100">
+          <div class="card-header bg-light">
+            <h3 class="h5 mb-0">ステイヤー血統の見分け方</h3>
+          </div>
+          <div class="card-body">
+            <p>血統表からステイヤー適性を見分けるポイント：</p>
+            <ol>
+              <li><strong>父馬の競走実績</strong>
+                <ul>
+                  <li>長距雧G1（菊花賞、有馬記念、天皇賞春など）で活躍した馬</li>
+                  <li>2400m以上のレースでの勝利が多い馬</li>
+                  <li>欧州の凱旋門賞、英セントレジャーなどステイヤー向け重賞勝ち馬</li>
+                </ul>
+              </li>
+              <li><strong>産駒の距雧適性傾向</strong>
+                <ul>
+                  <li>長距雧レースでの勝利率が高い種牡馬</li>
+                  <li>3歳後半〜4歳以降に力をつけてくる産駒が多い種牡馬</li>
+                </ul>
+              </li>
+              <li><strong>母父（BMS）のチェック</strong>
+                <ul>
+                  <li>中距雧〜ステイヤー系の種牡馬が母父の場合、長距雧適性が強化される</li>
+                  <li>例：ステイゴールド×ディープインパクト母父 → 極めて長距雧適性が高い</li>
+                </ul>
+              </li>
+              <li><strong>海外血統の場合</strong>
+                <ul>
+                  <li>欧州の長距雧G1（英セントレジャー、アスコットゴールドカップなど）勝ち馬の血統</li>
+                  <li>豪州のメルボルンカップ、シドニーカップなど長距雧G1勝ち馬の血統</li>
+                  <li>欧州のナショナルハント（障害）血統の影響がある馬</li>
+                </ul>
+              </li>
+            </ol>
+            <div class="alert alert-warning mt-3">
+              <p class="mb-0 small"><strong>注意点：</strong>純粋なステイヤー血統は日本では数が少なくなっています。多くの場合、中距雧血統とステイヤー血統の掛け合わせになるため、馬の個体差も大きくなります。実績を重視して判断しましょう。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mb-4">
+      <div class="card-header bg-light">
+        <h3 class="h5 mb-0">ステイヤー血統の予想ポイント</h3>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-6">
+            <h4 class="h6">強みを活かせる条件</h4>
+            <ul>
+              <li><strong>距離</strong>：2400m以上の長距雧レース</li>
+              <li><strong>コース</strong>：上り坂のある競馬場（中山、阪神など）</li>
+              <li><strong>馬場</strong>：良馬場〜重馬場（体力勝負になるコンディション）</li>
+              <li><strong>レース展開</strong>：スタミナを消耗するハイペース</li>
+              <li><strong>季節</strong>：夏場の暑い時期や、冬の寒い時期（体力消耗大）</li>
+              <li><strong>レースレベル</strong>：菊花賞、天皇賞春、有馬記念など</li>
+            </ul>
+          </div>
+          <div class="col-md-6">
+            <h4 class="h6">不利になりやすい条件</h4>
+            <ul>
+              <li><strong>距離</strong>：1800m以下の短い距雧</li>
+              <li><strong>コース</strong>：直線の短い小回りコース</li>
+              <li><strong>馬場</strong>：固い馬場状態（関節に負担がかかる）</li>
+              <li><strong>レース展開</strong>：極端なスローペースからの瞬発力勝負</li>
+              <li><strong>出走馬</strong>：瞬発力に優れたスピード型が多数</li>
+              <li><strong>レースペース</strong>：遅いペースから一気に加速するレース</li>
+            </ul>
+          </div>
+        </div>
+        <div class="alert alert-success mt-3">
+          <h4 class="h6">予想のヒント</h4>
+          <p>ステイヤー血統の馬を予想する際は以下の点に注目しましょう：</p>
+          <ul class="mb-0">
+            <li>長距雧レースの前哨戦で、中距雧戦を叩き台にしているステイヤー血統馬</li>
+            <li>前走より距雧が大幅に延びる条件で、ステイヤー血統の強みが出る</li>
+            <li>天候不順（降雨、酷暑など）で馬場が荒れる状況では、ステイヤー血統が有利に</li>
+            <li>ステイヤー血統は4〜5歳で完成することが多いため、古馬混合戦では年齢も考慮</li>
+            <li>春の長距雧G1と秋の長距雧G1では、求められる適性が異なることがある</li>
+            <li>欧州輸入のステイヤー血統馬は、日本の馬場状態や競馬スタイルへの適応度をチェック</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mb-4">
+      <div class="card-header bg-light">
+        <h3 class="h5 mb-0">長距雧レースの特殊性</h3>
+      </div>
+      <div class="card-body">
+        <p>ステイヤー血統の馬が得意とする長距雧レースには、他の距雧帯にはない特殊性があります：</p>
+        <div class="row">
+          <div class="col-lg-6">
+            <h4 class="h6">心理的要素の重要性</h4>
+            <ul>
+              <li><strong>忍耐力</strong>：長距雧を走り切る粘り強さが必要</li>
+              <li><strong>集中力</strong>：長時間の競争中に集中力を維持できるか</li>
+              <li><strong>闘争心</strong>：疲労が極限に達した状態でも諦めない精神力</li>
+              <li><strong>落ち着き</strong>：序盤から中盤にかけて力を温存できる冷静さ</li>
+            </ul>
+            <p class="small">ステイヤー血統は、これらの心理的要素に優れていることが多く、特に母系からこうした気質が受け継がれる傾向があります。</p>
+          </div>
+          <div class="col-lg-6">
+            <h4 class="h6">ペース配分の重要性</h4>
+            <ul>
+              <li><strong>ハイペース</strong>：全体的に速いペースではステイヤー有利</li>
+              <li><strong>極端なスローペース</strong>：スローからの瞬発力勝負ではステイヤー不利</li>
+              <li><strong>中盤の息抜き</strong>：中盤でペースが落ちる展開ではステイヤーが力を温存できる</li>
+              <li><strong>ラップタイム</strong>：安定したラップタイムが刻まれる展開が理想的</li>
+            </ul>
+            <p class="small">長距雧レースでは、馬自身のペース配分能力と騎手の距雧感が重要になります。ステイヤー血統の馬は、自分のペースを守りながら走る能力に優れています。</p>
+          </div>
+        </div>
+        <div class="alert alert-info mt-3">
+          <p class="mb-0">日本の競馬では純粋なステイヤーレースが少なくなっていますが、近年は国際化に伴い、長距雧適性を持つ馬の価値が再評価されています。特に外国人騎手が騎乗する場合、ステイヤー血統の特性を活かした戦術が取られることがあります。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="prediction" class="mb-5">
+    <h2 class="border-bottom pb-2">血統から距離適性を予測する方法</h2>
+    <p>
+      競走馬の血統表から距離適性を予測するには、いくつかの手法があります。
+      初心者から上級者まで活用できる実践的な方法を解説します。
+    </p>
+
+    <div class="card mb-4">
+      <div class="card-header bg-light">
+        <h3 class="h5 mb-0">父系・母系のバランスで判断する</h3>
+      </div>
+      <div class="card-body">
+        <p>最も基本的な方法は、父馬と母父（BMS）の距離適性を組み合わせて判断する方法です。</p>
+        <div class="table-responsive">
+          <table class="table table-bordered">
+            <thead class="table-light">
+              <tr>
+                <th>組み合わせパターン</th>
+                <th>予測される距離適性</th>
+                <th>例</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>スプリント系父馬 × スプリント系母父</td>
+                <td>短距離（〜1400m）に非常に強い適性</td>
+                <td>ロードカナロア × キングズベスト</td>
+              </tr>
+              <tr>
+                <td>スプリント系父馬 × マイル系母父</td>
+                <td>短距離〜マイル（〜1600m）の適性</td>
+                <td>ダイワメジャー × サンデーサイレンス</td>
+              </tr>
+              <tr>
+                <td>スプリント系父馬 × 中距雧系母父</td>
+                <td>マイル（1600m）前後の適性</td>
+                <td>ロードカナロア × ディープインパクト</td>
+              </tr>
+              <tr>
+                <td>マイル系父馬 × スプリント系母父</td>
+                <td>マイル（1600m）前後の適性</td>
+                <td>モーリス × スペシャルウィーク</td>
+              </tr>
+              <tr>
+                <td>マイル系父馬 × マイル系母父</td>
+                <td>マイル〜中距雧（1600m〜2000m）の適性</td>
+                <td>キングカメハメハ × フジキセキ</td>
+              </tr>
+              <tr>
+                <td>マイル系父馬 × 中距雧系母父</td>
+                <td>中距雧（1800m〜2200m）の適性</td>
+                <td>ルーラーシップ × ディープインパクト</td>
+              </tr>
+              <tr>
+                <td>中距雧系父馬 × マイル系母父</td>
+                <td>中距雧（1800m〜2200m）の適性</td>
+                <td>ディープインパクト × キングカメハメハ</td>
+              </tr>
+              <tr>
+                <td>中距雧系父馬 × 中距雧系母父</td>
+                <td>中距雧〜長距雧（2000m〜2400m）の適性</td>
+                <td>ハーツクライ × ディープインパクト</td>
+              </tr>
+              <tr>
+                <td>中距雧系父馬 × ステイヤー系母父</td>
+                <td>長距雧（2400m〜）の適性</td>
+                <td>オルフェーヴル × ステイゴールド</td>
+              </tr>
+              <tr>
+                <td>ステイヤー系父馬 × 中距雧系母父</td>
+                <td>長距雧（2400m〜）の適性</td>
+                <td>ステイゴールド × ディープインパクト</td>
+              </tr>
+              <tr>
+                <td>ステイヤー系父馬 × ステイヤー系母父</td>
+                <td>超長距雧（3000m〜）にも対応可能</td>
+                <td>ワークフォース × ステイゴールド</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="small text-muted mt-2">※上記は一般的な傾向であり、個体差や他の血統的要素によって変動します。</p>
+      </div>
+    </div>
+
+    <div class="row mb-4">
+      <div class="col-lg-6 mb-3">
+        <div class="card h-100">
+          <div class="card-header bg-light">
+            <h3 class="h5 mb-0">インブリードによる影響を見る</h3>
+          </div>
+          <div class="card-body">
+            <p>血統表の中で同じ祖先が複数回現れる「インブリード」は、距離適性に大きな影響を与えることがあります。</p>
+            <h4 class="h6">主なインブリードの効果</h4>
+            <ul>
+              <li><strong>Northern Dancer へのインブリード</strong>
+                <ul>
+                  <li>マイル〜中距雧の適性が強化される傾向</li>
+                  <li>バランスの良い能力を持つことが多い</li>
+                </ul>
+              </li>
+              <li><strong>Mr. Prospector へのインブリード</strong>
+                <ul>
+                  <li>スピード要素が強化される傾向</li>
+                  <li>短距雧〜マイルでの活躍が期待できる</li>
+                </ul>
+              </li>
+              <li><strong>サンデーサイレンス へのインブリード</strong>
+                <ul>
+                  <li>日本では中距雧適性が強化される傾向</li>
+                  <li>安定した能力を発揮することが多い</li>
+                </ul>
+              </li>
+              <li><strong>Roberto へのインブリード</strong>
+                <ul>
+                  <li>スタミナ要素が強化される傾向</li>
+                  <li>中長距雧での活躍が期待できる</li>
+                </ul>
+              </li>
+              <li><strong>Hail to Reason へのインブリード</strong>
+                <ul>
+                  <li>長距雧適性が強化される傾向</li>
+                  <li>粘り強さが特徴になることが多い</li>
+                </ul>
+              </li>
+            </ul>
+            <div class="alert alert-warning">
+              <p class="mb-0 small">インブリードの効果は「傾向」であり、絶対的なものではありません。また、濃すぎるインブリードは気性面などでマイナスになることもあります。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6 mb-3">
+        <div class="card h-100">
+          <div class="card-header bg-light">
+            <h3 class="h5 mb-0">ニックス（相性の良い配合）で判断する</h3>
+          </div>
+          <div class="card-body">
+            <p>特定の血統同士の組み合わせ（ニックス）が、特定の距離適性を生み出すパターンがあります。</p>
+            <h4 class="h6">代表的な距離適性ニックス</h4>
+            <ul>
+              <li><strong>サンデーサイレンス系 × Northern Dancer系</strong>
+                <ul>
+                  <li>マイル〜中距雧（1600m〜2200m）で高い適性</li>
+                  <li>例：ディープインパクト × キングマンボ</li>
+                </ul>
+              </li>
+              <li><strong>Mr. Prospector系 × Northern Dancer系</strong>
+                <ul>
+                  <li>短距雧〜マイル（1200m〜1600m）で高い適性</li>
+                  <li>例：キングカメハメハ × サンデーサイレンス</li>
+                </ul>
+              </li>
+              <li><strong>サドラーズウェルズ系 × Mr. Prospector系</strong>
+                <ul>
+                  <li>中距雧（1800m〜2200m）で高い適性</li>
+                  <li>例：ハーツクライ × フジキセキ</li>
+                </ul>
+              </li>
+              <li><strong>Roberto系 × Northern Dancer系</strong>
+                <ul>
+                  <li>中長距雧（2000m〜2400m）で高い適性</li>
+                  <li>例：ブライアンズタイム × ノーザンテースト</li>
+                </ul>
+              </li>
+              <li><strong>サンデーサイレンス系 × Roberto系</strong>
+                <ul>
+                  <li>長距雧（2400m〜）で高い適性</li>
+                  <li>例：ディープインパクト × ブライアンズタイム</li>
+                </ul>
+              </li>
+            </ul>
+            <div class="alert alert-info">
+              <p class="mb-0 small">ニックスの効果は時代と共に変化します。また、日本と海外では同じ血統組み合わせでも評価が異なることがあります。最新の成功事例を参考にしましょう。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mb-4">
+      <div class="card-header bg-light">
+        <h3 class="h5 mb-0">牝系（メアファミリー）から判断する</h3>
+      </div>
+      <div class="card-body">
+        <p>
+          母系をさかのぼって調べる「牝系分析」も、距離適性を予測する上で重要です。
+          特に母方の祖母、曾祖母の世代まで遡って、その一族がどのような距離で活躍してきたかを調べることで、
+          より詳細な距離適性の予測が可能になります。
+        </p>
+        <div class="row">
+          <div class="col-md-6">
+            <h4 class="h6">短距雧向き牝系の特徴</h4>
+            <ul>
+              <li>短距雧G1を複数勝利している一族</li>
+              <li>早熟な特徴を持つ馬を多く輩出している</li>
+              <li>米国のスプリンター系牝系</li>
+              <li>豪州のスピード系牝系</li>
+              <li>日本では特定の短距雧向き母系（例：ライラックポイント系）</li>
+            </ul>
+          </div>
+          <div class="col-md-6">
+            <h4 class="h6">長距雧向き牝系の特徴</h4>
+            <ul>
+              <li>菊花賞、有馬記念など長距雧G1勝ち馬を輩出</li>
+              <li>晩成型で長く活躍する馬を多く輩出</li>
+              <li>欧州の古典系牝系（特に英セントレジャー勝ち馬を出した牝系）</li>
+              <li>日本の古くからの名牝系（例：クリムゾンセイコー系）</li>
+              <li>ナショナルハント（障害）の血を引く牝系</li>
+            </ul>
+          </div>
+        </div>
+        <div class="alert alert-success mt-3">
+          <h4 class="h6">牝系分析のポイント</h4>
+          <p>牝系から距離適性を読み取る際のポイント：</p>
+          <ol class="mb-0">
+            <li>母、母の兄弟姉妹、祖母の産駒などが活躍した距離帯を確認</li>
+            <li>牝系に属する主な勝ち馬が勝利したG1レースの距離をチェック</li>
+            <li>系統の創始となる名牝の得意としていた距離を調査</li>
+            <li>牝系に属する馬の走りの特徴（前に行くタイプか、後方から差すタイプか）</li>
+            <li>当該牝系が日本の競馬で実績を残している場合、どの距雧で好成績を残しているか</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <div class="alert alert-info">
+      <h4 class="alert-heading h5">初心者向けアドバイス</h4>
+      <p>血統から距離適性を予測する際は、まずは「父馬」と「母父」の2点だけに注目するとよいでしょう。この2点だけでもおおよその距離適性が分かります。慣れてきたら、牝系やインブリードなど、より詳細な分析に進んでいきましょう。</p>
+    </div>
+  </section>
+
+  <section id="examples" class="mb-5">
+    <h2 class="border-bottom pb-2">実例で見る距離適性と血統の関係</h2>
+    <p>
+      ここでは、実際の競走馬の例を挙げながら、血統と距離適性の関係を見ていきましょう。
+      実例を知ることで、血統分析の理解が深まります。
+    </p>
+
+    <div class="row mb-4">
+      <div class="col-lg-6 mb-3">
+        <div class="card h-100">
+          <div class="card-header bg-light">
+            <h3 class="h5 mb-0">短距雧・マイル適性の名馬の血統例</h3>
+          </div>
+          <div class="card-body">
+            <h4 class="h6">モーリス（短距雧〜マイル）</h4>
+            <ul>
+              <li><strong>父：スクリーンヒーロー</strong>（中距雧向き）</li>
+              <li><strong>母父：カーネギー</strong>（長距雧向き）</li>
+              <li><strong>距離適性の実績</strong>：1600mのマイルCと安田記念を勝利</li>
+              <li><strong>血統と距離の関係性</strong>：中距雧〜長距雧血統だが、個体としては短距雧〜マイルで活躍。血統からは予測しづらいタイプだった</li>
+            </ul>
+
+            <h4 class="h6 mt-3">ロードカナロア（短距雧）</h4>
+            <ul>
+              <li><strong>父：キングカメハメハ</strong>（マイル〜中距雧向き）</li>
+              <li><strong>母父：Storm Cat</strong>（スプリント〜マイル向き）</li>
+              <li><strong>距離適性の実績</strong>：1200mのスプリンターズSと香港スプリントを勝利</li>
+              <li><strong>血統と距離の関係性</strong>：母父のStorm Cat（スピード系）の影響が強く出た好例。スプリント適性が強化された</li>
+            </ul>
+
+            <h4 class="h6 mt-3">アーモンドアイ（マイル〜中距雧）</h4>
+            <ul>
+              <li><strong>父：ロードカナロア</strong>（短距雧向き）</li>
+              <li><strong>母父：サンデーサイレンス</strong>（中距雧向き）</li>
+              <li><strong>距離適性の実績</strong>：1600mのヴィクトリアマイルから2500mのジャパンCまで勝利</li>
+              <li><strong>血統と距離の関係性</strong>：短距雧の父と中距雧の母父の組み合わせが幅広い距離適性を生んだ好例。母系の影響が強い</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6 mb-3">
+        <div class="card h-100">
+          <div class="card-header bg-light">
+            <h3 class="h5 mb-0">中距雧・長距雧適性の名馬の血統例</h3>
+          </div>
+          <div class="card-body">
+            <h4 class="h6">ディープインパクト（中距雧）</h4>
+            <ul>
+              <li><strong>父：サンデーサイレンス</strong>（中距雧向き）</li>
+              <li><strong>母父：Alzao</strong>（マイル〜中距雧向き）</li>
+              <li><strong>距離適性の実績</strong>：2000mの日本ダービーから3200mの菊花賞まで勝利</li>
+              <li><strong>血統と距離の関係性</strong>：父と母父両方が持つ中距雧適性が強化された好例。サンデーサイレンス産駒の中でも特に距雧適性の幅が広かった</li>
+            </ul>
+
+            <h4 class="h6 mt-3">キタサンブラック（中距雧〜長距雧）</h4>
+            <ul>
+              <li><strong>父：ブラックタイド</strong>（中距雧向き）</li>
+              <li><strong>母父：サクラバクシンオー</strong>（短距雧向き）</li>
+              <li><strong>距離適性の実績</strong>：2000mの日本ダービーから3200mの菊花賞まで勝利</li>
+              <li><strong>血統と距離の関係性</strong>：母父は短距雧向きだが、父のサンデーサイレンス系の影響が強く出た例。個体差の大きさを示す好例</li>
+            </ul>
+
+            <h4 class="h6 mt-3">ゴールドシップ（長距雧）</h4>
+            <ul>
+              <li><strong>父：ステイゴールド</strong>（長距雧向き）</li>
+              <li><strong>母父：メジロマックイーン</strong>（長距雧向き）</li>
+              <li><strong>距離適性の実績</strong>：2500mの有馬記念、3000mの菊花賞を勝利</li>
+              <li><strong>血統と距離の関係性</strong>：父と母父共に長距雧適性が高い組み合わせが、強力なステイヤーを生んだ好例。長距雧血統の理想的な組み合わせ</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mb-4">
+      <div class="card-header bg-light">
+        <h3 class="h5 mb-0">注目すべき血統パターン</h3>
+      </div>
+      <div class="card-body">
+        <p>競馬予想に役立つ、特徴的な血統パターンとその距離適性をご紹介します。</p>
+        <div class="row">
+          <div class="col-md-6">
+            <h4 class="h6">ディープインパクト産駒のパターン</h4>
+            <table class="table table-sm">
+              <thead class="table-light">
+                <tr>
+                  <th>母父</th>
+                  <th>予測される距離適性</th>
+                  <th>代表馬</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>スピード系母父</td>
+                  <td>マイル〜中距雧</td>
+                  <td>グランアレグリア（キングズベスト）</td>
+                </tr>
+                <tr>
+                  <td>キングカメハメハ</td>
+                  <td>中距雧</td>
+                  <td>サートゥルナーリア</td>
+                </tr>
+                <tr>
+                  <td>ステイヤー系母父</td>
+                  <td>中距雧〜長距雧</td>
+                  <td>ワールドプレミア（ブライアンズタイム）</td>
+                </tr>
+                <tr>
+                  <td>Storm Cat系</td>
+                  <td>マイル</td>
+                  <td>コントレイル（ジャングルポケット）</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="col-md-6">
+            <h4 class="h6">ロードカナロア産駒のパターン</h4>
+            <table class="table table-sm">
+              <thead class="table-light">
+                <tr>
+                  <th>母父</th>
+                  <th>予測される距離適性</th>
+                  <th>代表馬</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>サンデーサイレンス系</td>
+                  <td>マイル〜中距雧</td>
+                  <td>アーモンドアイ（サンデーサイレンス）</td>
+                </tr>
+                <tr>
+                  <td>キングカメハメハ</td>
+                  <td>スプリント〜マイル</td>
+                  <td>ダノンスマッシュ</td>
+                </tr>
+                <tr>
+                  <td>スピード系母父</td>
+                  <td>短距雧</td>
+                  <td>タワーオブロンドン（Bernstein）</td>
+                </tr>
+                <tr>
+                  <td>Storm Cat系</td>
+                  <td>短距雧〜マイル</td>
+                  <td>サトノアレス（Forestry）</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="alert alert-warning mt-3">
+          <p class="mb-0">血統パターンは傾向を示すものであり、個体差や調教、騎手の影響など他の要素も考慮する必要があります。また、新しい血統の組み合わせは常に生まれており、過去の成功パターンに固執しすぎないことも重要です。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="tips" class="mb-5">
+    <h2 class="border-bottom pb-2">予想に役立てるポイント</h2>
+    <p>
+      血統から読み取った距離適性を実際の競馬予想に活かすためのポイントを解説します。
+      これらのポイントを押さえることで、より的確な予想ができるようになります。
+    </p>
+
+    <div class="card mb-4">
+      <div class="card-header bg-light">
+        <h3 class="h5 mb-0">レース条件と血統的距離適性の相性を見る</h3>
+      </div>
+      <div class="card-body">
+        <p>血統的距離適性とレース条件の相性を見ることが、予想の基本となります。</p>
+        <div class="row">
+          <div class="col-lg-6">
+            <h4 class="h6">プラス評価となるケース</h4>
+            <ul>
+              <li><strong>適性距離でのレース</strong>
+                <ul>
+                  <li>血統的距離適性とレース距離が一致している</li>
+                  <li>例：ステイゴールド産駒が3000mのレースに出走する場合</li>
+                </ul>
+              </li>
+              <li><strong>好相性のコース形態</strong>
+                <ul>
+                  <li>血統特性とコース形態が合致している</li>
+                  <li>例：ディープインパクト産駒と東京競馬場の相性</li>
+                </ul>
+              </li>
+              <li><strong>好相性の馬場状態</strong>
+                <ul>
+                  <li>血統的に得意とする馬場状態である</li>
+                  <li>例：欧州血統の馬と湿った馬場の相性</li>
+                </ul>
+              </li>
+              <li><strong>距離延長に適した血統</strong>
+                <ul>
+                  <li>前走より距離が延びる時、ステイヤー系血統は評価アップ</li>
+                  <li>例：ディープインパクト産駒が2000m→2400mへ距離延長する場合</li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+          <div class="col-lg-6">
+            <h4 class="h6">マイナス評価となるケース</h4>
+            <ul>
+              <li><strong>適性外の距離</strong>
+                <ul>
+                  <li>血統的距離適性とレース距離が大きくかけ離れている</li>
+                  <li>例：ロードカナロア産駒が3000mのレースに出走する場合</li>
+                </ul>
+              </li>
+              <li><strong>不得意のコース形態</strong>
+                <ul>
+                  <li>血統特性とコース形態が合わない</li>
+                  <li>例：ステイヤー血統と短い直線の小回りコース</li>
+                </ul>
+              </li>
+              <li><strong>不得意の馬場状態</strong>
+                <ul>
+                  <li>血統的に苦手とする馬場状態である</li>
+                  <li>例：スピード型血統の馬と極端な重馬場</li>
+                </ul>
+              </li>
+              <li><strong>距離短縮に不向きな血統</strong>
+                <ul>
+                  <li>前走より距離が短縮する時、ステイヤー系血統は評価ダウン</li>
+                  <li>例：ステイゴールド産駒が2400m→1600mへ距離短縮する場合</li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row mb-4">
+      <div class="col-lg-6 mb-3">
+        <div class="card h-100">
+          <div class="card-header bg-light">
+            <h3 class="h5 mb-0">血統と年齢・成長の関係を見る</h3>
+          </div>
+          <div class="card-body">
+            <p>血統によって成長曲線や最大能力を発揮する年齢が異なります。</p>
+            <ul>
+              <li><strong>早熟型血統</strong>
+                <ul>
+                  <li>2〜3歳で早くから能力を発揮</li>
+                  <li>短距雧〜マイル血統に多い</li>
+                  <li>例：ロードカナロア産駒、Mr. Prospector系</li>
+                  <li>予想ポイント：新馬戦や2歳重賞、クラシック前半戦で注目</li>
+                </ul>
+              </li>
+              <li><strong>標準型血統</strong>
+                <ul>
+                  <li>3〜4歳で能力が完成する</li>
+                  <li>マイル〜中距雧血統に多い</li>
+                  <li>例：ディープインパクト産駒、キングカメハメハ産駒</li>
+                  <li>予想ポイント：クラシック後半戦から古馬G1初年度で注目</li>
+                </ul>
+              </li>
+              <li><strong>晩成型血統</strong>
+                <ul>
+                  <li>4〜5歳以降に力を発揮</li>
+                  <li>中距雧〜長距雧血統に多い</li>
+                  <li>例：ステイゴールド産駒、シンボリクリスエス産駒</li>
+                  <li>予想ポイント：古馬混合G1や長距雧重賞で注目</li>
+                </ul>
+              </li>
+              <li><strong>持続型血統</strong>
+                <ul>
+                  <li>一度完成すると長く現役で活躍</li>
+                  <li>欧州系のタフな血統に多い</li>
+                  <li>例：サドラーズウェルズ系、ギャリレオ系</li>
+                  <li>予想ポイント：6歳以上の古馬でも衰えの少ない馬として注目</li>
+                </ul>
+              </li>
+            </ul>
+            <div class="alert alert-info">
+              <p class="mb-0 small">血統による成長パターンの特徴を理解しておくと、「今の年齢では能力が未完成」「これからが本領発揮」といった馬を見つけやすくなります。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6 mb-3">
+        <div class="card h-100">
+          <div class="card-header bg-light">
+            <h3 class="h5 mb-0">血統×距離×他の要素の掛け合わせ</h3>
+          </div>
+          <div class="card-body">
+            <p>血統的距離適性だけでなく、他の要素との掛け合わせで総合的に判断することが重要です。</p>
+            <h4 class="h6">血統的距離適性と組み合わせるべき要素</h4>
+            <ul>
+              <li><strong>脚質</strong>
+                <ul>
+                  <li>距離適性と脚質が合致しているか（例：ステイヤー血統×差し・追込脚質）</li>
+                  <li>コース特性と脚質・血統の相性（例：短い直線コース×スプリント血統×先行脚質）</li>
+                </ul>
+              </li>
+              <li><strong>馬体</strong>
+                <ul>
+                  <li>血統から予測される体型と実際の馬体の一致度</li>
+                  <li>例：ステイヤー血統なのに筋肉質で短躯という場合、血統予測を修正する</li>
+                </ul>
+              </li>
+              <li><strong>騎手の特性</strong>
+                <ul>
+                  <li>血統的距離適性と騎手の得意戦法の相性</li>
+                  <li>例：ステイヤー血統×ペースを把握するのが上手い騎手</li>
+                </ul>
+              </li>
+              <li><strong>調教師の傾向</strong>
+                <ul>
+                  <li>調教師が血統の特徴を活かす調教・調整をしているか</li>
+                  <li>例：ステイヤー血統を長く乗り込む調教師との相性</li>
+                </ul>
+              </li>
+              <li><strong>レース展開予測</strong>
+                <ul>
+                  <li>予想されるペースと血統的特徴の相性</li>
+                  <li>例：ハイペース予想×ステイヤー血統 → 有利</li>
+                </ul>
+              </li>
+            </ul>
+            <div class="alert alert-warning">
+              <p class="mb-0 small">血統的距離適性は一要素に過ぎません。他の要素と矛盾する場合は、総合的に判断することが大切です。例えば「血統は長距雧向きだが、実績は短距雧のみ」という場合は、実績を重視すべきでしょう。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mb-4">
+      <div class="card-header bg-light">
+        <h3 class="h5 mb-0">距離変更時の血統評価</h3>
+      </div>
+      <div class="card-body">
+        <p>競走馬が前走と異なる距離に挑戦する場合、血統的観点から予測できることがあります。</p>
+        <table class="table table-bordered">
+          <thead class="table-light">
+            <tr>
+              <th>変更パターン</th>
+              <th>スプリント血統の場合</th>
+              <th>マイル血統の場合</th>
+              <th>中距雧血統の場合</th>
+              <th>ステイヤー血統の場合</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>大幅な距離延長</strong><br>例：1400m→2000m</td>
+              <td class="table-danger">大きなマイナス</td>
+              <td class="table-warning">やや不安</td>
+              <td class="table-success">プラス評価</td>
+              <td class="table-success">大きなプラス</td>
+            </tr>
+            <tr>
+              <td><strong>小幅な距離延長</strong><br>例：1600m→1800m</td>
+              <td class="table-warning">やや不安</td>
+              <td class="table-light">中立〜プラス</td>
+              <td class="table-success">プラス評価</td>
+              <td class="table-success">プラス評価</td>
+            </tr>
+            <tr>
+              <td><strong>小幅な距離短縮</strong><br>例：2000m→1800m</td>
+              <td class="table-success">プラス評価</td>
+              <td class="table-success">プラス評価</td>
+              <td class="table-light">中立〜プラス</td>
+              <td class="table-warning">やや不安</td>
+            </tr>
+            <tr>
+              <td><strong>大幅な距離短縮</strong><br>例：2400m→1600m</td>
+              <td class="table-success">大きなプラス</td>
+              <td class="table-success">プラス評価</td>
+              <td class="table-warning">やや不安</td>
+              <td class="table-danger">大きなマイナス</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="small text-muted mt-2">※上記は一般的な傾向であり、個体差や調教、実績などを考慮する必要があります。</p>
+        <div class="alert alert-success mt-3">
+          <h4 class="h6">距離変更の予想ポイント</h4>
+          <ul class="mb-0">
+            <li>前走で距離不適合だった馬が、血統的に適した距離に戻る場合は大きく評価アップ</li>
+            <li>芝・ダート替わりと距離変更が同時に行われる場合は、血統面から総合的に判断する</li>
+            <li>初めて延長・短縮に挑戦する場合は、同種牡馬産駒の過去の適応実績を参考にする</li>
+            <li>距離変更と同時に斤量変化がある場合、その影響も考慮（特に長距雧戦では重要）</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="alert alert-info">
+      <h4 class="alert-heading h5">初心者向けアドバイス</h4>
+      <p>血統的距離適性を予想に活かす際は、以下の点を心がけましょう：</p>
+      <ul class="mb-0">
+        <li>まずは主要な種牡馬10頭程度の距離適性を覚えるところから始める</li>
+        <li>実績と血統が一致する馬を見つけ、そこから予想を組み立てる</li>
+        <li>血統的距離適性と実績が大きく異なる場合は、実績を優先して判断する</li>
+        <li>徐々に母父（BMS）の影響も考慮できるよう知識を広げる</li>
+        <li>「血統からは予測できない活躍をする馬もいる」ことを忘れない</li>
+      </ul>
+    </div>
+  </section>
+
+  <div class="card mb-5">
+    <div class="card-body">
+      <h2 class="card-title h4">まとめ：血統と距離適性を理解して予想に活かそう</h2>
+      <p>
+        血統と距離適性の関係を理解することは、競馬予想の基礎となる重要なスキルです。
+        スプリント向き血統、マイル向き血統、中距雧向き血統、ステイヤー向き血統の特徴を把握し、
+        それぞれがどのようなレース条件で力を発揮しやすいかを知ることで、より精度の高い予想が可能になります。
+      </p>
+      <p>
+        父系と母系のバランス、特に父馬と母父の組み合わせに注目することで、
+        おおよその距雧適性を把握できます。さらに牝系の影響やインブリードなどの要素を加味すれば、
+        より詳細な距雧適性の予測が可能です。
+      </p>
+      <p>
+        ただし、血統はあくまで「傾向」を示すものであり、絶対的なものではありません。
+        個体差や調教、騎手、馬場状態など他の要素と組み合わせて総合的に判断することが大切です。
+        血統分析を一つの武器として、他の予想要素と組み合わせることで、より精度の高い予想を目指しましょう。
+      </p>
+    </div>
+  </div>
+
+  <div class="my-5">
+    <h2 class="h4 mb-4">関連記事</h2>
+    <div class="row">
+      <div class="col-md-4 mb-4">
+        <div class="card h-100">
+          <div class="card-body">
+            <h3 class="card-title h5">血統表の読み方</h3>
+            <p class="card-text">初心者向けに血統表の基本的な見方や構造を解説。血統から読み取れる様々な情報について説明します。</p>
+            <a href="/keiba_lab/bloodline/basics/" class="btn btn-outline-primary btn-sm">記事を読む</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4 mb-4">
+        <div class="card h-100">
+          <div class="card-body">
+            <h3 class="card-title h5">父系と母系の役割</h3>
+            <p class="card-text">父系と母系がそれぞれ競走馬にどのような影響を与えるのか詳しく解説します。バランスの重要性も説明。</p>
+            <a href="/keiba_lab/bloodline/roles/" class="btn btn-outline-primary btn-sm">記事を読む</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4 mb-4">
+        <div class="card h-100">
+          <div class="card-body">
+            <h3 class="card-title h5">主要種牡馬の特徴と傾向</h3>
+            <p class="card-text">現役の主要な種牡馬の特徴と、その産駒の傾向について解説。予想に役立つ種牡馬の知識を提供。</p>
+            <a href="/keiba_lab/bloodline/sires/" class="btn btn-outline-primary btn-sm">記事を読む</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %} 

@@ -1,0 +1,468 @@
+{% extends "base.html" %}
+
+{% block title %}血統表の読み方 | 初心者向け競馬の血統解説【馬メモ】{% endblock %}
+
+{% block meta_description %}競走馬の血統表の基本的な見方から正しい読み方まで初心者向けに解説。血統表の構造や表記方法、血統からわかる情報など、競馬予想に役立つ知識を紹介します。{% endblock %}
+
+{% block description %}競走馬の血統表の基本的な見方から正しい読み方まで初心者向けに解説。血統表の構造や表記方法、血統からわかる情報など、競馬予想に役立つ知識を紹介します。{% endblock %}
+
+{% block meta_keywords %}競馬,血統表,読み方,見方,父系,母系,血統解析,初心者,種牡馬,競走馬{% endblock %}
+
+{% block og_title %}血統表の読み方 | 初心者向け競馬の血統解説【馬メモ】{% endblock %}
+{% block og_description %}競走馬の血統表の基本的な見方から正しい読み方まで初心者向けに解説。血統表の構造や表記方法、血統からわかる情報など、競馬予想に役立つ知識を紹介します。{% endblock %}
+{% block og_type %}article{% endblock %}
+
+{% block twitter_title %}血統表の読み方 | 初心者向け競馬の血統解説【馬メモ】{% endblock %}
+{% block twitter_description %}競走馬の血統表の基本的な見方から正しい読み方まで初心者向けに解説。血統表の構造や表記方法、血統からわかる情報など、競馬予想に役立つ知識を紹介します。{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/">ホーム</a></li>
+      <li class="breadcrumb-item"><a href="/keiba_lab/">競馬ラボ</a></li>
+      <li class="breadcrumb-item"><a href="/keiba_lab/bloodline/">血統の知識</a></li>
+      <li class="breadcrumb-item active" aria-current="page">血統表の読み方</li>
+    </ol>
+  </nav>
+
+  <h1 class="mb-4">血統表の読み方</h1>
+  
+  <p class="lead mb-4">
+    血統表は競走馬の「設計図」とも言えるもので、その馬の持つ能力や適性を知る重要な手がかりとなります。
+    しかし、初めて見る方にとっては複雑で分かりにくいものです。
+    このページでは、血統表の基本的な見方から読み解き方まで、初心者の方にもわかりやすく解説します。
+  </p>
+
+  <!-- 目次 -->
+  <div class="card mb-5 shadow-sm">
+    <div class="card-body">
+      <h2 class="h5 mb-3">目次</h2>
+      <ol class="mb-0">
+        <li><a href="#structure" class="text-decoration-none">血統表の基本構造</a></li>
+        <li><a href="#reading" class="text-decoration-none">血統表の読み方</a></li>
+        <li><a href="#important-info" class="text-decoration-none">血統表から読み取れる重要な情報</a></li>
+        <li><a href="#examples" class="text-decoration-none">具体例でみる血統表の読み解き方</a></li>
+        <li><a href="#tips" class="text-decoration-none">初心者向け血統表活用のポイント</a></li>
+      </ol>
+    </div>
+  </div>
+
+  <section id="structure" class="mb-5">
+    <h2 class="border-bottom pb-2">血統表の基本構造</h2>
+    <p>
+      血統表は通常、競走馬の家系図として3代前（父母、祖父母、曾祖父母）までを表示しています。
+      わかりやすく言えば、「両親」「祖父母」「曾祖父母」までの家族関係を示した図です。
+    </p>
+
+    <div class="card mb-4">
+      <div class="card-body">
+        <h3 class="h5">血統表の基本的な構成</h3>
+        <div class="row">
+          <div class="col-md-8">
+            <ul>
+              <li><strong>一段目（左端）</strong>：対象となる馬自身</li>
+              <li><strong>二段目（左から2列目）</strong>：父馬（上）と母馬（下）</li>
+              <li><strong>三段目（左から3列目）</strong>：父方の祖父（上上）、父方の祖母（上下）、母方の祖父（下上）、母方の祖母（下下）</li>
+              <li><strong>四段目（左から4列目）</strong>：曾祖父母8頭</li>
+            </ul>
+            <p>このように、左から右へ世代をさかのぼり、上下で系統が分かれていく形で表示されています。</p>
+          </div>
+          <div class="col-md-4">
+            <div class="text-center">
+              <img src="/static/images/keiba_lab/bloodline/pedigree_structure.jpg" alt="血統表の基本構造" class="img-fluid rounded mb-2">
+              <small class="text-muted">血統表の基本構造イメージ</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="h5 mb-3">血統表の表記に関する基礎知識</h3>
+    <div class="row mb-4">
+      <div class="col-md-6">
+        <div class="card h-100">
+          <div class="card-header bg-light">
+            <h4 class="h6 mb-0">毛色の表記</h4>
+          </div>
+          <div class="card-body">
+            <p>血統表には、馬の名前と共に毛色が記載されていることがあります。</p>
+            <ul>
+              <li><strong>栗毛（くりげ）</strong>：全身が赤茶色の毛色</li>
+              <li><strong>鹿毛（かげ）</strong>：赤みがかった茶色</li>
+              <li><strong>黒鹿毛（くろかげ）</strong>：鹿毛より暗い褐色</li>
+              <li><strong>青鹿毛（あおかげ）</strong>：黒に近い暗褐色</li>
+              <li><strong>芦毛（あしげ）</strong>：白と黒の混じった毛色</li>
+              <li><strong>白毛（しろげ）</strong>：全身が白い</li>
+            </ul>
+            <p>毛色は遺伝するため、血統分析の一つの要素になることもあります。</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card h-100">
+          <div class="card-header bg-light">
+            <h4 class="h6 mb-0">出身国・地域の表記</h4>
+          </div>
+          <div class="card-body">
+            <p>馬名の横に出身国や地域を示す記号が記載されることがあります。</p>
+            <ul>
+              <li><strong>米</strong>：アメリカ産</li>
+              <li><strong>英</strong>：イギリス産</li>
+              <li><strong>仏</strong>：フランス産</li>
+              <li><strong>愛</strong>：アイルランド産</li>
+              <li><strong>独</strong>：ドイツ産</li>
+              <li><strong>加</strong>：カナダ産</li>
+              <li><strong>豪</strong>：オーストラリア産</li>
+              <li><strong>新</strong>：ニュージーランド産</li>
+            </ul>
+            <p>出身国によって、スピード型やスタミナ型など、特徴が異なる傾向があります。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="alert alert-info">
+      <h4 class="alert-heading h5">初心者向けアドバイス</h4>
+      <p>血統表を初めて見る方は、まずは「父馬（種牡馬）」に注目してみましょう。日本の競馬では、父馬の影響が大きく、その特徴が子に受け継がれることが多いです。競馬新聞などで「〇〇産駒」と表記されるのは、その種牡馬の子どもたちという意味です。</p>
+    </div>
+  </section>
+
+  <section id="reading" class="mb-5">
+    <h2 class="border-bottom pb-2">血統表の読み方</h2>
+    <p>血統表は単なる家系図ではなく、その馬の持つ特性や能力の傾向を知るための重要な情報源です。効果的な読み方を解説します。</p>
+
+    <div class="card mb-4">
+      <div class="card-header bg-light">
+        <h3 class="h5 mb-0">父系（種牡馬）を読む</h3>
+      </div>
+      <div class="card-body">
+        <p>父系（種牡馬）は、競走馬の能力や適性に大きな影響を与えます。以下のポイントに注目しましょう：</p>
+        <ul>
+          <li><strong>種牡馬の競走成績</strong>：G1勝利などの実績がある種牡馬は、その能力を子に受け継ぐ可能性が高い</li>
+          <li><strong>種牡馬の系統</strong>：サンデーサイレンス系、ノーザンダンサー系など、系統によって特徴が異なる</li>
+          <li><strong>産駒の傾向</strong>：過去にどのような子供（産駒）を輩出しているか</li>
+          <li><strong>距離適性</strong>：短距離・マイル・中距離・長距離のどこが得意か</li>
+          <li><strong>コース適性</strong>：芝・ダートどちらが得意か</li>
+        </ul>
+        <div class="alert alert-success">
+          <p class="mb-0"><strong>例：</strong> ディープインパクトは芝の中長距離に強く、産駒も芝の中距離で活躍する傾向があります。ロードカナロアは芝の短距離に適性が高く、産駒もスピード型の特徴を持つことが多いです。</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mb-4">
+      <div class="card-header bg-light">
+        <h3 class="h5 mb-0">母系（牝系）を読む</h3>
+      </div>
+      <div class="card-body">
+        <p>母系（牝系）は、主にスタミナや気性、体質などに影響を与えると言われています。以下のポイントをチェックしましょう：</p>
+        <ul>
+          <li><strong>母馬の競走成績</strong>：母馬自身が強い馬だったかどうか</li>
+          <li><strong>母馬の産駒成績</strong>：これまでに良い子供を産んでいるか</li>
+          <li><strong>母父（BMS：Brood Mare Sire）</strong>：母方の祖父は特に重要で「母父○○」と表現される</li>
+          <li><strong>牝系のファミリー</strong>：血統の「家系」として優秀な牝系に属しているか</li>
+          <li><strong>兄弟姉妹の成績</strong>：同じ両親から生まれた馬の成績は参考になる</li>
+        </ul>
+        <div class="alert alert-success">
+          <p class="mb-0"><strong>例：</strong> サンデーサイレンスを母父に持つ馬は、スタミナとスピードのバランスが良い特徴があります。ストームキャットを母父に持つ馬は、気性の荒さとパワーを併せ持つ傾向があります。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="important-info" class="mb-5">
+    <h2 class="border-bottom pb-2">血統表から読み取れる重要な情報</h2>
+    <p>血統表は単なる家系図ではなく、馬の将来性や能力の傾向を予測するための情報源です。以下のような情報を読み取ることができます。</p>
+
+    <div class="row mb-4">
+      <div class="col-lg-6 mb-3">
+        <div class="card h-100">
+          <div class="card-header bg-light">
+            <h3 class="h5 mb-0">距離適性</h3>
+          </div>
+          <div class="card-body">
+            <p>血統から、その馬が得意とする距離帯を予測できます。</p>
+            <ul>
+              <li><strong>短距離型血統</strong>：スピードに優れた血統で、1400m以下の短い距離で力を発揮しやすい</li>
+              <li><strong>マイル型血統</strong>：スピードとスタミナのバランスが良く、1600m前後が得意</li>
+              <li><strong>中距離型血統</strong>：2000m〜2400mの距離で活躍しやすい</li>
+              <li><strong>長距離型血統</strong>：スタミナに優れ、3000m以上の長い距離でも粘りを見せる</li>
+            </ul>
+            <div class="alert alert-success">
+              <p class="mb-0"><strong>例：</strong> ロードカナロア産駒は短距離型の特徴が強く、ステイゴールド産駒は長距離型の特徴が強い傾向があります。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6 mb-3">
+        <div class="card h-100">
+          <div class="card-header bg-light">
+            <h3 class="h5 mb-0">コース適性</h3>
+          </div>
+          <div class="card-body">
+            <p>芝・ダートどちらのコースが得意かも血統から予測できます。</p>
+            <ul>
+              <li><strong>芝向きの血統</strong>：欧州系の血統や、サンデーサイレンス系など</li>
+              <li><strong>ダート向きの血統</strong>：アメリカ系の血統や、ミスタープロスペクター系など</li>
+              <li><strong>万能型の血統</strong>：芝・ダート両方で活躍できる血統</li>
+            </ul>
+            <p>特に父系の影響が強いですが、母父がダート適性の高い血統である場合、芝向きの父系を持つ馬でもダートで活躍することがあります。</p>
+            <div class="alert alert-success">
+              <p class="mb-0"><strong>例：</strong> キングカメハメハ産駒は芝・ダート両方に適性があり、多様なコースで活躍しています。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row mb-4">
+      <div class="col-lg-6 mb-3">
+        <div class="card h-100">
+          <div class="card-header bg-light">
+            <h3 class="h5 mb-0">成長曲線</h3>
+          </div>
+          <div class="card-body">
+            <p>血統から、馬がどのように成長していくかの傾向も予測できます。</p>
+            <ul>
+              <li><strong>早熟型</strong>：2〜3歳で早くから能力を発揮する傾向</li>
+              <li><strong>晩成型</strong>：4〜5歳以降に力をつけてくる傾向</li>
+              <li><strong>持続型</strong>：長く現役で活躍できる体質</li>
+            </ul>
+            <p>特に母系の影響が大きいとされており、長く活躍できる牝系から生まれた馬は丈夫な体質を受け継ぐ傾向があります。</p>
+            <div class="alert alert-success">
+              <p class="mb-0"><strong>例：</strong> トウカイテイオー系の血を引く馬は晩成型の特徴があり、シンボリクリスエス産駒も年齢を重ねてから伸びてくることが多いです。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6 mb-3">
+        <div class="card h-100">
+          <div class="card-header bg-light">
+            <h3 class="h5 mb-0">脚質傾向</h3>
+          </div>
+          <div class="card-body">
+            <p>馬の走り方（脚質）も血統から傾向をつかむことができます。</p>
+            <ul>
+              <li><strong>逃げ・先行型血統</strong>：スピードに優れ、前に行く傾向が強い</li>
+              <li><strong>差し型血統</strong>：中団から差してくる脚質を持つことが多い</li>
+              <li><strong>追込型血統</strong>：後方から一気に追い込む末脚に特徴がある</li>
+            </ul>
+            <p>脚質は必ずしも血統通りにならず、調教や騎手の影響も大きいですが、傾向として把握しておくと予想の参考になります。</p>
+            <div class="alert alert-success">
+              <p class="mb-0"><strong>例：</strong> ディープインパクト産駒は差し脚を活かした競馬をするケースが多く、ハーツクライ産駒は先行から粘る競馬を得意とする傾向があります。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mb-4">
+      <div class="card-header bg-light">
+        <h3 class="h5 mb-0">インブリード（近親交配）の影響</h3>
+      </div>
+      <div class="card-body">
+        <p>血統表の中で同じ祖先が複数回登場することを「インブリード」と呼びます。これは特定の能力を強化する効果があるとされています。</p>
+        <div class="row">
+          <div class="col-md-6">
+            <h4 class="h6">インブリードの表記方法</h4>
+            <ul>
+              <li><strong>3×4</strong>：3代前と4代前に同じ祖先が現れる</li>
+              <li><strong>4×5</strong>：4代前と5代前に同じ祖先が現れる</li>
+              <li><strong>3×3</strong>：3代前に2回同じ祖先が現れる（濃いインブリード）</li>
+            </ul>
+            <p>数字が小さいほど濃いインブリードとなり、その祖先の特徴が強く出る傾向があります。</p>
+          </div>
+          <div class="col-md-6">
+            <h4 class="h6">代表的なインブリード対象</h4>
+            <ul>
+              <li><strong>ノーザンダンサー</strong>：バランスの良さやスピードを強化</li>
+              <li><strong>サンデーサイレンス</strong>：安定した能力とスタミナを強化</li>
+              <li><strong>ミスタープロスペクター</strong>：ダート適性やスピードを強化</li>
+              <li><strong>ヘイロー</strong>：丈夫さや長く走れる体質を強化</li>
+            </ul>
+          </div>
+        </div>
+        <div class="alert alert-warning mt-3">
+          <p class="mb-0"><strong>注意点：</strong> インブリードは必ずしも良い結果をもたらすとは限りません。濃すぎるインブリードは気性の難しさなど、マイナス面を強化してしまうこともあります。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="tips" class="mb-5">
+    <h2 class="border-bottom pb-2">初心者向け血統表活用のポイント</h2>
+    <p>血統表の知識を実際の競馬予想に活かすための、初心者向けのポイントをまとめました。</p>
+
+    <div class="row mb-4">
+      <div class="col-lg-6 mb-3">
+        <div class="card h-100">
+          <div class="card-header bg-light">
+            <h3 class="h5 mb-0">血統分析の基本ステップ</h3>
+          </div>
+          <div class="card-body">
+            <ol>
+              <li><strong>父馬（種牡馬）を確認する</strong>
+                <p>まずは父馬の特徴（得意距離、コース適性など）を把握しましょう。競馬新聞では「○○産駒」と表記されています。</p>
+              </li>
+              <li><strong>母父（BMS）をチェックする</strong>
+                <p>母方の祖父も重要です。「母父○○」の表記に注目し、その種牡馬の特徴を確認しましょう。</p>
+              </li>
+              <li><strong>レースの条件と照らし合わせる</strong>
+                <p>出走するレースの距離・コース・馬場状態が、その馬の血統的特徴と合致しているかを判断します。</p>
+              </li>
+              <li><strong>同じ血統の馬の過去の成績を参考にする</strong>
+                <p>同じ父や母父を持つ馬の成績パターンから、血統の傾向を把握しましょう。</p>
+              </li>
+              <li><strong>他の要素と組み合わせて判断する</strong>
+                <p>血統だけでなく、調教内容、騎手、枠順、馬体重など他の要素も含めて総合的に判断しましょう。</p>
+              </li>
+            </ol>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6 mb-3">
+        <div class="card h-100">
+          <div class="card-header bg-light">
+            <h3 class="h5 mb-0">覚えておきたい主要種牡馬の特徴</h3>
+          </div>
+          <div class="card-body">
+            <p>競馬予想で役立つ、日本の主要な種牡馬の特徴を簡潔にまとめました。</p>
+            <ul>
+              <li><strong>ディープインパクト</strong>：芝の中距離で活躍する産駒が多く、安定した成績を残す</li>
+              <li><strong>キングカメハメハ</strong>：芝・ダート両方に適性があり、万能型の産駒が多い</li>
+              <li><strong>ハーツクライ</strong>：芝の中長距離で粘り強い走りをする産駒が多い</li>
+              <li><strong>ロードカナロア</strong>：芝の短距離・マイルで鋭い末脚を見せる産駒が多い</li>
+              <li><strong>ルーラーシップ</strong>：中長距離でスタミナを活かす産駒が目立つ</li>
+              <li><strong>ドゥラメンテ</strong>：晩成型で古馬になって伸びてくる産駒が多い</li>
+              <li><strong>モーリス</strong>：マイルを中心に優れたスピードを持つ産駒が多い</li>
+              <li><strong>エピファネイア</strong>：中長距離で力を発揮する産駒が多い</li>
+              <li><strong>キタサンブラック</strong>：パワーとスタミナを併せ持つ産駒が期待される</li>
+            </ul>
+            <p>上記は一般的な傾向であり、個体差があることを念頭に置いてください。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mb-4">
+      <div class="card-header bg-light">
+        <h3 class="h5 mb-0">血統分析でよくある間違い</h3>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-6">
+            <h4 class="h6">避けるべき間違い</h4>
+            <ul>
+              <li><strong>血統だけで判断する</strong>：血統は一要素に過ぎず、他の要素も重要です</li>
+              <li><strong>両親の成績だけに注目する</strong>：優秀な親から必ずしも優秀な子が生まれるとは限りません</li>
+              <li><strong>インブリードを過大評価する</strong>：インブリードの効果は絶対的なものではありません</li>
+              <li><strong>海外の血統を軽視する</strong>：国内の血統だけでなく、海外の血統も重要です</li>
+              <li><strong>流行の血統に飛びつく</strong>：一時的な流行にとらわれず、基本を重視しましょう</li>
+            </ul>
+          </div>
+          <div class="col-md-6">
+            <h4 class="h6">正しい考え方</h4>
+            <ul>
+              <li><strong>総合的に判断する</strong>：血統、調教、騎手、馬体、枠順などを総合的に評価</li>
+              <li><strong>適性を重視する</strong>：その馬の血統的特徴とレース条件の相性を重視</li>
+              <li><strong>傾向として捉える</strong>：血統は「絶対」ではなく「傾向」として捉える</li>
+              <li><strong>例外があることを理解する</strong>：血統から予測できない活躍をする馬もいる</li>
+              <li><strong>継続的に学ぶ</strong>：血統の知識は日々更新される。常に新しい情報を取り入れる</li>
+            </ul>
+          </div>
+        </div>
+        <div class="alert alert-warning mt-3">
+          <p class="mb-0"><strong>重要：</strong> 血統分析は奥が深く、完全に習得するには時間がかかります。初心者の方は、まずは主要な種牡馬の特徴を覚え、徐々に知識を広げていくのがおすすめです。焦らず、着実に学んでいきましょう。</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mb-4">
+      <div class="card-header bg-light">
+        <h3 class="h5 mb-0">血統情報の入手先</h3>
+      </div>
+      <div class="card-body">
+        <p>血統情報を調べるための便利な情報源をご紹介します。</p>
+        <div class="row">
+          <div class="col-md-6">
+            <h4 class="h6">競馬新聞・競馬雑誌</h4>
+            <ul>
+              <li><strong>競馬新聞</strong>：スポーツ紙の競馬面や専門の競馬新聞には血統情報が掲載されています</li>
+              <li><strong>週刊誌・月刊誌</strong>：競馬専門雑誌には、詳細な血統解説や種牡馬情報が掲載されています</li>
+              <li><strong>血統専門書籍</strong>：血統理論や種牡馬解説の書籍も多数出版されています</li>
+            </ul>
+          </div>
+          <div class="col-md-6">
+            <h4 class="h6">インターネット</h4>
+            <ul>
+              <li><strong>JRA公式サイト</strong>：基本的な血統情報が閲覧可能</li>
+              <li><strong>netkeiba.com</strong>：詳細な血統表や統計情報を提供</li>
+              <li><strong>血統系統データベース</strong>：血統に特化したデータベースサイトも多数あります</li>
+              <li><strong>競馬専門ブログ・SNS</strong>：血統研究家の解説やファンの分析情報も参考になります</li>
+            </ul>
+          </div>
+        </div>
+        <div class="alert alert-info mt-3">
+          <p class="mb-0"><strong>アドバイス：</strong> 初心者の方は、まずはJRA公式サイトやnetkeibaなどの基本的な情報から始めるとよいでしょう。徐々に専門的な情報に触れていくことで、理解が深まります。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="card mb-5">
+    <div class="card-body">
+      <h2 class="card-title h4">まとめ：血統表を読むスキルを磨こう</h2>
+      <p>
+        血統表は、競走馬の能力や適性を予測するための貴重な情報源です。
+        初心者の方は、まずは父馬（種牡馬）の特徴を覚え、母父（BMS）の影響にも注目してみましょう。
+        レースの条件（距離・コース・馬場状態）と血統的特徴を照らし合わせることで、
+        その馬の適性を判断するスキルが身についていきます。
+      </p>
+      <p>
+        血統分析は競馬予想の一要素に過ぎませんが、長期的な視点で馬を評価する上で非常に重要です。
+        他の要素（調教、騎手、枠順など）と組み合わせて総合的に判断することで、
+        的中率の向上につながります。
+      </p>
+      <p>
+        血統の知識は一朝一夕に身につくものではありませんが、継続的に学び、
+        実際のレース結果と照らし合わせていくことで、少しずつ理解が深まっていきます。
+        競馬をより深く楽しむために、血統表を読むスキルを磨いていきましょう。
+      </p>
+    </div>
+  </div>
+
+  <div class="my-5">
+    <h2 class="h4 mb-4">関連記事</h2>
+    <div class="row">
+      <div class="col-md-4 mb-4">
+        <div class="card h-100">
+          <div class="card-body">
+            <h3 class="card-title h5">父系と母系の役割</h3>
+            <p class="card-text">父系と母系がそれぞれ馬にどのような影響を与えるのか詳しく解説します。</p>
+            <a href="/keiba_lab/bloodline/roles/" class="btn btn-outline-primary btn-sm">記事を読む</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4 mb-4">
+        <div class="card h-100">
+          <div class="card-body">
+            <h3 class="card-title h5">主要な父系統</h3>
+            <p class="card-text">サンデーサイレンス系、ノーザンダンサー系など、主要な父系統の特徴を解説します。</p>
+            <a href="/keiba_lab/bloodline/sire-lines/" class="btn btn-outline-primary btn-sm">記事を読む</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4 mb-4">
+        <div class="card h-100">
+          <div class="card-body">
+            <h3 class="card-title h5">血統と距離適性の関係</h3>
+            <p class="card-text">血統から読み取れる距離適性について、実例を交えながら詳しく解説します。</p>
+            <a href="/keiba_lab/bloodline/distance/" class="btn btn-outline-primary btn-sm">記事を読む</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,1150 @@
+{% extends "base.html" %}
+
+{% block title %}血統から見る馬場適性 | 芝・ダート適性と馬場状態の関係【馬メモ】{% endblock %}
+
+{% block meta_description %}競走馬の血統がどのように馬場適性に影響するのか解説。芝向き血統、ダート向き血統の特徴や、馬場状態（良馬場・重馬場）との相性についても詳しく紹介します。{% endblock %}
+
+{% block description %}競走馬の血統がどのように馬場適性に影響するのか解説。芝向き血統、ダート向き血統の特徴や、馬場状態（良馬場・重馬場）との相性についても詳しく紹介します。{% endblock %}
+
+{% block meta_keywords %}競馬,血統,馬場適性,芝,ダート,良馬場,重馬場,不良馬場,稍重,血統背景,父系,母系{% endblock %}
+
+{% block og_title %}血統から見る馬場適性 | 芝・ダート適性と馬場状態の関係【馬メモ】{% endblock %}
+{% block og_description %}競走馬の血統がどのように馬場適性に影響するのか解説。芝向き血統、ダート向き血統の特徴や、馬場状態（良馬場・重馬場）との相性についても詳しく紹介します。{% endblock %}
+{% block og_type %}article{% endblock %}
+
+{% block twitter_title %}血統から見る馬場適性 | 芝・ダート適性と馬場状態の関係【馬メモ】{% endblock %}
+{% block twitter_description %}競走馬の血統がどのように馬場適性に影響するのか解説。芝向き血統、ダート向き血統の特徴や、馬場状態（良馬場・重馬場）との相性についても詳しく紹介します。{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/">ホーム</a></li>
+      <li class="breadcrumb-item"><a href="/keiba_lab/">競馬ラボ</a></li>
+      <li class="breadcrumb-item"><a href="/keiba_lab/bloodline/">血統の知識</a></li>
+      <li class="breadcrumb-item active" aria-current="page">血統から見る馬場適性</li>
+    </ol>
+  </nav>
+
+  <h1 class="mb-4">血統から見る馬場適性</h1>
+  
+  <p class="lead mb-4">
+    競走馬の馬場適性は、芝かダートか、さらに良馬場・重馬場などの馬場状態によって大きく変わります。
+    これらの適性は血統に大きく影響されるため、血統背景を知ることで競走馬の活躍する舞台をある程度予測できます。
+    このページでは、血統から芝・ダート適性や馬場状態との相性を読み解く方法を解説します。
+  </p>
+
+  <!-- 目次 -->
+  <div class="card mb-5 shadow-sm">
+    <div class="card-body">
+      <h2 class="h5 mb-3">目次</h2>
+      <ol class="mb-0">
+        <li><a href="#basics" class="text-decoration-none">馬場適性と血統の基本</a></li>
+        <li><a href="#turf" class="text-decoration-none">芝向き血統の特徴</a></li>
+        <li><a href="#dirt" class="text-decoration-none">ダート向き血統の特徴</a></li>
+        <li><a href="#both" class="text-decoration-none">芝・ダート両方で活躍できる血統</a></li>
+        <li><a href="#condition" class="text-decoration-none">馬場状態と血統の関係</a></li>
+        <li><a href="#examples" class="text-decoration-none">実例で見る馬場適性と血統</a></li>
+        <li><a href="#prediction" class="text-decoration-none">血統から馬場適性を予測する方法</a></li>
+        <li><a href="#tips" class="text-decoration-none">予想に役立てるポイント</a></li>
+      </ol>
+    </div>
+  </div>
+
+  <section id="basics" class="mb-5">
+    <h2 class="border-bottom pb-2">馬場適性と血統の基本</h2>
+    <p>
+      競走馬の馬場適性は、芝コースとダートコースのどちらが得意か、また馬場状態（良・稍重・重・不良）によって
+      パフォーマンスがどう変化するかを示します。この適性は血統によって大きく影響を受けます。
+      まずは、馬場適性と血統の関係について基本的な考え方を解説します。
+    </p>
+
+    <div class="card mb-4">
+      <div class="card-header bg-light">
+        <h3 class="h5 mb-0">馬場適性を決める要素</h3>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-lg-8">
+            <p>馬の馬場適性を決める主な要素は以下の通りです：</p>
+            <ul>
+              <li><strong>走法の特徴</strong>：低い重心vs高い重心、大きなストライドvs回転率重視など</li>
+              <li><strong>蹄の形状や硬さ</strong>：蹄の大きさ、硬さ、形状などの特性</li>
+              <li><strong>筋肉の特性</strong>：筋肉量や質、瞬発力vs持久力など</li>
+              <li><strong>体重と骨格</strong>：体重の軽重、骨格の頑丈さなど</li>
+              <li><strong>気質と精神面</strong>：集中力、環境への適応能力など</li>
+            </ul>
+            <p>これらの要素は血統によって大きく影響を受け、特に父系と母系のバランスによって決まることが多いです。</p>
+          </div>
+          <div class="col-lg-4">
+            <div class="card text-white bg-primary h-100">
+              <div class="card-header">
+                <h4 class="h6 mb-0">血統と馬場適性の関係</h4>
+              </div>
+              <div class="card-body">
+                <p class="mb-0">馬場適性は血統（遺伝）で約60-70%決まると言われています。残りは以下の要素で変動します：</p>
+                <ul class="mb-0">
+                  <li>調教方法（砂馬場vs芝馬場での調教量）</li>
+                  <li>騎手の乗り方や得意なコース</li>
+                  <li>馬の成長や経験</li>
+                  <li>個体差（同じ血統でも適性は異なる）</li>
+                  <li>管理方法（蹄の手入れなど）</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row mb-4">
+      <div class="col-md-6 mb-3">
+        <div class="card h-100">
+          <div class="card-header bg-light">
+            <h4 class="h6 mb-0">父系の影響</h4>
+          </div>
+          <div class="card-body">
+            <p>父馬（種牡馬）からは主に以下の要素が遺伝する傾向があります：</p>
+            <ul>
+              <li><strong>走法のスタイル</strong>：ダート向きの力強い走りか、芝向きの流麗な走りか</li>
+              <li><strong>筋肉タイプ</strong>：瞬発力型か持久力型か</li>
+              <li><strong>蹄の特徴</strong>：蹄の大きさや硬さ</li>
+              <li><strong>骨格の基本構造</strong>：がっしりした体型か繊細な体型か</li>
+            </ul>
+            <p>父系統によって芝・ダートの適性や馬場状態への対応力が大きく異なります。</p>
+            <div class="alert alert-success">
+              <p class="mb-0 small"><strong>例：</strong>サンデーサイレンス系は芝適性、クロフネ系はダート適性が高い傾向があります。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6 mb-3">
+        <div class="card h-100">
+          <div class="card-header bg-light">
+            <h4 class="h6 mb-0">母系の影響</h4>
+          </div>
+          <div class="card-body">
+            <p>母系（牝系）からは主に以下の要素が遺伝する傾向があります：</p>
+            <ul>
+              <li><strong>馬場状態への適応力</strong>：良馬場向きか重馬場向きか</li>
+              <li><strong>精神的資質</strong>：不良馬場でも諦めない粘り強さなど</li>
+              <li><strong>体質の丈夫さ</strong>：蹄の質や関節の強さなど</li>
+              <li><strong>環境適応力</strong>：様々な馬場条件に対応できる柔軟性</li>
+            </ul>
+            <p>特に母父（BMS）の影響は大きく、父系の馬場適性を補完または強化する役割を果たします。</p>
+            <div class="alert alert-success">
+              <p class="mb-0 small"><strong>例：</strong>欧州血統の母父を持つ馬は、重馬場での適性が高くなる傾向があります。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mb-4">
+      <div class="card-header bg-light">
+        <h3 class="h5 mb-0">代表的な馬場適性の分類</h3>
+      </div>
+      <div class="card-body">
+        <p>競馬における馬場適性は、主に以下のように分類されます：</p>
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead class="table-light">
+              <tr>
+                <th>カテゴリー</th>
+                <th>特徴</th>
+                <th>馬体的特徴</th>
+                <th>代表的な血統例</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>芝専門型</strong></td>
+                <td>芝コースでのみ高いパフォーマンスを発揮</td>
+                <td>体が軽め、脚が細く長い、繊細な蹄</td>
+                <td>サンデーサイレンス系、欧州系種牡馬</td>
+              </tr>
+              <tr>
+                <td><strong>ダート専門型</strong></td>
+                <td>ダートコースでのみ高いパフォーマンスを発揮</td>
+                <td>筋肉質、がっしりした体型、頑丈な蹄</td>
+                <td>アメリカンブレッド、クロフネ系</td>
+              </tr>
+              <tr>
+                <td><strong>万能型</strong></td>
+                <td>芝・ダート両方で一定以上の能力を発揮</td>
+                <td>バランスの良い体格、適応力の高い蹄</td>
+                <td>キングカメハメハ系、ブライアンズタイム系</td>
+              </tr>
+              <tr>
+                <td><strong>良馬場特化型</strong></td>
+                <td>良馬場でのみ本領発揮、悪条件に弱い</td>
+                <td>スピード重視の体型、繊細な走法</td>
+                <td>スピード系アメリカ血統、一部のダンチヒ系</td>
+              </tr>
+              <tr>
+                <td><strong>重馬場特化型</strong></td>
+                <td>重・不良馬場で力を発揮</td>
+                <td>パワー重視の体型、強靭な足腰</td>
+                <td>欧州ステイヤー系、ノーザンテースト系</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="small text-muted mt-2">※上記の分類は一般的な傾向であり、個体差や時代によって例外も多く存在します。</p>
+      </div>
+    </div>
+
+    <div class="alert alert-info">
+      <h4 class="alert-heading h5">初心者向けアドバイス</h4>
+      <p>血統から馬場適性を読み解く際は、まずは父馬の傾向をチェックし、次に母父（BMS）の特徴を確認することをおすすめします。この2つの要素だけでも、おおよその馬場適性の予測が可能です。</p>
+      <hr>
+      <p class="mb-0">また、同じ父馬を持つ馬（兄弟・姉妹）の芝・ダートでの成績も参考になります。どちらのコースで好成績を残しているかをチェックしてみましょう。</p>
+    </div>
+  </section>
+
+  <section id="turf" class="mb-5">
+    <h2 class="border-bottom pb-2">芝向き血統の特徴</h2>
+    <p>
+      芝コースは草が生えており、ダートと比較して足への衝撃が少なく、スムーズな走りと持続力が求められます。
+      芝に適性の高い血統には以下のような特徴があります。
+    </p>
+
+    <div class="card mb-4">
+      <div class="card-header bg-light">
+        <h3 class="h5 mb-0">芝向き血統の一般的特徴</h3>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-lg-7">
+            <p><strong>芝向き血統に共通する主な特徴：</strong></p>
+            <ul>
+              <li><strong>スムーズな加速力</strong>：キレのある末脚を発揮できる能力</li>
+              <li><strong>大きなストライド</strong>：少ない歩数で長い距離を進める走法</li>
+              <li><strong>スタミナと持続力</strong>：高いペースを維持できる心肺機能</li>
+              <li><strong>筋肉の質</strong>：遅筋（持久力型）の比率が高い傾向</li>
+              <li><strong>繊細な感覚</strong>：芝の状態を感じ取れる繊細さと走破力</li>
+              <li><strong>体型</strong>：比較的軽めの体重と長い四肢を持つ傾向</li>
+            </ul>
+          </div>
+          <div class="col-lg-5">
+            <div class="card bg-light h-100">
+              <div class="card-body">
+                <h4 class="h6">芝コースの特性</h4>
+                <p>芝コースの特性と適性のある馬の特徴を理解することが重要です：</p>
+                <ul class="mb-0">
+                  <li>足への負担が比較的少ない</li>
+                  <li>大きなストライドでリズミカルに走れる</li>
+                  <li>最終コーナーからの切れ味が重要</li>
+                  <li>差し・追い込み脚質が活きやすい</li>
+                  <li>馬場状態の変化に敏感</li>
+                  <li>良馬場ではダートより時計が速くなる</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mb-4">
+      <div class="card-header bg-success text-white">
+        <h3 class="h5 mb-0">代表的な芝向き血統</h3>
+      </div>
+      <div class="card-body">
+        <p class="mb-3">日本競馬において、特に芝コースでの活躍が顕著な主要血統を紹介します。</p>
+        
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead class="table-light">
+              <tr>
+                <th>系統/種牡馬</th>
+                <th>特徴</th>
+                <th>代表産駒</th>
+                <th>芝適性度</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>サンデーサイレンス系</strong></td>
+                <td>日本の芝レースを代表する血統。瞬発力とスタミナのバランスが優れる</td>
+                <td>ディープインパクト、ステイゴールド</td>
+                <td>★★★★★</td>
+              </tr>
+              <tr>
+                <td><strong>ディープインパクト系</strong></td>
+                <td>サンデー系をさらに洗練。特に芝中長距離での適性が極めて高い</td>
+                <td>キタサンブラック、アーモンドアイ</td>
+                <td>★★★★★</td>
+              </tr>
+              <tr>
+                <td><strong>ハービンジャー</strong></td>
+                <td>欧州血統特有の持久力と瞬発力。芝の長距離で特に優れる</td>
+                <td>シュヴァルグラン、ブラストワンピース</td>
+                <td>★★★★★</td>
+              </tr>
+              <tr>
+                <td><strong>キングマンボ系</strong></td>
+                <td>バランス型の血統で芝マイルで特に活躍</td>
+                <td>キングカメハメハ、ロードカナロア</td>
+                <td>★★★★☆</td>
+              </tr>
+              <tr>
+                <td><strong>ノーザンダンサー系</strong></td>
+                <td>世界的な名血統。芝の短中距離で優れた能力を発揮</td>
+                <td>オルフェーヴル、ドリームジャーニー</td>
+                <td>★★★★☆</td>
+              </tr>
+              <tr>
+                <td><strong>サドラーズウェルズ系</strong></td>
+                <td>欧州型の長距離血統。粘り強さが特徴</td>
+                <td>ワールドプレミア、トーセンジョーダン</td>
+                <td>★★★★☆</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="small text-muted mt-2">※芝適性度は一般的な傾向を★5段階で表したものです</p>
+      </div>
+    </div>
+
+    <div class="row mb-4">
+      <div class="col-md-6 mb-3">
+        <div class="card h-100">
+          <div class="card-header bg-light">
+            <h4 class="h6 mb-0">芝向き血統と距離の関係</h4>
+          </div>
+          <div class="card-body">
+            <p>芝向き血統でも、適性距離はさまざまです：</p>
+            <ul>
+              <li><strong>短距離芝向き</strong>：スピード重視の血統（ダンチヒ系など）</li>
+              <li><strong>マイル芝向き</strong>：バランス型血統（ロードカナロア、キングマンボ系など）</li>
+              <li><strong>中長距離芝向き</strong>：スタミナ系血統（ディープインパクト系、欧州血統など）</li>
+            </ul>
+            <p>父系だけでなく母系の影響も大きく、特に芝の長距離では母系のスタミナ要素が重要になります。</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6 mb-3">
+        <div class="card h-100">
+          <div class="card-header bg-light">
+            <h4 class="h6 mb-0">芝向き血統と馬場状態</h4>
+          </div>
+          <div class="card-body">
+            <p>芝向き血統でも、馬場状態への適応力は異なります：</p>
+            <ul>
+              <li><strong>良馬場特化型</strong>：サンデーサイレンス系の多く、繊細な走りを持つ血統</li>
+              <li><strong>稍重・重馬場適性</strong>：欧州血統、特に英国・仏国系の血統</li>
+              <li><strong>オールラウンド型</strong>：キングカメハメハ系など日米欧の血を引くバランス型</li>
+            </ul>
+            <p>特に<strong>母父（BMS）</strong>の重馬場適性が高いと、悪条件下でも力を発揮しやすくなります。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="alert alert-warning">
+      <h4 class="alert-heading h5">芝向き血統の弱点</h4>
+      <p>芝向き血統でも弱点はあります。特に以下の点に注意しましょう：</p>
+      <ul class="mb-0">
+        <li>一部の芝向き血統は繊細で、激しいレース展開や馬場状態の悪化に弱い傾向がある</li>
+        <li>ダートコースへの転向が難しい場合が多い（特にサンデー系など純粋な芝血統）</li>
+        <li>成長に時間がかかるタイプが多く、早期デビューや2歳戦では力を出し切れないことがある</li>
+        <li>体重が軽いタイプが多く、荒れた馬場では不利になりやすい</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="dirt" class="mb-5">
+    <h2 class="border-bottom pb-2">ダート向き血統の特徴</h2>
+    <p>
+      ダートコースは砂や土でできており、芝と比較して走行時の衝撃が大きく、力強さとパワーが求められます。
+      ダートに適性の高い血統には以下のような特徴があります。
+    </p>
+
+    <div class="card mb-4">
+      <div class="card-header bg-light">
+        <h3 class="h5 mb-0">ダート向き血統の一般的特徴</h3>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-lg-7">
+            <p><strong>ダート向き血統に共通する主な特徴：</strong></p>
+            <ul>
+              <li><strong>パワー・筋力</strong>：砂を掻き分けて走るための強靭な筋力</li>
+              <li><strong>踏ん張り強さ</strong>：砂地でもしっかりと蹴りだせる脚力</li>
+              <li><strong>スピードとダッシュ力</strong>：前半の位置取りに有利な初速</li>
+              <li><strong>豊かな骨量</strong>：衝撃に耐えられる骨格</li>
+              <li><strong>気性</strong>：闘争心が強く、積極的な気質を持つ傾向</li>
+              <li><strong>体型</strong>：筋肉質で胴短く、骨量が豊かな傾向</li>
+            </ul>
+          </div>
+          <div class="col-lg-5">
+            <div class="card bg-light h-100">
+              <div class="card-body">
+                <h4 class="h6">ダートコースの特性</h4>
+                <p>ダートコースの特性と適性のある馬の特徴を理解することが重要です：</p>
+                <ul class="mb-0">
+                  <li>足が沈み込む感覚で走行負担が大きい</li>
+                  <li>コーナーの傾斜が急な場合が多い</li>
+                  <li>前半のポジショニングが重要</li>
+                  <li>差し・追い込み脚質は不利になりやすい</li>
+                  <li>砂の跳ね返りを気にしない精神力も必要</li>
+                  <li>良馬場でも芝より時計は遅くなる</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mb-4">
+      <div class="card-header bg-warning">
+        <h3 class="h5 mb-0 text-dark">代表的なダート向き血統</h3>
+      </div>
+      <div class="card-body">
+        <p class="mb-3">日本競馬において、特にダートコースでの活躍が顕著な主要血統を紹介します。</p>
+        
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead class="table-light">
+              <tr>
+                <th>系統/種牡馬</th>
+                <th>特徴</th>
+                <th>代表産駒</th>
+                <th>ダート適性度</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>ミスタープロスペクター系</strong></td>
+                <td>ダート適性が非常に高く、スピードとパワーを兼ね備える</td>
+                <td>スマートファルコン、カネヒキリ</td>
+                <td>★★★★★</td>
+              </tr>
+              <tr>
+                <td><strong>クロフネ系</strong></td>
+                <td>アメリカ血統特有のスピードとパワー、ダート短距離で特に強い</td>
+                <td>アドマイヤムーン、エピファネイア</td>
+                <td>★★★★★</td>
+              </tr>
+              <tr>
+                <td><strong>ゴールドアリュール</strong></td>
+                <td>日本生まれのダート王者、早熟性と力強さ</td>
+                <td>オルフェーヴル、エスポワールシチー</td>
+                <td>★★★★★</td>
+              </tr>
+              <tr>
+                <td><strong>ブライアンズタイム系</strong></td>
+                <td>粘り強さと持続力が特徴、ダート中距離で活躍</td>
+                <td>マヤノトップガン、タイムパラドックス</td>
+                <td>★★★★☆</td>
+              </tr>
+              <tr>
+                <td><strong>ヘイロー系</strong></td>
+                <td>スピードとタフさを併せ持つ、砂被りにも強い</td>
+                <td>サウンドトゥルー、コパノリッキー</td>
+                <td>★★★★☆</td>
+              </tr>
+              <tr>
+                <td><strong>キンシャサノキセキ</strong></td>
+                <td>芝・ダート両方で活躍できる柔軟性、パワー型</td>
+                <td>アパパネ、ケイティブレイブ</td>
+                <td>★★★★☆</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="small text-muted mt-2">※ダート適性度は一般的な傾向を★5段階で表したものです</p>
+      </div>
+    </div>
+
+    <div class="row mb-4">
+      <div class="col-md-6 mb-3">
+        <div class="card h-100">
+          <div class="card-header bg-light">
+            <h4 class="h6 mb-0">ダート向き血統と距離の関係</h4>
+          </div>
+          <div class="card-body">
+            <p>ダート向き血統でも、適性距離には違いがあります：</p>
+            <ul>
+              <li><strong>短距離ダート型</strong>：爆発的なスピード型（クロフネ系、ミスプロ系など）</li>
+              <li><strong>マイルダート型</strong>：スピード・パワーのバランス型（ゴールドアリュール系など）</li>
+              <li><strong>中距離ダート型</strong>：持久力のあるタフな血統（ブライアンズタイム系など）</li>
+            </ul>
+            <p>ダートの中長距離戦では、単なるスピードだけでなく、スタミナとタフさを兼ね備えた血統が優位になります。</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6 mb-3">
+        <div class="card h-100">
+          <div class="card-header bg-light">
+            <h4 class="h6 mb-0">ダート向き血統と馬場状態</h4>
+          </div>
+          <div class="card-body">
+            <p>ダート馬場状態と血統の関係性：</p>
+            <ul>
+              <li><strong>高速馬場向き</strong>：軽快な走りができるスピード型血統</li>
+              <li><strong>重・不良馬場向き</strong>：力強く、重たい砂を掻き分けられるパワー型血統</li>
+              <li><strong>オールラウンド型</strong>：アメリカ×日本のクロス血統など</li>
+            </ul>
+            <p>特に<strong>前脚の構造</strong>や<strong>体重</strong>が、ダート馬場状態への適応に大きく影響します。力強い前脚を持つ血統は、重馬場でも踏ん張りが効きます。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="alert alert-warning">
+      <h4 class="alert-heading h5">ダート向き血統の弱点</h4>
+      <p>ダート向き血統にも弱点があります。特に以下の点に注意しましょう：</p>
+      <ul class="mb-0">
+        <li>多くのダート血統は芝コースでの成績が振るわない傾向がある</li>
+        <li>末脚の切れ味よりもパワーと持続力を重視するため、瞬発力で差される場合がある</li>
+        <li>気性が荒い個体が多く、レース中に消耗しやすい</li>
+        <li>早熟な傾向があり、長いキャリアを維持できないケースもある</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="both" class="mb-5">
+    <h2 class="border-bottom pb-2">芝・ダート両方で活躍できる血統</h2>
+    <p>
+      芝・ダート両方で活躍できる血統は、一般的に以下のような特徴を持っています。
+    </p>
+
+    <div class="card mb-4">
+      <div class="card-header bg-light">
+        <h3 class="h5 mb-0">芝・ダート両方で活躍できる血統の一般的特徴</h3>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-lg-7">
+            <p><strong>芝・ダート両方で活躍できる血統に共通する主な特徴：</strong></p>
+            <ul>
+              <li><strong>バランスの良い体格</strong>：体高が高く、脚が長い傾向</li>
+              <li><strong>適応力の高い蹄</strong>：弾力性があり、足への負担が少ない</li>
+              <li><strong>持久力・スタミナ</strong>：長い距離を安定したペースで走れる心肺機能</li>
+              <li><strong>気性</strong>：落ち着いた性格や集中力を持つ傾向</li>
+            </ul>
+          </div>
+          <div class="col-lg-5">
+            <div class="card bg-light h-100">
+              <div class="card-body">
+                <h4 class="h6">芝・ダート両方で活躍できる血統の特徴</h4>
+                <p>芝・ダート両方で活躍できる血統の特徴を理解することが重要です：</p>
+                <ul class="mb-0">
+                  <li>バランスの良い体格</li>
+                  <li>適応力の高い蹄</li>
+                  <li>持久力・スタミナ</li>
+                  <li>気性</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mb-4">
+      <div class="card-header bg-success text-white">
+        <h3 class="h5 mb-0">代表的な芝・ダート両方で活躍できる血統</h3>
+      </div>
+      <div class="card-body">
+        <p class="mb-3">日本競馬において、特に芝・ダート両方で活躍が顕著な主要血統を紹介します。</p>
+        
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead class="table-light">
+              <tr>
+                <th>系統/種牡馬</th>
+                <th>特徴</th>
+                <th>代表産駒</th>
+                <th>芝適性度</th>
+                <th>ダート適性度</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>キングカメハメハ系</strong></td>
+                <td>バランスの良い体格、適応力の高い蹄、持久力とスタミナ</td>
+                <td>キングカメハメハ、ロードカナロア</td>
+                <td>★★★★★</td>
+                <td>★★★★★</td>
+              </tr>
+              <tr>
+                <td><strong>ブライアンズタイム系</strong></td>
+                <td>バランスの良い体格、適応力の高い蹄、持久力とスタミナ</td>
+                <td>ブライアンズタイム、フィエールマン</td>
+                <td>★★★★★</td>
+                <td>★★★★★</td>
+              </tr>
+              <tr>
+                <td><strong>ハービンジャー</strong></td>
+                <td>欧州血統特有の持久力とダート適性、良馬場でも好走</td>
+                <td>ブラストワンピース、サトノダイヤモンド</td>
+                <td>★★★★★</td>
+                <td>★★★★★</td>
+              </tr>
+              <tr>
+                <td><strong>ノーザンテースト系</strong></td>
+                <td>長距離レースに適性、粘り強さが特徴</td>
+                <td>トウカイテイオー、ナリタブライアン</td>
+                <td>★★★★☆</td>
+                <td>★★★★☆</td>
+              </tr>
+              <tr>
+                <td><strong>ロードカナロア</strong></td>
+                <td>スプリント~マイル適性、柔軟性も高い</td>
+                <td>アーモンドアイ、サートゥルナーリア</td>
+                <td>★★★★☆</td>
+                <td>★★★★☆</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="small text-muted mt-2">※芝適性度とダート適性度は一般的な傾向を★5段階で表したものです</p>
+      </div>
+    </div>
+
+    <div class="row mb-4">
+      <div class="col-md-6 mb-3">
+        <div class="card h-100">
+          <div class="card-header bg-light">
+            <h4 class="h6 mb-0">芝・ダート両方で活躍できる血統と距離の関係</h4>
+          </div>
+          <div class="card-body">
+            <p>芝・ダート両方で活躍できる血統でも、適性距離はさまざまです：</p>
+            <ul>
+              <li><strong>短距離両方向き</strong>：スピード重視の血統（ダンチヒ系など）</li>
+              <li><strong>マイル両方向き</strong>：バランス型血統（ロードカナロア、キングマンボ系など）</li>
+              <li><strong>中長距離両方向き</strong>：スタミナ系血統（ディープインパクト系、欧州血統など）</li>
+            </ul>
+            <p>父系だけでなく母系の影響も大きく、特にダートの長距離では母系のスタミナ要素が重要になります。</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6 mb-3">
+        <div class="card h-100">
+          <div class="card-header bg-light">
+            <h4 class="h6 mb-0">芝・ダート両方で活躍できる血統と馬場状態</h4>
+          </div>
+          <div class="card-body">
+            <p>芝・ダート両方で活躍できる血統でも、馬場状態への適応力は異なります：</p>
+            <ul>
+              <li><strong>良馬場特化型</strong>：サンデーサイレンス系の多く、繊細な走りを持つ血統</li>
+              <li><strong>稍重・重馬場適性</strong>：欧州血統、特に英国・仏国系の血統</li>
+              <li><strong>オールラウンド型</strong>：キングカメハメハ系など日米欧の血を引くバランス型</li>
+            </ul>
+            <p>特に<strong>母父（BMS）</strong>の重馬場適性が高いと、悪条件下でも力を発揮しやすくなります。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="alert alert-warning">
+      <h4 class="alert-heading h5">芝・ダート両方で活躍できる血統の弱点</h4>
+      <p>芝・ダート両方で活躍できる血統でも弱点はあります。特に以下の点に注意しましょう：</p>
+      <ul class="mb-0">
+        <li>一部の芝・ダート両方で活躍できる血統は繊細で、激しいレース展開や馬場状態の悪化に弱い傾向がある</li>
+        <li>ダートコースへの転向が難しい場合が多い（特にサンデー系など純粋な血統）</li>
+        <li>成長に時間がかかるタイプが多く、早期デビューや2歳戦では力を出し切れないことがある</li>
+        <li>体重が軽いタイプが多く、重馬場では不利になりやすい</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="condition" class="mb-5">
+    <h2 class="border-bottom pb-2">馬場状態と血統の関係</h2>
+    <p>
+      競走馬の馬場適性は、血統によって大きく影響を受けます。このセクションでは、血統と馬場状態の関係について詳しく解説します。
+    </p>
+
+    <div class="card mb-4">
+      <div class="card-header bg-light">
+        <h3 class="h5 mb-0">父系と母系の影響</h3>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-lg-8">
+            <p>父系と母系の影響は、血統から馬場適性を決定する上で重要な要素です。</p>
+            <ul>
+              <li><strong>父系</strong>：走法のスタイル、筋肉タイプ、蹄の特徴、骨格の基本構造など</li>
+              <li><strong>母系</strong>：馬場状態への適応力、精神的資質、体質の丈夫さ、環境適応力など</li>
+            </ul>
+            <p>特に母父（BMS）の影響は大きく、父系の馬場適性を補完または強化する役割を果たします。</p>
+          </div>
+          <div class="col-lg-4">
+            <div class="card text-white bg-primary h-100">
+              <div class="card-header">
+                <h4 class="h6 mb-0">血統と馬場適性の関係</h4>
+              </div>
+              <div class="card-body">
+                <p class="mb-0">馬場適性は血統（遺伝）で約60-70%決まると言われています。残りは以下の要素で変動します：</p>
+                <ul class="mb-0">
+                  <li>調教方法（砂馬場vs芝馬場での調教量）</li>
+                  <li>騎手の乗り方や得意なコース</li>
+                  <li>馬の成長や経験</li>
+                  <li>個体差（同じ血統でも適性は異なる）</li>
+                  <li>管理方法（蹄の手入れなど）</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mb-4">
+      <div class="card-header bg-light">
+        <h3 class="h5 mb-0">代表的な馬場適性の分類</h3>
+      </div>
+      <div class="card-body">
+        <p>競馬における馬場適性は、主に以下のように分類されます：</p>
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead class="table-light">
+              <tr>
+                <th>カテゴリー</th>
+                <th>特徴</th>
+                <th>馬体的特徴</th>
+                <th>代表的な血統例</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>芝専門型</strong></td>
+                <td>芝コースでのみ高いパフォーマンスを発揮</td>
+                <td>体が軽め、脚が細く長い、繊細な蹄</td>
+                <td>サンデーサイレンス系、欧州系種牡馬</td>
+              </tr>
+              <tr>
+                <td><strong>ダート専門型</strong></td>
+                <td>ダートコースでのみ高いパフォーマンスを発揮</td>
+                <td>筋肉質、がっしりした体型、頑丈な蹄</td>
+                <td>アメリカンブレッド、クロフネ系</td>
+              </tr>
+              <tr>
+                <td><strong>万能型</strong></td>
+                <td>芝・ダート両方で一定以上の能力を発揮</td>
+                <td>バランスの良い体格、適応力の高い蹄</td>
+                <td>キングカメハメハ系、ブライアンズタイム系</td>
+              </tr>
+              <tr>
+                <td><strong>良馬場特化型</strong></td>
+                <td>良馬場でのみ本領発揮、悪条件に弱い</td>
+                <td>スピード重視の体型、繊細な走法</td>
+                <td>スピード系アメリカ血統、一部のダンチヒ系</td>
+              </tr>
+              <tr>
+                <td><strong>重馬場特化型</strong></td>
+                <td>重・不良馬場で力を発揮</td>
+                <td>パワー重視の体型、強靭な足腰</td>
+                <td>欧州ステイヤー系、ノーザンテースト系</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="small text-muted mt-2">※上記の分類は一般的な傾向であり、個体差や時代によって例外も多く存在します。</p>
+      </div>
+    </div>
+
+    <div class="alert alert-info">
+      <h4 class="alert-heading h5">初心者向けアドバイス</h4>
+      <p>血統から馬場適性を読み解く際は、まずは父馬の傾向をチェックし、次に母父（BMS）の特徴を確認することをおすすめします。この2つの要素だけでも、おおよその馬場適性の予測が可能です。</p>
+      <hr>
+      <p class="mb-0">また、同じ父馬を持つ馬（兄弟・姉妹）の芝・ダートでの成績も参考になります。どちらのコースで好成績を残しているかをチェックしてみましょう。</p>
+    </div>
+  </section>
+
+  <section id="examples" class="mb-5">
+    <h2 class="border-bottom pb-2">実例で見る馬場適性と血統</h2>
+    <p>
+      このセクションでは、実際の競走馬の例を用いて馬場適性と血統の関係を説明します。
+    </p>
+
+    <div class="card mb-4">
+      <div class="card-header bg-light">
+        <h3 class="h5 mb-0">例：サンデーサイレンス系</h3>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-lg-8">
+            <p><strong>サンデーサイレンス系の特徴：</strong></p>
+            <ul>
+              <li>大きなストライド</li>
+              <li>切れ味鋭い末脚</li>
+              <li>芝コースの良馬場で力を発揮</li>
+            </ul>
+            <p>これらの特徴は、サンデーサイレンス系の血統が持っていることを示しています。</p>
+          </div>
+          <div class="col-lg-4">
+            <div class="card bg-light h-100">
+              <div class="card-body">
+                <h4 class="h6">サンデーサイレンス系の代表産駒</h4>
+                <p>ディープインパクト、スペシャルウィーク、ステイゴールド</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mb-4">
+      <div class="card-header bg-light">
+        <h3 class="h5 mb-0">例：クロフネ系</h3>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-lg-8">
+            <p><strong>クロフネ系の特徴：</strong></p>
+            <ul>
+              <li>ダートでの大きなストライド</li>
+              <li>高い持続力</li>
+              <li>ダートコースでの高いパフォーマンス</li>
+            </ul>
+            <p>これらの特徴は、クロフネ系の血統が持っていることを示しています。</p>
+          </div>
+          <div class="col-lg-4">
+            <div class="card bg-light h-100">
+              <div class="card-body">
+                <h4 class="h6">クロフネ系の代表産駒</h4>
+                <p>クロフネ、フィエールマン</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mb-4">
+      <div class="card-header bg-light">
+        <h3 class="h5 mb-0">例：キングカメハメハ系</h3>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-lg-8">
+            <p><strong>キングカメハメハ系の特徴：</strong></p>
+            <ul>
+              <li>バランスの良い体格</li>
+              <li>適応力の高い蹄</li>
+              <li>持久力とスタミナ</li>
+            </ul>
+            <p>これらの特徴は、キングカメハメハ系の血統が持っていることを示しています。</p>
+          </div>
+          <div class="col-lg-4">
+            <div class="card bg-light h-100">
+              <div class="card-body">
+                <h4 class="h6">キングカメハメハ系の代表産駒</h4>
+                <p>キングカメハメハ、ロードカナロア</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="prediction" class="mb-5">
+    <h2 class="border-bottom pb-2">血統から馬場適性を予測する方法</h2>
+    <p>
+      このセクションでは、血統から馬場適性を予測するための方法を説明します。
+    </p>
+
+    <div class="card mb-4">
+      <div class="card-header bg-light">
+        <h3 class="h5 mb-0">血統から馬場適性を予測するための一般的な手順</h3>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-lg-8">
+            <p><strong>血統から馬場適性を予測するための一般的な手順：</strong></p>
+            <ol>
+              <li>父馬の傾向をチェックする</li>
+              <li>母父（BMS）の特徴を確認する</li>
+              <li>血統の特徴を理解する</li>
+              <li>血統と馬場状態の関係を分析する</li>
+              <li>馬場適性を予測する</li>
+            </ol>
+          </div>
+          <div class="col-lg-4">
+            <div class="card bg-light h-100">
+              <div class="card-body">
+                <h4 class="h6">血統から馬場適性を予測するための一般的な手順</h4>
+                <p>血統から馬場適性を予測するための一般的な手順を理解することが重要です：</p>
+                <ol class="mb-0">
+                  <li>父馬の傾向をチェックする</li>
+                  <li>母父（BMS）の特徴を確認する</li>
+                  <li>血統の特徴を理解する</li>
+                  <li>血統と馬場状態の関係を分析する</li>
+                  <li>馬場適性を予測する</li>
+                </ol>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mb-4">
+      <div class="card-header bg-success text-white">
+        <h3 class="h5 mb-0">実際の予測例</h3>
+      </div>
+      <div class="card-body">
+        <p class="mb-3">実際に血統から馬場適性を予測する例を紹介します。</p>
+        
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead class="table-light">
+              <tr>
+                <th>血統</th>
+                <th>父馬</th>
+                <th>母父（BMS）</th>
+                <th>予測される馬場適性</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>サンデーサイレンス系</strong></td>
+                <td>サンデーサイレンス</td>
+                <td>クロフネ系</td>
+                <td>芝コースでのみ高いパフォーマンスを発揮</td>
+              </tr>
+              <tr>
+                <td><strong>クロフネ系</strong></td>
+                <td>クロフネ</td>
+                <td>サンデーサイレンス系</td>
+                <td>ダートコースでのみ高いパフォーマンスを発揮</td>
+              </tr>
+              <tr>
+                <td><strong>キングカメハメハ系</strong></td>
+                <td>キングカメハメハ</td>
+                <td>ロードカナロア</td>
+                <td>芝・ダート両方で一定以上の能力を発揮</td>
+              </tr>
+              <tr>
+                <td><strong>ロードカナロア</strong></td>
+                <td>サンデーサイレンス系</td>
+                <td>クロフネ系</td>
+                <td>スプリント~マイル適性、柔軟性も高い</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="small text-muted mt-2">※実際の予測はもっと複雑であり、個々の馬の特性や経験なども考慮する必要があります。</p>
+      </div>
+    </div>
+
+    <div class="alert alert-warning">
+      <h4 class="alert-heading h5">予測の限界</h4>
+      <p>血統から馬場適性を予測する際には、以下の点に注意しましょう：</p>
+      <ul class="mb-0">
+        <li>血統だけでは馬場適性を完全に予測できない場合がある</li>
+        <li>個々の馬の特性や経験も考慮する必要がある</li>
+        <li>血統から馬場適性を予測する際には、様々な情報を総合的に判断することが重要です</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="tips" class="mb-5">
+    <h2 class="border-bottom pb-2">予想に役立てるポイント</h2>
+    <p>
+      このセクションでは、血統から馬場適性を予測する際に役立てるポイントを紹介します。
+    </p>
+
+    <div class="card mb-4">
+      <div class="card-header bg-light">
+        <h3 class="h5 mb-0">血統から馬場適性を予測する際の一般的なポイント</h3>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-lg-8">
+            <p><strong>血統から馬場適性を予測する際の一般的なポイント：</strong></p>
+            <ul>
+              <li>血統の特徴を理解する</li>
+              <li>血統と馬場状態の関係を分析する</li>
+              <li>様々な情報を総合的に判断する</li>
+            </ul>
+          </div>
+          <div class="col-lg-4">
+            <div class="card bg-light h-100">
+              <div class="card-body">
+                <h4 class="h6">血統から馬場適性を予測する際の一般的なポイント</h4>
+                <p>血統から馬場適性を予測する際の一般的なポイントを理解することが重要です：</p>
+                <ul class="mb-0">
+                  <li>血統の特徴を理解する</li>
+                  <li>血統と馬場状態の関係を分析する</li>
+                  <li>様々な情報を総合的に判断する</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mb-4">
+      <div class="card-header bg-success text-white">
+        <h3 class="h5 mb-0">実際の予測例</h3>
+      </div>
+      <div class="card-body">
+        <p class="mb-3">実際に血統から馬場適性を予測する例を紹介します。</p>
+        
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead class="table-light">
+              <tr>
+                <th>血統</th>
+                <th>父馬</th>
+                <th>母父（BMS）</th>
+                <th>予測される馬場適性</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>サンデーサイレンス系</strong></td>
+                <td>サンデーサイレンス</td>
+                <td>クロフネ系</td>
+                <td>芝コースでのみ高いパフォーマンスを発揮</td>
+              </tr>
+              <tr>
+                <td><strong>クロフネ系</strong></td>
+                <td>クロフネ</td>
+                <td>サンデーサイレンス系</td>
+                <td>ダートコースでのみ高いパフォーマンスを発揮</td>
+              </tr>
+              <tr>
+                <td><strong>キングカメハメハ系</strong></td>
+                <td>キングカメハメハ</td>
+                <td>ロードカナロア</td>
+                <td>芝・ダート両方で一定以上の能力を発揮</td>
+              </tr>
+              <tr>
+                <td><strong>ロードカナロア</strong></td>
+                <td>サンデーサイレンス系</td>
+                <td>クロフネ系</td>
+                <td>スプリント~マイル適性、柔軟性も高い</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="small text-muted mt-2">※実際の予測はもっと複雑であり、個々の馬の特性や経験なども考慮する必要があります。</p>
+      </div>
+    </div>
+
+    <div class="alert alert-warning">
+      <h4 class="alert-heading h5">予測の限界</h4>
+      <p>血統から馬場適性を予測する際には、以下の点に注意しましょう：</p>
+      <ul class="mb-0">
+        <li>血統だけでは馬場適性を完全に予測できない場合がある</li>
+        <li>個々の馬の特性や経験も考慮する必要がある</li>
+        <li>血統から馬場適性を予測する際には、様々な情報を総合的に判断することが重要です</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="conclusion" class="mb-5">
+    <h2 class="border-bottom pb-2">血統と馬場適性を予想に活かすコツ</h2>
+    
+    <div class="alert alert-info mb-4">
+      <h4 class="alert-heading h5">馬場適性の見極め方</h4>
+      <p>血統だけでなく、以下の要素も合わせて総合的に判断することが重要です：</p>
+      <ol class="mb-0">
+        <li><strong>過去実績</strong>：その馬のコース別（芝/ダート）の成績を確認</li>
+        <li><strong>血統構成</strong>：父系・母系両方の馬場適性を確認</li>
+        <li><strong>体型特徴</strong>：筋肉の付き方やサイズ感</li>
+        <li><strong>走法</strong>：芝向きの大きなストライドか、ダート向きの力強い走りか</li>
+        <li><strong>条件適性</strong>：馬場状態（良〜不良）ごとの適性傾向</li>
+      </ol>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6 mb-4">
+        <div class="card h-100">
+          <div class="card-header bg-primary text-white">
+            <h3 class="h5 mb-0">馬場適性予想の実践例</h3>
+          </div>
+          <div class="card-body">
+            <p><strong>芝→ダート転向時のチェックポイント：</strong></p>
+            <ul>
+              <li>父系にダート適性血統が含まれているか</li>
+              <li>母父（BMS）がダート適性を持つ種牡馬か</li>
+              <li>兄弟馬のダート実績はどうか</li>
+              <li>筋肉質で骨量が豊かな体型か</li>
+              <li>前に行く気性や闘争心があるか</li>
+            </ul>
+            <p><strong>ダート→芝転向時のチェックポイント：</strong></p>
+            <ul>
+              <li>父系に芝適性血統が含まれているか</li>
+              <li>母父（BMS）は芝適性種牡馬か</li>
+              <li>スムーズな走りや長いストライドを持つか</li>
+              <li>瞬発力や末脚の伸びはあるか</li>
+              <li>芝の長距離をこなせるスタミナがあるか</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6 mb-4">
+        <div class="card h-100">
+          <div class="card-header bg-success text-white">
+            <h3 class="h5 mb-0">おすすめのリサーチ方法</h3>
+          </div>
+          <div class="card-body">
+            <p><strong>初心者向け血統リサーチ手順：</strong></p>
+            <ol>
+              <li>まず対象馬の<strong>父系</strong>を確認し、芝・ダートどちらの適性が高いか調べる</li>
+              <li>次に<strong>母父（BMS）</strong>を確認し、父系と相性が良いか確認</li>
+              <li>対象馬の<strong>過去レース</strong>で芝・ダートそれぞれの成績を比較</li>
+              <li>同じ<strong>兄弟・姉妹</strong>の馬場適性も参考にする</li>
+              <li>対象レースの<strong>コース特性</strong>（直線の長さ、コーナーの形状など）と血統の相性を考える</li>
+            </ol>
+            <div class="alert alert-success mb-0 mt-2">
+              <p class="mb-0"><strong>ポイント</strong>：血統だけで判断せず、実績と組み合わせて予想することが重要です。血統は「素質」を表し、実績は「能力の発揮度」を表します。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mb-4">
+      <div class="card-header bg-dark text-white">
+        <h3 class="h5 mb-0">まとめ：血統と馬場適性の考え方</h3>
+      </div>
+      <div class="card-body">
+        <p>血統と馬場適性の関係を理解することは、競馬予想の精度を高める重要な要素です。</p>
+        <ul>
+          <li>血統は馬の基本的な素質を示す指標であり、<strong>潜在能力</strong>を表します</li>
+          <li>単一の血統だけでなく、<strong>父系・母系のバランス</strong>が重要です</li>
+          <li>血統の特徴と<strong>個体の特性</strong>は必ずしも一致するわけではありません</li>
+          <li>馬場適性は<strong>血統+体型+気質+走法</strong>の総合的な結果です</li>
+          <li>予想の際は、血統情報に<strong>過去実績</strong>を組み合わせて判断しましょう</li>
+          <li>転厩や調教師変更などの<strong>環境変化</strong>も馬場適性に影響することがあります</li>
+        </ul>
+        <p>血統と馬場適性の知識を深めることで、より多角的な視点から競馬を楽しむことができるようになります。初心者の方も、まずは基本的な血統と馬場適性の関係を理解することから始めてみましょう。</p>
+      </div>
+    </div>
+    
+    <div class="alert alert-primary">
+      <div class="d-flex align-items-center mb-2">
+        <i class="fas fa-lightbulb me-2"></i>
+        <h4 class="alert-heading h5 mb-0">次のステップ</h4>
+      </div>
+      <p>血統と馬場適性の関係をさらに深く理解するためには、以下の観点からも学習を進めると良いでしょう：</p>
+      <div class="row">
+        <div class="col-md-6">
+          <ul>
+            <li><a href="../distance/">血統と距離適性の関係</a></li>
+            <li><a href="../nicks/">ニックス理論と配合の相性</a></li>
+          </ul>
+        </div>
+        <div class="col-md-6">
+          <ul>
+            <li><a href="../roles/">父系・母系の役割と影響</a></li>
+            <li><a href="../../racecourse/jra/">各競馬場の特徴と相性</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+{% endblock %} 

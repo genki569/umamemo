@@ -288,5 +288,126 @@
             </div>
         </div>
     </section>
+
+    <div class="card bg-light mb-4">
+        <div class="card-body">
+            <h3 class="h5 mb-3">馬券の基本知識をマスターしよう</h3>
+            <div class="list-group">
+                <a href="{{ url_for('keiba_lab.betting_types') }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                    馬券の種類と特徴
+                    <i class="fas fa-chevron-right text-muted"></i>
+                </a>
+                <a href="{{ url_for('keiba_lab.betting_structure') }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                    馬券の仕組みと配当計算
+                    <i class="fas fa-chevron-right text-muted"></i>
+                </a>
+                <a href="{{ url_for('keiba_lab.betting_how_to_buy') }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                    馬券の購入方法
+                    <i class="fas fa-chevron-right text-muted"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- サイトマップリンク -->
+    <div class="card border-primary mb-4">
+        <div class="card-body">
+            <div class="d-flex align-items-center">
+                <div class="flex-shrink-0 me-3">
+                    <i class="fas fa-sitemap fa-2x text-primary"></i>
+                </div>
+                <div class="flex-grow-1">
+                    <h3 class="h5 mb-1">競馬ラボコンテンツマップ</h3>
+                    <p class="mb-2">競馬の基礎から予想法まで、全コンテンツを一覧でチェック</p>
+                    <a href="{{ url_for('keiba_lab.guide') }}" class="btn btn-sm btn-outline-primary">
+                        コンテンツ一覧を見る <i class="fas fa-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h2 class="h3 mb-4">馬券を買うときの基本戦略</h2>
+    
+    <div class="row mb-5">
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-header bg-light">
+                    <h3 class="h5 mb-0">予算の設定</h3>
+                </div>
+                <div class="card-body">
+                    <p>馬券を買う前に、その日の予算を必ず決めておきましょう。予算は「失っても問題ない金額」に設定することが重要です。</p>
+                    <ul>
+                        <li>1日あたりの予算を明確に決める</li>
+                        <li>予算を超えた購入はしない</li>
+                        <li>負けを取り戻そうとする「追い金」は厳禁</li>
+                        <li>生活資金から馬券代を捻出しない</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-header bg-light">
+                    <h3 class="h5 mb-0">馬券の種類選び</h3>
+                </div>
+                <div class="card-body">
+                    <p>レースの特性や自分の予想に合わせて、適切な馬券の種類を選びましょう。</p>
+                    <ul>
+                        <li>自信度が高い場合は単勝・馬単など</li>
+                        <li>荒れそうなレースは三連複ボックスなど</li>
+                        <li>堅そうなレースは複勝や馬連が安定</li>
+                        <li>初心者は点数を絞った馬券から始める</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-header bg-light">
+                    <h3 class="h5 mb-0">配分戦略</h3>
+                </div>
+                <div class="card-body">
+                    <p>予算内での馬券の買い方も重要な戦略です。</p>
+                    <ul>
+                        <li>全レース均等に買うよりも勝負レースを絞る</li>
+                        <li>軸馬には重点的に投資する</li>
+                        <li>相手馬は人気順ではなく能力や適性で判断</li>
+                        <li>配当期待値の高い馬券に重点配分する</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-header bg-light">
+                    <h3 class="h5 mb-0">検証の重要性</h3>
+                </div>
+                <div class="card-body">
+                    <p>馬券の的中・不的中にかかわらず、レース後の検証が上達の鍵です。</p>
+                    <ul>
+                        <li>買った馬券と結果を記録する習慣をつける</li>
+                        <li>なぜ当たった/外れたのかを分析する</li>
+                        <li>自分の得意・不得意なレースパターンを把握する</li>
+                        <li>定期的に自分の回収率を計算する</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="alert alert-success mb-5">
+        <h3 class="h5">上級者向けアドバイス</h3>
+        <p>ある程度経験を積んだら、以下の点も意識してみましょう：</p>
+        <ul class="mb-0">
+            <li><strong>市場の歪みを見つける：</strong>人気に対して実力が伴っていない馬を見極める</li>
+            <li><strong>馬券の組み合わせ：</strong>同一レースで複数の馬券種を組み合わせて買う</li>
+            <li><strong>適性重視：</strong>馬の適性と条件のマッチングを最優先する</li>
+            <li><strong>馬場状態の変化：</strong>日中の馬場変化をいち早く察知して予想に反映させる</li>
+        </ul>
+    </div>
 </div>
 {% endblock %} 
