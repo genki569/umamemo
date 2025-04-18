@@ -5166,6 +5166,7 @@ def keiba_lab_index():
     return render_template('keiba_lab/index.html')
 
 @app.route('/keiba-lab/<path:content_path>')
+@app.route('/keiba_lab/<path:content_path>')  # アンダースコアバージョンも追加
 def keiba_lab_content(content_path):
     """
     競馬ラボの個別コンテンツページ
