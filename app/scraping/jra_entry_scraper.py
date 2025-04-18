@@ -510,65 +510,86 @@ def get_race_info_for_next_three_days():
                     date_str = target_date.strftime("%Y%m%d")
                     filename = f"jra_race_entries_{date_str}.csv"
                     
-                    print(f"\n{date_str}の処理を開始します...")
+                    print(f"\n{target_date.strftime('%Y年%m月%d日')}({date_str})の処理を開始します...")
                     
-                    # 特定の日付に対しては固定のレースIDを生成
-                    fixed_race_urls = []
+                    # 常に動的にレースIDを生成（今日、明日、明後日用）
+                    # 土日か平日かで処理を分ける
+                    weekday = target_date.weekday()  # 0:月曜, 1:火曜, ..., 5:土曜, 6:日曜
+                    is_weekend = weekday >= 5
                     
-                    if date_str in ["20250419", "20250420", "20250421"]:
-                        print(f"{date_str}は特定の日付なので固定のレースIDを生成します")
-                        # 開催場所ごとの12レース分を生成
-                        venues = ["05", "06", "09"]  # 例：東京、中山、阪神など
-                        
-                        for venue in venues:
-                            for race_num in range(1, 13):
-                                race_id = f"2025{venue}0307{race_num:02d}"
-                                race_url = f"https://race.netkeiba.com/race/shutuba.html?race_id={race_id}"
-                                fixed_race_urls.append(race_url)
-                                print(f"固定レースURL生成: {race_url}")
-                        
-                        print(f"固定レースURL数: {len(fixed_race_urls)}")
-                        
-                        # 固定URLを処理
-                        if fixed_race_urls:
-                            for race_url in fixed_race_urls:
-                                try:
-                                    race_entry = scrape_race_entry(page, race_url)
-                                    if race_entry and race_entry['entries'] and len(race_entry['entries']) > 0:
-                                        save_to_csv(race_entry, filename)
-                                        print(f"保存完了: {race_entry['venue_name']} {race_entry['race_number']}R")
-                                    else:
-                                        print(f"レース情報取得失敗: {race_url}")
-                                except Exception as e:
-                                    print(f"レース情報取得エラー: {str(e)}")
-                                    traceback.print_exc()
-                            
-                            print(f"{date_str}の処理が完了しました")
-                            continue  # 次の日付へ
+                    # 動的にレースURLを生成
+                    generated_race_urls = []
                     
-                    # 通常の処理（URLを動的に取得）
+                    # 土日は中央競馬が開催されることが多いので、メインの競馬場でのレースを想定
+                    # 平日は地方競馬や特別な日のみ
+                    if is_weekend:
+                        print(f"{target_date.strftime('%Y年%m月%d日')}は週末のため、主要競馬場でのレースを生成します")
+                        main_venues = ["05", "06", "09"]  # 東京、中山、阪神など主要競馬場
+                    else:
+                        print(f"{target_date.strftime('%Y年%m月%d日')}は平日のため、限定的な競馬場でのレースを生成します")
+                        main_venues = ["01", "02", "03"]  # 平日は可能性の低い競馬場も少数生成
+                    
+                    # 年と月を取得
+                    year = target_date.strftime("%Y")
+                    month = target_date.strftime("%m")
+                    year_month = year + month
+                    
+                    # 第何週目かを推定（簡易的に月初からの週数で計算）
+                    day_of_month = int(target_date.strftime("%d"))
+                    week_num = (day_of_month - 1) // 7 + 1  # 1-7日は第1週、8-14日は第2週...
+                    
+                    # 開催回と日目の推定
+                    # 中央競馬は通常5週間程度の開催が1回
+                    # 1月初旬なら01週01日、3月なら02週02日、など
+                    # 簡易的に月と週から推定
+                    kai_code = f"{(int(month) % 6) + 1:02d}"  # 月を6で割った余りに1を足す (1-6)
+                    day_code = f"{((week_num - 1) % 8) + 1:02d}"  # 週を8で割った余りに1を足す (1-8)
+                    
+                    # レースIDの生成（年 + 場コード + 開催回 + 日目 + レース番号）
+                    for venue in main_venues:
+                        for race_num in range(1, 13):  # 1-12レース
+                            race_id = f"{year}{venue}{kai_code}{day_code}{race_num:02d}"
+                            race_url = f"https://race.netkeiba.com/race/shutuba.html?race_id={race_id}"
+                            generated_race_urls.append(race_url)
+                            print(f"レースURL生成: {race_url}")
+                    
+                    print(f"生成したレースURL数: {len(generated_race_urls)}")
+                    
+                    # バックアップとして通常の方法でもURLを取得
                     try:
-                        race_urls = get_race_urls_for_date(page, context, date_str)
-                        print(f"{date_str}のレースURL数: {len(race_urls)}")
-                        
-                        if race_urls:  # レースURLが存在する場合のみ処理
-                            for race_url in race_urls:
-                                try:
-                                    race_entry = scrape_race_entry(page, race_url)
-                                    if race_entry and race_entry['entries'] and len(race_entry['entries']) > 0:
-                                        save_to_csv(race_entry, filename)
-                                        print(f"保存完了: {race_entry['venue_name']} {race_entry['race_number']}R")
-                                        # アクセス間隔を空ける（サーバー負荷軽減のため）
-                                        time.sleep(2)
-                                except Exception as e:
-                                    print(f"レース情報取得エラー: {str(e)}")
-                                    traceback.print_exc()
-                            print(f"{date_str}の処理が完了しました")
-                        else:
-                            print(f"{date_str}のレースはありません")
+                        scraped_race_urls = get_race_urls_for_date(page, context, date_str)
+                        print(f"スクレイピングで取得したレースURL数: {len(scraped_race_urls)}")
+                        # 両方のURLリストをマージ（重複は自動的に除外される）
+                        all_race_urls = list(set(generated_race_urls + scraped_race_urls))
                     except Exception as e:
-                        print(f"{date_str}の処理中にエラーが発生しました: {str(e)}")
-                        traceback.print_exc()
+                        print(f"スクレイピングに失敗しました。生成したURLのみを使用します: {str(e)}")
+                        all_race_urls = generated_race_urls
+                    
+                    print(f"処理対象のレースURL数: {len(all_race_urls)}")
+                    
+                    # 全てのURLを処理
+                    processed_count = 0
+                    success_count = 0
+                    
+                    for race_url in all_race_urls:
+                        try:
+                            print(f"処理中: {race_url}")
+                            race_entry = scrape_race_entry(page, race_url)
+                            processed_count += 1
+                            
+                            if race_entry and race_entry.get('entries') and len(race_entry['entries']) > 0:
+                                save_to_csv(race_entry, filename)
+                                success_count += 1
+                                print(f"保存完了: {race_entry.get('venue_name', '不明')} {race_entry.get('race_number', '?')}R（成功: {success_count}/{processed_count}）")
+                                # アクセス間隔を空ける（サーバー負荷軽減のため）
+                                time.sleep(2)
+                            else:
+                                print(f"レースデータなし: {race_url}")
+                        except Exception as e:
+                            print(f"レース情報取得エラー: {str(e)}")
+                            traceback.print_exc()
+                    
+                    print(f"{target_date.strftime('%Y年%m月%d日')}の処理が完了しました（成功: {success_count}/{processed_count}）")
                 
             finally:
                 try:
