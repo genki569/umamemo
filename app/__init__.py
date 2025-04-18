@@ -210,6 +210,8 @@ def create_app(config_name=None):
     app.jinja_env.filters['zip'] = zip
     
     # Blueprintの登録
+    # エラーの原因となっているBlueprintをコメントアウト
+    '''
     from app.errors import bp as errors_bp
     app.register_blueprint(errors_bp)
     
@@ -224,10 +226,15 @@ def create_app(config_name=None):
     
     from app.admin import bp as admin_bp
     app.register_blueprint(admin_bp, url_prefix='/admin')
+    '''
     
-    # 競馬ラボのBlueprintを登録
-    from app.keiba_lab import bp as keiba_lab_bp
-    app.register_blueprint(keiba_lab_bp, url_prefix='/keiba-lab')
+    # 競馬ラボのBlueprintだけはルーティングに必要なので残す
+    try:
+        from app.keiba_lab import bp as keiba_lab_bp
+        app.register_blueprint(keiba_lab_bp, url_prefix='/keiba-lab')
+        app.logger.info("keiba_lab Blueprintを登録しました")
+    except ImportError:
+        app.logger.warning("app.keiba_lab モジュールが見つかりません。")
     
     return app
 
