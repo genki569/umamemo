@@ -307,32 +307,65 @@ def get_race_urls_for_date(page, context, date_str: str) -> List[str]:
         url = f"https://race.netkeiba.com/top/race_list.html?kaisai_date={date_str}"
         print(f"\n{date_str}のレース情報を取得中...")
         
-        # タイムアウトを設定
-        page.set_default_timeout(60000)  # 60秒
+        # タイムアウトを設定 - 長めに設定
+        page.set_default_timeout(120000)  # 120秒
         
-        # User-AgentとRefererを設定
+        # User-AgentとRefererを設定（より本物らしく）
         page.set_extra_http_headers({
-            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.127 Safari/537.36',
-            'Referer': 'https://race.netkeiba.com/'
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
+            'Referer': 'https://www.google.com/',
+            'Accept-Language': 'ja,en-US;q=0.9,en;q=0.8',
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache'
         })
         
-        # まずトップページにアクセス
-        print("トップページにアクセスしています...")
-        page.goto("https://race.netkeiba.com/", wait_until='domcontentloaded')
-        page.wait_for_timeout(3000)
-        
-        # 次に目的のページに遷移
+        # 直接目的のページに遷移
         print(f"レース一覧ページにアクセスしています: {url}")
         try:
-            page.goto(url, wait_until='domcontentloaded', timeout=60000)
-        except TimeoutError:
-            print("ページの完全な読み込みはタイムアウトしましたが、処理を継続します")
+            # ナビゲーションタイムアウトを長く設定
+            page.goto(url, wait_until='networkidle', timeout=90000)
+            print("ページ読み込み完了")
+        except Exception as e:
+            print(f"ページ読み込み中にエラーが発生しましたが処理を継続します: {str(e)}")
         
+        # 長めに待機してページが完全に読み込まれるのを待つ
+        page.wait_for_timeout(10000)
+        
+        # スクロールしてすべてのコンテンツを表示させる
+        page.evaluate('''() => {
+            window.scrollTo(0, 0);
+            let totalHeight = 0;
+            let distance = 100;
+            let timer = setInterval(() => {
+                let scrollHeight = document.body.scrollHeight;
+                window.scrollBy(0, distance);
+                totalHeight += distance;
+                if(totalHeight >= scrollHeight){
+                    clearInterval(timer);
+                }
+            }, 100);
+        }''')
+        
+        # スクロール完了を待つ
         page.wait_for_timeout(5000)
         
         # ページのHTMLを取得して解析
         html_content = page.content()
+        print(f"HTML取得完了: {len(html_content)}バイト")
         soup = BeautifulSoup(html_content, 'html.parser')
+        
+        # 特定の出馬表パターンの直接抽出
+        print("HTMLから直接URLパターンを検索します...")
+        
+        # ソースコードから直接レースIDを抽出する強力な方法
+        race_id_pattern = re.compile(r'race_id=(\d+)')
+        race_ids = race_id_pattern.findall(html_content)
+        print(f"HTMLから直接抽出したレースID数: {len(race_ids)}")
+        
+        for race_id in race_ids:
+            shutuba_url = f"https://race.netkeiba.com/race/shutuba.html?race_id={race_id}"
+            all_race_urls.add(shutuba_url)
+            print(f"レースURL追加: {shutuba_url}")
         
         # 出馬表へのリンクを複数のセレクターで試行
         race_links = []
@@ -343,64 +376,78 @@ def get_race_urls_for_date(page, context, date_str: str) -> List[str]:
             race_links.extend(links1)
             print(f"セレクター1で{len(links1)}件のリンクを取得")
         
-        # 方法2: RaceList枠内の全リンク
-        links2 = page.query_selector_all('.RaceList a[href*="race_id="]')
+        # 方法2: 別のセレクター(RaceList要素)
+        links2 = page.query_selector_all('span.RaceList_ItemTitle a')
         if links2:
             race_links.extend(links2)
             print(f"セレクター2で{len(links2)}件のリンクを取得")
-            
-        # 方法3: 別のクラス構造を試す
-        links3 = page.query_selector_all('dl.RaceList_DataList a[href*="race_id="]')
+        
+        # 方法3: より広範なセレクター
+        links3 = page.query_selector_all('a[href*="race_id="]')
         if links3:
             race_links.extend(links3)
             print(f"セレクター3で{len(links3)}件のリンクを取得")
-            
-        # 方法4: テーブル内のリンク
-        links4 = page.query_selector_all('table a[href*="race_id="]')
+        
+        # 方法4: シンプルな表形式での検索
+        links4 = page.query_selector_all('table a')
         if links4:
             race_links.extend(links4)
             print(f"セレクター4で{len(links4)}件のリンクを取得")
-            
-        # JavaScript実行で隠れた要素を表示
+        
+        # JavaScript実行で隠れた要素を表示し、イベントを発火
         page.evaluate('''() => {
             // 非表示要素を表示
-            const hiddenElements = document.querySelectorAll('[style*="display: none"]');
-            hiddenElements.forEach(el => el.style.display = 'block');
+            document.querySelectorAll('[style*="display: none"]').forEach(el => el.style.display = 'block');
+            
+            // タブをクリックする処理（タブUIがある場合）
+            document.querySelectorAll('.RaceList_DataTab li').forEach(tab => {
+                const event = new MouseEvent('click', {
+                    bubbles: true,
+                    cancelable: true,
+                    view: window
+                });
+                tab.dispatchEvent(event);
+            });
         }''')
         
-        # 再度リンクを検索
-        links5 = page.query_selector_all('a[href*="race_id="]')
+        # JRA開催情報に固有のセレクターを試す
+        page.wait_for_timeout(2000)
+        links5 = page.query_selector_all('.Race_Num a, .RaceList_DataItem a')
         if links5:
             race_links.extend(links5)
             print(f"セレクター5で{len(links5)}件のリンクを取得")
             
-        print(f"取得したリンク数: {len(race_links)}")
+        print(f"合計で{len(race_links)}件のリンクを取得")
         
+        # 取得したリンクからURLを抽出
         for link in race_links:
-            href = link.get_attribute('href')
-            if href and 'race_id=' in href:
-                # 出馬表URLに変換
-                race_id_match = re.search(r'race_id=([0-9]+)', href)
-                if race_id_match:
-                    race_id = race_id_match.group(1)
-                    shutuba_url = f"https://race.netkeiba.com/race/shutuba.html?race_id={race_id}"
-                    
-                    all_race_urls.add(shutuba_url)
-                    print(f"レースURL追加: {shutuba_url}")
+            try:
+                href = link.get_attribute('href')
+                if href and 'race_id=' in href:
+                    # 出馬表URLに変換
+                    race_id_match = re.search(r'race_id=([0-9]+)', href)
+                    if race_id_match:
+                        race_id = race_id_match.group(1)
+                        shutuba_url = f"https://race.netkeiba.com/race/shutuba.html?race_id={race_id}"
+                        all_race_urls.add(shutuba_url)
+            except Exception as e:
+                print(f"リンク処理中のエラー: {str(e)}")
         
-        # HTMLから直接抽出する方法も追加
-        soup = BeautifulSoup(html_content, 'html.parser')
-        for a_tag in soup.select('a[href*="race_id="]'):
-            href = a_tag.get('href')
-            if href and 'race_id=' in href:
-                race_id_match = re.search(r'race_id=([0-9]+)', href)
-                if race_id_match:
-                    race_id = race_id_match.group(1)
+        # 最終手段: 日付から推測されるレースIDのパターンを生成
+        # 例: 202504190101, 202504190102, ...
+        if len(all_race_urls) == 0:
+            print("リンクからの取得に失敗したため、日付からレースIDを生成します")
+            venue_codes = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10']
+            race_numbers = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12']
+            
+            for venue_code in venue_codes:
+                for race_number in race_numbers:
+                    race_id = f"{date_str}{venue_code}{race_number}"
                     shutuba_url = f"https://race.netkeiba.com/race/shutuba.html?race_id={race_id}"
                     all_race_urls.add(shutuba_url)
-                    print(f"HTMLから直接抽出: {shutuba_url}")
+                    print(f"日付から生成: {shutuba_url}")
         
-        print(f"メインページから{len(all_race_urls)}件のレースURLを取得しました")
+        print(f"最終的に{len(all_race_urls)}件のレースURLを取得しました")
         
     except Exception as e:
         print(f"レースURL取得中にエラー: {str(e)}")
