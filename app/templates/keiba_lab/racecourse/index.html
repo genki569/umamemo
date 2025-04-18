@@ -20,7 +20,7 @@
         <div class="card-body">
           <h2 class="card-title h5">JRA主要競馬場</h2>
           <p class="card-text">中央競馬（JRA）の主要競馬場の特徴、施設、アクセス方法などを紹介します。</p>
-          <a href="{{ url_for('keiba_lab.racecourse_jra') }}" class="btn btn-primary">詳細を見る</a>
+          <a href="{{ url_for('keiba_lab_content', content_path='racecourse/jra') }}" class="btn btn-primary">詳細を見る</a>
         </div>
       </div>
     </div>
@@ -29,7 +29,7 @@
         <div class="card-body">
           <h2 class="card-title h5">地方競馬場ガイド</h2>
           <p class="card-text">全国の地方競馬場の特徴やコース構造、特色ある施設などを紹介します。</p>
-          <a href="{{ url_for('keiba_lab.racecourse_local') }}" class="btn btn-primary">詳細を見る</a>
+          <a href="{{ url_for('keiba_lab_content', content_path='racecourse/local') }}" class="btn btn-primary">詳細を見る</a>
         </div>
       </div>
     </div>
@@ -38,7 +38,7 @@
         <div class="card-body">
           <h2 class="card-title h5">競馬場施設ガイド</h2>
           <p class="card-text">パドック、グランドスタンド、ウィナーズサークルなど競馬場の主要施設について解説します。</p>
-          <a href="{{ url_for('keiba_lab.racecourse_facilities') }}" class="btn btn-primary">詳細を見る</a>
+          <a href="{{ url_for('keiba_lab_content', content_path='racecourse/facilities') }}" class="btn btn-primary">詳細を見る</a>
         </div>
       </div>
     </div>
@@ -56,7 +56,7 @@
             直線の長い2,000mの芝コースと内回り・外回りのダートコースを持ち、
             直線が長く上り坂のある芝コースが特徴です。
           </p>
-          <a href="{{ url_for('keiba_lab.racecourse_tokyo') }}" class="btn btn-outline-primary btn-sm">詳しく見る</a>
+          <a href="{{ url_for('keiba_lab_content', content_path='racecourse/tokyo') }}" class="btn btn-outline-primary btn-sm">詳しく見る</a>
         </div>
       </div>
     </div>
@@ -68,7 +68,7 @@
             急坂のある独特のコース形状が特徴で、芝の内回り・外回りと直線の短いダートコースがあります。
             最終コーナーからゴールまでの直線が短く、位置取りが重要な競馬場です。
           </p>
-          <a href="{{ url_for('keiba_lab.racecourse_nakayama') }}" class="btn btn-outline-primary btn-sm">詳しく見る</a>
+          <a href="{{ url_for('keiba_lab_content', content_path='racecourse/nakayama') }}" class="btn btn-outline-primary btn-sm">詳しく見る</a>
         </div>
       </div>
     </div>
@@ -80,7 +80,7 @@
             直線が長く、最後の直線に緩やかな上り坂があるのが特徴です。
             芝とダートのコースを持ち、特に芝コースは直線の長さを活かした差し・追い込み馬が活躍します。
           </p>
-          <a href="{{ url_for('keiba_lab.racecourse_hanshin') }}" class="btn btn-outline-primary btn-sm">詳しく見る</a>
+          <a href="{{ url_for('keiba_lab_content', content_path='racecourse/hanshin') }}" class="btn btn-outline-primary btn-sm">詳しく見る</a>
         </div>
       </div>
     </div>
@@ -93,7 +93,7 @@
             緩やかな下り坂から上り坂に変わる独特のコース形状が特徴です。
             多様な距離のレースが行われます。
           </p>
-          <a href="{{ url_for('keiba_lab.racecourse_kyoto') }}" class="btn btn-outline-primary btn-sm">詳しく見る</a>
+          <a href="{{ url_for('keiba_lab_content', content_path='racecourse/kyoto') }}" class="btn btn-outline-primary btn-sm">詳しく見る</a>
         </div>
       </div>
     </div>
@@ -109,7 +109,7 @@
             広い走路幅と緩やかなカーブが特徴で、芝とダートのコースを持ちます。
             比較的フラットなコース形状で公平なレース展開が期待できます。
           </p>
-          <a href="{{ url_for('keiba_lab.racecourse_chukyo') }}" class="btn btn-outline-primary btn-sm">詳しく見る</a>
+          <a href="{{ url_for('keiba_lab_content', content_path='racecourse/chukyo') }}" class="btn btn-outline-primary btn-sm">詳しく見る</a>
         </div>
       </div>
     </div>
@@ -122,7 +122,7 @@
             芝コースは直線が短く、最後の直線に上り坂があり、
             前残りになりやすいコース特性を持っています。
           </p>
-          <a href="{{ url_for('keiba_lab.racecourse_fukushima') }}" class="btn btn-outline-primary btn-sm">詳しく見る</a>
+          <a href="{{ url_for('keiba_lab_content', content_path='racecourse/fukushima') }}" class="btn btn-outline-primary btn-sm">詳しく見る</a>
         </div>
       </div>
     </div>
@@ -135,7 +135,7 @@
             芝コースは内回り・外回りと直線コースがあり、
             ダートコースは急なカーブが特徴です。
           </p>
-          <a href="{{ url_for('keiba_lab.racecourse_niigata') }}" class="btn btn-outline-primary btn-sm">詳しく見る</a>
+          <a href="{{ url_for('keiba_lab_content', content_path='racecourse/niigata') }}" class="btn btn-outline-primary btn-sm">詳しく見る</a>
         </div>
       </div>
     </div>
@@ -148,7 +148,7 @@
             ダートコースを持ちます。小回りのきいたコース形状で、
             夏季のみ開催される特色ある競馬場です。
           </p>
-          <a href="{{ url_for('keiba_lab.racecourse_hakodate') }}" class="btn btn-outline-primary btn-sm">詳しく見る</a>
+          <a href="{{ url_for('keiba_lab_content', content_path='racecourse/hakodate') }}" class="btn btn-outline-primary btn-sm">詳しく見る</a>
         </div>
       </div>
     </div>
@@ -164,7 +164,7 @@
             芝コースは平坦で直線が短く、ダートコースは急なカーブがあり
             内枠有利の傾向があります。夏季のみ開催されます。
           </p>
-          <a href="{{ url_for('keiba_lab.racecourse_sapporo') }}" class="btn btn-outline-primary btn-sm">詳しく見る</a>
+          <a href="{{ url_for('keiba_lab_content', content_path='racecourse/sapporo') }}" class="btn btn-outline-primary btn-sm">詳しく見る</a>
         </div>
       </div>
     </div>
@@ -177,7 +177,7 @@
             小回りがきいたコンパクトなコース形状で、
             夏と冬のシーズンに開催されます。
           </p>
-          <a href="{{ url_for('keiba_lab.racecourse_kokura') }}" class="btn btn-outline-primary btn-sm">詳しく見る</a>
+          <a href="{{ url_for('keiba_lab_content', content_path='racecourse/kokura') }}" class="btn btn-outline-primary btn-sm">詳しく見る</a>
         </div>
       </div>
     </div>
@@ -197,7 +197,7 @@
             芝コースは馬の脚への負担が少なく、スピードを活かしたレース展開になりやすいのが特徴です。
             芝の状態（良馬場・稍重・重・不良）によっても適性が変わります。
           </p>
-          <a href="{{ url_for('keiba_lab.course_turf') }}" class="btn btn-outline-primary btn-sm">詳しく見る</a>
+          <a href="{{ url_for('keiba_lab_content', content_path='course/turf') }}" class="btn btn-outline-primary btn-sm">詳しく見る</a>
         </div>
       </div>
     </div>
@@ -209,7 +209,7 @@
             砂を敷き詰めたダートコースは、パワーのある馬が有利になる傾向があります。
             馬場状態の影響を受けやすく、内外の差が出やすいのも特徴です。
           </p>
-          <a href="{{ url_for('keiba_lab.course_dirt') }}" class="btn btn-outline-primary btn-sm">詳しく見る</a>
+          <a href="{{ url_for('keiba_lab_content', content_path='course/dirt') }}" class="btn btn-outline-primary btn-sm">詳しく見る</a>
         </div>
       </div>
     </div>
@@ -227,7 +227,7 @@
         競馬場の楽しみ方や施設の利用方法、持ち物や服装のアドバイスなど、
         初めて競馬場を訪れる方に役立つ情報をまとめています。
       </p>
-      <a href="{{ url_for('keiba_lab.racecourse_first_visit') }}" class="btn btn-outline-primary">詳しく見る</a>
+      <a href="{{ url_for('keiba_lab_content', content_path='racecourse/first-visit') }}" class="btn btn-outline-primary">詳しく見る</a>
     </div>
   </div>
 

@@ -52,7 +52,7 @@
             各競馬場のコース形状を理解し、それに適した馬を選ぶことが重要です。
             特に重賞レースでは、過去のレース傾向も踏まえて分析しましょう。
           </p>
-          <a href="{{ url_for('keiba_lab.course_shape') }}" class="btn btn-primary">詳しく見る</a>
+          <a href="{{ url_for('keiba_lab_content', content_path='course/shape') }}" class="btn btn-primary">詳しく見る</a>
         </div>
       </div>
     </div>
@@ -75,7 +75,7 @@
             馬の血統や過去のレース成績から距離適性を見極め、
             その馬が最も力を発揮できる距離のレースを狙いましょう。
           </p>
-          <a href="{{ url_for('keiba_lab.course_distance') }}" class="btn btn-primary">詳しく見る</a>
+          <a href="{{ url_for('keiba_lab_content', content_path='course/distance') }}" class="btn btn-primary">詳しく見る</a>
         </div>
       </div>
     </div>
@@ -101,7 +101,7 @@
             馬場状態は日によって変化するため、当日の状況を確認し、
             それに適応できる馬を選ぶことが大切です。
           </p>
-          <a href="{{ url_for('keiba_lab.course_condition') }}" class="btn btn-primary">詳しく見る</a>
+          <a href="{{ url_for('keiba_lab_content', content_path='course/condition') }}" class="btn btn-primary">詳しく見る</a>
         </div>
       </div>
     </div>
@@ -124,7 +124,7 @@
             季節の変わり目は特に馬のコンディションが変化しやすいため、
             直近の調教や馬体重の変化にも注目しましょう。
           </p>
-          <a href="{{ url_for('keiba_lab.course_season') }}" class="btn btn-primary">詳しく見る</a>
+          <a href="{{ url_for('keiba_lab_content', content_path='course/season') }}" class="btn btn-primary">詳しく見る</a>
         </div>
       </div>
     </div>
@@ -150,7 +150,7 @@
             枠順だけでなく、その馬の脚質や騎手の戦術も考慮して、
             総合的に判断することが重要です。
           </p>
-          <a href="{{ url_for('keiba_lab.course_post_position') }}" class="btn btn-primary">詳しく見る</a>
+          <a href="{{ url_for('keiba_lab_content', content_path='course/post-position') }}" class="btn btn-primary">詳しく見る</a>
         </div>
       </div>
     </div>
@@ -173,7 +173,7 @@
             レースの出走馬の脚質構成も重要で、逃げ馬が多いレースでは
             逃げ馬同士が消耗して差し・追込馬が有利になるケースもあります。
           </p>
-          <a href="{{ url_for('keiba_lab.course_running_style') }}" class="btn btn-primary">詳しく見る</a>
+          <a href="{{ url_for('keiba_lab_content', content_path='course/running-style') }}" class="btn btn-primary">詳しく見る</a>
         </div>
       </div>
     </div>
@@ -208,7 +208,7 @@
           </ul>
         </div>
       </div>
-      <a href="{{ url_for('keiba_lab.course_racecourse') }}" class="btn btn-primary mt-3">詳しく見る</a>
+      <a href="{{ url_for('keiba_lab_content', content_path='course/racecourse') }}" class="btn btn-primary mt-3">詳しく見る</a>
     </div>
   </div>
 
@@ -256,7 +256,7 @@
           <div class="card-body">
             <h3 class="card-title h5">コース別データ分析</h3>
             <p class="card-text">各競馬場のコース別成績データを分析し、統計的な傾向を解説します。</p>
-            <a href="{{ url_for('keiba_lab.course_data') }}" class="btn btn-outline-primary btn-sm">記事を読む</a>
+            <a href="{{ url_for('keiba_lab_content', content_path='course/data') }}" class="btn btn-outline-primary btn-sm">記事を読む</a>
           </div>
         </div>
       </div>
@@ -265,7 +265,7 @@
           <div class="card-body">
             <h3 class="card-title h5">重賞レースのコース攻略</h3>
             <p class="card-text">主要G1レースのコース特性と過去の傾向を詳しく解説します。</p>
-            <a href="{{ url_for('keiba_lab.course_g1') }}" class="btn btn-outline-primary btn-sm">記事を読む</a>
+            <a href="{{ url_for('keiba_lab_content', content_path='course/g1') }}" class="btn btn-outline-primary btn-sm">記事を読む</a>
           </div>
         </div>
       </div>
@@ -274,7 +274,7 @@
           <div class="card-body">
             <h3 class="card-title h5">雨の日の競馬攻略法</h3>
             <p class="card-text">雨天時の馬場状態の変化とそれに対応するための予想ポイントを解説します。</p>
-            <a href="{{ url_for('keiba_lab.course_rainy') }}" class="btn btn-outline-primary btn-sm">記事を読む</a>
+            <a href="{{ url_for('keiba_lab_content', content_path='course/rainy') }}" class="btn btn-outline-primary btn-sm">記事を読む</a>
           </div>
         </div>
       </div>

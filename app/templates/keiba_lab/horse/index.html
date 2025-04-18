@@ -53,7 +53,7 @@
             初心者の方は、まずは毛艶と筋肉の張りに注目するとよいでしょう。
             毛艶が良く、筋肉に適度な張りがある馬は、基本的に調子が良いと判断できます。
           </p>
-          <a href="{{ url_for('keiba_lab.horse_body') }}" class="btn btn-primary">詳しく見る</a>
+          <a href="{{ url_for('keiba_lab_content', content_path='horse/body') }}" class="btn btn-primary">詳しく見る</a>
         </div>
       </div>
     </div>
@@ -82,7 +82,7 @@
           <p>
             歩様の異常は故障のサインであることが多いため、特に注意して観察しましょう。
           </p>
-          <a href="{{ url_for('keiba_lab.horse_walking') }}" class="btn btn-primary">詳しく見る</a>
+          <a href="{{ url_for('keiba_lab_content', content_path='horse/walking') }}" class="btn btn-primary">詳しく見る</a>
         </div>
       </div>
     </div>
@@ -112,7 +112,7 @@
           <p>
             馬体重だけで判断するのではなく、実際の馬体や調教内容と合わせて総合的に評価することが大切です。
           </p>
-          <a href="{{ url_for('keiba_lab.horse_weight') }}" class="btn btn-primary">詳しく見る</a>
+          <a href="{{ url_for('keiba_lab_content', content_path='horse/weight') }}" class="btn btn-primary">詳しく見る</a>
         </div>
       </div>
     </div>
@@ -141,7 +141,7 @@
           <p>
             馬の性格にもよるため、その馬の普段の様子と比較して判断することが重要です。
           </p>
-          <a href="{{ url_for('keiba_lab.horse_mental') }}" class="btn btn-primary">詳しく見る</a>
+          <a href="{{ url_for('keiba_lab_content', content_path='horse/mental') }}" class="btn btn-primary">詳しく見る</a>
         </div>
       </div>
     </div>
@@ -172,7 +172,7 @@
             体型だけで適性を完全に判断することはできませんが、
             血統情報と組み合わせることでより正確な予測が可能になります。
           </p>
-          <a href="{{ url_for('keiba_lab.horse_physique') }}" class="btn btn-primary">詳しく見る</a>
+          <a href="{{ url_for('keiba_lab_content', content_path='horse/physique') }}" class="btn btn-primary">詳しく見る</a>
         </div>
       </div>
     </div>
@@ -197,7 +197,7 @@
             あくまで参考程度に考えるのが良いでしょう。
             実際の馬の様子や行動から性格を判断することが重要です。
           </p>
-          <a href="{{ url_for('keiba_lab.horse_color') }}" class="btn btn-primary">詳しく見る</a>
+          <a href="{{ url_for('keiba_lab_content', content_path='horse/color') }}" class="btn btn-primary">詳しく見る</a>
         </div>
       </div>
     </div>
@@ -266,7 +266,7 @@
             気配は主観的な要素も多いですが、競馬の達人たちは微妙な違いを捉えて予想に活かしています。
             何度も観察するうちに、「この馬は今日走りそうだ」という直感が磨かれていくでしょう。
           </p>
-          <a href="{{ url_for('keiba_lab.horse_aura') }}" class="btn btn-primary mt-2">詳しく見る</a>
+          <a href="{{ url_for('keiba_lab_content', content_path='horse/aura') }}" class="btn btn-primary mt-2">詳しく見る</a>
         </div>
       </div>
     </div>
@@ -314,7 +314,7 @@
           </ul>
         </div>
       </div>
-      <a href="{{ url_for('keiba_lab.horse_racing') }}" class="btn btn-primary mt-3">詳しく見る</a>
+      <a href="{{ url_for('keiba_lab_content', content_path='horse/racing') }}" class="btn btn-primary mt-3">詳しく見る</a>
     </div>
   </div>
 
@@ -363,7 +363,7 @@
           <div class="card-body">
             <h3 class="card-title h5">プロが見るパドックチェックのコツ</h3>
             <p class="card-text">競馬のプロたちが実践している、効率的なパドック観察法を紹介します。</p>
-            <a href="{{ url_for('keiba_lab.horse_pro_check') }}" class="btn btn-outline-primary btn-sm">記事を読む</a>
+            <a href="{{ url_for('keiba_lab_content', content_path='horse/pro-check') }}" class="btn btn-outline-primary btn-sm">記事を読む</a>
           </div>
         </div>
       </div>
@@ -372,7 +372,7 @@
           <div class="card-body">
             <h3 class="card-title h5">馬の故障サインを見抜く</h3>
             <p class="card-text">故障や体調不良のサインを早期に見抜くためのチェックポイントを解説します。</p>
-            <a href="{{ url_for('keiba_lab.horse_injury') }}" class="btn btn-outline-primary btn-sm">記事を読む</a>
+            <a href="{{ url_for('keiba_lab_content', content_path='horse/injury') }}" class="btn btn-outline-primary btn-sm">記事を読む</a>
           </div>
         </div>
       </div>
@@ -381,7 +381,7 @@
           <div class="card-body">
             <h3 class="card-title h5">競走馬の成長と変化</h3>
             <p class="card-text">年齢による競走馬の体型や能力の変化について詳しく解説します。</p>
-            <a href="{{ url_for('keiba_lab.horse_growth') }}" class="btn btn-outline-primary btn-sm">記事を読む</a>
+            <a href="{{ url_for('keiba_lab_content', content_path='horse/growth') }}" class="btn btn-outline-primary btn-sm">記事を読む</a>
           </div>
         </div>
       </div>
@@ -392,15 +392,15 @@
     <div class="card-body">
       <h3 class="h5 mb-3">競走馬の見方の基本</h3>
       <div class="list-group">
-        <a href="{{ url_for('keiba_lab.horse_check') }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+        <a href="{{ url_for('keiba_lab_content', content_path='horse/check') }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
           馬体の見方と調教の評価方法
           <i class="fas fa-chevron-right text-muted"></i>
         </a>
-        <a href="{{ url_for('keiba_lab.horse_condition') }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+        <a href="{{ url_for('keiba_lab_content', content_path='horse/condition') }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
           馬の調子を見極めるポイント
           <i class="fas fa-chevron-right text-muted"></i>
         </a>
-        <a href="{{ url_for('keiba_lab.horse_growth') }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+        <a href="{{ url_for('keiba_lab_content', content_path='horse/growth') }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
           馬の成長と適正レース
           <i class="fas fa-chevron-right text-muted"></i>
         </a>
@@ -418,7 +418,7 @@
         <div class="flex-grow-1">
           <h3 class="h5 mb-1">競馬ラボコンテンツマップ</h3>
           <p class="mb-2">競馬の基礎から予想法まで、全コンテンツを一覧でチェック</p>
-          <a href="{{ url_for('keiba_lab.guide') }}" class="btn btn-sm btn-outline-primary">
+          <a href="{{ url_for('keiba_lab_content', content_path='guide') }}" class="btn btn-sm btn-outline-primary">
             コンテンツ一覧を見る <i class="fas fa-arrow-right ms-1"></i>
           </a>
         </div>
@@ -470,7 +470,7 @@
           </ul>
         </div>
       </div>
-      <a href="{{ url_for('keiba_lab.horse_racing') }}" class="btn btn-primary mt-3">詳しく見る</a>
+      <a href="{{ url_for('keiba_lab_content', content_path='horse/racing') }}" class="btn btn-primary mt-3">詳しく見る</a>
     </div>
   </div>
 </div>
