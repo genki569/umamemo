@@ -5,11 +5,11 @@
 
 /* 基本設定 */
 .keiba-lab {
-  --primary-color: #6466f1;
-  --primary-dark: #4F46E5;
-  --primary-light: rgba(100, 102, 241, 0.12);
-  --accent-color: #EC4899;
-  --accent-light: rgba(236, 72, 153, 0.12);
+  --primary-color: #5145E5;
+  --primary-dark: #3D35C6;
+  --primary-light: rgba(81, 69, 229, 0.15);
+  --accent-color: #E11D48;
+  --accent-light: rgba(225, 29, 72, 0.15);
   --gradient-primary: linear-gradient(135deg, var(--primary-color), var(--accent-color));
   --text-color: #1e293b;
   --text-dark: #0f172a;
@@ -76,7 +76,7 @@
   position: relative;
   z-index: 1;
   letter-spacing: -0.02em;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
 }
 
 .keiba-lab-header p.lead {
@@ -183,7 +183,7 @@
 
 .category-icon i {
   font-size: 1.5rem;
-  color: var(--primary-color);
+  color: var(--primary-dark);
   transition: var(--transition-base);
 }
 
@@ -222,7 +222,7 @@
 }
 
 .category-links a {
-  color: var(--text-dark);
+  color: var(--primary-dark);
   text-decoration: none;
   display: block;
   position: relative;
@@ -233,7 +233,8 @@
 }
 
 .category-links a:hover {
-  color: var(--primary-color);
+  color: var(--accent-color);
+  text-decoration: none;
 }
 
 .category-links a::before {
@@ -260,6 +261,95 @@
   margin-bottom: 0.4rem;
   color: var(--text-muted);
   line-height: 1.5;
+}
+
+/* サイド見出し強化 */
+.category-section-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: 1.25rem;
+  color: var(--text-dark);
+  position: relative;
+  padding-bottom: 0.7rem;
+}
+
+.category-section-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 70px;
+  height: 3px;
+  background: var(--gradient-primary);
+  border-radius: 3px;
+}
+
+/* トップページ用セクションタイトル強化 */
+.section-title {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.section-title h2 {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: var(--text-dark);
+  margin-bottom: 1rem;
+  position: relative;
+  display: inline-block;
+}
+
+.section-title h2::after {
+  content: '';
+  position: absolute;
+  bottom: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 4px;
+  background: var(--gradient-primary);
+  border-radius: 3px;
+}
+
+.section-title p {
+  font-size: 1.2rem;
+  color: var(--text-muted);
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+/* トップページリンクカード */
+.link-card {
+  display: block;
+  padding: 1.75rem;
+  border-radius: var(--border-radius);
+  background-color: var(--bg-white);
+  box-shadow: var(--card-shadow);
+  transition: var(--transition-base);
+  height: 100%;
+  text-decoration: none !important;
+}
+
+.link-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--card-hover-shadow);
+}
+
+.link-card h3 {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+  color: var(--primary-dark);
+  transition: var(--transition-base);
+}
+
+.link-card:hover h3 {
+  color: var(--accent-color);
+}
+
+.link-card p {
+  color: var(--text-muted);
+  margin-bottom: 0;
 }
 
 /* コンテンツページスタイル */
@@ -861,4 +951,17 @@
 .keiba-lab textarea:focus {
   outline: 2px solid var(--primary-color);
   outline-offset: 2px;
+}
+
+/* リンクスタイルの強化 */
+.keiba-lab a {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: 500;
+  transition: var(--transition-base);
+}
+
+.keiba-lab a:hover {
+  color: var(--primary-dark);
+  text-decoration: underline;
 } 
