@@ -5176,6 +5176,8 @@ def keiba_lab_content(content_path):
     Args:
         content_path: コンテンツのパス
     """
+    app.logger.info(f"Request for keiba_lab content: '{content_path}'")
+    
     # URLリダイレクトマッピング - 新しいパス体系を既存ファイルにマッピング
     url_redirects = {
         # 馬体関連のリダイレクト
@@ -5183,16 +5185,16 @@ def keiba_lab_content(content_path):
         'horse/body-check': 'horse/body',   # 馬体の見るポイント → 既存の馬体チェックページ
         
         # 競馬場・コース関連
-        'racecourse/jra': 'racecourse/jra/index',       # JRA主要競馬場
-        'racecourse/course': 'racecourse/course/index', # コースの構造と特性
+        'racecourse/jra': 'racecourse/jra',             # JRA主要競馬場
+        'racecourse/course': 'racecourse/course',       # コースの構造と特性
         
         # 馬券・投資関連
         'betting/strategy': 'betting/index',            # 馬券の組み立て方
         
         # 血統関連
         'bloodline/major': 'bloodline/index',           # 主要血統ライン
-        'bloodline/combination': 'bloodline/roles/index', # 配合理論の基礎
-        'bloodline/aptitude': 'bloodline/aptitude/index', # 血統と適性
+        'bloodline/combination': 'bloodline/roles',     # 配合理論の基礎
+        'bloodline/aptitude': 'bloodline/aptitude',     # 血統と適性
         
         # 競走馬関連
         'horse/condition': 'horse/condition',           # 馬の調子と状態
@@ -5211,7 +5213,9 @@ def keiba_lab_content(content_path):
     
     # リダイレクトが存在する場合は対応するパスに変更
     if content_path in url_redirects:
+        original_path = content_path
         content_path = url_redirects[content_path]
+        app.logger.info(f"Redirecting from '{original_path}' to '{content_path}'")
     
     # 1. まず直接.htmlファイルを探す
     direct_template_path = f'keiba_lab/{content_path}.html'
@@ -5219,13 +5223,16 @@ def keiba_lab_content(content_path):
     # 2. 次にディレクトリ/index.htmlを探す
     directory_template_path = f'keiba_lab/{content_path}/index.html'
     
+    app.logger.info(f"Trying to render: 1. '{direct_template_path}' or 2. '{directory_template_path}'")
+    
     # テンプレートの試行
     try:
         return render_template(direct_template_path)
-    except Exception as e:
+    except Exception as e1:
+        app.logger.info(f"Failed to render {direct_template_path}: {str(e1)}")
         try:
             return render_template(directory_template_path)
-        except Exception as e:
+        except Exception as e2:
             # どちらのテンプレートも見つからない場合は404を返す
-            app.logger.error(f"Template not found for path '{content_path}': {str(e)}")
+            app.logger.error(f"Template not found for path '{content_path}'. Tried:\n1. {direct_template_path}\n2. {directory_template_path}\nErrors: {str(e1)}, {str(e2)}")
             return render_template('errors/404.html'), 404
