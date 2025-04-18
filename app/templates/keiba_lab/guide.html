@@ -366,68 +366,66 @@
             </section>
 
             <!-- 競走馬の見方 -->
-            <section class="mb-5">
+            <div class="border-top pt-4 mt-4">
                 <div class="d-flex align-items-center mb-3">
-                    <div class="p-2 rounded-circle me-3" style="background-color: rgba(79, 70, 229, 0.1);">
-                        <i class="fas fa-horse text-primary"></i>
-                    </div>
+                    <i class="fas fa-horse fa-2x text-primary me-3"></i>
                     <h2 class="h3 mb-0">競走馬の見方</h2>
                 </div>
-                <div class="card shadow-sm border-0">
-                    <div class="card-body">
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item bg-transparent px-0">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <ul class="list-unstyled">
+                            <li class="mb-2">
                                 <a href="{{ url_for('keiba_lab_content', content_path='horse/body-basics') }}" class="text-decoration-none">
                                     <i class="fas fa-chevron-right text-primary me-2"></i>馬体の基礎知識
                                 </a>
-                                <ul class="list-unstyled ps-4 mt-2 small text-muted">
+                                <ul class="list-unstyled ms-4 my-2 text-muted small">
                                     <li>・馬体各部の名称と役割</li>
-                                    <li>・理想的な馬体の特徴</li>
-                                    <li>・馬体のバランスと走力</li>
-                                    <li>・筋肉の発達とパワー</li>
-                                    <li>・馬体の成長と変化</li>
+                                    <li>・馬体の基本構造と筋肉の見方</li>
+                                    <li>・馬体から読み取れる情報</li>
+                                    <li>・馬の健康状態の基本指標</li>
                                 </ul>
                             </li>
-                            <li class="list-group-item bg-transparent px-0 mt-3">
+                            <li class="mb-2">
                                 <a href="{{ url_for('keiba_lab_content', content_path='horse/body-check') }}" class="text-decoration-none">
                                     <i class="fas fa-chevron-right text-primary me-2"></i>馬体の見るポイント
                                 </a>
-                                <ul class="list-unstyled ps-4 mt-2 small text-muted">
+                                <ul class="list-unstyled ms-4 my-2 text-muted small">
                                     <li>・パドックでの馬体チェック法</li>
-                                    <li>・馬体の良し悪しの判断</li>
-                                    <li>・馬体重の見方と意味</li>
-                                    <li>・毛艶と健康状態の見分け方</li>
-                                    <li>・気性の見極め方</li>
+                                    <li>・毛艶・筋肉・バランスの見方</li>
+                                    <li>・良い馬体と悪い馬体の特徴</li>
+                                    <li>・季節による馬体の変化</li>
                                 </ul>
                             </li>
-                            <li class="list-group-item bg-transparent px-0 mt-3">
+                        </ul>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <ul class="list-unstyled">
+                            <li class="mb-2">
                                 <a href="{{ url_for('keiba_lab_content', content_path='horse/walking') }}" class="text-decoration-none">
                                     <i class="fas fa-chevron-right text-primary me-2"></i>走法と歩様
                                 </a>
-                                <ul class="list-unstyled ps-4 mt-2 small text-muted">
-                                    <li>・基本的な走法の種類</li>
+                                <ul class="list-unstyled ms-4 my-2 text-muted small">
                                     <li>・理想的な歩様の特徴</li>
-                                    <li>・走法と適性の関係</li>
-                                    <li>・歩様の乱れと意味</li>
-                                    <li>・走法からみる距離適性</li>
+                                    <li>・歩様からわかる馬の状態</li>
+                                    <li>・走法の種類と特徴</li>
+                                    <li>・歩様異常のサイン</li>
                                 </ul>
                             </li>
-                            <li class="list-group-item bg-transparent px-0 mt-3">
+                            <li class="mb-2">
                                 <a href="{{ url_for('keiba_lab_content', content_path='horse/condition') }}" class="text-decoration-none">
                                     <i class="fas fa-chevron-right text-primary me-2"></i>馬の調子と状態
                                 </a>
-                                <ul class="list-unstyled ps-4 mt-2 small text-muted">
-                                    <li>・好調馬の特徴</li>
-                                    <li>・不調馬の見分け方</li>
-                                    <li>・馬の心理状態の判断</li>
-                                    <li>・休み明け馬の見方</li>
-                                    <li>・季節による馬の変化</li>
+                                <ul class="list-unstyled ms-4 my-2 text-muted small">
+                                    <li>・馬体重と調子の関係</li>
+                                    <li>・馬の精神状態の見分け方</li>
+                                    <li>・覇気と気配のチェック</li>
+                                    <li>・馬の体調不良のサイン</li>
                                 </ul>
                             </li>
                         </ul>
                     </div>
                 </div>
-            </section>
+            </div>
 
             <!-- コース攻略 -->
             <section class="mb-5">
