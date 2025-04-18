@@ -445,25 +445,20 @@ def get_race_urls_for_date(page, date_str: str) -> List[str]:
         html_content = page.content()
         soup = BeautifulSoup(html_content, 'html.parser')
         
-        # レースリンクを取得（中央競馬のみ）
+        # レースリンクを取得（すべてのレース）
         race_links = []
         race_card_elements = soup.select('div.RaceList_DataItem')
         
         for element in race_card_elements:
-            # 中央競馬のレースかどうかチェック
-            kaisai_label = element.select_one('.RaceList_DataTitle')
-            is_central = True if kaisai_label and '中央競馬' in kaisai_label.text else False
-            
-            if is_central:
-                # レースのURLを抽出
-                race_elems = element.select('li.RaceList_DataItem')
-                for race in race_elems:
-                    link_elem = race.select_one('a')
-                    if link_elem and 'href' in link_elem.attrs:
-                        relative_link = link_elem['href']
-                        if 'shutuba.html' in relative_link:
-                            absolute_link = f"https://race.netkeiba.com{relative_link}"
-                            race_links.append(absolute_link)
+            # すべてのレースのURLを抽出（中央競馬フィルタリングを削除）
+            race_elems = element.select('li.RaceList_DataItem')
+            for race in race_elems:
+                link_elem = race.select_one('a')
+                if link_elem and 'href' in link_elem.attrs:
+                    relative_link = link_elem['href']
+                    if 'shutuba.html' in relative_link:
+                        absolute_link = f"https://race.netkeiba.com{relative_link}"
+                        race_links.append(absolute_link)
         
         # デバッグ出力
         print(f"{date_str}のレースURL取得: {len(race_links)}件")
