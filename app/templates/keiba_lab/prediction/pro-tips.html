@@ -1,0 +1,71 @@
+{% extends "keiba_lab/layout.html" %}
+
+{% block title %}プロが教える馬券の選び方 | 予想のコツ | 競馬ラボ{% endblock %}
+
+{% block meta_description %}プロの競馬予想家が実践している馬券選びのポイントと初心者が陥りやすい落とし穴を解説。データだけでなく現場の知恵を活かした実践的な競馬予想法を紹介します。{% endblock %}
+
+{% block meta_keywords %}競馬,予想法,馬券,プロ予想家,競馬予想,馬券選び,的中率,回収率,データ分析,競馬のコツ{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item"><a href="{{ url_for('keiba_lab_content', content_path='prediction') }}">予想の基本理論</a></li>
+<li class="breadcrumb-item active" aria-current="page">プロが教える馬券の選び方</li>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <h1 class="mb-4">プロが教える馬券の選び方</h1>
+            
+            <div class="alert alert-warning mb-4">
+                <div class="d-flex">
+                    <div class="me-3">
+                        <i class="fas fa-exclamation-triangle fa-2x"></i>
+                    </div>
+                    <div>
+                        <h5 class="alert-heading">ページ準備中</h5>
+                        <p class="mb-0">このページは現在準備中です。近日中に公開予定ですので、しばらくお待ちください。</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h2 class="h4 mb-3">このページで解説予定の内容</h2>
+                    <ul class="mb-0">
+                        <li>プロ予想家が実践している馬券選びの基本原則</li>
+                        <li>初心者が陥りやすい予想の落とし穴と対策法</li>
+                        <li>データと感覚のバランスの取り方</li>
+                        <li>プロ予想家が実際に使用している予想法と思考プロセス</li>
+                        <li>状況別の馬券選びのポイント</li>
+                    </ul>
+                </div>
+            </div>
+
+            <p>準備が整い次第、充実したコンテンツをお届けします。その間、以下の関連コンテンツもご覧ください。</p>
+            
+            <h3 class="h5 mb-3 mt-5">関連コンテンツ</h3>
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">予想の基本アプローチ</h5>
+                            <p class="card-text">競馬予想の基本ステップを学び、効果的な予想法の基礎を身につけましょう。</p>
+                            <a href="{{ url_for('keiba_lab_content', content_path='prediction/approach') }}" class="stretched-link"></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">データ分析の基礎</h5>
+                            <p class="card-text">競馬データの正しい読み方と分析方法を学び、予想精度を高めましょう。</p>
+                            <a href="{{ url_for('keiba_lab_content', content_path='prediction/data-analysis') }}" class="stretched-link"></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

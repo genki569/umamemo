@@ -228,13 +228,8 @@ def create_app(config_name=None):
     app.register_blueprint(admin_bp, url_prefix='/admin')
     '''
     
-    # 競馬ラボのBlueprintだけはルーティングに必要なので残す
-    try:
-        from app.keiba_lab import bp as keiba_lab_bp
-        app.register_blueprint(keiba_lab_bp, url_prefix='/keiba-lab')
-        app.logger.info("keiba_lab Blueprintを登録しました")
-    except ImportError:
-        app.logger.warning("app.keiba_lab モジュールが見つかりません。")
+    # 競馬ラボのBlueprintを使わない
+    # 代わりにapp/routes.pyに直接ルートを定義
     
     return app
 

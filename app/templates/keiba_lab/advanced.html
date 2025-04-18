@@ -1,0 +1,70 @@
+{% extends "keiba_lab/layout.html" %}
+
+{% block title %}上級者向けコンテンツ | 競馬ラボ | 馬メモ{% endblock %}
+
+{% block meta_description %}競馬ラボの上級者向けコンテンツ集。高度な統計分析、独自の予想理論、投資戦略など、より本格的に競馬予想に取り組みたい方向けの専門的な解説記事を集めています。{% endblock %}
+
+{% block meta_keywords %}競馬,上級者,統計分析,投資戦略,回収率,ハンデ,競馬理論{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item active" aria-current="page">上級者向けコンテンツ</li>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <h1 class="mb-4">上級者向けコンテンツ</h1>
+            
+            <div class="alert alert-warning mb-4">
+                <div class="d-flex">
+                    <div class="me-3">
+                        <i class="fas fa-exclamation-triangle fa-2x"></i>
+                    </div>
+                    <div>
+                        <h5 class="alert-heading">ページ準備中</h5>
+                        <p class="mb-0">このページは現在準備中です。近日中に公開予定ですので、しばらくお待ちください。</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h2 class="h4 mb-3">このページで紹介予定のコンテンツ</h2>
+                    <ul class="mb-0">
+                        <li>統計学に基づいた馬券投資戦略</li>
+                        <li>期待値理論と回収率最大化への応用</li>
+                        <li>高度な血統分析とクロスの理解</li>
+                        <li>ポートフォリオ理論の馬券投資への応用</li>
+                        <li>独自の予想モデル構築のためのフレームワーク</li>
+                    </ul>
+                </div>
+            </div>
+
+            <p>準備が整い次第、充実したコンテンツをお届けします。その間、以下の関連コンテンツもご覧ください。</p>
+            
+            <h3 class="h5 mb-3 mt-5">おすすめコンテンツ</h3>
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">理論的予想法</h5>
+                            <p class="card-text">スピード理論の基本、レースペース理論など、理論的アプローチを解説します。</p>
+                            <a href="{{ url_for('keiba_lab_content', content_path='prediction/theory') }}" class="stretched-link"></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">投資戦略の基礎</h5>
+                            <p class="card-text">期待値理論の基本、リスク分散の方法、長期的利益を出す思考法を解説します。</p>
+                            <a href="{{ url_for('keiba_lab_content', content_path='investment') }}" class="stretched-link"></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
