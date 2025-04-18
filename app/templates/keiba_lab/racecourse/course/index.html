@@ -1,0 +1,881 @@
+{% extends "keiba_lab/_base.html" %}
+
+{% block title %}競馬場のコース構造と特性 | 芝・ダート・距離別の徹底解説【馬メモ】{% endblock %}
+
+{% block description %}競馬場のコース構造を徹底解説。芝とダートの違い、内回りと外回りの特徴、直線の長さや坂の影響など、コース特性が競走馬のパフォーマンスに与える影響について初心者向けにわかりやすく説明します。{% endblock %}
+
+{% block keywords %}競馬場,コース構造,芝コース,ダートコース,内回り,外回り,直線,坂,コース特性,距離,予想{% endblock %}
+
+{% block og_title %}競馬場のコース構造と特性 | 芝・ダート・距離別の徹底解説{% endblock %}
+{% block og_description %}競馬場のコース構造とその特徴について徹底解説。芝・ダートの違いや、内回り・外回りの特性、直線の長さや坂の影響など、競馬予想に役立つコース知識を初心者向けに解説します。{% endblock %}
+
+{% block twitter_title %}競馬場のコース構造と特性 | 芝・ダート・距離別の徹底解説{% endblock %}
+{% block twitter_description %}競馬場のコース構造とその特徴について徹底解説。芝・ダートの違いや、内回り・外回りの特性、直線の長さや坂の影響など、競馬予想に役立つコース知識を初心者向けに解説します。{% endblock %}
+
+{% block content %}
+<div class="keiba_lab_content">
+  <div class="breadcrumb">
+    <ul>
+      <li><a href="/keiba-lab/">競馬ラボ</a></li>
+      <li><a href="/keiba-lab/racecourse/">競馬場ガイド</a></li>
+      <li>コース構造と特性</li>
+    </ul>
+  </div>
+
+  <h1 class="main_title">競馬場のコース構造と特性</h1>
+
+  <p class="lead">
+    競馬場のコース構造とその特性を理解することは、競馬予想の精度を高める上で非常に重要です。芝コースとダートコースの違い、内回りと外回りの特徴、直線の長さや坂の有無など、様々な要素が競走馬のパフォーマンスに影響を与えます。この記事では、競馬場のコース構造と特性について詳しく解説し、それらが競馬予想にどのように役立つかを説明します。
+  </p>
+
+  <div class="toc">
+    <div class="toc_title">目次</div>
+    <ul>
+      <li><a href="#turf-dirt">芝コースとダートコースの違い</a></li>
+      <li><a href="#inner-outer">内回りと外回りの特徴</a></li>
+      <li><a href="#straight">直線の長さとその影響</a></li>
+      <li><a href="#hill">坂の存在とその影響</a></li>
+      <li><a href="#distance">距離による特性の違い</a></li>
+      <li><a href="#weather">天候とコース状態の関係</a></li>
+      <li><a href="#racecourse-features">主な競馬場の特徴的なコース構造</a></li>
+    </ul>
+  </div>
+
+  <section id="turf-dirt">
+    <h2>芝コースとダートコースの違い</h2>
+    
+    <div class="card mb-4">
+      <div class="card-header">
+        <h3>芝コースとダートコースの基本的な違い</h3>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-6">
+            <h4>芝コース</h4>
+            <ul>
+              <li><strong>表面：</strong>天然の芝生（一部では人工芝も使用）</li>
+              <li><strong>弾力性：</strong>比較的高い（馬の脚への負担が少ない）</li>
+              <li><strong>スピード：</strong>一般的に速いタイムが出やすい</li>
+              <li><strong>走行音：</strong>比較的静か</li>
+              <li><strong>適性馬：</strong>軽快なフットワークと瞬発力を持つ馬</li>
+            </ul>
+          </div>
+          <div class="col-md-6">
+            <h4>ダートコース</h4>
+            <ul>
+              <li><strong>表面：</strong>砂や砕石などを混ぜた土</li>
+              <li><strong>弾力性：</strong>比較的低い（脚への負担が大きい）</li>
+              <li><strong>スピード：</strong>一般的に芝より遅いタイムになる</li>
+              <li><strong>走行音：</strong>蹄の音が大きい</li>
+              <li><strong>適性馬：</strong>パワーと持久力を持つ馬</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <p>
+      芝コースとダートコースは表面の素材が異なるため、馬の走り方や適性に大きな違いがあります。芝コースは弾力性があり、馬の蹄が地面に沈み込みにくいため、軽快なフットワークを持つ馬が有利です。一方、ダートコースは蹄が地面に沈み込みやすく、力強さが求められます。
+    </p>
+
+    <div class="card mb-4">
+      <div class="card-header">
+        <h3>天候による影響の違い</h3>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-6">
+            <h4>雨の日の芝コース</h4>
+            <ul>
+              <li>水はけの良い馬場：「良」〜「稍重」</li>
+              <li>水はけの悪い馬場：「重」〜「不良」</li>
+              <li>馬場状態が「重」や「不良」になると、泥濘（でいねい）が発生</li>
+              <li>馬の脚力や体力への負担が増大</li>
+              <li>泥濘適性のある馬が有利に</li>
+            </ul>
+          </div>
+          <div class="col-md-6">
+            <h4>雨の日のダートコース</h4>
+            <ul>
+              <li>砂が水分を含み、粘り気が出る</li>
+              <li>スピードが出にくくなる</li>
+              <li>極端な場合、泥状になり「ヘヴィ」な状態に</li>
+              <li>パワーのある馬が有利に</li>
+              <li>前に行く馬（逃げ・先行）が有利になる傾向</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <p>
+      天候、特に雨は芝コースとダートコースで異なる影響を与えます。芝コースでは雨が降ると芝が滑りやすくなり、馬の足元が不安定になります。馬場状態が「重」や「不良」になると、泥濘（でいねい）が発生し、馬の走行に大きな影響を与えます。ダートコースでは、雨により砂が水分を含み、粘り気が出てスピードが出しにくくなります。
+    </p>
+
+    <div class="alert alert-info">
+      <strong>予想のポイント：</strong> コース別の適性をチェックする際は、そのレースが芝とダートのどちらで行われるかを確認し、出走馬のこれまでの芝・ダートでの成績を比較することが重要です。また、天候予報をチェックし、雨が予想される場合は馬場状態の変化を考慮した予想が必要です。
+    </div>
+  </section>
+
+  <section id="inner-outer">
+    <h2>内回りと外回りの特徴</h2>
+    
+    <div class="card mb-4">
+      <div class="card-header">
+        <h3>内回りと外回りの基本的な違い</h3>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-6">
+            <h4>内回りコース</h4>
+            <ul>
+              <li><strong>全長：</strong>比較的短い</li>
+              <li><strong>コーナー：</strong>きつい（角度が大きい）</li>
+              <li><strong>特徴：</strong>小回りが利き、テンポよく走れる馬が有利</li>
+              <li><strong>脚質：</strong>内枠からの逃げ・先行が有利な傾向</li>
+              <li><strong>例：</strong>東京・中山・阪神・京都・中京の内回り</li>
+            </ul>
+          </div>
+          <div class="col-md-6">
+            <h4>外回りコース</h4>
+            <ul>
+              <li><strong>全長：</strong>比較的長い</li>
+              <li><strong>コーナー：</strong>緩やか（角度が小さい）</li>
+              <li><strong>特徴：</strong>スピードを落とさずコーナーを回れる馬が有利</li>
+              <li><strong>脚質：</strong>差し・追い込み馬も成功率が高い</li>
+              <li><strong>例：</strong>東京・中山・阪神・京都・中京の外回り</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <p>
+      内回りと外回りはコースの形状が異なります。内回りは周長が短く、コーナーがきついため、小回りの利く馬や内枠を活かした作戦が有効です。外回りは周長が長く、コーナーが緩やかなため、大きなストライドを活かしたスピードのある馬が有利になる傾向があります。
+    </p>
+
+    <div class="card mb-4">
+      <div class="card-header">
+        <h3>主な競馬場の内回り・外回りの特徴</h3>
+      </div>
+      <div class="card-body">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>競馬場</th>
+              <th>内回り特徴</th>
+              <th>外回り特徴</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>東京</td>
+              <td>直線が長く、最終コーナーが比較的きつい</td>
+              <td>直線が非常に長く（525m）、差し・追い込み馬に有利</td>
+            </tr>
+            <tr>
+              <td>中山</td>
+              <td>最終コーナーがきつく、直線が短い</td>
+              <td>内回りよりコーナーが緩やかで、直線も長い</td>
+            </tr>
+            <tr>
+              <td>阪神</td>
+              <td>直線が長く、上り坂がある</td>
+              <td>直線がさらに長く、スタミナが問われる</td>
+            </tr>
+            <tr>
+              <td>京都</td>
+              <td>長い直線と緩やかな下り坂がある</td>
+              <td>バックストレッチが長く、コーナーが緩やか</td>
+            </tr>
+            <tr>
+              <td>中京</td>
+              <td>コーナーがきつく、小回りが利く馬に有利</td>
+              <td>直線が長く、差し馬に有利な設計</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="alert alert-info">
+      <strong>予想のポイント：</strong> レースの内回り・外回りを確認し、出走馬のこれまでの内回り・外回りでの成績を比較することが重要です。特に初めて外回りに挑戦する馬や、内回りを得意としている馬が外回りに出走する場合などは注意が必要です。
+    </div>
+  </section>
+
+  <section id="straight">
+    <h2>直線の長さとその影響</h2>
+    
+    <p>
+      競馬場の直線の長さは、レースの展開や適性馬に大きな影響を与えます。直線が長い競馬場では差し・追い込み馬に有利となり、短い競馬場では逃げ・先行馬が有利になる傾向があります。
+    </p>
+
+    <div class="card mb-4">
+      <div class="card-header">
+        <h3>直線の長さによるコースの分類</h3>
+      </div>
+      <div class="card-body">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>分類</th>
+              <th>直線の長さ</th>
+              <th>代表的な競馬場</th>
+              <th>有利な脚質</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>超長直線</td>
+              <td>500m以上</td>
+              <td>東京（525m）</td>
+              <td>差し・追い込み馬が非常に有利</td>
+            </tr>
+            <tr>
+              <td>長直線</td>
+              <td>400m〜500m</td>
+              <td>阪神（473m）、京都（410m）、中京（412m）</td>
+              <td>差し馬が有利、追い込み馬も活躍可能</td>
+            </tr>
+            <tr>
+              <td>標準直線</td>
+              <td>300m〜400m</td>
+              <td>新潟（359m）、札幌（354m）</td>
+              <td>様々な脚質が活躍できるバランスのとれたコース</td>
+            </tr>
+            <tr>
+              <td>短直線</td>
+              <td>300m未満</td>
+              <td>中山（287m）、福島（292m）、小倉（293m）</td>
+              <td>逃げ・先行馬が有利</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <p>
+      直線が長い競馬場では、最後の直線で一気に加速する「仕掛けどころ」が重要になります。東京競馬場のような超長直線では、最終コーナーを4〜5番手で回り、直線で一気に加速する差し馬や、後方から一気に追い込む馬が活躍することが多いです。
+    </p>
+
+    <p>
+      一方、中山競馬場のような短直線のコースでは、スタート後のポジション取りが重要で、内枠からの逃げ・先行馬が有利になる傾向があります。短い直線では差し・追い込み馬がポジションを上げる時間が限られるため、レース序盤から中盤にかけての展開が勝敗を左右します。
+    </p>
+
+    <div class="card mb-4">
+      <div class="card-header">
+        <h3>注目すべき特徴的な直線</h3>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-6">
+            <h4>東京競馬場の長い直線</h4>
+            <p>
+              日本最長の525mの直線を持つ東京競馬場では、直線での持久力と末脚の差が明確に出ます。特に春のテンポの速い馬場では、直線で一気に差を詰める差し・追い込み馬が有利です。
+            </p>
+          </div>
+          <div class="col-md-6">
+            <h4>福島競馬場の短い直線</h4>
+            <p>
+              292mと短い直線を持つ福島競馬場では、最終コーナーの位置取りが非常に重要です。内枠を確保した逃げ・先行馬が強く、外枠の差し・追い込み馬は不利になりやすいコース設計となっています。
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="alert alert-info">
+      <strong>予想のポイント：</strong> レースが行われる競馬場の直線の長さを確認し、出走馬の脚質とマッチするかどうかを検討しましょう。差し・追い込み馬は長い直線のコース、逃げ・先行馬は短い直線のコースで活躍しやすい傾向があります。
+    </div>
+  </section>
+
+  <section id="hill">
+    <h2>坂の存在とその影響</h2>
+    
+    <p>
+      一部の競馬場には直線やコーナーに坂（上り坂・下り坂）が存在します。これらの坂は馬のスタミナや走法に大きな影響を与え、特定のタイプの馬に有利・不利をもたらします。
+    </p>
+
+    <div class="card mb-4">
+      <div class="card-header">
+        <h3>主な競馬場の坂の特徴</h3>
+      </div>
+      <div class="card-body">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>競馬場</th>
+              <th>坂の特徴</th>
+              <th>影響</th>
+              <th>有利な馬のタイプ</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>阪神</td>
+              <td>直線に上り坂（ラスト200m付近）</td>
+              <td>直線終盤でスピードが落ちやすい</td>
+              <td>スタミナとパワーのある馬</td>
+            </tr>
+            <tr>
+              <td>京都</td>
+              <td>3〜4コーナーにかけて緩やかな下り坂</td>
+              <td>コーナーでスピードが上がりやすい</td>
+              <td>バランスの良い走りができる馬</td>
+            </tr>
+            <tr>
+              <td>中山</td>
+              <td>向正面に上り坂、3〜4コーナーに下り坂</td>
+              <td>起伏の変化で馬の走りが不安定になりやすい</td>
+              <td>バランス感覚に優れた馬</td>
+            </tr>
+            <tr>
+              <td>小倉</td>
+              <td>バックストレッチが上り坂</td>
+              <td>中盤でスタミナを消耗しやすい</td>
+              <td>持久力のある馬</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <p>
+      坂の存在は、特に長距離レースにおいて重要な要素となります。上り坂では馬は余分な体力を使い、下り坂ではバランスを崩しやすくなります。阪神競馬場の直線上りは特に有名で、「阪神の坂」と呼ばれ、直線終盤で失速する馬も多く見られます。
+    </p>
+
+    <div class="card mb-4">
+      <div class="card-header">
+        <h3>坂が与える馬への影響</h3>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-6">
+            <h4>上り坂の影響</h4>
+            <ul>
+              <li>馬の体力・スタミナの消耗が大きい</li>
+              <li>重心が後ろに移動し、蹴り出しが重要に</li>
+              <li>後躯の強い馬が有利</li>
+              <li>逃げ・先行馬はペース配分が難しい</li>
+              <li>差し・追い込み馬は上り坂で一気に差を詰めにくい</li>
+            </ul>
+          </div>
+          <div class="col-md-6">
+            <h4>下り坂の影響</h4>
+            <ul>
+              <li>スピードが自然と上がりやすい</li>
+              <li>重心が前に移動し、バランスが崩れやすい</li>
+              <li>前躯のしっかりした馬が有利</li>
+              <li>逃げ・先行馬は下り坂でリズムを崩しやすい</li>
+              <li>差し・追い込み馬は下り坂で一気に差を詰めやすい</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="alert alert-info">
+      <strong>予想のポイント：</strong> 坂のある競馬場ではその特性を考慮した予想が重要です。特に阪神の上り坂では、終盤の伸びしろのある馬や、過去に阪神で好成績を残している馬を評価しましょう。また、京都の下り坂では、バランスの良い走りができる馬や、下り坂でスピードを活かせる馬を選ぶのがポイントです。
+    </div>
+  </section>
+
+  <section id="distance">
+    <h2>距離による特性の違い</h2>
+    
+    <p>
+      レースの距離によってコース特性やレース展開は大きく変わります。短距離・マイル・中距離・長距離それぞれで求められる馬の能力や予想のポイントは異なります。
+    </p>
+
+    <div class="card mb-4">
+      <div class="card-header">
+        <h3>距離別の特性と適性馬</h3>
+      </div>
+      <div class="card-body">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>カテゴリ</th>
+              <th>距離</th>
+              <th>特徴</th>
+              <th>適性馬</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>短距離</td>
+              <td>1000m〜1400m</td>
+              <td>スピード重視、短時間で決着</td>
+              <td>瞬発力があり、加速力に優れた馬</td>
+            </tr>
+            <tr>
+              <td>マイル</td>
+              <td>1600m前後</td>
+              <td>スピードとスタミナのバランス</td>
+              <td>機動力と持続力を兼ね備えた馬</td>
+            </tr>
+            <tr>
+              <td>中距離</td>
+              <td>1800m〜2200m</td>
+              <td>スタミナが重要、ペース配分が鍵</td>
+              <td>持久力があり、リズム走行ができる馬</td>
+            </tr>
+            <tr>
+              <td>長距離</td>
+              <td>2400m以上</td>
+              <td>スタミナが最重要、ペース変化に対応</td>
+              <td>強靭なスタミナと精神力を持つ馬</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <p>
+      短距離レースでは瞬発力が重要で、スタートダッシュの良さや直線での加速力が求められます。一方、長距離レースではスタミナの持続力や、ペース変化に対応できる柔軟性が求められます。
+    </p>
+
+    <div class="card mb-4">
+      <div class="card-header">
+        <h3>距離別のコース攻略法</h3>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-6">
+            <h4>短距離〜マイルのコース攻略</h4>
+            <ul>
+              <li>内枠の有利性が高い（特に小回りコース）</li>
+              <li>スタートダッシュ・ポジション取りが重要</li>
+              <li>直線での加速力・瞬発力が決め手に</li>
+              <li>血統面では短距離血統の馬を評価</li>
+              <li>前走と同距離・短縮の馬を重視</li>
+            </ul>
+          </div>
+          <div class="col-md-6">
+            <h4>中距離〜長距離のコース攻略</h4>
+            <ul>
+              <li>枠の有利・不利は相対的に小さい</li>
+              <li>中間のペース配分・脚のためが重要</li>
+              <li>直線での持続力・粘りが決め手に</li>
+              <li>血統面ではスタミナ系の馬を評価</li>
+              <li>前走と同距離・延長でも好走した馬を重視</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mb-4">
+      <div class="card-header">
+        <h3>特徴的な距離コース</h3>
+      </div>
+      <div class="card-body">
+        <ul>
+          <li><strong>中山1200m：</strong>急坂・急カーブがあり、スピードのある内枠馬が有利</li>
+          <li><strong>東京1600m：</strong>広いコースでポジション取りの自由度が高く、実力差が出やすい</li>
+          <li><strong>阪神2000m：</strong>内回りでコーナーがきつく、終盤の坂で決着がつくことが多い</li>
+          <li><strong>京都3000m：</strong>長い直線と緩やかなコーナーで、真のスタミナが問われる</li>
+          <li><strong>中山2500m（有馬記念）：</strong>起伏の多い難コースで、総合力のある馬が勝利する</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="alert alert-info">
+      <strong>予想のポイント：</strong> レースの距離に応じた予想が重要です。短距離では内枠・スピード・血統を重視し、長距離ではスタミナ・ペース適性・過去の距離適性をチェックしましょう。また、前走より距離が大幅に変わる場合は特に注意が必要です。距離延長の場合は持久力、距離短縮の場合は切れ味に着目します。
+    </div>
+  </section>
+
+  <section id="weather">
+    <h2>天候とコース状態の関係</h2>
+    
+    <p>
+      天候は競馬場のコース状態に大きな影響を与え、特に雨の影響は芝コースとダートコースで大きく異なります。コース状態（馬場状態）は「良」「稍重」「重」「不良」の4段階で表現されます。
+    </p>
+
+    <div class="card mb-4">
+      <div class="card-header">
+        <h3>馬場状態による影響</h3>
+      </div>
+      <div class="card-body">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>馬場状態</th>
+              <th>芝コースの特徴</th>
+              <th>ダートコースの特徴</th>
+              <th>適性馬</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>良（良馬場）</td>
+              <td>適度な弾力性、最も公平な条件</td>
+              <td>適度な締まり、標準的な走行状態</td>
+              <td>基本的にはどのタイプの馬も実力通り</td>
+            </tr>
+            <tr>
+              <td>稍重（やや重い）</td>
+              <td>やや水分を含み、弾力性が増す</td>
+              <td>やや水分を含み、砂が重くなる</td>
+              <td>パワーのある馬、柔軟な走りができる馬</td>
+            </tr>
+            <tr>
+              <td>重（重馬場）</td>
+              <td>水分を多く含み、沈み込みやすい</td>
+              <td>水分を多く含み、走行抵抗が大きい</td>
+              <td>パワーとスタミナのある馬、泥濘適性馬</td>
+            </tr>
+            <tr>
+              <td>不良（悪馬場）</td>
+              <td>大きく沈み込み、泥濘化する</td>
+              <td>泥状になり、大きな走行抵抗</td>
+              <td>特殊な泥濘適性を持つ馬、力のある馬</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <p>
+      馬場状態が「重」や「不良」になると、レースのペースは遅くなり、馬のスタミナとパワーが重要になります。芝コースでは特に影響が大きく、「芝の重馬場巧者」と呼ばれる特殊な適性を持つ馬が活躍することがあります。
+    </p>
+
+    <div class="card mb-4">
+      <div class="card-header">
+        <h3>天候影響の強いコース</h3>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-6">
+            <h4>雨の影響を受けやすいコース</h4>
+            <ul>
+              <li><strong>新潟芝コース：</strong>水はけが悪く、雨の影響が長引く</li>
+              <li><strong>東京ダートコース：</strong>雨で泥濘化しやすい特性がある</li>
+              <li><strong>福島芝コース：</strong>水はけが悪く、重馬場になりやすい</li>
+            </ul>
+          </div>
+          <div class="col-md-6">
+            <h4>雨の影響を受けにくいコース</h4>
+            <ul>
+              <li><strong>京都芝コース：</strong>排水設備が良く、回復が早い</li>
+              <li><strong>中京芝コース：</strong>改修後は水はけが良くなっている</li>
+              <li><strong>阪神ダートコース：</strong>比較的安定した状態を保つ</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="alert alert-info">
+      <strong>予想のポイント：</strong> レース当日の天候予報をチェックし、雨が予想される場合は馬場状態の変化を考慮した予想が必要です。特に「重」「不良」馬場で過去に好走している馬や、泥濘適性のある血統の馬を評価しましょう。また、天候の影響を受けやすいコースでのレースでは、馬場適性をより重視すべきです。
+    </div>
+  </section>
+
+  <section id="racecourse-features">
+    <h2>主な競馬場の特徴的なコース構造</h2>
+    
+    <p>
+      JRAの各競馬場はそれぞれ特徴的なコース構造を持っており、それぞれのコースに適した馬や騎乗戦術があります。ここでは主な競馬場の特徴を解説します。
+    </p>
+
+    <div class="card mb-4">
+      <div class="card-header">
+        <h3>主な競馬場の特徴</h3>
+      </div>
+      <div class="card-body">
+        <div class="accordion" id="racecourseAccordion">
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="headingTokyo">
+              <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTokyo" aria-expanded="true" aria-controls="collapseTokyo">
+                東京競馬場
+              </button>
+            </h2>
+            <div id="collapseTokyo" class="accordion-collapse collapse show" aria-labelledby="headingTokyo" data-bs-parent="#racecourseAccordion">
+              <div class="accordion-body">
+                <div class="row">
+                  <div class="col-md-8">
+                    <p><strong>最大の特徴：</strong> 日本最長の直線（525m）と広大なコース</p>
+                    <ul>
+                      <li>広い馬場で実力差が出やすい「実力診断コース」</li>
+                      <li>長い直線により差し・追い込み馬が有利</li>
+                      <li>外回りは特に直線が長く、スタミナが必要</li>
+                      <li>平坦なコースで起伏があまりない</li>
+                      <li>芝コースは良好な排水設備、ダートは雨の影響を受けやすい</li>
+                    </ul>
+                    <p><strong>有名なレース：</strong> 日本ダービー、天皇賞（秋）、ジャパンカップ</p>
+                  </div>
+                  <div class="col-md-4">
+                    <img src="/static/img/keiba_lab/tokyo_racecourse.jpg" alt="東京競馬場コース図" class="img-fluid">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="headingNakayama">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseNakayama" aria-expanded="false" aria-controls="collapseNakayama">
+                中山競馬場
+              </button>
+            </h2>
+            <div id="collapseNakayama" class="accordion-collapse collapse" aria-labelledby="headingNakayama" data-bs-parent="#racecourseAccordion">
+              <div class="accordion-body">
+                <div class="row">
+                  <div class="col-md-8">
+                    <p><strong>最大の特徴：</strong> 起伏に富んだコースと短い直線（287m）</p>
+                    <ul>
+                      <li>向正面の上り坂と3〜4コーナーにかけての下り坂が特徴</li>
+                      <li>短い直線により逃げ・先行馬が有利</li>
+                      <li>特に内回りは小回りコースで、内枠有利の傾向</li>
+                      <li>急坂と急カーブの「技術コース」と呼ばれる</li>
+                      <li>芝コースは雨の影響を受けやすい</li>
+                    </ul>
+                    <p><strong>有名なレース：</strong> 有馬記念、皐月賞、スプリングステークス</p>
+                  </div>
+                  <div class="col-md-4">
+                    <img src="/static/img/keiba_lab/nakayama_racecourse.jpg" alt="中山競馬場コース図" class="img-fluid">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="headingHanshin">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseHanshin" aria-expanded="false" aria-controls="collapseHanshin">
+                阪神競馬場
+              </button>
+            </h2>
+            <div id="collapseHanshin" class="accordion-collapse collapse" aria-labelledby="headingHanshin" data-bs-parent="#racecourseAccordion">
+              <div class="accordion-body">
+                <div class="row">
+                  <div class="col-md-8">
+                    <p><strong>最大の特徴：</strong> 直線終盤の上り坂と長い直線（473m）</p>
+                    <ul>
+                      <li>直線の後半に上り坂があり「阪神の坂」と呼ばれる</li>
+                      <li>上り坂でスピードが落ちるため、スタミナが重要</li>
+                      <li>長い直線だが、坂の影響で差し・追い込みが難しい場合も</li>
+                      <li>内回りコースはコーナーがきつく、外回りは緩やか</li>
+                      <li>良馬場でも重い芝質で知られる</li>
+                    </ul>
+                    <p><strong>有名なレース：</strong> 菊花賞、桜花賞、宝塚記念</p>
+                  </div>
+                  <div class="col-md-4">
+                    <img src="/static/img/keiba_lab/hanshin_racecourse.jpg" alt="阪神競馬場コース図" class="img-fluid">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="headingKyoto">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseKyoto" aria-expanded="false" aria-controls="collapseKyoto">
+                京都競馬場
+              </button>
+            </h2>
+            <div id="collapseKyoto" class="accordion-collapse collapse" aria-labelledby="headingKyoto" data-bs-parent="#racecourseAccordion">
+              <div class="accordion-body">
+                <div class="row">
+                  <div class="col-md-8">
+                    <p><strong>最大の特徴：</strong> 3〜4コーナーにかけての下り坂と長い直線（410m）</p>
+                    <ul>
+                      <li>3〜4コーナーの下り坂でスピードが上がりやすい</li>
+                      <li>直線が広く長いため、差し・追い込み馬も活躍</li>
+                      <li>芝コースは水はけが良く、雨の影響を受けにくい</li>
+                      <li>バランスの取れた「公平コース」と呼ばれる</li>
+                      <li>外回りの長距離コースは特に難度が高い</li>
+                    </ul>
+                    <p><strong>有名なレース：</strong> 天皇賞（春）、エリザベス女王杯、マイルチャンピオンシップ</p>
+                  </div>
+                  <div class="col-md-4">
+                    <img src="/static/img/keiba_lab/kyoto_racecourse.jpg" alt="京都競馬場コース図" class="img-fluid">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="alert alert-info">
+      <strong>予想のポイント：</strong> 各競馬場の特性を理解し、過去にその競馬場で好成績を残している馬を評価しましょう。また、馬の脚質と競馬場の相性も重要です。例えば、差し・追い込み馬は東京や阪神の長い直線で、逃げ・先行馬は中山の短い直線で活躍しやすい傾向があります。
+    </div>
+  </section>
+
+  <section id="long-distance">
+    <h2>超長距離レース（3000m以上）の特性</h2>
+    
+    <p>
+      通常の長距離レースよりもさらに距離の長い超長距離レース（3000m以上）は、特殊な条件と要素を持つレースです。日本では限られた回数しか実施されず、特別な魅力と難しさを持っています。
+    </p>
+
+    <div class="card mb-4">
+      <div class="card-header">
+        <h3>超長距離レースの特徴</h3>
+      </div>
+      <div class="card-body">
+        <ul>
+          <li><strong>時間の長さ</strong>：通常のレースより1周以上長く走ることが多く、3分以上かかる</li>
+          <li><strong>スタミナの重要性</strong>：純粋な持久力が最も重要な要素になる</li>
+          <li><strong>ペース配分の難しさ</strong>：長い距離をどうペース配分するかが勝敗を分ける</li>
+          <li><strong>精神的な強さ</strong>：長時間の競争を諦めずに走り続ける精神力が必要</li>
+          <li><strong>血統的要素</strong>：ステイヤー（長距離適性）の血統が顕著に出やすい</li>
+          <li><strong>少頭数での実施</strong>：適性馬が限られるため、比較的少ない頭数で行われることが多い</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="row mb-4">
+      <div class="col-md-6">
+        <div class="card h-100">
+          <div class="card-header">
+            <h3>日本の主な超長距離レース</h3>
+          </div>
+          <div class="card-body">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>レース名</th>
+                  <th>距離</th>
+                  <th>開催</th>
+                  <th>特徴</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>春天（天皇賞春）</td>
+                  <td>3200m</td>
+                  <td>京都（5月）</td>
+                  <td>日本最高峰のステイヤー決定戦</td>
+                </tr>
+                <tr>
+                  <td>ダイヤモンドステークス</td>
+                  <td>3400m</td>
+                  <td>東京（2月）</td>
+                  <td>日本最長クラスの距離</td>
+                </tr>
+                <tr>
+                  <td>メイステークス</td>
+                  <td>3000m</td>
+                  <td>京都（5月）</td>
+                  <td>春天に向けたステップレース</td>
+                </tr>
+                <tr>
+                  <td>小倉大賞典</td>
+                  <td>3000m</td>
+                  <td>小倉（2月）</td>
+                  <td>地方開催の長距離重賞</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card h-100">
+          <div class="card-header">
+            <h3>海外の有名な超長距離レース</h3>
+          </div>
+          <div class="card-body">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>レース名</th>
+                  <th>距離</th>
+                  <th>開催国</th>
+                  <th>特徴</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>メルボルンカップ</td>
+                  <td>3200m</td>
+                  <td>オーストラリア</td>
+                  <td>「レースが国を止める」と言われる国民的行事</td>
+                </tr>
+                <tr>
+                  <td>ゴールドカップ</td>
+                  <td>4000m</td>
+                  <td>イギリス</td>
+                  <td>アスコットの伝統的なステイヤー王決定戦</td>
+                </tr>
+                <tr>
+                  <td>凱旋門賞</td>
+                  <td>2400m</td>
+                  <td>フランス</td>
+                  <td>厳密には超長距離ではないが、欧州最高峰の長距離レース</td>
+                </tr>
+                <tr>
+                  <td>シドニーカップ</td>
+                  <td>3200m</td>
+                  <td>オーストラリア</td>
+                  <td>オーストラリアの老舗ステイヤーカップ</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mb-4">
+      <div class="card-header">
+        <h3>超長距離レースの予想ポイント</h3>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-6">
+            <h4>重視すべき要素</h4>
+            <ul>
+              <li><strong>過去の距離適性</strong>：3000m級の距離を経験して好走した実績</li>
+              <li><strong>終盤の伸び</strong>：長距離でも終盤に力強く伸びるかどうか</li>
+              <li><strong>血統的背景</strong>：ステイヤーの血を引いているか</li>
+              <li><strong>成長度合い</strong>：年齢と共に力をつける馬が多い</li>
+              <li><strong>レースの流れ</strong>：ハイペースかスローペースかで適性が分かれる</li>
+            </ul>
+          </div>
+          <div class="col-md-6">
+            <h4>データ分析のポイント</h4>
+            <ul>
+              <li><strong>上がり3ハロンの速さ</strong>：長距離でも終盤の脚が重要</li>
+              <li><strong>5歳以上の実績馬</strong>：長距離では経験豊富な馬が好走しやすい</li>
+              <li><strong>連続好走馬</strong>：長距離適性が一度証明された馬は信頼できる</li>
+              <li><strong>騎手の長距離実績</strong>：長距離戦に強い騎手の存在</li>
+              <li><strong>距離延長組の成績</strong>：さらなる距離延長で伸びる可能性</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mb-4">
+      <div class="card-header">
+        <h3>超長距離の名勝負</h3>
+      </div>
+      <div class="card-body">
+        <p>超長距離レースは少数精鋭の戦いとなるため、歴史的な名勝負が生まれることも多いです。</p>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="card mb-3">
+              <div class="card-body">
+                <h4>ディープインパクト vs ハーツクライ（2006年天皇賞春）</h4>
+                <p>無敗の三冠馬ディープインパクトと世界的名馬ハーツクライの壮絶な一騎打ち。ディープインパクトが3200mの長丁場を制し、その万能性を証明した。</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="card mb-3">
+              <div class="card-body">
+                <h4>キタサンブラック vs シュヴァルグラン（2017年天皇賞春）</h4>
+                <p>人気絶頂のキタサンブラックと長距離巧者シュヴァルグランの激闘。キタサンブラックが逃げ切り、GⅠ6勝目を挙げた。</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="alert alert-info">
+      <strong>予想のポイント：</strong> 超長距離レースでは、単純なスピードよりもスタミナと精神力が重要です。過去に長い距離をこなした実績のある馬、終始安定したペースで走れる馬、そして騎手の長距離レースでの実績も大きなポイントになります。また、血統的にステイヤーとしての素質がある馬を重視しましょう。
+    </div>
+  </section>
+</div>
+{% endblock %} 

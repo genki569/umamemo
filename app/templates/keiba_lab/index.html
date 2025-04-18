@@ -57,6 +57,11 @@
                                     <i class="fas fa-chevron-right text-primary me-2"></i>競馬カレンダーの仕組み
                                 </a>
                             </li>
+                            <li class="list-group-item bg-transparent border-0 ps-0">
+                                <a href="{{ url_for('keiba_lab_content', content_path='basics/enjoy') }}" class="text-decoration-none">
+                                    <i class="fas fa-chevron-right text-primary me-2"></i>競馬の楽しみ方
+                                </a>
+                            </li>
                         </ul>
                         <a href="{{ url_for('keiba_lab_content', content_path='basics') }}" class="btn btn-outline-primary mt-3 w-100">もっと見る</a>
                     </div>
@@ -251,8 +256,13 @@
                                 </a>
                             </li>
                             <li class="list-group-item bg-transparent border-0 ps-0">
-                                <a href="{{ url_for('keiba_lab_content', content_path='course/condition') }}" class="text-decoration-none">
+                                <a href="{{ url_for('keiba_lab_content', content_path='course/track-condition') }}" class="text-decoration-none">
                                     <i class="fas fa-chevron-right text-primary me-2"></i>馬場状態の理解
+                                </a>
+                            </li>
+                            <li class="list-group-item bg-transparent border-0 ps-0">
+                                <a href="{{ url_for('keiba_lab_content', content_path='course/season') }}" class="text-decoration-none">
+                                    <i class="fas fa-chevron-right text-primary me-2"></i>季節とコース特性
                                 </a>
                             </li>
                         </ul>
@@ -286,6 +296,11 @@
                             <li class="list-group-item bg-transparent border-0 ps-0">
                                 <a href="{{ url_for('keiba_lab_content', content_path='investment/strategy') }}" class="text-decoration-none">
                                     <i class="fas fa-chevron-right text-primary me-2"></i>投資戦略の基礎
+                                </a>
+                            </li>
+                            <li class="list-group-item bg-transparent border-0 ps-0">
+                                <a href="{{ url_for('keiba_lab_content', content_path='investment/mental') }}" class="text-decoration-none">
+                                    <i class="fas fa-chevron-right text-primary me-2"></i>メンタル管理
                                 </a>
                             </li>
                         </ul>

@@ -262,22 +262,22 @@
                     <div class="card-body">
                         <ul class="list-group list-group-flush">
                             <li class="list-group-item bg-transparent px-0">
-                                <a href="{{ url_for('keiba_lab.course_shape') }}" class="text-decoration-none">
+                                <a href="{{ url_for('keiba_lab_content', content_path='course/shape') }}" class="text-decoration-none">
                                     <i class="fas fa-chevron-right text-primary me-2"></i>コース形状と戦略
                                 </a>
                             </li>
                             <li class="list-group-item bg-transparent px-0">
-                                <a href="{{ url_for('keiba_lab.course_distance') }}" class="text-decoration-none">
+                                <a href="{{ url_for('keiba_lab_content', content_path='course/distance') }}" class="text-decoration-none">
                                     <i class="fas fa-chevron-right text-primary me-2"></i>距離別攻略法
                                 </a>
                             </li>
                             <li class="list-group-item bg-transparent px-0">
-                                <a href="{{ url_for('keiba_lab.course_condition') }}" class="text-decoration-none">
+                                <a href="{{ url_for('keiba_lab_content', content_path='course/track-condition') }}" class="text-decoration-none">
                                     <i class="fas fa-chevron-right text-primary me-2"></i>馬場状態の理解
                                 </a>
                             </li>
                             <li class="list-group-item bg-transparent px-0">
-                                <a href="{{ url_for('keiba_lab.course_season') }}" class="text-decoration-none">
+                                <a href="{{ url_for('keiba_lab_content', content_path='course/season') }}" class="text-decoration-none">
                                     <i class="fas fa-chevron-right text-primary me-2"></i>季節とコース攻略
                                 </a>
                             </li>
@@ -298,23 +298,28 @@
                     <div class="card-body">
                         <ul class="list-group list-group-flush">
                             <li class="list-group-item bg-transparent px-0">
-                                <a href="{{ url_for('keiba_lab.investment_money_management') }}" class="text-decoration-none">
+                                <a href="{{ url_for('keiba_lab_content', content_path='investment/money-management') }}" class="text-decoration-none">
                                     <i class="fas fa-chevron-right text-primary me-2"></i>資金管理の基本
                                 </a>
                             </li>
                             <li class="list-group-item bg-transparent px-0">
-                                <a href="{{ url_for('keiba_lab.investment_roi') }}" class="text-decoration-none">
+                                <a href="{{ url_for('keiba_lab_content', content_path='investment/roi') }}" class="text-decoration-none">
                                     <i class="fas fa-chevron-right text-primary me-2"></i>回収率の考え方
                                 </a>
                             </li>
                             <li class="list-group-item bg-transparent px-0">
-                                <a href="{{ url_for('keiba_lab.investment_strategy') }}" class="text-decoration-none">
+                                <a href="{{ url_for('keiba_lab_content', content_path='investment/strategy') }}" class="text-decoration-none">
                                     <i class="fas fa-chevron-right text-primary me-2"></i>投資戦略の基礎
                                 </a>
                             </li>
                             <li class="list-group-item bg-transparent px-0">
-                                <a href="{{ url_for('keiba_lab.investment_mental') }}" class="text-decoration-none">
+                                <a href="{{ url_for('keiba_lab_content', content_path='investment/mental') }}" class="text-decoration-none">
                                     <i class="fas fa-chevron-right text-primary me-2"></i>メンタル管理術
+                                </a>
+                            </li>
+                            <li class="list-group-item bg-transparent px-0">
+                                <a href="{{ url_for('keiba_lab_content', content_path='investment/record') }}" class="text-decoration-none">
+                                    <i class="fas fa-chevron-right text-primary me-2"></i>投資記録と分析
                                 </a>
                             </li>
                         </ul>

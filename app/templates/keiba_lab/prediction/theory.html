@@ -1,0 +1,811 @@
+{% extends "base.html" %}
+
+{% block title %}競馬の理論的予想法 | 数値・統計に基づく予想アプローチ【馬メモ】{% endblock %}
+
+{% block meta_description %}競馬の理論的予想法を解説。タイム理論、SP理論、統計学的アプローチなど、主要な理論予想法の特徴とその実践方法について、初心者にもわかりやすく紹介します。{% endblock %}
+
+{% block meta_keywords %}競馬予想,理論的予想法,タイム理論,SP理論,統計学的予想,指数,データ分析,回収率,期待値,理論派{% endblock %}
+
+{% block og_title %}競馬の理論的予想法 | 数値・統計に基づく予想アプローチ【馬メモ】{% endblock %}
+{% block og_description %}競馬の理論的予想法を解説。タイム理論、SP理論、統計学的アプローチなど、主要な理論予想法の特徴とその実践方法について、初心者にもわかりやすく紹介します。{% endblock %}
+{% block og_type %}article{% endblock %}
+
+{% block twitter_title %}競馬の理論的予想法 | 数値・統計に基づく予想アプローチ【馬メモ】{% endblock %}
+{% block twitter_description %}競馬の理論的予想法を解説。タイム理論、SP理論、統計学的アプローチなど、主要な理論予想法の特徴とその実践方法について、初心者にもわかりやすく紹介します。{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <!-- パンくずリスト -->
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/">ホーム</a></li>
+      <li class="breadcrumb-item"><a href="/keiba_lab/">競馬ラボ</a></li>
+      <li class="breadcrumb-item"><a href="/keiba_lab/prediction/">予想の基本理論</a></li>
+      <li class="breadcrumb-item active" aria-current="page">理論的予想法</li>
+    </ol>
+  </nav>
+
+  <h1 class="mb-4">競馬の理論的予想法</h1>
+  
+  <div class="row mb-4">
+    <div class="col-lg-8">
+      <p class="lead">競馬予想における理論的アプローチは、客観的なデータと数値に基づき、論理的な分析と判断を重視する方法です。感覚や勘に頼るのではなく、数値化された指標や統計学的な手法を用いて予想の精度を高めることを目指します。このページでは、代表的な理論的予想法の特徴と実践方法について解説します。</p>
+    </div>
+  </div>
+
+  <!-- 目次 -->
+  <div class="card mb-5 shadow-sm">
+    <div class="card-body">
+      <h2 class="h5 mb-3">目次</h2>
+      <ol class="mb-0">
+        <li><a href="#what-is-theory" class="text-decoration-none">理論的予想法とは</a></li>
+        <li><a href="#time-theory" class="text-decoration-none">タイム理論</a></li>
+        <li><a href="#sp-theory" class="text-decoration-none">SP理論（スピード指数理論）</a></li>
+        <li><a href="#statistics" class="text-decoration-none">統計学的アプローチ</a></li>
+        <li><a href="#value-theory" class="text-decoration-none">期待値理論と回収率重視の予想法</a></li>
+        <li><a href="#practical-guide" class="text-decoration-none">理論的予想法の実践ガイド</a></li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- 理論的予想法とは -->
+  <section id="what-is-theory" class="mb-5">
+    <h2 class="border-bottom pb-2 mb-4">理論的予想法とは</h2>
+    <div class="row">
+      <div class="col-lg-8">
+        <p>理論的予想法とは、客観的なデータと数値に基づいて論理的に予想を組み立てるアプローチです。主観的な判断や感覚ではなく、タイムや統計データなどの定量的な指標を用いて、再現性と一貫性のある予想を目指します。</p>
+        
+        <h3 class="h5 mt-4">理論的予想法の特徴</h3>
+        <ul>
+          <li><strong>データ重視</strong>：客観的なデータと数値を重視し、感覚や勘に頼らない</li>
+          <li><strong>論理的思考</strong>：明確な論理に基づいて予想を組み立てる</li>
+          <li><strong>再現性</strong>：同じデータからは同じ結論が導かれる再現性がある</li>
+          <li><strong>検証可能性</strong>：予想の根拠が明確で検証可能</li>
+          <li><strong>長期的視点</strong>：一時的な結果ではなく、長期的な収支を重視</li>
+        </ul>
+        
+        <h3 class="h5 mt-4">理論的予想法のメリット</h3>
+        <ul>
+          <li><strong>客観性</strong>：感情に左右されず、冷静な判断ができる</li>
+          <li><strong>一貫性</strong>：予想の質にブレが少ない</li>
+          <li><strong>効率性</strong>：データを効率的に分析できる</li>
+          <li><strong>成長性</strong>：予想の結果から学びやすく、改善が容易</li>
+          <li><strong>長期的な収益性</strong>：長期的には安定した回収が期待できる</li>
+        </ul>
+        
+        <h3 class="h5 mt-4">理論的予想法のデメリット</h3>
+        <ul>
+          <li><strong>データに表れない要素の見落とし</strong>：数値化されない馬の状態などを見逃す可能性</li>
+          <li><strong>過去データへの依存</strong>：新しい状況や変化に対応しにくい</li>
+          <li><strong>モデルの限界</strong>：どんな理論も完璧ではなく、限界がある</li>
+          <li><strong>学習コスト</strong>：習得に時間と労力がかかる</li>
+          <li><strong>データ入手の困難さ</strong>：良質なデータの入手や作成に手間がかかる</li>
+        </ul>
+        
+        <div class="alert alert-info mt-4">
+          <h4 class="h6 alert-heading">理論とバランス</h4>
+          <p class="mb-0">理論的予想法は強力なツールですが、馬の状態や騎手の調子など、数値化されない要素も競馬には存在します。理論に固執しすぎず、時には柔軟に対応することも大切です。最も効果的なのは、理論的アプローチと感覚的なアプローチをバランスよく組み合わせることです。</p>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="card mb-4">
+          <div class="card-header bg-light">
+            <strong>理論派と感覚派の比較</strong>
+          </div>
+          <div class="card-body">
+            <table class="table table-sm">
+              <thead>
+                <tr>
+                  <th>項目</th>
+                  <th>理論派</th>
+                  <th>感覚派</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>重視するもの</td>
+                  <td>数値データ</td>
+                  <td>目視や印象</td>
+                </tr>
+                <tr>
+                  <td>判断基準</td>
+                  <td>客観的指標</td>
+                  <td>主観的感覚</td>
+                </tr>
+                <tr>
+                  <td>予想の再現性</td>
+                  <td>高い</td>
+                  <td>低い</td>
+                </tr>
+                <tr>
+                  <td>柔軟性</td>
+                  <td>低め</td>
+                  <td>高め</td>
+                </tr>
+                <tr>
+                  <td>上達の仕方</td>
+                  <td>理論の改良</td>
+                  <td>経験の蓄積</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        
+        <div class="card">
+          <div class="card-header bg-light">
+            <strong>代表的な理論家たち</strong>
+          </div>
+          <div class="card-body">
+            <ul class="mb-0">
+              <li><strong>シャンティー</strong>：タイム理論の先駆者</li>
+              <li><strong>松原敬明</strong>：松原式スピード指数の開発者</li>
+              <li><strong>鈴木和幸</strong>：「競馬はデータサイエンスだ」の著者</li>
+              <li><strong>井崎脩五郎</strong>：理論と実践を融合させた予想家</li>
+              <li><strong>安田和博（デンジャラス）</strong>：独自の統計理論の実践者</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- タイム理論 -->
+  <section id="time-theory" class="mb-5">
+    <h2 class="border-bottom pb-2 mb-4">タイム理論</h2>
+    <div class="row">
+      <div class="col-lg-8">
+        <p>タイム理論は、競走馬の走破タイムを分析し、各馬の実力を評価する予想法です。走破タイムは馬の能力を示す最も基本的な指標であり、理論的予想法の基礎となるものです。</p>
+        
+        <h3 class="h5 mt-4">タイム理論の基本的な考え方</h3>
+        <ul>
+          <li><strong>同条件での比較</strong>：同じ距離、同じコース、同じ馬場状態でのタイムを比較する</li>
+          <li><strong>標準タイムからの差</strong>：標準タイム（平均的なタイム）との差を計算する</li>
+          <li><strong>上がりタイムの重視</strong>：特に最後の3ハロン（600m）のタイムを重視する</li>
+          <li><strong>タイム差の安定性</strong>：タイム差が安定している馬ほど信頼性が高い</li>
+          <li><strong>条件間の換算</strong>：異なる条件間でのタイムを換算して比較する</li>
+        </ul>
+        
+        <h3 class="h5 mt-4">タイム理論の指標例</h3>
+        <ul>
+          <li><strong>タイム指数</strong>：馬場状態などを考慮して補正したタイム評価値</li>
+          <li><strong>上がり指数</strong>：上がり3ハロンを評価した指数</li>
+          <li><strong>平均タイム差</strong>：平均的なタイムとの差</li>
+          <li><strong>タイム偏差値</strong>：タイムの相対的な位置を示す値</li>
+          <li><strong>ラップ分析値</strong>：200mごとのラップから算出した評価値</li>
+        </ul>
+        
+        <h3 class="h5 mt-4">シャンティー式タイム理論</h3>
+        <p>日本のタイム理論の先駆けとなったのが、予想家シャンティーによって確立された「シャンティー式タイム理論」です。</p>
+        <p>基本的な考え方：</p>
+        <ul>
+          <li>レース内での「タイム差」は能力差を表す</li>
+          <li>同じ馬場状態なら、距離が違っても同じタイム差で走る</li>
+          <li>「上がり3ハロン」のタイムが良い馬ほど次走でも好走する</li>
+          <li>小回りコースと大回りコース、直線の違いなどによるタイム換算が可能</li>
+        </ul>
+        
+        <div class="card mb-4">
+          <div class="card-header bg-light">
+            <strong>シャンティー式タイム理論の実践例</strong>
+          </div>
+          <div class="card-body">
+            <p>例えば、東京競馬場2000mのレースで、以下のような結果だったとします：</p>
+            <ul>
+              <li>A馬：2分1秒2（標準タイムより1.2秒速い）上がり3F 34.5秒</li>
+              <li>B馬：2分1秒8（標準タイムより0.6秒速い）上がり3F 33.8秒</li>
+            </ul>
+            <p>次走で中山競馬場1800mに出走する場合：</p>
+            <p>標準タイム差はそのまま能力差として反映されるため、A馬はB馬より0.6秒速い能力を持つと評価できます。ただし、B馬の上がりが良いことから末脚が優れており、中山の急坂では差が縮まる可能性があります。</p>
+          </div>
+        </div>
+        
+        <h3 class="h5 mt-4">タイム理論の限界と注意点</h3>
+        <ul>
+          <li><strong>馬場差の考慮</strong>：同じ「良馬場」でも日によって速さが異なる</li>
+          <li><strong>レース展開の影響</strong>：ハイペースやスローペースでタイムは大きく変わる</li>
+          <li><strong>馬の調子変化</strong>：タイムには馬の体調も大きく影響する</li>
+          <li><strong>コース特性の影響</strong>：同じ距離でもコースによる特性差がある</li>
+          <li><strong>変則的な走破タイム</strong>：アクシデントなどでタイムが異常値になることがある</li>
+        </ul>
+      </div>
+      <div class="col-lg-4">
+        <div class="card mb-4">
+          <div class="card-header bg-light">
+            <strong>タイム理論の基本公式</strong>
+          </div>
+          <div class="card-body">
+            <p><strong>標準タイム差（STD）</strong></p>
+            <p>STD = 実走破タイム - 標準タイム</p>
+            <p>※マイナスであれば標準より速い</p>
+            
+            <p><strong>馬場差換算</strong></p>
+            <p>換算タイム = 実走破タイム - 馬場差</p>
+            
+            <p><strong>距離変化の換算（概算）</strong></p>
+            <p>200m増えるごとに約12秒加算</p>
+            <p>※実際には馬の特性により異なる</p>
+          </div>
+        </div>
+        
+        <div class="alert alert-warning">
+          <h4 class="h6 alert-heading">タイム理論を使う際の注意点</h4>
+          <p class="mb-0">タイムだけで予想すると、レース展開や馬の状態などを見落とす可能性があります。特に「上がりタイム」は、前半のペースに大きく影響されるため、ラップタイム全体を見ることが重要です。また、好タイムでも力を出し切って走った馬は、次走で反動が出る場合もあります。</p>
+        </div>
+        
+        <div class="card">
+          <div class="card-header bg-success text-white">
+            <strong>タイム理論向きのレース</strong>
+          </div>
+          <div class="card-body">
+            <ul class="mb-0">
+              <li><strong>条件戦</strong>：比較的安定した能力の馬が多い</li>
+              <li><strong>平坦なコースのレース</strong>：起伏の影響が少ない</li>
+              <li><strong>スプリントレース</strong>：展開の影響が比較的小さい</li>
+              <li><strong>良馬場でのレース</strong>：馬場差が出にくい</li>
+              <li><strong>同条件での連戦</strong>：条件差を考慮する必要がない</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SP理論（スピード指数理論） -->
+  <section id="sp-theory" class="mb-5">
+    <h2 class="border-bottom pb-2 mb-4">SP理論（スピード指数理論）</h2>
+    <div class="row">
+      <div class="col-lg-8">
+        <p>SP理論（スピード指数理論）は、タイム理論をさらに発展させ、様々な要素を考慮してより精密な指数化を行う予想法です。単純なタイムだけでなく、馬場状態、レース展開、コース特性などの要素を総合的に加味した指数を用います。</p>
+        
+        <h3 class="h5 mt-4">スピード指数の基本的な考え方</h3>
+        <ul>
+          <li><strong>タイムの標準化</strong>：様々な条件下でのタイムを標準化して比較可能にする</li>
+          <li><strong>馬場差の補正</strong>：馬場状態による差を数値化して補正する</li>
+          <li><strong>コース間の換算</strong>：異なるコース間の差を数値化して調整する</li>
+          <li><strong>斤量の考慮</strong>：斤量の違いによる影響を数値化して調整する</li>
+          <li><strong>レース展開の分析</strong>：ペースの速さなどを考慮して評価する</li>
+        </ul>
+        
+        <h3 class="h5 mt-4">代表的なスピード指数</h3>
+        <ul>
+          <li><strong>松原式スピード指数</strong>：日本で広く知られているスピード指数体系</li>
+          <li><strong>RPR（レーシングポストレーティング）</strong>：イギリスで発表されている国際的な指数</li>
+          <li><strong>ビーヨリタイム指数</strong>：日本の競馬雑誌で発表されている指数</li>
+          <li><strong>サンスポZBAT指数</strong>：サンケイスポーツが発表している指数</li>
+          <li><strong>ブルーメソッド</strong>：上がりタイムを重視した指数体系</li>
+        </ul>
+        
+        <h3 class="h5 mt-4">松原式スピード指数について</h3>
+        <p>松原敬明氏によって確立された松原式スピード指数は、日本の競馬界で最も普及している指数体系の一つです。</p>
+        <p>特徴：</p>
+        <ul>
+          <li>基準となる「標準タイム」を設定し、それとの差から指数を算出</li>
+          <li>馬場状態による「馬場差」を計算し、タイムを補正</li>
+          <li>コースごとの特性を数値化し、異なるコース間での比較を可能に</li>
+          <li>指数が高いほど能力が高いことを示す（一般的に100前後が平均的な能力）</li>
+          <li>上がり3ハロンのタイムも指数化し、末脚の確かさを評価</li>
+        </ul>
+        
+        <h3 class="h5 mt-4">SP理論の実践方法</h3>
+        <p>SP理論を実践するためのステップ：</p>
+        <ol>
+          <li><strong>スピード指数の入手</strong>：競馬新聞や専門誌、Webサイトなどから入手</li>
+          <li><strong>過去数走の指数チェック</strong>：単発の高指数ではなく、安定した高指数を評価</li>
+          <li><strong>条件適性との照合</strong>：距離、コース、馬場状態などとの相性を確認</li>
+          <li><strong>調子の判断</strong>：指数の上昇・下降トレンドから調子を判断</li>
+          <li><strong>他の要素との総合判断</strong>：血統、騎手、調教など他の要素も加味</li>
+        </ol>
+        
+        <div class="alert alert-info mt-4">
+          <h4 class="h6 alert-heading">スピード指数の使い方</h4>
+          <p class="mb-0">スピード指数は強力なツールですが、機械的に最高指数の馬を選ぶだけでは十分ではありません。以下のような視点で活用することが大切です：</p>
+          <ul class="mb-0">
+            <li>指数の「安定性」を重視する（変動が大きい馬は不安定）</li>
+            <li>上昇傾向にある馬に注目する（調子が上向いている可能性）</li>
+            <li>同条件での過去の指数を特に重視する</li>
+            <li>オッズとの対比で「割安」な馬を見つける</li>
+            <li>指数が出にくい血統や騎手の特性も考慮する</li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="card mb-4">
+          <div class="card-header bg-light">
+            <strong>スピード指数の見方</strong>
+          </div>
+          <div class="card-body">
+            <p><strong>松原式スピード指数の目安</strong></p>
+            <table class="table table-sm">
+              <thead>
+                <tr>
+                  <th>指数</th>
+                  <th>評価</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>110以上</td>
+                  <td>G1級の能力</td>
+                </tr>
+                <tr>
+                  <td>105〜109</td>
+                  <td>重賞級の能力</td>
+                </tr>
+                <tr>
+                  <td>100〜104</td>
+                  <td>オープン級の能力</td>
+                </tr>
+                <tr>
+                  <td>95〜99</td>
+                  <td>3勝クラスの能力</td>
+                </tr>
+                <tr>
+                  <td>90〜94</td>
+                  <td>2勝クラスの能力</td>
+                </tr>
+                <tr>
+                  <td>85〜89</td>
+                  <td>1勝クラスの能力</td>
+                </tr>
+                <tr>
+                  <td>80〜84</td>
+                  <td>未勝利クラスの能力</td>
+                </tr>
+              </tbody>
+            </table>
+            <p class="small mt-2">※あくまで目安であり、競馬場や距離などにより異なる</p>
+          </div>
+        </div>
+        
+        <div class="card">
+          <div class="card-header bg-danger text-white">
+            <strong>スピード指数の落とし穴</strong>
+          </div>
+          <div class="card-body">
+            <ul class="mb-0">
+              <li><strong>単発の高指数に惑わされる</strong><br>一度だけ出た高指数は信頼性が低い</li>
+              <li><strong>条件の違いを無視する</strong><br>適性外の条件では指数が再現されない</li>
+              <li><strong>馬の状態を見落とす</strong><br>調子が悪ければ過去の高指数は意味がない</li>
+              <li><strong>指数の作成方法を知らない</strong><br>指数の算出方法を理解せず鵜呑みにする</li>
+              <li><strong>他の要素を無視する</strong><br>指数だけに頼り、他の重要な要素を見落とす</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 統計学的アプローチ -->
+  <section id="statistics" class="mb-5">
+    <h2 class="border-bottom pb-2 mb-4">統計学的アプローチ</h2>
+    <div class="row">
+      <div class="col-lg-8">
+        <p>統計学的アプローチは、大量のレースデータから統計的な法則性や傾向を見出し、予想に活かす方法です。個別の馬の能力だけでなく、レース全体のパターンや確率的な視点から予想を組み立てます。</p>
+        
+        <h3 class="h5 mt-4">統計学的アプローチの基本的な考え方</h3>
+        <ul>
+          <li><strong>データの大量収集</strong>：多くのレースデータを集めて分析</li>
+          <li><strong>パターン認識</strong>：繰り返し起こるパターンや法則性を発見</li>
+          <li><strong>確率論的思考</strong>：単純な勝敗ではなく、確率で考える</li>
+          <li><strong>因果関係の分析</strong>：どの要素がレース結果に影響するかを分析</li>
+          <li><strong>回帰分析や機械学習</strong>：高度な統計手法を活用</li>
+        </ul>
+        
+        <h3 class="h5 mt-4">主な統計分析の視点</h3>
+        <div class="table-responsive">
+          <table class="table table-bordered">
+            <thead class="table-light">
+              <tr>
+                <th>分析視点</th>
+                <th>内容</th>
+                <th>活用例</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>枠順統計</td>
+                <td>枠順による成績の偏り</td>
+                <td>内枠有利のコースでは内枠を重視</td>
+              </tr>
+              <tr>
+                <td>脚質統計</td>
+                <td>脚質別の勝率や連対率</td>
+                <td>先行有利のレースでは先行馬を重視</td>
+              </tr>
+              <tr>
+                <td>血統統計</td>
+                <td>特定の血統の適性や成績</td>
+                <td>芝に強い血統の馬を芝レースで評価</td>
+              </tr>
+              <tr>
+                <td>騎手統計</td>
+                <td>騎手別の成績や得意コース</td>
+                <td>特定コースで高成績の騎手を評価</td>
+              </tr>
+              <tr>
+                <td>調教師統計</td>
+                <td>調教師別の成績や傾向</td>
+                <td>休み明けに強い厩舎の馬を評価</td>
+              </tr>
+              <tr>
+                <td>レース傾向</td>
+                <td>特定レースの過去の傾向</td>
+                <td>重賞の傾向分析で好走条件を抽出</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        
+        <h3 class="h5 mt-4">統計学的予想法の実践例</h3>
+        <p>例えば、あるG1レースの過去10年間の傾向を分析する場合：</p>
+        <ol>
+          <li><strong>データ収集</strong>：過去10年の同レースの結果、出走馬データを収集</li>
+          <li><strong>傾向分析</strong>：好走馬の共通点（前走成績、脚質、血統など）を抽出</li>
+          <li><strong>条件設定</strong>：「前走3着以内」「上がり3F33秒台」など条件を設定</li>
+          <li><strong>条件適合馬抽出</strong>：当該レースの出走馬で条件に合う馬を抽出</li>
+          <li><strong>オッズとの対比</strong>：条件適合馬とオッズを比較し、妙味のある馬を選出</li>
+        </ol>
+        
+        <h3 class="h5 mt-4">AI・機械学習を用いた予想</h3>
+        <p>近年は、AIや機械学習を活用した統計的予想法も発展しています。</p>
+        <ul>
+          <li><strong>回帰分析</strong>：複数の要素からレース結果を予測する手法</li>
+          <li><strong>ディープラーニング</strong>：大量のデータから自動的にパターンを学習</li>
+          <li><strong>決定木・ランダムフォレスト</strong>：条件分岐による予測モデル</li>
+          <li><strong>クラスタリング</strong>：似た特性を持つ馬をグループ化して分析</li>
+          <li><strong>遺伝的アルゴリズム</strong>：進化の過程を模した最適化手法</li>
+        </ul>
+        
+        <div class="alert alert-warning mt-4">
+          <h4 class="h6 alert-heading">統計学的アプローチの限界</h4>
+          <p class="mb-0">統計学的アプローチは強力ですが、以下のような限界もあります：</p>
+          <ul class="mb-0">
+            <li>過去のデータに基づくため、新しい傾向や変化に弱い</li>
+            <li>稀な事象や例外的な状況を予測するのが難しい</li>
+            <li>サンプル数が少ないと信頼性が低下する</li>
+            <li>多くの要素が複雑に絡み合う競馬では完全な予測は困難</li>
+            <li>「統計的に有利」と「必ず勝つ」は異なることを理解する必要がある</li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="card mb-4">
+          <div class="card-header bg-light">
+            <strong>統計分析に役立つツール</strong>
+          </div>
+          <div class="card-body">
+            <ul class="mb-0">
+              <li><strong>Excelなどの表計算ソフト</strong><br>基本的な統計処理が可能</li>
+              <li><strong>統計分析専用ソフト</strong><br>R、SPSS、SASなど</li>
+              <li><strong>Pythonなどのプログラミング言語</strong><br>柔軟な分析が可能</li>
+              <li><strong>競馬データベースサイト</strong><br>netkeiba.comなど</li>
+              <li><strong>競馬統計専門サイト</strong><br>JRA-VANなど</li>
+            </ul>
+          </div>
+        </div>
+        
+        <div class="card">
+          <div class="card-header bg-success text-white">
+            <strong>統計分析におすすめの着眼点</strong>
+          </div>
+          <div class="card-body">
+            <ul class="mb-0">
+              <li><strong>「条件別」の成績</strong><br>馬場、距離、クラスなど</li>
+              <li><strong>「時系列」の分析</strong><br>成績の推移、上昇・下降傾向</li>
+              <li><strong>「複合条件」の分析</strong><br>複数条件が揃った場合の成績</li>
+              <li><strong>「否定的条件」の分析</strong><br>好走できない条件の特定</li>
+              <li><strong>「穴馬」の統計的特徴</strong><br>人気薄で好走する馬の共通点</li>
+            </ul>
+          </div>
+        </div>
+        
+        <div class="alert alert-info mt-4">
+          <h4 class="h6 alert-heading">実践ポイント</h4>
+          <p class="mb-0">統計分析は「過去と似た状況では似た結果になりやすい」という前提に立っています。ただし、競馬は生き物を扱うスポーツであり、完全に再現性があるわけではありません。統計は「傾向」を示すものと理解し、機械的な判断は避けましょう。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 期待値理論と回収率重視の予想法 -->
+  <section id="value-theory" class="mb-5">
+    <h2 class="border-bottom pb-2 mb-4">期待値理論と回収率重視の予想法</h2>
+    <div class="row">
+      <div class="col-lg-8">
+        <p>期待値理論は、馬の勝つ確率とオッズから期待される収益を計算し、長期的な利益を目指す予想法です。単純に「勝つ馬を当てる」のではなく、「オッズに対して割安な馬を見つける」ことに重点を置きます。</p>
+        
+        <h3 class="h5 mt-4">期待値理論の基本的な考え方</h3>
+        <ul>
+          <li><strong>期待値の計算</strong>：勝率×払戻金額 - 投資額</li>
+          <li><strong>プラスの期待値</strong>：期待値がプラスなら長期的には利益が出る</li>
+          <li><strong>適正オッズの算出</strong>：勝率の逆数が適正オッズ（例：20%の勝率なら5倍が適正）</li>
+          <li><strong>バリューベット</strong>：適正オッズより高いオッズで買えるとバリュー（割安）がある</li>
+          <li><strong>長期的視点</strong>：1レースの結果ではなく、長期的な収支を重視</li>
+        </ul>
+        
+        <h3 class="h5 mt-4">期待値計算の具体例</h3>
+        <p>例えば、あなたの分析で「この馬の勝率は20%だ」と判断した場合：</p>
+        <ul>
+          <li>適正オッズは 1÷0.2=5倍</li>
+          <li>実際のオッズが8倍なら、期待値は 0.2×8倍-1=0.6（プラス期待値）</li>
+          <li>実際のオッズが4倍なら、期待値は 0.2×4倍-1=-0.2（マイナス期待値）</li>
+        </ul>
+        <p>プラスの期待値がある馬を継続的に買い続ければ、長期的には利益が出る確率が高まります。</p>
+        
+        <h3 class="h5 mt-4">期待値を高める戦略</h3>
+        <ol>
+          <li><strong>人気馬の過大評価を見抜く</strong>：人気馬は過大評価されやすく、オッズが割高になりがち</li>
+          <li><strong>中穴馬の発見</strong>：市場が見落としている要素を持つ中穴馬を見つける</li>
+          <li><strong>条件適性の深掘り</strong>：特定条件に強い馬を見つけ、その条件下で勝負</li>
+          <li><strong>独自の勝率推定</strong>：一般的な評価とは異なる独自の分析で勝率を推定</li>
+          <li><strong>複数の馬券種での比較</strong>：単勝、複勝、馬連など複数の馬券種で期待値を比較</li>
+        </ol>
+        
+        <h3 class="h5 mt-4">回収率重視の予想法</h3>
+        <p>回収率重視の予想法は、期待値理論をベースに、実際の馬券購入における回収率の最大化を目指します。</p>
+        <ul>
+          <li><strong>的中率と回収率のバランス</strong>：的中率が低くても回収率が高ければ長期的には利益</li>
+          <li><strong>リスク管理</strong>：1レースの投資額を限定し、資金を長持ちさせる</li>
+          <li><strong>バンク管理</strong>：全資金（バンク）に対する投資比率の調整</li>
+          <li><strong>複数の馬券種の併用</strong>：状況に応じて最適な馬券種を選択</li>
+          <li><strong>価値ある長期投資</strong>：目先の結果に一喜一憂せず、長期的な収支を重視</li>
+        </ul>
+        
+        <div class="alert alert-info mt-4">
+          <h4 class="h6 alert-heading">期待値理論のメンタル面</h4>
+          <p class="mb-0">期待値理論の難しさは、短期的には負ける可能性があることを受け入れる必要がある点です。10%の勝率の馬が10倍のオッズで買えれば期待値はプラスですが、10回買って1回しか当たらないため、9回は負けます。それでも長期的には利益が出るという考え方を持つことが大切です。</p>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="card mb-4">
+          <div class="card-header bg-light">
+            <strong>期待値計算のポイント</strong>
+          </div>
+          <div class="card-body">
+            <h5 class="h6">期待値の公式</h5>
+            <p>期待値 = (払戻金額 × 勝率) - 投資額</p>
+            
+            <h5 class="h6">適正オッズの計算</h5>
+            <p>適正オッズ = 1 ÷ 勝率</p>
+            
+            <h5 class="h6">勝率の一般的な目安</h5>
+            <table class="table table-sm">
+              <thead>
+                <tr>
+                  <th>人気</th>
+                  <th>概算勝率</th>
+                  <th>適正オッズ</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1番人気</td>
+                  <td>約30%</td>
+                  <td>約3.3倍</td>
+                </tr>
+                <tr>
+                  <td>2番人気</td>
+                  <td>約20%</td>
+                  <td>約5倍</td>
+                </tr>
+                <tr>
+                  <td>3番人気</td>
+                  <td>約15%</td>
+                  <td>約6.7倍</td>
+                </tr>
+                <tr>
+                  <td>5番人気</td>
+                  <td>約8%</td>
+                  <td>約12.5倍</td>
+                </tr>
+                <tr>
+                  <td>10番人気</td>
+                  <td>約2%</td>
+                  <td>約50倍</td>
+                </tr>
+              </tbody>
+            </table>
+            <p class="small">※あくまで目安であり、レースによって異なります</p>
+          </div>
+        </div>
+        
+        <div class="card">
+          <div class="card-header bg-danger text-white">
+            <strong>期待値理論の落とし穴</strong>
+          </div>
+          <div class="card-body">
+            <ul class="mb-0">
+              <li><strong>勝率の過大評価</strong><br>自分の推定勝率が高すぎると期待値が誤算になる</li>
+              <li><strong>サンプル数の問題</strong><br>十分なレース数がないと理論通りにならない</li>
+              <li><strong>心理的障壁</strong><br>連敗が続くとメンタル的に続けられなくなる</li>
+              <li><strong>資金管理の失敗</strong><br>1レースの投資額が多すぎると破綻のリスク</li>
+              <li><strong>控除率の影響</strong><br>馬券の控除率（約25%）が長期的に効いてくる</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 理論的予想法の実践ガイド -->
+  <section id="practical-guide" class="mb-5">
+    <h2 class="border-bottom pb-2 mb-4">理論的予想法の実践ガイド</h2>
+    <div class="row">
+      <div class="col-lg-8">
+        <p>ここでは、理論的予想法を実際にレース予想に活かすための実践的なガイドを紹介します。理論を理解するだけでなく、どのように活用するかが重要です。</p>
+        
+        <h3 class="h5 mt-4">理論的予想のステップ</h3>
+        <ol>
+          <li><strong>情報収集</strong>：過去のレース結果、タイム、適性データなど必要な情報を集める</li>
+          <li><strong>データ分析</strong>：収集したデータを整理し、分析する</li>
+          <li><strong>勝率推定</strong>：各馬の勝率や期待値を推定する</li>
+          <li><strong>買い目選択</strong>：分析結果に基づいて最適な買い目を選択</li>
+          <li><strong>検証と改善</strong>：結果を検証し、次回の予想に活かす</li>
+        </ol>
+        
+        <h3 class="h5 mt-4">理論別の実践ポイント</h3>
+        <div class="table-responsive">
+          <table class="table table-bordered">
+            <thead class="table-light">
+              <tr>
+                <th>理論</th>
+                <th>実践ポイント</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>タイム理論</td>
+                <td>
+                  <ul>
+                    <li>同条件下でのタイム比較を重視する</li>
+                    <li>上がり3Fタイムとラップ全体のバランスを見る</li>
+                    <li>レース展開の影響を考慮してタイムを評価する</li>
+                  </ul>
+                </td>
+              </tr>
+              <tr>
+                <td>SP理論</td>
+                <td>
+                  <ul>
+                    <li>複数回の指数の安定性を重視する</li>
+                    <li>条件変化による指数の変動を予測する</li>
+                    <li>複数の指数体系を比較すると精度が上がる</li>
+                  </ul>
+                </td>
+              </tr>
+              <tr>
+                <td>統計学的アプローチ</td>
+                <td>
+                  <ul>
+                    <li>十分なサンプル数を確保する</li>
+                    <li>類似したレースのパターンを見つける</li>
+                    <li>統計的な傾向と例外の見極めが重要</li>
+                  </ul>
+                </td>
+              </tr>
+              <tr>
+                <td>期待値理論</td>
+                <td>
+                  <ul>
+                    <li>自分の推定勝率と実際のオッズを常に比較する</li>
+                    <li>的中率よりも回収率を重視する</li>
+                    <li>長期的な視点で資金管理をする</li>
+                  </ul>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        
+        <h3 class="h5 mt-4">初心者向け理論的予想の始め方</h3>
+        <p>理論的予想法は一見難しそうですが、以下のステップで徐々に始めることができます：</p>
+        <ol>
+          <li><strong>基本的な指標から始める</strong>：まずは「タイム」「上がり3F」「適性」などの基本的な指標から</li>
+          <li><strong>少数のレースに絞る</strong>：全レースではなく、得意なコースや条件のレースに絞って分析</li>
+          <li><strong>記録を残す</strong>：予想の根拠と結果を必ず記録して振り返りの材料にする</li>
+          <li><strong>理論書や解説を読む</strong>：専門書や競馬雑誌の理論解説を参考にする</li>
+          <li><strong>徐々に指標を増やす</strong>：慣れてきたら分析する指標や要素を増やしていく</li>
+        </ol>
+        
+        <h3 class="h5 mt-4">理論と実践のバランス</h3>
+        <p>理論的予想法を実践する際には、理論に固執しすぎず、現実との調和を図ることが大切です。</p>
+        <ul>
+          <li><strong>理論の限界を理解する</strong>：どんな理論にも限界があることを認識する</li>
+          <li><strong>柔軟な適用</strong>：状況に応じて理論の適用方法を調整する</li>
+          <li><strong>複数の理論の組み合わせ</strong>：一つの理論だけでなく、複数の理論を組み合わせる</li>
+          <li><strong>定性的要素との融合</strong>：馬の状態や騎手の調子など数値化されない要素も考慮する</li>
+          <li><strong>継続的な検証と改良</strong>：結果を検証し、常に理論を改良していく</li>
+        </ul>
+        
+        <div class="alert alert-success mt-4">
+          <h4 class="h6 alert-heading">理論的予想の成功の鍵</h4>
+          <p class="mb-0">理論的予想法で成功するための最大のポイントは「継続性」と「検証」です。一時的な勝ち負けに一喜一憂せず、長期的な視点で予想法を磨き続けることが重要です。また、自分の予想を客観的に検証し、改善点を見つける姿勢も欠かせません。</p>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="card mb-4">
+          <div class="card-header bg-light">
+            <strong>理論的予想家のツールボックス</strong>
+          </div>
+          <div class="card-body">
+            <p>理論的予想法を実践するために役立つツール：</p>
+            <ul class="mb-0">
+              <li><strong>データベース</strong>：過去レースのデータベース</li>
+              <li><strong>スプレッドシート</strong>：データ分析・記録用</li>
+              <li><strong>指数計算ツール</strong>：独自指数の計算</li>
+              <li><strong>競馬新聞・専門紙</strong>：基本的なデータソース</li>
+              <li><strong>レース映像</strong>：実際の走りを確認</li>
+              <li><strong>予想記録ノート</strong>：予想と結果の記録</li>
+              <li><strong>統計分析ソフト</strong>：高度な統計分析</li>
+            </ul>
+          </div>
+        </div>
+        
+        <div class="card">
+          <div class="card-header bg-primary text-white">
+            <strong>理論的予想のチェックリスト</strong>
+          </div>
+          <div class="card-body">
+            <p>予想前に確認すべきポイント：</p>
+            <ol class="mb-0">
+              <li>基本データ（タイム、上がり、着差など）</li>
+              <li>条件適性（距離、コース、馬場など）</li>
+              <li>統計的傾向（枠順、脚質、人気など）</li>
+              <li>レース特性（過去のパターン、展開予想）</li>
+              <li>調教・状態情報（調教タイム、馬体重など）</li>
+              <li>オッズと期待値（推定勝率とオッズの比較）</li>
+              <li>理論に基づく最終判断（買い目決定）</li>
+            </ol>
+          </div>
+        </div>
+        
+        <div class="alert alert-warning mt-4">
+          <h4 class="h6 alert-heading">メンタル管理の重要性</h4>
+          <p class="mb-0">理論的予想法では、メンタル管理も重要な要素です。数字だけでは表現できない要素もある競馬では、完璧な予想は不可能です。連敗や誤算があっても冷静さを保ち、長期的な視点で継続することが成功への道です。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="card mb-5">
+    <div class="card-body">
+      <h2 class="h4 mb-3">まとめ：理論的予想法の活かし方</h2>
+      <p>競馬の理論的予想法は、客観的なデータと論理的な分析に基づく予想アプローチです。タイム理論、SP理論、統計学的アプローチ、期待値理論など、様々な理論が存在し、それぞれに長所と短所があります。</p>
+      <p>理論的予想法を実践する際には、一つの理論に固執するのではなく、複数の理論を組み合わせ、状況に応じて柔軟に適用することが大切です。また、理論だけに頼りすぎず、馬の状態や騎手の調子など、数値化されない要素も考慮する姿勢も重要です。</p>
+      <p>最も重要なのは、継続性と検証です。一時的な勝ち負けに一喜一憂せず、長期的な視点で予想法を磨き続けることが、理論的予想法での成功の鍵となります。</p>
+      <p>初心者の方は、まずは基本的な指標から始め、徐々に分析の幅を広げていくことをおすすめします。理論的予想法は一朝一夕に身につくものではありませんが、継続的な努力によって、より精度の高い予想が可能になります。</p>
+    </div>
+  </div>
+
+  <div class="row mb-5">
+    <div class="col-md-6">
+      <div class="card h-100">
+        <div class="card-body">
+          <h3 class="h5 card-title">関連ページ</h3>
+          <ul class="mb-0">
+            <li><a href="/keiba_lab/prediction/approach.html">予想の基本アプローチ</a></li>
+            <li><a href="/keiba_lab/prediction/data-analysis.html">データ分析の基礎</a></li>
+            <li><a href="/keiba_lab/prediction/odds.html">オッズ分析の基本と活用法</a></li>
+            <li><a href="/keiba_lab/prediction/running-style.html">脚質と馬の走り方の基礎知識</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card h-100">
+        <div class="card-body">
+          <h3 class="h5 card-title">推薦参考書籍</h3>
+          <ul class="mb-0">
+            <li>『タイム理論の真髄』（シャンティー著）</li>
+            <li>『競馬はデータサイエンスだ』（鈴木和幸著）</li>
+            <li>『期待値競馬のすすめ』（斉藤雅樹著）</li>
+            <li>『競馬の統計学』（井崎脩五郎著）</li>
+            <li>『スピード指数の研究』（松原敬明著）</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %} 

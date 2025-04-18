@@ -1,0 +1,794 @@
+{% extends "base.html" %}
+
+{% block title %}地方競馬場ガイド | 個性豊かな全国の地方競馬場を徹底解説【馬メモ】{% endblock %}
+
+{% block description %}全国の主要地方競馬場の特徴や魅力を徹底解説。南関東4場を中心に、地方競馬場のコース特性や観戦ポイント、アクセス情報など初心者にもわかりやすく紹介します。{% endblock %}
+
+{% block keywords %}地方競馬場,南関東4場,大井競馬場,川崎競馬場,船橋競馬場,浦和競馬場,園田競馬場,姫路競馬場,地方競馬,ナイター競馬{% endblock %}
+
+{% block og_title %}地方競馬場ガイド | 個性豊かな全国の地方競馬場を徹底解説【馬メモ】{% endblock %}
+{% block og_description %}全国の主要地方競馬場の特徴や魅力を徹底解説。南関東4場を中心に、地方競馬場のコース特性や観戦ポイント、アクセス情報など初心者にもわかりやすく紹介します。{% endblock %}
+
+{% block twitter_title %}地方競馬場ガイド | 個性豊かな全国の地方競馬場を徹底解説【馬メモ】{% endblock %}
+{% block twitter_description %}全国の主要地方競馬場の特徴や魅力を徹底解説。南関東4場を中心に、地方競馬場のコース特性や観戦ポイント、アクセス情報など初心者にもわかりやすく紹介します。{% endblock %}
+
+{% block content %}
+<div class="container mt-4 mb-5">
+  <!-- パンくずリスト -->
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/">ホーム</a></li>
+      <li class="breadcrumb-item"><a href="/keiba_lab/">競馬ラボ</a></li>
+      <li class="breadcrumb-item"><a href="/keiba_lab/racecourse/">競馬場ガイド</a></li>
+      <li class="breadcrumb-item active" aria-current="page">地方競馬場ガイド</li>
+    </ol>
+  </nav>
+
+  <h1 class="mb-4">地方競馬場ガイド：個性豊かな全国の地方競馬場を徹底解説</h1>
+
+  <div class="lead mb-4">
+    <p>地方競馬は中央競馬（JRA）とは異なる魅力を持ち、全国各地の個性あふれる競馬場で開催されています。特にナイター競馬や平日開催など、中央競馬にはない独自のスタイルが特徴です。このページでは、主要な地方競馬場の特徴やコース情報、観戦のポイントなどを詳しく紹介します。</p>
+  </div>
+
+  <!-- 目次 -->
+  <div class="card mb-5">
+    <div class="card-header">
+      目次
+    </div>
+    <div class="card-body">
+      <ol class="mb-0">
+        <li><a href="#overview">地方競馬場の概要</a></li>
+        <li><a href="#south-kanto">南関東4競馬場ガイド</a></li>
+        <li><a href="#hyogo">兵庫の競馬場（園田・姫路）</a></li>
+        <li><a href="#other">その他の主要地方競馬場</a></li>
+        <li><a href="#characteristics">地方競馬場のコース特性</a></li>
+        <li><a href="#watching">地方競馬観戦のポイント</a></li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- 地方競馬場の概要 -->
+  <section id="overview" class="mb-5">
+    <h2 class="border-bottom pb-2">地方競馬場の概要</h2>
+    
+    <div class="row mb-4">
+      <div class="col-md-7">
+        <p>地方競馬（地方競馬全国協会：NAR）は、都道府県や市町村などの地方自治体が主催する競馬で、全国に15の競馬場があります。JRAと異なり、ナイター開催や平日開催が主体で、より気軽に競馬を楽しめるのが特徴です。</p>
+        
+        <h3 class="h5 mt-4">地方競馬の特徴</h3>
+        <ul>
+          <li><strong>ナイター競馬</strong>：多くの地方競馬場は夜間照明を完備し、平日夜に開催</li>
+          <li><strong>短距離重視</strong>：多くの競馬場が小回りのコースで、短距離レースが多い</li>
+          <li><strong>地域密着型</strong>：地元の特色を活かしたイベントや食事を楽しめる</li>
+          <li><strong>リーズナブル</strong>：入場料が無料または安価で、食事も比較的リーズナブル</li>
+          <li><strong>独自の重賞</strong>：各競馬場が特色ある重賞レースを開催</li>
+        </ul>
+        
+        <h3 class="h5 mt-4">全国の地方競馬場</h3>
+        <p>主な地方競馬場は以下の通りです：</p>
+        <ul>
+          <li><strong>南関東</strong>：大井、川崎、船橋、浦和</li>
+          <li><strong>北海道</strong>：門別</li>
+          <li><strong>東北</strong>：盛岡、水沢</li>
+          <li><strong>関西</strong>：園田、姫路</li>
+          <li><strong>九州</strong>：佐賀</li>
+          <li><strong>その他</strong>：金沢、名古屋、高知、笠松</li>
+        </ul>
+      </div>
+      <div class="col-md-5">
+        <div class="card">
+          <div class="card-header bg-light">
+            <strong>地方競馬と中央競馬の主な違い</strong>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-sm">
+                <thead>
+                  <tr>
+                    <th>項目</th>
+                    <th>地方競馬</th>
+                    <th>中央競馬（JRA）</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>開催日</td>
+                    <td>平日中心</td>
+                    <td>土日祝日中心</td>
+                  </tr>
+                  <tr>
+                    <td>開催時間</td>
+                    <td>昼間・ナイター</td>
+                    <td>昼間のみ</td>
+                  </tr>
+                  <tr>
+                    <td>競馬場数</td>
+                    <td>15場</td>
+                    <td>10場</td>
+                  </tr>
+                  <tr>
+                    <td>コース規模</td>
+                    <td>比較的小規模</td>
+                    <td>大規模</td>
+                  </tr>
+                  <tr>
+                    <td>賞金水準</td>
+                    <td>比較的低い</td>
+                    <td>高い</td>
+                  </tr>
+                  <tr>
+                    <td>入場料</td>
+                    <td>無料～200円程度</td>
+                    <td>200円～1,000円程度</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        
+        <div class="alert alert-info mt-3">
+          <strong>地方競馬の魅力：</strong>
+          <p class="mb-0">地方競馬はJRAに比べて距離が近く、馬や騎手との距離感も近いのが特徴です。また、平日夜に開催されるため仕事帰りに気軽に立ち寄れるのも魅力です。交流重賞レースではJRAの有力馬が参戦することもあり、大きな盛り上がりを見せます。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 南関東4競馬場ガイド -->
+  <section id="south-kanto" class="mb-5">
+    <h2 class="border-bottom pb-2">南関東4競馬場ガイド</h2>
+    
+    <p class="mb-4">南関東4競馬場（大井、川崎、船橋、浦和）は、首都圏に位置し、年間を通して交代で開催されている人気の高い地方競馬場です。それぞれに個性があり、独自の魅力を持っています。</p>
+    
+    <!-- 大井競馬場 -->
+    <div class="card mb-4">
+      <div class="card-header">
+        <h3 class="h5 mb-0">大井競馬場（東京都品川区）</h3>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-4">
+            <img src="{{ url_for('static', filename='images/racecourse/ooi.jpg') }}" class="img-fluid rounded mb-3" alt="大井競馬場">
+          </div>
+          <div class="col-md-8">
+            <h4 class="h6">コース特性</h4>
+            <ul>
+              <li>ダート1600mのA1コース、内回りの1200mのB1コースなど複数のコース</li>
+              <li>直線が長く、差し・追い込み馬も活躍できる</li>
+              <li>最終コーナーの傾斜が緩やかで、外差し馬にも好条件</li>
+            </ul>
+            
+            <h4 class="h6 mt-3">主要レース</h4>
+            <ul>
+              <li><strong>東京大賞典</strong>（G1、ダート2000m、12月）：地方競馬最高峰のダートG1</li>
+              <li><strong>かしわ記念</strong>（G1、ダート1600m、5月）</li>
+              <li><strong>JBCクラシック</strong>（ダート2000m、11月）：交流重賞の最高峰（3年に1度開催）</li>
+            </ul>
+            
+            <h4 class="h6 mt-3">特徴と見どころ</h4>
+            <ul>
+              <li>南関東最大規模の競馬場で施設が充実</li>
+              <li>ナイター設備が整っており、夜景とともに競馬を楽しめる</li>
+              <li>"SPAT4プレミアム"などの特別観覧施設あり</li>
+              <li>"とうきょうみなとまつり"など特色あるイベントを開催</li>
+            </ul>
+            
+            <h4 class="h6 mt-3">アクセス</h4>
+            <p>電車：京急線「品川駅」からバスで約20分、またはりんかい線「大井競馬場前駅」から徒歩約2分</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 川崎競馬場 -->
+    <div class="card mb-4">
+      <div class="card-header">
+        <h3 class="h5 mb-0">川崎競馬場（神奈川県川崎市）</h3>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-4">
+            <img src="{{ url_for('static', filename='images/racecourse/kawasaki.jpg') }}" class="img-fluid rounded mb-3" alt="川崎競馬場">
+          </div>
+          <div class="col-md-8">
+            <h4 class="h6">コース特性</h4>
+            <ul>
+              <li>一周1,600mのダートコース</li>
+              <li>コーナーがきつく、小回りが利く馬が有利</li>
+              <li>最終コーナーからの直線が短いため、逃げ・先行馬が有利</li>
+            </ul>
+            
+            <h4 class="h6 mt-3">主要レース</h4>
+            <ul>
+              <li><strong>川崎記念</strong>（G1、ダート2100m、1月）</li>
+              <li><strong>関東オークス</strong>（Jpn2、ダート2100m、6月）：3歳牝馬限定</li>
+              <li><strong>神奈川チャレンジカップ</strong>（ダート2100m、12月）</li>
+            </ul>
+            
+            <h4 class="h6 mt-3">特徴と見どころ</h4>
+            <ul>
+              <li>コンパクトなコースで、馬との距離が近い</li>
+              <li>"川崎ジャンボリー"など名物イベントが人気</li>
+              <li>地元の飲食店が出店する"かわさきグルメフェス"が開催</li>
+              <li>"ザ・プレミアム"という特別観覧エリアあり</li>
+            </ul>
+            
+            <h4 class="h6 mt-3">アクセス</h4>
+            <p>電車：JR「川崎駅」または京急「川崎駅」から徒歩約15分、またはバスで約5分</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 船橋競馬場 -->
+    <div class="card mb-4">
+      <div class="card-header">
+        <h3 class="h5 mb-0">船橋競馬場（千葉県船橋市）</h3>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-4">
+            <img src="{{ url_for('static', filename='images/racecourse/funabashi.jpg') }}" class="img-fluid rounded mb-3" alt="船橋競馬場">
+          </div>
+          <div class="col-md-8">
+            <h4 class="h6">コース特性</h4>
+            <ul>
+              <li>一周1,300mのダートコース</li>
+              <li>急なコーナーが特徴で、内枠有利の傾向</li>
+              <li>南関東では最も小回りのコースで、前に行く馬が有利</li>
+              <li>中央のスタンド寄りは若干の上り坂</li>
+            </ul>
+            
+            <h4 class="h6 mt-3">主要レース</h4>
+            <ul>
+              <li><strong>かしわ記念</strong>（G1、ダート1600m、5月）※2022年から大井開催</li>
+              <li><strong>ダイオライト記念</strong>（Jpn2、ダート2400m、3月）</li>
+              <li><strong>船橋ケイバ賞</strong>（ダート1700m、11月）</li>
+            </ul>
+            
+            <h4 class="h6 mt-3">特徴と見どころ</h4>
+            <ul>
+              <li>"ハートビートナイター"など照明演出が特徴</li>
+              <li>"ケイバグルメフェス"など食のイベントが充実</li>
+              <li>屋内スタンドが広く、雨天時も快適</li>
+              <li>近くに中山競馬場（JRA）があり、競馬ファンには便利なエリア</li>
+            </ul>
+            
+            <h4 class="h6 mt-3">アクセス</h4>
+            <p>電車：JR総武線「船橋駅」から徒歩約15分、またはバスで約5分、京成線「船橋競馬場駅」から徒歩約5分</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 浦和競馬場 -->
+    <div class="card mb-4">
+      <div class="card-header">
+        <h3 class="h5 mb-0">浦和競馬場（埼玉県さいたま市）</h3>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-4">
+            <img src="{{ url_for('static', filename='images/racecourse/urawa.jpg') }}" class="img-fluid rounded mb-3" alt="浦和競馬場">
+          </div>
+          <div class="col-md-8">
+            <h4 class="h6">コース特性</h4>
+            <ul>
+              <li>一周1,400mのダートコース</li>
+              <li>直線が短く、前に行く馬が有利</li>
+              <li>バックストレッチがやや上り坂</li>
+              <li>ホームストレッチが下り坂で、最後の直線で速度が上がりやすい</li>
+            </ul>
+            
+            <h4 class="h6 mt-3">主要レース</h4>
+            <ul>
+              <li><strong>浦和記念</strong>（Jpn2、ダート2000m、12月）</li>
+              <li><strong>埼玉栄冠賞</strong>（ダート1400m、5月）</li>
+              <li><strong>エンプレス杯</strong>（Jpn2、ダート2100m、10月）：牝馬限定重賞</li>
+            </ul>
+            
+            <h4 class="h6 mt-3">特徴と見どころ</h4>
+            <ul>
+              <li>南関東で最も歴史ある競馬場の一つ</li>
+              <li>コンパクトなコースで、全体を見渡しやすい</li>
+              <li>"うまレース"など名物イベントを開催</li>
+              <li>比較的空いていることが多く、ゆったり観戦可能</li>
+            </ul>
+            
+            <h4 class="h6 mt-3">アクセス</h4>
+            <p>電車：JR京浜東北線「南浦和駅」からバスで約10分</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 兵庫の競馬場（園田・姫路） -->
+  <section id="hyogo" class="mb-5">
+    <h2 class="border-bottom pb-2">兵庫の競馬場（園田・姫路）</h2>
+    
+    <p class="mb-4">兵庫県には園田と姫路の2つの地方競馬場があり、関西地方競馬の中心として人気を集めています。</p>
+    
+    <!-- 園田競馬場 -->
+    <div class="card mb-4">
+      <div class="card-header">
+        <h3 class="h5 mb-0">園田競馬場（兵庫県尼崎市）</h3>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-4">
+            <img src="{{ url_for('static', filename='images/racecourse/sonoda.jpg') }}" class="img-fluid rounded mb-3" alt="園田競馬場">
+          </div>
+          <div class="col-md-8">
+            <h4 class="h6">コース特性</h4>
+            <ul>
+              <li>一周1,051mの小回りダートコース</li>
+              <li>非常にタイトなコーナーで、小回りの利く馬が有利</li>
+              <li>直線が短く、逃げ・先行馬が有利</li>
+            </ul>
+            
+            <h4 class="h6 mt-3">主要レース</h4>
+            <ul>
+              <li><strong>園田金盃</strong>（ダート1870m、9月）</li>
+              <li><strong>兵庫ゴールドトロフィー</strong>（ダート1400m、5月）</li>
+              <li><strong>兵庫大賞典</strong>（ダート1870m、11月）</li>
+            </ul>
+            
+            <h4 class="h6 mt-3">特徴と見どころ</h4>
+            <ul>
+              <li>関西の地方競馬の中心として長い歴史</li>
+              <li>ナイター設備が充実し、仕事帰りに立ち寄れる</li>
+              <li>"ソノダセブンス"など独自のレースイベント</li>
+              <li>地元の名産品を使った飲食を楽しめる</li>
+            </ul>
+            
+            <h4 class="h6 mt-3">アクセス</h4>
+            <p>電車：阪神電鉄「尼崎駅」からバスで約10分</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 姫路競馬場 -->
+    <div class="card mb-4">
+      <div class="card-header">
+        <h3 class="h5 mb-0">姫路競馬場（兵庫県姫路市）</h3>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-4">
+            <img src="{{ url_for('static', filename='images/racecourse/himeji.jpg') }}" class="img-fluid rounded mb-3" alt="姫路競馬場">
+          </div>
+          <div class="col-md-8">
+            <h4 class="h6">コース特性</h4>
+            <ul>
+              <li>一周1,089mのダートコース</li>
+              <li>小回りでコーナーがきつい</li>
+              <li>直線が短く、前に行く馬が有利</li>
+            </ul>
+            
+            <h4 class="h6 mt-3">主要レース</h4>
+            <ul>
+              <li><strong>姫路챔이언쉿 </strong>（ダート1700m、1月）</li>
+              <li><strong>兵庫챔이언쉿 </strong>（ダート1700m、12月）</li>
+              <li><strong>姫山菊花賞</strong>（ダート1700m、10月）</li>
+            </ul>
+            
+            <h4 class="h6 mt-3">特徴と見どころ</h4>
+            <ul>
+              <li>世界遺産・姫路城の近くに位置する</li>
+              <li>コンパクトなコースで全体を見渡しやすい</li>
+              <li>地元の食材を使った飲食が充実</li>
+              <li>"姫路競馬場まつり"など地域色豊かなイベント</li>
+            </ul>
+            
+            <h4 class="h6 mt-3">アクセス</h4>
+            <p>電車：JR・山陽電鉄「姫路駅」からバスで約15分</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- その他の主要地方競馬場 -->
+  <section id="other" class="mb-5">
+    <h2 class="border-bottom pb-2">その他の主要地方競馬場</h2>
+    
+    <p class="mb-4">南関東と兵庫以外にも、各地に魅力的な地方競馬場があります。それぞれに地域性を活かした特色あるレースやイベントが開催されています。</p>
+    
+    <div class="row row-cols-1 row-cols-md-2 g-4 mb-4">
+      <!-- 門別競馬場 -->
+      <div class="col">
+        <div class="card h-100">
+          <div class="card-header">
+            <h3 class="h5 mb-0">門別競馬場（北海道沙流郡）</h3>
+          </div>
+          <div class="card-body">
+            <p><strong>コース特性：</strong>一周1,600mのダートコース。北海道の広大な土地を活かした広々としたコース設計。</p>
+            <p><strong>主要レース：</strong>北海道スプリントカップ、ブリーダーズゴールドカップ、イノセントカップなど</p>
+            <p><strong>特徴：</strong>北海道の雄大な自然の中にある競馬場。ホッカイドウ競馬の中心拠点として活躍。</p>
+            <p><strong>アクセス：</strong>JR日高線「富川駅」からバスで約10分（現在、JR日高線は一部不通）</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 盛岡競馬場 -->
+      <div class="col">
+        <div class="card h-100">
+          <div class="card-header">
+            <h3 class="h5 mb-0">盛岡競馬場（岩手県盛岡市）</h3>
+          </div>
+          <div class="card-body">
+            <p><strong>コース特性：</strong>一周1,600mのダートコースと1,700mの芝コースを持つ珍しい地方競馬場。</p>
+            <p><strong>主要レース：</strong>マイルチャンピオンシップ南部杯（Jpn1）、南部杯、OROカップなど</p>
+            <p><strong>特徴：</strong>地方競馬では数少ない芝コースを持つ競馬場。JRA所属馬も参戦する南部杯は地方競馬の最高峰レースの一つ。</p>
+            <p><strong>アクセス：</strong>JR「盛岡駅」からバスで約25分</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 高知競馬場 -->
+      <div class="col">
+        <div class="card h-100">
+          <div class="card-header">
+            <h3 class="h5 mb-0">高知競馬場（高知県高知市）</h3>
+          </div>
+          <div class="card-body">
+            <p><strong>コース特性：</strong>一周1,033mの小回りダートコース。コーナーが急で小回りの利く馬が有利。</p>
+            <p><strong>主要レース：</strong>黒潮マイルチャンピオンシップ、高知優駿、黒潮菊花賞など</p>
+            <p><strong>特徴：</strong>"よさこい競馬"などの地域色豊かなイベントが特徴。地元の食材を使った食事も人気。</p>
+            <p><strong>アクセス：</strong>土佐電鉄「はりまや橋駅」からバスで約15分</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 名古屋競馬場 -->
+      <div class="col">
+        <div class="card h-100">
+          <div class="card-header">
+            <h3 class="h5 mb-0">名古屋競馬場（愛知県弥富市）</h3>
+          </div>
+          <div class="card-body">
+            <p><strong>コース特性：</strong>一周1,400mのダートコース。やや小回りだが、直線も比較的長め。</p>
+            <p><strong>主要レース：</strong>名古屋グランプリ（Jpn2）、東海クイーンカップ、東海ダービーなど</p>
+            <p><strong>特徴：</strong>中京競馬場（JRA）の近くに位置し、中部地方の競馬の中心。"名古屋競馬まつり"などのイベントも開催。</p>
+            <p><strong>アクセス：</strong>近鉄名古屋線「弥富駅」または「佐古木駅」から徒歩約15分</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 佐賀競馬場 -->
+      <div class="col">
+        <div class="card h-100">
+          <div class="card-header">
+            <h3 class="h5 mb-0">佐賀競馬場（佐賀県鳥栖市）</h3>
+          </div>
+          <div class="card-body">
+            <p><strong>コース特性：</strong>一周1,200mのダートコース。小回りでコーナーがきつい。</p>
+            <p><strong>主要レース：</strong>佐賀記念、筑後川賞、佐賀王冠賞など</p>
+            <p><strong>特徴：</strong>九州で唯一の地方競馬場。地元の特産品や食文化を活かしたイベントが充実。</p>
+            <p><strong>アクセス：</strong>JR「鳥栖駅」からバスで約5分</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 水沢競馬場 -->
+      <div class="col">
+        <div class="card h-100">
+          <div class="card-header">
+            <h3 class="h5 mb-0">水沢競馬場（岩手県奥州市）</h3>
+          </div>
+          <div class="card-body">
+            <p><strong>コース特性：</strong>一周1,200mのダートコース。小回りで内枠有利の傾向。</p>
+            <p><strong>主要レース：</strong>水沢プリンセスカップ、杵臼賞、水沢フラワーカップなど</p>
+            <p><strong>特徴：</strong>盛岡競馬場とともに岩手競馬を支える競馬場。"前沢牛"など地元食材を使った食事が人気。</p>
+            <p><strong>アクセス：</strong>JR「水沢駅」からバスで約10分</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 地方競馬場のコース特性 -->
+  <section id="characteristics" class="mb-5">
+    <h2 class="border-bottom pb-2">地方競馬場のコース特性</h2>
+    
+    <div class="row mb-4">
+      <div class="col-md-7">
+        <p>地方競馬場のコースは中央競馬に比べて小回りの傾向があり、それぞれに特徴的な構造を持っています。ここでは地方競馬場のコースの一般的な特性について解説します。</p>
+        
+        <h3 class="h5 mt-4">コースサイズと構造</h3>
+        <ul>
+          <li><strong>小回りコース</strong>：多くの地方競馬場は一周1,000m～1,600m程度と小回り</li>
+          <li><strong>急なコーナー</strong>：コースサイズが小さいため、コーナーが急な場合が多い</li>
+          <li><strong>直線の長さ</strong>：中央競馬に比べて直線が短い場合が多い</li>
+          <li><strong>坂の有無</strong>：競馬場によって坂があるものとフラットなものがある</li>
+        </ul>
+        
+        <h3 class="h5 mt-4">馬場状態の特徴</h3>
+        <ul>
+          <li><strong>ダート中心</strong>：ほとんどの地方競馬場はダートコースのみ</li>
+          <li><strong>馬場管理</strong>：降雨後の馬場状態が競馬場によって大きく異なる</li>
+          <li><strong>季節変化</strong>：季節による馬場状態の変化が大きい傾向</li>
+          <li><strong>内外差</strong>：使用頻度の高い内側と外側で馬場状態に差がつきやすい</li>
+        </ul>
+        
+        <h3 class="h5 mt-4">有利な脚質と戦術</h3>
+        <p>地方競馬場では一般的に以下の脚質や戦術が有利とされています：</p>
+        <ul>
+          <li><strong>逃げ・先行</strong>：直線が短いため、前に行く馬が有利な場合が多い</li>
+          <li><strong>小回り適性</strong>：急なコーナーを上手く回れる馬が有利</li>
+          <li><strong>内枠</strong>：小回りのため、内枠が有利になる場合が多い</li>
+          <li><strong>スタート対応</strong>：短距離レースが多いため、スタートの良さが重要</li>
+        </ul>
+      </div>
+      <div class="col-md-5">
+        <div class="card mb-4">
+          <div class="card-header bg-light">
+            <strong>地方競馬場の距離別特徴</strong>
+          </div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-striped mb-0">
+                <thead>
+                  <tr>
+                    <th>距離</th>
+                    <th>特徴</th>
+                    <th>有利な条件</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>短距離<br>(800m-1200m)</td>
+                    <td>スピード重視、短い直線</td>
+                    <td>スタートの良さ、瞬発力</td>
+                  </tr>
+                  <tr>
+                    <td>マイル<br>(1600m前後)</td>
+                    <td>バランス型、1周または2周</td>
+                    <td>ポジショニング、小回り適性</td>
+                  </tr>
+                  <tr>
+                    <td>中距離<br>(1800m-2100m)</td>
+                    <td>2周回ることが多い</td>
+                    <td>スタミナ、ペース配分</td>
+                  </tr>
+                  <tr>
+                    <td>長距離<br>(2400m以上)</td>
+                    <td>少数開催、特殊レース</td>
+                    <td>スタミナ、精神的強さ</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        
+        <div class="alert alert-info">
+          <strong>予想のポイント：</strong>
+          <p class="mb-0">地方競馬場のレースを予想する際は、その競馬場特有のバイアスを理解することが重要です。特に小回りのコースでは内枠・先行馬が有利な傾向があり、馬の適性を見極めることがポイントとなります。また、同じ競馬場での過去の実績も重要な指標となります。</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="card">
+      <div class="card-header bg-light">
+        <strong>主要地方競馬場のコース比較</strong>
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-striped mb-0">
+            <thead>
+              <tr>
+                <th>競馬場</th>
+                <th>一周の長さ</th>
+                <th>コーナーの特徴</th>
+                <th>直線の長さ</th>
+                <th>有利な脚質</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>大井</td>
+                <td>1,600m</td>
+                <td>比較的緩やか</td>
+                <td>約400m</td>
+                <td>先行〜差し</td>
+              </tr>
+              <tr>
+                <td>川崎</td>
+                <td>1,600m</td>
+                <td>やや急</td>
+                <td>約300m</td>
+                <td>逃げ〜先行</td>
+              </tr>
+              <tr>
+                <td>船橋</td>
+                <td>1,300m</td>
+                <td>急</td>
+                <td>約250m</td>
+                <td>逃げ〜先行</td>
+              </tr>
+              <tr>
+                <td>浦和</td>
+                <td>1,400m</td>
+                <td>やや急</td>
+                <td>約300m</td>
+                <td>逃げ〜先行</td>
+              </tr>
+              <tr>
+                <td>園田</td>
+                <td>1,051m</td>
+                <td>非常に急</td>
+                <td>約200m</td>
+                <td>逃げ中心</td>
+              </tr>
+              <tr>
+                <td>盛岡</td>
+                <td>1,600m</td>
+                <td>比較的緩やか</td>
+                <td>約350m</td>
+                <td>先行〜差し</td>
+              </tr>
+              <tr>
+                <td>高知</td>
+                <td>1,033m</td>
+                <td>非常に急</td>
+                <td>約200m</td>
+                <td>逃げ中心</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 地方競馬観戦のポイント -->
+  <section id="watching" class="mb-5">
+    <h2 class="border-bottom pb-2">地方競馬観戦のポイント</h2>
+    
+    <div class="row mb-4">
+      <div class="col-md-7">
+        <p>地方競馬は中央競馬（JRA）とは異なる魅力があり、観戦する際のポイントも少し違います。ここでは地方競馬を楽しむためのポイントを紹介します。</p>
+        
+        <h3 class="h5 mt-4">地方競馬観戦の基本情報</h3>
+        <ul>
+          <li><strong>開催日時</strong>：主に平日や祝日、週末の一部。ナイター開催が多い</li>
+          <li><strong>入場料</strong>：無料または200円程度（競馬場により異なる）</li>
+          <li><strong>服装</strong>：カジュアルでOK。夜は冷える場合があるので上着を持参</li>
+          <li><strong>設備</strong>：JRAに比べてコンパクトだが必要な設備は整っている</li>
+        </ul>
+        
+        <h3 class="h5 mt-4">現地観戦のおすすめポイント</h3>
+        <ol>
+          <li><strong>パドック観察</strong>：距離が近く、馬の様子を間近で見られる</li>
+          <li><strong>ローカルフード</strong>：各競馬場の地元グルメを楽しめる</li>
+          <li><strong>馬券購入</strong>：初心者でも窓口で丁寧に教えてもらえる</li>
+          <li><strong>イベント参加</strong>：地域色豊かなイベントが多く開催されている</li>
+          <li><strong>コンパクトな見学</strong>：施設がコンパクトで移動が少なく済む</li>
+        </ol>
+        
+        <h3 class="h5 mt-4">地方競馬特有の楽しみ方</h3>
+        <ul>
+          <li><strong>ナイター競馬</strong>：夜の照明下でのレースは独特の雰囲気</li>
+          <li><strong>地元アイドルホース</strong>：地方競馬ならではの人気馬を応援</li>
+          <li><strong>ローカルジョッキー</strong>：地方競馬ならではの騎手の魅力</li>
+          <li><strong>交流重賞</strong>：JRAの馬も参戦する交流レースは見どころ満載</li>
+          <li><strong>ファンサービス</strong>：選手との距離が近く、ファンサービスが充実</li>
+        </ul>
+      </div>
+      <div class="col-md-5">
+        <div class="card mb-4">
+          <div class="card-header bg-light">
+            <strong>初めての地方競馬におすすめの競馬場</strong>
+          </div>
+          <div class="card-body">
+            <ol class="mb-0">
+              <li><strong>大井競馬場</strong>：設備が充実し、アクセスも良好</li>
+              <li><strong>川崎競馬場</strong>：都心からのアクセスが良く、コンパクト</li>
+              <li><strong>船橋競馬場</strong>：ナイター設備が充実、グルメも豊富</li>
+              <li><strong>園田競馬場</strong>：関西在住の方におすすめ、設備も充実</li>
+              <li><strong>盛岡競馬場</strong>：芝コースもあり、地方競馬の魅力を堪能</li>
+            </ol>
+          </div>
+        </div>
+        
+        <div class="alert alert-success">
+          <strong>初心者向けアドバイス：</strong>
+          <p>地方競馬は入場料が安く、平日や夜間も開催しているため、初めて競馬場に行く人にもおすすめです。特に平日の昼間は混雑も少なく、ゆっくりと競馬場を見て回ることができます。また、場内の係員に質問すれば丁寧に案内してもらえるのも魅力です。</p>
+        </div>
+        
+        <div class="card mt-4">
+          <div class="card-header bg-light">
+            <strong>持っていくと便利なもの</strong>
+          </div>
+          <div class="card-body">
+            <ul class="mb-0">
+              <li>双眼鏡（レンタルもあり）</li>
+              <li>競馬新聞または競馬場プログラム</li>
+              <li>メモ帳とペン</li>
+              <li>現金（一部競馬場ではカード利用可）</li>
+              <li>スマートフォン（情報検索用）</li>
+              <li>モバイルバッテリー</li>
+              <li>日よけ・雨具（季節による）</li>
+              <li>防寒具（夜間や冬期）</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="alert alert-warning">
+      <h4 class="alert-heading">地方競馬観戦時の注意点</h4>
+      <ul class="mb-0">
+        <li>ナイター開催の場合、終了時間が遅くなるため交通手段を確認</li>
+        <li>特に冬季のナイターは気温が下がるため防寒対策を</li>
+        <li>雨天時は屋内スペースが限られる場合があるため傘などを持参</li>
+        <li>交流重賞レースの日は混雑するため、早めの到着を</li>
+        <li>地方競馬のルール・システムはJRAと若干異なる部分があるため注意</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- まとめ -->
+  <section class="mb-5">
+    <h2 class="border-bottom pb-2">まとめ：地方競馬場の魅力</h2>
+    
+    <div class="row">
+      <div class="col-md-8">
+        <p>地方競馬場はJRAの競馬場とは一味違った魅力があります。小回りのコースでの迫力あるレース、ナイター開催の独特の雰囲気、地域色豊かなイベントや食事、そして何よりも馬や騎手との距離の近さが最大の特徴です。</p>
+        
+        <p>また、平日や夜間に開催されることが多いため、仕事帰りや平日の余暇時間に気軽に立ち寄れるのも魅力の一つです。入場料も無料または安価なので、競馬初心者の方にも気軽に訪れていただけます。</p>
+        
+        <p>それぞれの競馬場には独自の特色があり、様々な競馬場を巡ることで競馬の奥深さや地域の魅力を発見できるでしょう。特に南関東4競馬場は首都圏からのアクセスも良く、初めての方におすすめです。</p>
+        
+        <p>ぜひこのガイドを参考に、あなたの興味のある地方競馬場を訪れてみてください。新たな競馬の楽しみ方が広がるはずです。</p>
+      </div>
+      <div class="col-md-4">
+        <div class="alert alert-primary">
+          <h4 class="alert-heading">地方競馬ファン増加中！</h4>
+          <p>近年、地方競馬のファンは増加傾向にあります。特にナイター競馬や、交流重賞レースの人気が高まっており、若い世代や女性の観客も増えています。また、ネット中継の充実により、自宅からでも地方競馬を楽しめるようになったことも人気上昇の理由の一つです。</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bg-light p-4 rounded mt-4">
+      <h4>関連コンテンツ</h4>
+      <div class="row">
+        <div class="col-md-4">
+          <a href="{{ url_for('keiba_lab_content', content_path='racecourse/jra') }}" class="text-decoration-none">
+            <div class="card mb-3 hover-lift border-0 shadow-sm h-100">
+              <div class="card-body">
+                <h5 class="card-title">JRA主要競馬場ガイド</h5>
+                <p class="card-text">JRAの10競馬場の特徴や見どころを徹底解説。</p>
+              </div>
+            </div>
+          </a>
+        </div>
+        <div class="col-md-4">
+          <a href="{{ url_for('keiba_lab_content', content_path='racecourse/facilities') }}" class="text-decoration-none">
+            <div class="card mb-3 hover-lift border-0 shadow-sm h-100">
+              <div class="card-body">
+                <h5 class="card-title">競馬場の設備と特徴</h5>
+                <p class="card-text">スタンドやパドックなど競馬場内の主要施設について解説。</p>
+              </div>
+            </div>
+          </a>
+        </div>
+        <div class="col-md-4">
+          <a href="{{ url_for('keiba_lab_content', content_path='basics/enjoy/first-time') }}" class="text-decoration-none">
+            <div class="card mb-3 hover-lift border-0 shadow-sm h-100">
+              <div class="card-body">
+                <h5 class="card-title">初めての競馬観戦ガイド</h5>
+                <p class="card-text">初めて競馬場に行く方のための完全ガイド。持ち物から楽しみ方まで徹底解説。</p>
+              </div>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+{% endblock %} 

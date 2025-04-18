@@ -1,0 +1,117 @@
+{% extends "keiba_lab/layout.html" %}
+
+{% block title %}馬場状態の理解 | コンディション別の特徴と適性馬の見極め方【馬メモ】{% endblock %}
+
+{% block meta_description %}競馬における馬場状態（良・稍重・重・不良）の特徴と影響を解説。各馬場状態に適した馬の特徴、馬場状態の見極め方、各競馬場の馬場傾向など、予想に役立つ実践的な知識を初心者向けに紹介します。{% endblock %}
+
+{% block meta_keywords %}馬場状態,良馬場,稍重,重馬場,不良馬場,馬場適性,馬場の見方,馬場傾向,競馬予想,季節による変化{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{{ url_for('keiba_lab.index') }}">競馬ラボ</a></li>
+      <li class="breadcrumb-item"><a href="{{ url_for('keiba_lab_content', content_path='course') }}">コース攻略</a></li>
+      <li class="breadcrumb-item active" aria-current="page">馬場状態の理解</li>
+    </ol>
+  </nav>
+
+  <h1 class="mb-4">馬場状態の理解：コンディション別の特徴と適性馬</h1>
+  
+  <p class="lead mb-4">
+    競馬において、馬場状態はレース結果に大きな影響を与える重要な要素です。
+    同じ馬でも馬場状態によって走りが大きく変わることがあります。
+    このページでは、馬場状態の種類とその特徴、各状態に適した馬の特徴などを詳しく解説します。
+  </p>
+
+  <!-- 目次 -->
+  <div class="card mb-5">
+    <div class="card-header">
+      <h2 class="h5 mb-0">目次</h2>
+    </div>
+    <div class="card-body">
+      <ol class="mb-0">
+        <li><a href="#types">馬場状態の種類と表記</a></li>
+        <li><a href="#good">良馬場の特徴と適性馬</a></li>
+        <li><a href="#slightly-heavy">稍重馬場の特徴と適性馬</a></li>
+        <li><a href="#heavy">重・不良馬場の特徴と適性馬</a></li>
+        <li><a href="#judgment">馬場状態の見極め方</a></li>
+        <li><a href="#racecourses">主要競馬場の馬場傾向</a></li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- 今後ここに詳細なコンテンツを追加します -->
+  <section id="types" class="mb-5">
+    <h2 class="border-bottom pb-2">馬場状態の種類と表記</h2>
+    <!-- 内容は後で追加します -->
+  </section>
+
+  <section id="good" class="mb-5">
+    <h2 class="border-bottom pb-2">良馬場の特徴と適性馬</h2>
+    <!-- 内容は後で追加します -->
+  </section>
+
+  <section id="slightly-heavy" class="mb-5">
+    <h2 class="border-bottom pb-2">稍重馬場の特徴と適性馬</h2>
+    <!-- 内容は後で追加します -->
+  </section>
+
+  <section id="heavy" class="mb-5">
+    <h2 class="border-bottom pb-2">重・不良馬場の特徴と適性馬</h2>
+    <!-- 内容は後で追加します -->
+  </section>
+
+  <section id="judgment" class="mb-5">
+    <h2 class="border-bottom pb-2">馬場状態の見極め方</h2>
+    <!-- 内容は後で追加します -->
+  </section>
+
+  <section id="racecourses" class="mb-5">
+    <h2 class="border-bottom pb-2">主要競馬場の馬場傾向</h2>
+    <!-- 内容は後で追加します -->
+  </section>
+
+  <!-- 関連コンテンツ -->
+  <div class="alert alert-info mb-5">
+    <h3 class="h5">馬場状態を見極めるコツ</h3>
+    <p>公式発表の馬場状態だけでなく、レース映像での馬の走りや砂の跳ね方、芝の状態なども観察すると、より正確に馬場状態を判断することができます。また、前のレースでのラップタイムも参考になります。</p>
+  </div>
+
+  <div class="bg-light p-4 rounded mt-4">
+    <h3 class="h4">関連コンテンツ</h3>
+    <div class="row">
+      <div class="col-md-4">
+        <a href="{{ url_for('keiba_lab_content', content_path='course/shape') }}" class="text-decoration-none">
+          <div class="card mb-3 hover-lift border-0 shadow-sm h-100">
+            <div class="card-body">
+              <h5 class="card-title">コース形状と戦略</h5>
+              <p class="card-text">競馬場のコース形状が競走に与える影響と攻略法を解説。</p>
+            </div>
+          </div>
+        </a>
+      </div>
+      <div class="col-md-4">
+        <a href="{{ url_for('keiba_lab_content', content_path='course/distance') }}" class="text-decoration-none">
+          <div class="card mb-3 hover-lift border-0 shadow-sm h-100">
+            <div class="card-body">
+              <h5 class="card-title">距離別攻略法</h5>
+              <p class="card-text">短距離・マイル・中距離・長距離の特性と攻略法を解説。</p>
+            </div>
+          </div>
+        </a>
+      </div>
+      <div class="col-md-4">
+        <a href="{{ url_for('keiba_lab_content', content_path='bloodline/surface') }}" class="text-decoration-none">
+          <div class="card mb-3 hover-lift border-0 shadow-sm h-100">
+            <div class="card-body">
+              <h5 class="card-title">血統から見る馬場適性</h5>
+              <p class="card-text">芝・ダート・重馬場に強い血統の特徴を解説。</p>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %} 

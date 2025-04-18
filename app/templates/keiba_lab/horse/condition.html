@@ -1,0 +1,111 @@
+{% extends "keiba_lab/layout.html" %}
+
+{% block title %}競走馬の調子と状態 | レース当日の馬の良し悪しを見極める【馬メモ】{% endblock %}
+
+{% block meta_description %}競走馬の調子と状態を見極めるポイントを初心者向けに解説。好調馬・不調馬の特徴、馬の心理状態の読み方、休み明け馬の見方、季節による変化など、レース予想に役立つ実践的な知識を紹介します。{% endblock %}
+
+{% block meta_keywords %}競走馬の調子,好調馬,不調馬,馬の状態,心理状態,休み明け,季節変化,パドック観察,競馬予想,馬のコンディション{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{{ url_for('keiba_lab.index') }}">競馬ラボ</a></li>
+      <li class="breadcrumb-item"><a href="{{ url_for('keiba_lab_content', content_path='horse') }}">競走馬の見方</a></li>
+      <li class="breadcrumb-item active" aria-current="page">馬の調子と状態</li>
+    </ol>
+  </nav>
+
+  <h1 class="mb-4">競走馬の調子と状態：レース当日の馬の良し悪しを見極める</h1>
+  
+  <p class="lead mb-4">
+    競走馬はコンディションによって走りが大きく変わります。
+    レース当日の馬の調子や状態を見極めることができれば、予想の精度を格段に高めることができます。
+    このページでは、初心者でも実践できる、馬の調子と状態を見極めるポイントを詳しく解説します。
+  </p>
+
+  <!-- 目次 -->
+  <div class="card mb-5">
+    <div class="card-header">
+      <h2 class="h5 mb-0">目次</h2>
+    </div>
+    <div class="card-body">
+      <ol class="mb-0">
+        <li><a href="#good-horse">好調馬の特徴と見分け方</a></li>
+        <li><a href="#bad-horse">不調馬の特徴と見分け方</a></li>
+        <li><a href="#mental">馬の心理状態を読む</a></li>
+        <li><a href="#after-rest">休み明け馬の見方</a></li>
+        <li><a href="#season">季節による馬の変化</a></li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- 今後ここに詳細なコンテンツを追加します -->
+  <section id="good-horse" class="mb-5">
+    <h2 class="border-bottom pb-2">好調馬の特徴と見分け方</h2>
+    <!-- 内容は後で追加します -->
+  </section>
+
+  <section id="bad-horse" class="mb-5">
+    <h2 class="border-bottom pb-2">不調馬の特徴と見分け方</h2>
+    <!-- 内容は後で追加します -->
+  </section>
+
+  <section id="mental" class="mb-5">
+    <h2 class="border-bottom pb-2">馬の心理状態を読む</h2>
+    <!-- 内容は後で追加します -->
+  </section>
+
+  <section id="after-rest" class="mb-5">
+    <h2 class="border-bottom pb-2">休み明け馬の見方</h2>
+    <!-- 内容は後で追加します -->
+  </section>
+
+  <section id="season" class="mb-5">
+    <h2 class="border-bottom pb-2">季節による馬の変化</h2>
+    <!-- 内容は後で追加します -->
+  </section>
+
+  <!-- 関連コンテンツ -->
+  <div class="alert alert-info mb-5">
+    <h3 class="h5">馬の調子を見極めるコツ</h3>
+    <p>馬の調子を判断する際は、単一の要素だけでなく、毛艶、筋肉の張り、歩様、気配などを総合的に観察することが大切です。また、その馬の普段の様子を知っておくと、より正確な判断ができるようになります。</p>
+  </div>
+
+  <div class="bg-light p-4 rounded mt-4">
+    <h3 class="h4">関連コンテンツ</h3>
+    <div class="row">
+      <div class="col-md-4">
+        <a href="{{ url_for('keiba_lab_content', content_path='horse/body') }}" class="text-decoration-none">
+          <div class="card mb-3 hover-lift border-0 shadow-sm h-100">
+            <div class="card-body">
+              <h5 class="card-title">馬体チェックポイント</h5>
+              <p class="card-text">パドックでの馬体の見方と良し悪しの判断方法を解説。</p>
+            </div>
+          </div>
+        </a>
+      </div>
+      <div class="col-md-4">
+        <a href="{{ url_for('keiba_lab_content', content_path='horse/walking') }}" class="text-decoration-none">
+          <div class="card mb-3 hover-lift border-0 shadow-sm h-100">
+            <div class="card-body">
+              <h5 class="card-title">歩様の見方</h5>
+              <p class="card-text">馬の歩き方から調子や能力を読み取る方法について解説。</p>
+            </div>
+          </div>
+        </a>
+      </div>
+      <div class="col-md-4">
+        <a href="{{ url_for('keiba_lab_content', content_path='horse/weight') }}" class="text-decoration-none">
+          <div class="card mb-3 hover-lift border-0 shadow-sm h-100">
+            <div class="card-body">
+              <h5 class="card-title">馬体重の見方</h5>
+              <p class="card-text">馬体重の増減から競走馬の状態を判断する方法を解説。</p>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %} 
