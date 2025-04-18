@@ -669,7 +669,7 @@ def get_cached_jockey_stats():
         return jockey_stats_cache['data']
     
     # 中央競馬の開催場所リスト
-    central_venues = ['東京', '中山', '阪神', '京都', '中京', '小倉', '福島', '新潟', '札幌']
+    central_venues = ['東京', '中山', '阪神', '京都', '中京', '小倉', '福島', '新潟', '札幌', '函館']
     
     # 1回のクエリで必要なデータを全て取得
     results = db.session.query(
@@ -823,7 +823,7 @@ def jockey_detail(jockey_id):
         thirds = sum(1 for e in entries if e.position == 3)
         
         # 央競馬の開催場所リスト
-        central_venues = ['東京', '中山', '阪神', '京都', '中京', '小倉', '福島', '新潟', '札幌']
+        central_venues = ['東京', '中山', '阪神', '京都', '中京', '小倉', '福島', '新潟', '札幌', '函館']
         
         # レース情報を取得して所属を判
         races = db.session.query(Race).join(Entry).filter(Entry.jockey_id == jockey_id).all()
@@ -5176,6 +5176,17 @@ def keiba_lab_content(content_path):
     Args:
         content_path: コンテンツのパス
     """
+    # URLリダイレクトマッピング - 新しいパス体系を既存ファイルにマッピング
+    url_redirects = {
+        # 馬体関連のリダイレクト
+        'horse/body-basics': 'horse/body',  # 馬体の基礎知識 → 既存の馬体チェックページ
+        'horse/body-check': 'horse/body',   # 馬体の見るポイント → 既存の馬体チェックページ
+    }
+    
+    # リダイレクトが存在する場合は対応するパスに変更
+    if content_path in url_redirects:
+        content_path = url_redirects[content_path]
+    
     # 1. まず直接.htmlファイルを探す
     direct_template_path = f'keiba_lab/{content_path}.html'
     
