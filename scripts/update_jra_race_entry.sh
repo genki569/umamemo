@@ -66,6 +66,29 @@ python --version
 log "ディスク容量:"
 df -h .
 
+# Xvfb（仮想フレームバッファ）が存在するか確認し、必要に応じて設定
+if command -v Xvfb >/dev/null 2>&1; then
+    log "Xvfbが利用可能です"
+    
+    # 既存のXvfbプロセスがあれば終了
+    pkill Xvfb 2>/dev/null
+    
+    # 仮想ディスプレイを開始
+    log "仮想ディスプレイを開始します"
+    Xvfb :99 -screen 0 1280x1024x24 &
+    export DISPLAY=:99
+    
+    # Xvfbが正常に起動したか確認
+    sleep 2
+    if ! ps aux | grep -v grep | grep "Xvfb :99" > /dev/null; then
+        log "警告: Xvfbの起動に失敗しました。ヘッドレスモードのみで動作します"
+    else
+        log "Xvfbが正常に起動しました (DISPLAY=$DISPLAY)"
+    fi
+else
+    log "Xvfbが見つかりません。ヘッドレスモードのみで動作します"
+fi
+
 # 仮想環境がある場合はアクティベート
 if [ -d "$APP_DIR/venv" ]; then
     source "$APP_DIR/venv/bin/activate"
@@ -84,26 +107,40 @@ if ! python -c "from playwright.sync_api import sync_playwright; print('Playwrig
     python -m playwright install
 fi
 
-# Playwrightのブラウザが存在するか確認し、なければインストール
-log "Playwrightブラウザのインストール状態を確認しています..."
-BROWSER_CHECK=$(python -m playwright install --help 2>&1)
-log "ブラウザチェック結果: $BROWSER_CHECK"
+# ブラウザのインストール状態を確認して再インストール
+log "Playwrightブラウザを再インストールしています..."
+python -m playwright install --force chromium
+log "Chromiumブラウザが再インストールされました"
 
-python -m playwright install chromium
-log "Chromiumブラウザがインストールされていることを確認しました"
+# 環境変数を設定
+export PLAYWRIGHT_BROWSERS_PATH="$HOME/.cache/ms-playwright"
+export PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=0
 
-# ブラウザのキャッシュをクリア（問題解決のため）
+# ブラウザのキャッシュディレクトリを確認
 if [ -d "$HOME/.cache/ms-playwright" ]; then
     log "Playwrightのキャッシュディレクトリが存在します"
     du -sh "$HOME/.cache/ms-playwright" 2>/dev/null || log "キャッシュサイズを取得できません"
+    # キャッシュディレクトリの権限を確認
+    log "キャッシュディレクトリの権限:"
+    ls -ld "$HOME/.cache/ms-playwright"
 fi
 
 log "スクレイピングを開始します..."
 # スクレイピングスクリプトを実行（デバッグモードで）
 PYTHONUNBUFFERED=1 python -m app.scraping.jra_entry_scraper
 
-if [ $? -ne 0 ]; then
-    handle_error "スクレイピングに失敗しました"
+SCRAPING_RESULT=$?
+if [ $SCRAPING_RESULT -ne 0 ]; then
+    log "スクレイピングがエラーコード $SCRAPING_RESULT で終了しました"
+    
+    # 再試行（システムモードでのブラウザインストール）
+    log "システムモードでブラウザを再インストールして再試行します..."
+    PLAYWRIGHT_BROWSERS_PATH=/usr/local/ms-playwright python -m playwright install --force chromium
+    PLAYWRIGHT_BROWSERS_PATH=/usr/local/ms-playwright PYTHONUNBUFFERED=1 python -m app.scraping.jra_entry_scraper
+    
+    if [ $? -ne 0 ]; then
+        handle_error "スクレイピングに失敗しました"
+    fi
 fi
 
 log "スクレイピングが完了しました"
@@ -159,6 +196,12 @@ do
         log "${DATE}のJRA CSVファイルが見つかりません: $CSV_FILE"
     fi
 done
+
+# Xvfbを終了（起動している場合）
+if [ -n "$DISPLAY" ] && [ "$DISPLAY" = ":99" ]; then
+    log "仮想ディスプレイを終了します"
+    pkill Xvfb
+fi
 
 # タイムアウトプロセスを終了
 kill $TIMEOUT_PID 2>/dev/null
