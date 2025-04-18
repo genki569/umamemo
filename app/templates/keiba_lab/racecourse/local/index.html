@@ -10,9 +10,9 @@
 <div class="container my-5">
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
-      <li class="breadcrumb-item"><a href="{{ url_for('keiba_lab.index') }}">競馬ラボ</a></li>
-      <li class="breadcrumb-item"><a href="{{ url_for('keiba_lab.racecourse') }}">競馬場ガイド</a></li>
-      <li class="breadcrumb-item active" aria-current="page">地方競馬場</li>
+      <li class="breadcrumb-item"><a href="{{ url_for('keiba_lab_index') }}">競馬ラボ</a></li>
+      <li class="breadcrumb-item"><a href="{{ url_for('keiba_lab_content', content_path='racecourse') }}">競馬場ガイド</a></li>
+      <li class="breadcrumb-item active" aria-current="page">地方競馬場一覧</li>
     </ol>
   </nav>
 
