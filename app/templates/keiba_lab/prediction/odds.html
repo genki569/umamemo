@@ -1,0 +1,724 @@
+{% extends "base.html" %}
+
+{% block title %}オッズ分析の基本と活用法 | 競馬予想の基本理論【馬メモ】{% endblock %}
+
+{% block description %}競馬のオッズ分析の基本と活用法を解説。オッズの見方や変動パターン、人気と実力の乖離を見極めるコツなど、初心者から上級者まで役立つオッズ活用術を紹介します。{% endblock %}
+
+{% block keywords %}オッズ分析,競馬,予想法,人気,穴馬,オッズ変動,期待値,本命馬,激走馬,レース傾向{% endblock %}
+
+{% block og_title %}オッズ分析の基本と活用法 | 競馬予想の基本理論【馬メモ】{% endblock %}
+{% block og_description %}競馬のオッズ分析の基本と活用法を解説。オッズの見方や変動パターン、人気と実力の乖離を見極めるコツなど、初心者から上級者まで役立つオッズ活用術を紹介します。{% endblock %}
+
+{% block twitter_title %}オッズ分析の基本と活用法 | 競馬予想の基本理論【馬メモ】{% endblock %}
+{% block twitter_description %}競馬のオッズ分析の基本と活用法を解説。オッズの見方や変動パターン、人気と実力の乖離を見極めるコツなど、初心者から上級者まで役立つオッズ活用術を紹介します。{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/keiba_lab/">競馬ラボ</a></li>
+      <li class="breadcrumb-item"><a href="/keiba_lab/prediction/">予想の基本理論</a></li>
+      <li class="breadcrumb-item active" aria-current="page">オッズ分析</li>
+    </ol>
+  </nav>
+
+  <h1 class="mb-4">オッズ分析の基本と活用法：競馬予想のキーポイント</h1>
+
+  <div class="alert alert-primary" role="alert">
+    <strong>このページのポイント:</strong> オッズの本質と分析方法を理解し、効果的な馬券戦略に活かす方法を解説します。オッズは単なる人気や配当だけでなく、情報の宝庫です。
+  </div>
+
+  <div class="table-of-contents mb-5">
+    <div class="card">
+      <div class="card-header">
+        目次
+      </div>
+      <div class="card-body">
+        <ol>
+          <li><a href="#what-is-odds">オッズとは：基本的な理解</a></li>
+          <li><a href="#reading-odds">オッズの読み方と計算方法</a></li>
+          <li><a href="#odds-change">オッズ変動の分析と意味</a></li>
+          <li><a href="#popularity-gap">人気と実力の乖離を見極める</a></li>
+          <li><a href="#odds-patterns">レース別オッズパターンの特徴</a></li>
+          <li><a href="#practical-strategy">実践的なオッズ分析戦略</a></li>
+          <li><a href="#summary">まとめ：効果的なオッズ活用法</a></li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <section id="what-is-odds" class="mb-5">
+    <h2 class="border-bottom pb-2">オッズとは：基本的な理解</h2>
+    <div class="row">
+      <div class="col-md-8">
+        <p>オッズとは、競馬において各馬の人気度合いを数値化したものであり、「配当率」とも言われます。具体的には、その馬が勝った場合に支払われる配当金の倍率を示しています。例えば、単勝オッズが2.5倍の馬が勝った場合、100円の馬券に対して250円が払い戻されます（元金含む）。</p>
+        <p>オッズは以下の要素によって決定されます：</p>
+        <ul>
+          <li>その馬に対する投票（馬券購入）金額の割合</li>
+          <li>全体の投票金額</li>
+          <li>控除率（約25%）</li>
+        </ul>
+        <p>重要なのは、オッズは「市場の評価」を表しているということです。つまり、多くの人がその馬が勝つと思えばオッズは下がり、逆に勝つ可能性が低いと思われる馬のオッズは高くなります。</p>
+      </div>
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-header bg-light">
+            <strong>オッズの基本知識</strong>
+          </div>
+          <div class="card-body">
+            <p><strong>オッズの種類：</strong></p>
+            <ul>
+              <li>単勝オッズ</li>
+              <li>複勝オッズ</li>
+              <li>連勝式オッズ（馬連、馬単など）</li>
+              <li>三連系オッズ（三連複、三連単）</li>
+            </ul>
+            <p><strong>オッズ表示形式：</strong></p>
+            <ul>
+              <li>小数点形式（日本式）：2.5倍</li>
+              <li>分数形式（英国式）：3/2</li>
+              <li>アメリカン形式：-200</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="reading-odds" class="mb-5">
+    <h2 class="border-bottom pb-2">オッズの読み方と計算方法</h2>
+    <div class="row">
+      <div class="col-md-7">
+        <p>オッズは単に配当率を示すだけでなく、馬の勝利確率の評価としても読み取ることができます。例えば、単勝オッズ2.0倍は理論上50%の勝率を示唆します（控除率を考慮しない場合）。</p>
+        
+        <h3 class="h5 mt-4">単勝オッズと勝率の関係</h3>
+        <p>理論上の勝率（%）= 100 ÷ オッズ</p>
+        <ul>
+          <li>オッズ1.5倍：約67%の勝率</li>
+          <li>オッズ2.0倍：約50%の勝率</li>
+          <li>オッズ5.0倍：約20%の勝率</li>
+          <li>オッズ10.0倍：約10%の勝率</li>
+        </ul>
+        
+        <h3 class="h5 mt-4">オッズから期待値を読み取る</h3>
+        <p>期待値 = (払戻金額 × 勝率) - 投資額</p>
+        <p>期待値がプラスであれば理論上は長期的に利益が出る可能性があります。ただし、実際の勝率は正確にはわかりませんので、自分の分析による予測確率との比較が重要です。</p>
+
+        <h3 class="h5 mt-4">オッズと人気の関係</h3>
+        <p>人気順は単勝オッズの低い順に1番人気、2番人気...と付けられます。一般的な目安として：</p>
+        <ul>
+          <li>1〜3番人気：本命候補（オッズ約1.5倍〜5倍）</li>
+          <li>4〜6番人気：対抗候補（オッズ約6倍〜15倍）</li>
+          <li>7番人気以下：穴候補（オッズ約16倍以上）</li>
+        </ul>
+      </div>
+      <div class="col-md-5">
+        <div class="card mb-4">
+          <div class="card-header bg-light">
+            <strong>単勝オッズの基本的な見方</strong>
+          </div>
+          <div class="card-body">
+            <table class="table table-sm">
+              <thead>
+                <tr>
+                  <th>オッズ</th>
+                  <th>人気度</th>
+                  <th>理論上の勝率</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1.0〜1.9倍</td>
+                  <td>大本命</td>
+                  <td>50%以上</td>
+                </tr>
+                <tr>
+                  <td>2.0〜3.9倍</td>
+                  <td>本命</td>
+                  <td>25〜50%</td>
+                </tr>
+                <tr>
+                  <td>4.0〜9.9倍</td>
+                  <td>対抗</td>
+                  <td>10〜25%</td>
+                </tr>
+                <tr>
+                  <td>10.0〜29.9倍</td>
+                  <td>穴候補</td>
+                  <td>3〜10%</td>
+                </tr>
+                <tr>
+                  <td>30.0倍以上</td>
+                  <td>大穴</td>
+                  <td>3%以下</td>
+                </tr>
+              </tbody>
+            </table>
+            <p class="small mt-2">※控除率を考慮していないため、実際の勝率はこれより低くなります</p>
+          </div>
+        </div>
+
+        <div class="alert alert-info">
+          <strong>プロの視点：</strong>
+          <p>プロの馬券師は自分の予想する勝率とオッズの比較から「オッズの妥当性」を判断します。例えば、自分の分析で30%の勝率があると判断した馬のオッズが5.0倍（理論上20%の勝率）なら、「割安」と判断できます。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="odds-change" class="mb-5">
+    <h2 class="border-bottom pb-2">オッズ変動の分析と意味</h2>
+    <div class="row">
+      <div class="col-md-8">
+        <p>オッズは馬券の購入状況によって常に変動し、レース直前まで変化し続けます。この「オッズ変動」には重要な情報が含まれており、予想に大きなヒントを与えてくれます。</p>
+        
+        <h3 class="h5 mt-4">オッズ変動のタイミング</h3>
+        <ul>
+          <li><strong>前日発売時：</strong>初期オッズが形成され、一般的な人気が反映されます</li>
+          <li><strong>当日朝〜昼：</strong>新聞予想や専門紙の影響を受けて変動します</li>
+          <li><strong>パドック・本馬場入場時：</strong>馬の状態を見た直後に大きく動くことがあります</li>
+          <li><strong>レース直前：</strong>プロや大口の馬券購入により急変することがあります</li>
+        </ul>
+        
+        <h3 class="h5 mt-4">意味のあるオッズ変動パターン</h3>
+        <ul>
+          <li><strong>オッズの下降（人気上昇）：</strong>
+            <ul>
+              <li>馬の調子が良いという情報が流れている可能性</li>
+              <li>プロや情報通が買っている可能性</li>
+              <li>配当を気にしない強気の買い方がされている可能性</li>
+            </ul>
+          </li>
+          <li><strong>オッズの上昇（人気下降）：</strong>
+            <ul>
+              <li>調子が悪いという情報が出ている可能性</li>
+              <li>見た目の状態が悪い</li>
+              <li>馬場状態や枠順などの条件が不利と判断された</li>
+            </ul>
+          </li>
+          <li><strong>急激な変動：</strong>
+            <ul>
+              <li>何らかの重要情報が市場に伝わった可能性が高い</li>
+              <li>特に直前の急変動は要注目</li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+      <div class="col-md-4">
+        <div class="card mb-4">
+          <div class="card-header bg-light">
+            <strong>オッズ変動をチェックする方法</strong>
+          </div>
+          <div class="card-body">
+            <ul>
+              <li>JRAの公式サイトでリアルタイムチェック</li>
+              <li>スマホアプリでプッシュ通知を設定</li>
+              <li>前日と当日のオッズ比較サイトの利用</li>
+              <li>オッズ変動グラフを確認できるサービスの活用</li>
+            </ul>
+          </div>
+        </div>
+        
+        <div class="card">
+          <div class="card-header bg-warning text-dark">
+            <strong>注目すべき変動パターン</strong>
+          </div>
+          <div class="card-body">
+            <ul>
+              <li><strong>「上位人気の逆行」</strong><br>1、2番人気が上昇し、3番人気以下が下降する場合は、上位人気の信頼度が高い</li>
+              <li><strong>「中穴の急降下」</strong><br>中穴クラス（10〜30倍）の馬のオッズが急に下がる場合は、プロの狙いの可能性</li>
+              <li><strong>「全体的な平坦化」</strong><br>全体のオッズが平坦化する場合は、荒れるレースの兆候かも</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="popularity-gap" class="mb-5">
+    <h2 class="border-bottom pb-2">人気と実力の乖離を見極める</h2>
+    <div class="row">
+      <div class="col-md-8">
+        <p>オッズ分析の醍醐味は、「人気（オッズ）」と「実力（実際の勝つ確率）」の間にある乖離（ギャップ）を見つけることです。市場は必ずしも正確ではなく、時に過大評価または過小評価することがあります。そこに馬券的価値（バリュー）が生まれます。</p>
+        
+        <h3 class="h5 mt-4">過大評価されやすい馬の特徴</h3>
+        <p>以下のような馬は人気に比べて実力が伴っていない可能性があります：</p>
+        <ul>
+          <li><strong>有名調教師・騎手の馬：</strong>実力以上に人気が集まりやすい</li>
+          <li><strong>話題の新馬・未勝利勝ち上がり馬：</strong>実績が少ないのに期待だけで人気になる</li>
+          <li><strong>重賞勝ち馬の次走：</strong>条件が変わると不利になることも</li>
+          <li><strong>大きな牝馬レースの勝ち馬：</strong>牡馬相手だと能力差が出ることも</li>
+          <li><strong>人気血統の馬：</strong>血統だけで評価されすぎる場合がある</li>
+        </ul>
+        
+        <h3 class="h5 mt-4">過小評価されやすい馬の特徴</h3>
+        <p>以下のような馬は人気より実力がある可能性があります：</p>
+        <ul>
+          <li><strong>地方競馬出身馬：</strong>中央のレースで実力を発揮できる馬も多い</li>
+          <li><strong>前走大敗した実力馬：</strong>一度の敗戦で人気が下がりすぎる場合がある</li>
+          <li><strong>休み明けの実績馬：</strong>休養明けを嫌気して人気が落ちる</li>
+          <li><strong>マイナー血統の好成績馬：</strong>血統より実績を見るべき馬</li>
+          <li><strong>コース替わりの適性馬：</strong>前走と条件が変わって能力を発揮できる馬</li>
+        </ul>
+        
+        <div class="alert alert-success mt-4">
+          <h4 class="h5">バリュー馬券の基本的な考え方</h4>
+          <p>バリュー馬券とは、オッズから期待される理論上の確率よりも、実際の勝つ確率が高いと判断できる馬に投票することです。例えば：</p>
+          <ul>
+            <li>オッズ10倍（理論上の勝率10%）の馬が、あなたの分析では20%の勝率があると判断できればバリュー</li>
+            <li>オッズ2倍（理論上の勝率50%）の馬が、実際には30%程度の勝率しかないと判断すれば割高</li>
+          </ul>
+          <p>長期的に見れば、バリュー馬券を購入し続けることが収支プラスの鍵となります。</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card mb-4">
+          <div class="card-header bg-light">
+            <strong>バリュー判断のポイント</strong>
+          </div>
+          <div class="card-body">
+            <p>人気と実力の乖離を判断するには：</p>
+            <ol>
+              <li>過去の類似レースのデータ分析</li>
+              <li>条件変更による影響の正確な評価</li>
+              <li>調教師・騎手の評価を排除した馬自身の能力判断</li>
+              <li>馬場状態・枠順などの環境要因の正確な評価</li>
+              <li>時計・上がりタイムなど客観的数字の分析</li>
+            </ol>
+          </div>
+        </div>
+        
+        <div class="card">
+          <div class="card-header bg-info text-white">
+            <strong>プロが狙うバリュー馬の例</strong>
+          </div>
+          <div class="card-body">
+            <ul>
+              <li>前走不利があった馬</li>
+              <li>展開不向きで負けた能力馬</li>
+              <li>季節適性の高い馬（夏型・秋型）</li>
+              <li>重馬場適性馬（馬場悪化時）</li>
+              <li>好枠を引いた中穴人気の馬</li>
+              <li>距離延長で末脚が活きる馬</li>
+              <li>騎手変更での好相性ジョッキー</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="odds-patterns" class="mb-5">
+    <h2 class="border-bottom pb-2">レース別オッズパターンの特徴</h2>
+    <p>レースタイプによって、オッズの形成パターンには特徴があります。これを理解することで、レースの特性に合わせたオッズ分析が可能になります。</p>
+    
+    <div class="card-deck mb-4">
+      <div class="card">
+        <div class="card-header bg-primary text-white">
+          <strong>重賞レースのオッズパターン</strong>
+        </div>
+        <div class="card-body">
+          <ul>
+            <li><strong>G1レース：</strong>
+              <ul>
+                <li>人気馬に資金が集中する傾向</li>
+                <li>メディア注目馬に過剰な人気が集まる</li>
+                <li>一般ファン参加で「夢買い」が増加</li>
+                <li>実績馬が相応の評価を受ける</li>
+              </ul>
+            </li>
+            <li><strong>G2・G3レース：</strong>
+              <ul>
+                <li>次のステップを占う意味で注目される</li>
+                <li>ステップレースとして過小評価される馬も</li>
+                <li>プロ好みの「妙味馬」が潜んでいる</li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="card">
+        <div class="card-header bg-success text-white">
+          <strong>条件戦のオッズパターン</strong>
+        </div>
+        <div class="card-body">
+          <ul>
+            <li><strong>クラス混合レース：</strong>
+              <ul>
+                <li>格上馬が人気になりやすい</li>
+                <li>格下でも状態良好馬は妙味あり</li>
+                <li>斤量差が適切に評価されないことも</li>
+              </ul>
+            </li>
+            <li><strong>ハンデ戦：</strong>
+              <ul>
+                <li>上位斤量馬が過大評価されがち</li>
+                <li>軽斤量の実力馬に妙味が生まれる</li>
+                <li>ハンデの適否で大きく変わる</li>
+              </ul>
+            </li>
+            <li><strong>新馬・未勝利戦：</strong>
+              <ul>
+                <li>血統や厩舎で人気が左右される</li>
+                <li>実際の能力が反映されにくい</li>
+                <li>大穴配当が出やすい</li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    
+    <div class="card-deck">
+      <div class="card">
+        <div class="card-header bg-warning text-dark">
+          <strong>特殊条件レースのオッズパターン</strong>
+        </div>
+        <div class="card-body">
+          <ul>
+            <li><strong>長距離レース：</strong>
+              <ul>
+                <li>スタミナ評価が難しく、人気が割れる</li>
+                <li>実績馬に人気が集中しやすい</li>
+                <li>血統評価が重視されがち</li>
+              </ul>
+            </li>
+            <li><strong>短距離レース：</strong>
+              <ul>
+                <li>逃げ馬・先行馬が評価されやすい</li>
+                <li>好スタート馬に人気が集まる</li>
+                <li>枠順の影響が大きく反映される</li>
+              </ul>
+            </li>
+            <li><strong>牝馬限定レース：</strong>
+              <ul>
+                <li>人気が上位に集中する傾向</li>
+                <li>前走の「負け方」が重視されにくい</li>
+                <li>調子のサイクルが適切に評価されない</li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="card">
+        <div class="card-header bg-danger text-white">
+          <strong>特殊な馬場状態でのオッズ</strong>
+        </div>
+        <div class="card-body">
+          <ul>
+            <li><strong>重・不良馬場：</strong>
+              <ul>
+                <li>血統による評価が強くなる</li>
+                <li>過去の実績が過度に重視される</li>
+                <li>馬体重増の馬が軽視されがち</li>
+                <li>差し・追込馬が過小評価される傾向</li>
+              </ul>
+            </li>
+            <li><strong>極端な高速馬場：</strong>
+              <ul>
+                <li>瞬発力のある馬が評価される</li>
+                <li>スピード血統が重視される</li>
+                <li>内枠有利の考えが強くなる</li>
+              </ul>
+            </li>
+            <li><strong>季節の変わり目：</strong>
+              <ul>
+                <li>季節適性が適切に評価されない</li>
+                <li>夏型・秋型馬の評価に妙味が生まれる</li>
+                <li>調教内容の評価が難しく、人気が割れる</li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="practical-strategy" class="mb-5">
+    <h2 class="border-bottom pb-2">実践的なオッズ分析戦略</h2>
+    <div class="row">
+      <div class="col-md-8">
+        <p>オッズの分析を実際の馬券戦略に活かすための実践的なアプローチを解説します。効果的な戦略を身につけることで、的中率と回収率の向上につなげましょう。</p>
+        
+        <h3 class="h5 mt-4">1. オッズ帯別の馬券戦略</h3>
+        <div class="table-responsive">
+          <table class="table table-bordered">
+            <thead class="table-light">
+              <tr>
+                <th>オッズ帯</th>
+                <th>特徴</th>
+                <th>推奨される馬券</th>
+                <th>注意点</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1.0〜2.0倍</td>
+                <td>大本命馬。的中率は高いが配当は低い</td>
+                <td>馬単の1着軸、三連単の1着軸</td>
+                <td>単勝だけでは回収率が上がりにくい</td>
+              </tr>
+              <tr>
+                <td>2.1〜5.0倍</td>
+                <td>堅実な本命候補。バランスの取れた配当</td>
+                <td>単勝、馬連、馬単、三連複の軸</td>
+                <td>人気に見合う実力があるか精査が必要</td>
+              </tr>
+              <tr>
+                <td>5.1〜10.0倍</td>
+                <td>対抗馬。好配当が期待できる</td>
+                <td>複勝、ワイド、馬連の相手</td>
+                <td>馬の調子・条件適性を重視する</td>
+              </tr>
+              <tr>
+                <td>10.1〜30.0倍</td>
+                <td>穴馬。高配当が期待できる</td>
+                <td>複勝、三連複のヒモ、三連単のヒモ</td>
+                <td>レース条件との相性を重視</td>
+              </tr>
+              <tr>
+                <td>30.1倍以上</td>
+                <td>大穴馬。超高配当が期待できる</td>
+                <td>少額で複勝、三連複・三連単のヒモ</td>
+                <td>勝因となる明確な要素が必要</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        
+        <h3 class="h5 mt-4">2. オッズ変動を活用した戦略</h3>
+        <ul>
+          <li><strong>順張り戦略：</strong>オッズが下降（人気上昇）している馬を買う
+            <ul>
+              <li>「マネーは正しい」という考えに基づく戦略</li>
+              <li>特に直前の急激なオッズ下降は重要な情報源</li>
+              <li>適応例：情報通が多いG1レース、重賞レースなど</li>
+            </ul>
+          </li>
+          <li><strong>逆張り戦略：</strong>不当に人気が低い（オッズが高い）馬を買う
+            <ul>
+              <li>市場の「集合知の誤り」を利用する戦略</li>
+              <li>自分の分析で価値があると判断した馬を狙う</li>
+              <li>適応例：新馬戦、条件変更が大きいレースなど</li>
+            </ul>
+          </li>
+        </ul>
+        
+        <h3 class="h5 mt-4">3. オッズ分布から読み解くレース傾向</h3>
+        <ul>
+          <li><strong>一強パターン：</strong>1頭だけオッズが極端に低い
+            <ul>
+              <li>特徴：一強馬の単勝回収率は低いが、的中率は高い</li>
+              <li>対策：一強を軸にした馬単・三連単が有効</li>
+            </ul>
+          </li>
+          <li><strong>二強パターン：</strong>2頭だけオッズが低い
+            <ul>
+              <li>特徴：この2頭で決まる確率が高い</li>
+              <li>対策：2頭の馬連・馬単、または2頭を軸にした三連単</li>
+            </ul>
+          </li>
+          <li><strong>団子パターン：</strong>オッズが横並びに近い状態
+            <ul>
+              <li>特徴：混戦模様で荒れる可能性が高い</li>
+              <li>対策：穴馬も含めた三連複ボックス、複勝の組み合わせ</li>
+            </ul>
+          </li>
+          <li><strong>中穴台頭パターン：</strong>中穴馬（10〜20倍）のオッズが下がり続ける
+            <ul>
+              <li>特徴：情報通の評価が高い可能性</li>
+              <li>対策：その馬を軸または相手にした馬連・三連複</li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+      <div class="col-md-4">
+        <div class="card mb-4">
+          <div class="card-header bg-light">
+            <strong>オッズ分析のタイミング</strong>
+          </div>
+          <div class="card-body">
+            <ol>
+              <li><strong>前日夜：</strong> 初期予想を立て、狙い目を決定</li>
+              <li><strong>当日朝：</strong> 前日との変動をチェック</li>
+              <li><strong>パドック前：</strong> 最新オッズでの見直し</li>
+              <li><strong>発走直前：</strong> 最終オッズ確認と馬券調整</li>
+            </ol>
+            <p>特に<mark>発走5分前〜2分前</mark>のオッズ変動は重要な情報を含んでいることが多いです。</p>
+          </div>
+        </div>
+        
+        <div class="card mb-4">
+          <div class="card-header bg-danger text-white">
+            <strong>オッズ分析の注意点</strong>
+          </div>
+          <div class="card-body">
+            <ul>
+              <li>オッズだけに頼った予想は危険</li>
+              <li>少額購入の馬が多いレースはオッズが安定しない</li>
+              <li>タレント騎手・人気厩舎はオッズが過小になりがち</li>
+              <li>平場は地方開催より中央開催の方がオッズは安定する</li>
+              <li>雨などの急激な条件変化時はオッズの信頼性が低下</li>
+            </ul>
+          </div>
+        </div>
+        
+        <div class="alert alert-success">
+          <strong>プロが活用するオッズ分析ツール</strong>
+          <ul class="mb-0">
+            <li>オッズ変動グラフ</li>
+            <li>理論オッズ計算ツール</li>
+            <li>期待値計算ツール</li>
+            <li>投票率分析ツール</li>
+            <li>市場信頼度指数</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="summary" class="mb-5">
+    <h2 class="border-bottom pb-2">まとめ：効果的なオッズ活用法</h2>
+    <div class="row">
+      <div class="col-md-8">
+        <p>オッズ分析は競馬予想において非常に重要な要素です。単なる人気や配当率を示すだけでなく、市場参加者の総合的な判断や、時には特別な情報も反映されています。ここでは、効果的なオッズ活用のポイントをまとめます。</p>
+        
+        <div class="card mb-4">
+          <div class="card-header bg-primary text-white">
+            <h3 class="h5 mb-0">オッズ分析の5つの基本原則</h3>
+          </div>
+          <div class="card-body">
+            <ol>
+              <li><strong>自分の予想とオッズの比較を行う</strong>
+                <p>自分の予想による勝率とオッズから導き出される理論的勝率を比較し、乖離がある馬を見つけることが重要です。乖離が大きいほど「バリュー」または「割高」と判断できます。</p>
+              </li>
+              <li><strong>オッズ変動の理由を考える</strong>
+                <p>単にオッズが下がった・上がったという事実だけでなく、「なぜ変動したのか」を考察することで、市場の評価の本質を理解できます。</p>
+              </li>
+              <li><strong>レースタイプ別の特性を理解する</strong>
+                <p>G1と条件戦、ダートと芝、短距離と長距離など、レースタイプによってオッズの形成過程や信頼性は異なります。それぞれの特性を理解して判断することが大切です。</p>
+              </li>
+              <li><strong>複数の馬券種のオッズを総合的に見る</strong>
+                <p>単勝オッズだけでなく、複勝、馬連、三連複など複数の馬券種のオッズを見ることで、より全体的な市場の評価を把握できます。</p>
+              </li>
+              <li><strong>最終オッズを重視する</strong>
+                <p>特に発走直前のオッズは、最新の情報や専門家の判断が最も反映されています。可能な限り最終オッズを確認してから馬券を購入するのが理想的です。</p>
+              </li>
+            </ol>
+          </div>
+        </div>
+        
+        <div class="alert alert-info">
+          <h4 class="h5">バリュー投資の考え方</h4>
+          <p>競馬の長期的な収支を考える上で最も重要なのは「バリュー」の概念です。オッズよりも実際の勝率が高いと判断できる馬に投資し続けることで、長期的には利益が出る可能性が高まります。</p>
+          <p>しかし、バリュー判断は難しく、客観的な分析力と経験が必要です。過去のレース分析、統計データの活用、馬の調子の見極めなど、様々な要素を総合的に判断する能力を磨くことが重要です。</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card mb-4">
+          <div class="card-header bg-success text-white">
+            <strong>レベル別オッズ活用法</strong>
+          </div>
+          <div class="card-body">
+            <h5 class="h6">初心者向け</h5>
+            <ul>
+              <li>単勝1〜3番人気の信頼度を確認する</li>
+              <li>オッズと新聞予想の一致度をチェック</li>
+              <li>極端なオッズ変動に注目する</li>
+              <li>近走の実績と単勝オッズのバランスを見る</li>
+            </ul>
+            
+            <h5 class="h6 mt-3">中級者向け</h5>
+            <ul>
+              <li>自分の予想とオッズの乖離を分析</li>
+              <li>複数の馬券種オッズを比較分析</li>
+              <li>時間帯別のオッズ変動パターンをチェック</li>
+              <li>レース条件と人気馬の適性を照合</li>
+            </ul>
+            
+            <h5 class="h6 mt-3">上級者向け</h5>
+            <ul>
+              <li>独自の期待値計算による投資判断</li>
+              <li>馬柱データと市場評価の乖離分析</li>
+              <li>過去の類似レースパターン分析</li>
+              <li>オッズの心理的影響を排除した客観分析</li>
+            </ul>
+          </div>
+        </div>
+        
+        <div class="card">
+          <div class="card-header bg-warning text-dark">
+            <strong>実践トレーニング法</strong>
+          </div>
+          <div class="card-body">
+            <p>オッズ分析力を高めるためのトレーニング：</p>
+            <ol>
+              <li>仮想馬券を買い、結果と検証を繰り返す</li>
+              <li>レース前にオッズ予想をしてみる</li>
+              <li>レース後のオッズ分析ノートをつける</li>
+              <li>特定のレースタイプだけを集中的に分析</li>
+              <li>少額から実践し、検証と改善を繰り返す</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="alert alert-secondary mt-4">
+      <h4 class="h5">最後に</h4>
+      <p>オッズ分析は競馬予想の一要素に過ぎません。脚質、調教、血統、馬場適性など、他の要素と組み合わせて総合的に判断することが重要です。確率の勝負である競馬において、一度の的中・不的中で判断せず、長期的な視点で分析力を磨いていきましょう。</p>
+      <p>また、競馬は娯楽であることを忘れず、予算内で楽しむことが何よりも大切です。オッズ分析を楽しみながら、競馬の奥深さを味わってください。</p>
+    </div>
+    
+    <div class="card border-primary mt-5">
+      <div class="card-header bg-primary text-white">
+        <h3 class="h5 mb-0">関連コンテンツ</h3>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-6">
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item border-0 px-0">
+                <a href="{{ url_for('keiba_lab_content', content_path='prediction/approach') }}" class="text-decoration-none">
+                  <i class="fas fa-chevron-right text-primary me-2"></i>予想の基本アプローチ
+                </a>
+              </li>
+              <li class="list-group-item border-0 px-0">
+                <a href="{{ url_for('keiba_lab_content', content_path='prediction/running-style') }}" class="text-decoration-none">
+                  <i class="fas fa-chevron-right text-primary me-2"></i>脚質分析で的中率アップ
+                </a>
+              </li>
+              <li class="list-group-item border-0 px-0">
+                <a href="{{ url_for('keiba_lab_content', content_path='betting/types') }}" class="text-decoration-none">
+                  <i class="fas fa-chevron-right text-primary me-2"></i>馬券の種類と特徴
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div class="col-md-6">
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item border-0 px-0">
+                <a href="{{ url_for('keiba_lab_content', content_path='investment/money-management') }}" class="text-decoration-none">
+                  <i class="fas fa-chevron-right text-primary me-2"></i>資金管理の基本
+                </a>
+              </li>
+              <li class="list-group-item border-0 px-0">
+                <a href="{{ url_for('keiba_lab_content', content_path='investment/roi') }}" class="text-decoration-none">
+                  <i class="fas fa-chevron-right text-primary me-2"></i>回収率の考え方
+                </a>
+              </li>
+              <li class="list-group-item border-0 px-0">
+                <a href="{{ url_for('keiba_lab_content', content_path='basics/rules') }}" class="text-decoration-none">
+                  <i class="fas fa-chevron-right text-primary me-2"></i>競馬のルールと仕組み
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+{% endblock %} 
