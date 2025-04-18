@@ -5181,6 +5181,32 @@ def keiba_lab_content(content_path):
         # 馬体関連のリダイレクト
         'horse/body-basics': 'horse/body',  # 馬体の基礎知識 → 既存の馬体チェックページ
         'horse/body-check': 'horse/body',   # 馬体の見るポイント → 既存の馬体チェックページ
+        
+        # 競馬場・コース関連
+        'racecourse/jra': 'racecourse/jra/index',       # JRA主要競馬場
+        'racecourse/course': 'racecourse/course/index', # コースの構造と特性
+        
+        # 馬券・投資関連
+        'betting/strategy': 'betting/index',            # 馬券の組み立て方
+        
+        # 血統関連
+        'bloodline/major': 'bloodline/index',           # 主要血統ライン
+        'bloodline/combination': 'bloodline/roles/index', # 配合理論の基礎
+        'bloodline/aptitude': 'bloodline/aptitude/index', # 血統と適性
+        
+        # 競走馬関連
+        'horse/condition': 'horse/condition',           # 馬の調子と状態
+        
+        # コース攻略関連
+        'course/shape': 'course/shape',                 # コース形状と戦略
+        'course/track-condition': 'course/track-condition', # 馬場状態の理解
+        'course/season': 'course/index',                # 季節とコース特性
+        
+        # 馬券投資関連
+        'investment/money': 'investment/index',         # 資金管理の基本
+        'investment/return': 'investment/index',        # 回収率の考え方
+        'investment/strategy': 'investment/index',      # 投資戦略の基礎
+        'investment/mental': 'investment/mental',       # メンタル管理
     }
     
     # リダイレクトが存在する場合は対応するパスに変更
@@ -5201,4 +5227,5 @@ def keiba_lab_content(content_path):
             return render_template(directory_template_path)
         except Exception as e:
             # どちらのテンプレートも見つからない場合は404を返す
+            app.logger.error(f"Template not found for path '{content_path}': {str(e)}")
             return render_template('errors/404.html'), 404
