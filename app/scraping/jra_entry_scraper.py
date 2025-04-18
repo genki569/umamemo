@@ -307,146 +307,46 @@ def get_race_urls_for_date(page, context, date_str: str) -> List[str]:
         url = f"https://race.netkeiba.com/top/race_list.html?kaisai_date={date_str}"
         print(f"\n{date_str}のレース情報を取得中...")
         
-        # タイムアウトを設定 - 長めに設定
-        page.set_default_timeout(120000)  # 120秒
+        # タイムアウトを設定
+        page.set_default_timeout(60000)  # 60秒
         
-        # User-AgentとRefererを設定（より本物らしく）
+        # User-AgentとRefererを設定
         page.set_extra_http_headers({
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
-            'Referer': 'https://www.google.com/',
-            'Accept-Language': 'ja,en-US;q=0.9,en;q=0.8',
-            'Cache-Control': 'no-cache',
-            'Pragma': 'no-cache'
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.127 Safari/537.36',
+            'Referer': 'https://race.netkeiba.com/'
         })
         
-        # 直接目的のページに遷移
+        # まずトップページにアクセス
+        print("トップページにアクセスしています...")
+        page.goto("https://race.netkeiba.com/", wait_until='domcontentloaded')
+        page.wait_for_timeout(3000)
+        
+        # 次に目的のページに遷移
         print(f"レース一覧ページにアクセスしています: {url}")
         try:
-            # ナビゲーションタイムアウトを長く設定
-            page.goto(url, wait_until='networkidle', timeout=90000)
-            print("ページ読み込み完了")
-        except Exception as e:
-            print(f"ページ読み込み中にエラーが発生しましたが処理を継続します: {str(e)}")
+            page.goto(url, wait_until='domcontentloaded', timeout=60000)
+        except TimeoutError:
+            print("ページの完全な読み込みはタイムアウトしましたが、処理を継続します")
         
-        # 長めに待機してページが完全に読み込まれるのを待つ
-        page.wait_for_timeout(10000)
-        
-        # スクロールしてすべてのコンテンツを表示させる
-        page.evaluate('''() => {
-            window.scrollTo(0, 0);
-            let totalHeight = 0;
-            let distance = 100;
-            let timer = setInterval(() => {
-                let scrollHeight = document.body.scrollHeight;
-                window.scrollBy(0, distance);
-                totalHeight += distance;
-                if(totalHeight >= scrollHeight){
-                    clearInterval(timer);
-                }
-            }, 100);
-        }''')
-        
-        # スクロール完了を待つ
         page.wait_for_timeout(5000)
         
-        # ページのHTMLを取得して解析
-        html_content = page.content()
-        print(f"HTML取得完了: {len(html_content)}バイト")
+        # 出馬表へのリンクを取得
+        race_links = page.query_selector_all('a[href*="/race/shutuba.html"]')
+        print(f"取得したリンク数: {len(race_links)}")
         
-        # 出馬表へのリンクを複数のセレクターで試行
-        race_links = []
-        
-        # 方法1: 従来の方法
-        links1 = page.query_selector_all('a[href*="/race/shutuba.html"]')
-        if links1:
-            race_links.extend(links1)
-            print(f"セレクター1で{len(links1)}件のリンクを取得")
-        
-        # 方法2: 別のセレクター(RaceList要素)
-        links2 = page.query_selector_all('span.RaceList_ItemTitle a')
-        if links2:
-            race_links.extend(links2)
-            print(f"セレクター2で{len(links2)}件のリンクを取得")
-        
-        # 方法3: より広範なセレクター
-        links3 = page.query_selector_all('a[href*="race_id="]')
-        if links3:
-            race_links.extend(links3)
-            print(f"セレクター3で{len(links3)}件のリンクを取得")
-            
-        print(f"合計で{len(race_links)}件のリンクを取得")
-        
-        # 取得したリンクからURLを抽出
         for link in race_links:
-            try:
-                href = link.get_attribute('href')
-                if href and 'race_id=' in href:
-                    # 出馬表URLに変換
-                    race_id_match = re.search(r'race_id=([0-9]+)', href)
-                    if race_id_match:
-                        race_id = race_id_match.group(1)
-                        shutuba_url = f"https://race.netkeiba.com/race/shutuba.html?race_id={race_id}"
-                        all_race_urls.add(shutuba_url)
-                        print(f"リンクから抽出: {shutuba_url}")
-            except Exception as e:
-                print(f"リンク処理中のエラー: {str(e)}")
+            href = link.get_attribute('href')
+            if href:
+                # 相対パスを絶対URLに変換
+                if href.startswith('/'):
+                    race_url = f"https://race.netkeiba.com{href}"
+                else:
+                    race_url = href
+                
+                all_race_urls.add(race_url)
+                print(f"レースURL追加: {race_url}")
         
-        # HTMLから直接抽出する方法
-        soup = BeautifulSoup(html_content, 'html.parser')
-        race_id_pattern = re.compile(r'race_id=(\d+)')
-        
-        # HTMLから直接race_idを検索
-        for match in race_id_pattern.finditer(html_content):
-            race_id = match.group(1)
-            if len(race_id) == 12:  # 正しいレースIDは12桁
-                shutuba_url = f"https://race.netkeiba.com/race/shutuba.html?race_id={race_id}"
-                all_race_urls.add(shutuba_url)
-                print(f"HTMLから直接抽出: {shutuba_url}")
-        
-        # 最終手段: 日付から推測されるレースIDのパターンを生成
-        if len(all_race_urls) == 0:
-            print("リンクからの取得に失敗したため、レースIDを生成します")
-            # 日付からyear部分を抽出 (例: 20250419 → 2025)
-            year = date_str[:4]
-            month = date_str[4:6]
-            day = date_str[6:8]
-            
-            # レースIDの先頭部分は「年(4桁) + 場コード(2桁) + 回次(2桁) + 日目(2桁) + レース番号(2桁)」
-            # 例: 2025 + 06 + 03 + 07 + 01
-            
-            # 場コードと回次・日目の組み合わせを試す
-            venue_codes = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10']
-            kaisai_codes = [('01', '01'), ('01', '02'), ('02', '01'), ('02', '02'), 
-                           ('03', '01'), ('03', '02'), ('03', '03'), ('03', '04'),
-                           ('03', '05'), ('03', '06'), ('03', '07'), ('03', '08')] 
-            race_numbers = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12']
-            
-            # 特定の日付の場合、典型的なパターンを優先
-            if date_str == "20250419":
-                print("2025年4月19日のレースを生成します")
-                # 既知のパターン（例：2025年4月19日の東京・中山・阪神・福島など）
-                specific_patterns = [
-                    "202506030701", "202506030702", "202506030703", "202506030704",
-                    "202506030705", "202506030706", "202506030707", "202506030708",
-                    "202506030709", "202506030710", "202506030711", "202506030712",
-                    "202505030701", "202505030702", "202505030703", "202505030704",
-                    "202501010101", "202501010102", "202501010103", "202501010104"
-                ]
-                for pattern in specific_patterns:
-                    shutuba_url = f"https://race.netkeiba.com/race/shutuba.html?race_id={pattern}"
-                    all_race_urls.add(shutuba_url)
-                    print(f"特定パターンから生成: {shutuba_url}")
-            else:
-                # 一般的なパターン生成
-                for venue_code in venue_codes:
-                    for kaisai_code, day_code in kaisai_codes:
-                        for race_number in race_numbers:
-                            race_id = f"{year}{venue_code}{kaisai_code}{day_code}{race_number}"
-                            shutuba_url = f"https://race.netkeiba.com/race/shutuba.html?race_id={race_id}"
-                            all_race_urls.add(shutuba_url)
-                            print(f"パターンから生成: {shutuba_url}")
-        
-        print(f"最終的に{len(all_race_urls)}件のレースURLを取得しました")
+        print(f"メインページから{len(all_race_urls)}件のレースURLを取得しました")
         
     except Exception as e:
         print(f"レースURL取得中にエラー: {str(e)}")
