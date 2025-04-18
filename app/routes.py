@@ -31,6 +31,7 @@ import time
 import os
 import calendar
 from app.email_utils import send_confirmation_email
+import jinja2
 
 # カスタムデコレータの定義
 def custom_login_required(f):
@@ -5175,11 +5176,18 @@ def keiba_lab_content(content_path):
     Args:
         content_path: コンテンツのパス
     """
-    # コンテンツのパスに基づいてテンプレートを選択
-    template_path = f'keiba_lab/{content_path}.html'
+    # 1. まず直接.htmlファイルを探す
+    direct_template_path = f'keiba_lab/{content_path}.html'
     
+    # 2. 次にディレクトリ/index.htmlを探す
+    directory_template_path = f'keiba_lab/{content_path}/index.html'
+    
+    # テンプレートの試行
     try:
-        return render_template(template_path)
-    except:
-        # テンプレートが見つからない場合は404を返す
-        return render_template('errors/404.html'), 404
+        return render_template(direct_template_path)
+    except Exception as e:
+        try:
+            return render_template(directory_template_path)
+        except Exception as e:
+            # どちらのテンプレートも見つからない場合は404を返す
+            return render_template('errors/404.html'), 404
