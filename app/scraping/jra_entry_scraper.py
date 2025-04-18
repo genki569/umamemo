@@ -330,21 +330,75 @@ def get_race_urls_for_date(page, context, date_str: str) -> List[str]:
         
         page.wait_for_timeout(5000)
         
-        # 出馬表へのリンクを取得
-        race_links = page.query_selector_all('a[href*="/race/shutuba.html"]')
+        # ページのHTMLを取得して解析
+        html_content = page.content()
+        soup = BeautifulSoup(html_content, 'html.parser')
+        
+        # 出馬表へのリンクを複数のセレクターで試行
+        race_links = []
+        
+        # 方法1: 従来の方法
+        links1 = page.query_selector_all('a[href*="/race/shutuba.html"]')
+        if links1:
+            race_links.extend(links1)
+            print(f"セレクター1で{len(links1)}件のリンクを取得")
+        
+        # 方法2: RaceList枠内の全リンク
+        links2 = page.query_selector_all('.RaceList a[href*="race_id="]')
+        if links2:
+            race_links.extend(links2)
+            print(f"セレクター2で{len(links2)}件のリンクを取得")
+            
+        # 方法3: 別のクラス構造を試す
+        links3 = page.query_selector_all('dl.RaceList_DataList a[href*="race_id="]')
+        if links3:
+            race_links.extend(links3)
+            print(f"セレクター3で{len(links3)}件のリンクを取得")
+            
+        # 方法4: テーブル内のリンク
+        links4 = page.query_selector_all('table a[href*="race_id="]')
+        if links4:
+            race_links.extend(links4)
+            print(f"セレクター4で{len(links4)}件のリンクを取得")
+            
+        # JavaScript実行で隠れた要素を表示
+        page.evaluate('''() => {
+            // 非表示要素を表示
+            const hiddenElements = document.querySelectorAll('[style*="display: none"]');
+            hiddenElements.forEach(el => el.style.display = 'block');
+        }''')
+        
+        # 再度リンクを検索
+        links5 = page.query_selector_all('a[href*="race_id="]')
+        if links5:
+            race_links.extend(links5)
+            print(f"セレクター5で{len(links5)}件のリンクを取得")
+            
         print(f"取得したリンク数: {len(race_links)}")
         
         for link in race_links:
             href = link.get_attribute('href')
-            if href:
-                # 相対パスを絶対URLに変換
-                if href.startswith('/'):
-                    race_url = f"https://race.netkeiba.com{href}"
-                else:
-                    race_url = href
-                
-                all_race_urls.add(race_url)
-                print(f"レースURL追加: {race_url}")
+            if href and 'race_id=' in href:
+                # 出馬表URLに変換
+                race_id_match = re.search(r'race_id=([0-9]+)', href)
+                if race_id_match:
+                    race_id = race_id_match.group(1)
+                    shutuba_url = f"https://race.netkeiba.com/race/shutuba.html?race_id={race_id}"
+                    
+                    all_race_urls.add(shutuba_url)
+                    print(f"レースURL追加: {shutuba_url}")
+        
+        # HTMLから直接抽出する方法も追加
+        soup = BeautifulSoup(html_content, 'html.parser')
+        for a_tag in soup.select('a[href*="race_id="]'):
+            href = a_tag.get('href')
+            if href and 'race_id=' in href:
+                race_id_match = re.search(r'race_id=([0-9]+)', href)
+                if race_id_match:
+                    race_id = race_id_match.group(1)
+                    shutuba_url = f"https://race.netkeiba.com/race/shutuba.html?race_id={race_id}"
+                    all_race_urls.add(shutuba_url)
+                    print(f"HTMLから直接抽出: {shutuba_url}")
         
         print(f"メインページから{len(all_race_urls)}件のレースURLを取得しました")
         
