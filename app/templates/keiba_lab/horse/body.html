@@ -8,7 +8,7 @@
 
 {% block content %}
 <div class="container my-5">
-  <nav aria-label="breadcrumb">
+  <nav aria-label="breadcrumb" class="keiba-lab-breadcrumb">
     <ol class="breadcrumb">
       <li class="breadcrumb-item"><a href="{{ url_for('keiba_lab_index') }}">競馬ラボ</a></li>
       <li class="breadcrumb-item"><a href="{{ url_for('keiba_lab_content', content_path='horse') }}">競走馬の見方</a></li>
@@ -16,18 +16,20 @@
     </ol>
   </nav>
 
-  <h1 class="mb-4">馬体チェックポイント：パドックでの馬体の見方</h1>
-  
-  <p class="lead mb-4">
-    競馬予想において、パドックでの馬体チェックは非常に重要です。
-    馬の体調や能力を直接目で確認することで、その日の走りを予測することができます。
-    このページでは、初心者の方でも実践できる馬体チェックのポイントを詳しく解説します。
-  </p>
+  <div class="content-header animate-fade-in">
+    <h1>馬体チェックポイント：パドックでの馬体の見方</h1>
+    
+    <p class="lead">
+      競馬予想において、パドックでの馬体チェックは非常に重要です。
+      馬の体調や能力を直接目で確認することで、その日の走りを予測することができます。
+      このページでは、初心者の方でも実践できる馬体チェックのポイントを詳しく解説します。
+    </p>
+  </div>
 
   <!-- 目次 -->
-  <div class="card mb-5">
+  <div class="toc-card animate-fade-in delay-1">
     <div class="card-header">
-      <h2 class="h5 mb-0">目次</h2>
+      <h2>目次</h2>
     </div>
     <div class="card-body">
       <ol class="mb-0">
@@ -40,14 +42,14 @@
     </div>
   </div>
 
-  <section id="importance" class="mb-5">
-    <h2 class="border-bottom pb-2">馬体チェックの重要性</h2>
+  <section id="importance" class="content-section animate-fade-in delay-2">
+    <h2>馬体チェックの重要性</h2>
     
     <p>競馬予想において、馬券を購入する前にパドックで馬の状態を確認することは非常に重要です。なぜなら、どんなに過去の成績が良くても、当日の調子が悪ければ好走は期待できないからです。</p>
     
     <div class="row mb-4">
       <div class="col-lg-7">
-        <h3 class="h5 mt-3">馬体チェックが重要な理由</h3>
+        <h3>馬体チェックが重要な理由</h3>
         <ul>
           <li><strong>当日の調子がわかる</strong>：過去の成績や調教タイムだけでは、レース当日の馬の状態は完全にはわかりません。パドックで実際に馬を見ることで、その日の調子を直接確認できます。</li>
           <li><strong>オッズに表れない情報が得られる</strong>：人気馬でも状態が悪ければ買わない判断ができますし、人気のない馬でも好調であれば穴馬として狙うことができます。</li>
@@ -56,64 +58,66 @@
         </ul>
       </div>
       <div class="col-lg-5">
-        <div class="card bg-light">
-          <div class="card-body">
-            <h3 class="h5">プロの予想家も重視</h3>
-            <p>多くのプロの予想家や馬券師は、データ分析と同等かそれ以上にパドックでの馬体チェックを重視しています。彼らは長年の経験から、馬の状態と走りの関係を熟知しているため、パドックでの観察を欠かしません。</p>
-            <p>特に人気薄の穴馬を見つける際には、パドックでの馬体チェックが非常に有効です。</p>
-          </div>
+        <div class="custom-alert custom-alert-primary">
+          <h4>プロの予想家も重視</h4>
+          <p>多くのプロの予想家や馬券師は、データ分析と同等かそれ以上にパドックでの馬体チェックを重視しています。彼らは長年の経験から、馬の状態と走りの関係を熟知しているため、パドックでの観察を欠かしません。</p>
+          <p>特に人気薄の穴馬を見つける際には、パドックでの馬体チェックが非常に有効です。</p>
         </div>
       </div>
     </div>
     
-    <h3 class="h5">初心者がパドックチェックから始めるべき理由</h3>
+    <h3>初心者がパドックチェックから始めるべき理由</h3>
     <p>競馬初心者の方は、最初は多くの要素を考慮した予想が難しいかもしれません。しかし、パドックでの馬体チェックは、実際に馬を見て判断するという直感的な方法なので、比較的取り組みやすい予想要素です。</p>
     
-    <div class="alert alert-primary mb-4">
-      <h4 class="h6">馬体チェックのメリット</h4>
+    <div class="custom-alert custom-alert-primary mb-4">
+      <h4>馬体チェックのメリット</h4>
       <p class="mb-0">パドックでの馬体チェックを習慣づけることで、徐々に馬を見る目が養われていきます。最初は違いがわからなくても、継続することで「良い馬」と「悪い馬」の違いがわかるようになり、予想の精度が向上していきます。また、実際に馬を見ることで競馬の楽しさも倍増します。</p>
     </div>
     
     <div class="row">
       <div class="col-md-6">
-        <div class="card mb-3">
-          <div class="card-header bg-success text-white">
-            馬体チェックで得られる情報
+        <div class="gradient-border mb-3">
+          <div class="card border-0">
+            <div class="card-header bg-primary text-white">
+              馬体チェックで得られる情報
+            </div>
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item">馬の健康状態と調子</li>
+              <li class="list-group-item">精神面の状態（集中力・気合い）</li>
+              <li class="list-group-item">肉体的なコンディション</li>
+              <li class="list-group-item">レースへの意欲</li>
+              <li class="list-group-item">疲労度や故障の兆候</li>
+            </ul>
           </div>
-          <ul class="list-group list-group-flush">
-            <li class="list-group-item">馬の健康状態と調子</li>
-            <li class="list-group-item">精神面の状態（集中力・気合い）</li>
-            <li class="list-group-item">肉体的なコンディション</li>
-            <li class="list-group-item">レースへの意欲</li>
-            <li class="list-group-item">疲労度や故障の兆候</li>
-          </ul>
         </div>
       </div>
       <div class="col-md-6">
-        <div class="card mb-3">
-          <div class="card-header bg-danger text-white">
-            馬体チェックをしないリスク
+        <div class="gradient-border mb-3">
+          <div class="card border-0">
+            <div class="card-header bg-danger text-white">
+              馬体チェックをしないリスク
+            </div>
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item">調子の悪い人気馬に投資してしまう</li>
+              <li class="list-group-item">好調な穴馬を見逃す</li>
+              <li class="list-group-item">怪我や故障の兆候を見逃す</li>
+              <li class="list-group-item">馬場との相性を考慮できない</li>
+              <li class="list-group-item">レース直前の変化に対応できない</li>
+            </ul>
           </div>
-          <ul class="list-group list-group-flush">
-            <li class="list-group-item">調子の悪い人気馬に投資してしまう</li>
-            <li class="list-group-item">好調な穴馬を見逃す</li>
-            <li class="list-group-item">怪我や故障の兆候を見逃す</li>
-            <li class="list-group-item">馬場との相性を考慮できない</li>
-            <li class="list-group-item">レース直前の変化に対応できない</li>
-          </ul>
         </div>
       </div>
     </div>
   </section>
 
-  <section id="points" class="mb-5">
-    <h2 class="border-bottom pb-2">基本的な馬体チェックポイント</h2>
+  <section id="points" class="content-section animate-fade-in delay-3">
+    <h2>基本的な馬体チェックポイント</h2>
     
     <p>競走馬の馬体には、その日の調子や能力を示す様々なサインがあります。初心者の方は、まず以下の基本的なポイントを押さえるとよいでしょう。</p>
     
     <div class="row mb-4">
       <div class="col-lg-6">
-        <h3 class="h5 mt-3 mb-3">1. 毛艶（つや）</h3>
+        <h3>1. 毛艶（つや）</h3>
         <p>毛艶は馬の健康状態を最も端的に表す指標です。健康で調子の良い馬は、毛並みに艶があり、ピカピカと光って見えます。</p>
         <ul>
           <li><strong>良い毛艶</strong>：光沢があり、健康的な輝きがある</li>
@@ -122,7 +126,7 @@
         <p>特に日差しが強い日は、毛艶の良し悪しが非常にわかりやすくなります。馬体が太陽の光を反射して輝いているかどうかに注目しましょう。</p>
       </div>
       <div class="col-lg-6">
-        <h3 class="h5 mt-3 mb-3">2. 筋肉の張り具合</h3>
+        <h3>2. 筋肉の張り具合</h3>
         <p>筋肉の張り具合は馬の調教の充実度や体調を示しています。適度に筋肉が発達していることが理想です。</p>
         <ul>
           <li><strong>良い筋肉</strong>：適度に張りがあり、弾力感がある</li>
@@ -134,7 +138,7 @@
 
     <div class="row mb-4">
       <div class="col-lg-6">
-        <h3 class="h5 mt-3 mb-3">3. 腹回り（お腹の締まり）</h3>
+        <h3>3. 腹回り（お腹の締まり）</h3>
         <p>腹部の状態は調教の充実度や体調管理の良さを示します。引き締まった腹部は良好な状態のサインです。</p>
         <ul>
           <li><strong>良い腹回り</strong>：引き締まっていて、適度に締まりがある</li>
@@ -143,7 +147,7 @@
         <p>腹部が膨れていると十分な調教がなされていない可能性があり、逆に痩せすぎていると体調不良の可能性があります。横から見た時に、腹部がすっきりと引き締まっているかをチェックしましょう。</p>
       </div>
       <div class="col-lg-6">
-        <h3 class="h5 mt-3 mb-3">4. 全体のバランス</h3>
+        <h3>4. 全体のバランス</h3>
         <p>馬体の全体的なバランスは、その馬の能力や適性を示唆します。バランスの取れた体つきが理想的です。</p>
         <ul>
           <li><strong>良いバランス</strong>：前後左右のバランスが取れている、全体的にまとまりがある</li>
@@ -153,40 +157,36 @@
       </div>
     </div>
 
-    <div class="card mb-4">
-      <div class="card-header bg-primary text-white">
-        <h3 class="h5 mb-0">馬体チェックの主な注目部位</h3>
-      </div>
-      <div class="card-body">
-        <div class="row">
-          <div class="col-md-6">
-            <h4 class="h6">上半身（前躯）</h4>
-            <ul>
-              <li><strong>頭部</strong>：表情、目の輝き、耳の動き</li>
-              <li><strong>首</strong>：太さ、筋肉の張り、しなやかさ</li>
-              <li><strong>肩</strong>：筋肉の発達具合、左右対称性</li>
-              <li><strong>胸</strong>：幅広さ、筋肉の張り</li>
-            </ul>
-          </div>
-          <div class="col-md-6">
-            <h4 class="h6">下半身（後躯）</h4>
-            <ul>
-              <li><strong>腰</strong>：力強さ、安定感</li>
-              <li><strong>臀部（お尻）</strong>：丸み、筋肉の張り</li>
-              <li><strong>後肢</strong>：筋肉のつき方、安定感</li>
-              <li><strong>蹄（ひづめ）</strong>：状態、大きさ、形</li>
-            </ul>
-          </div>
+    <div class="custom-alert custom-alert-primary mb-4">
+      <h4>馬体チェックの主な注目部位</h4>
+      <div class="row">
+        <div class="col-md-6">
+          <h4 class="h6">上半身（前躯）</h4>
+          <ul>
+            <li><strong>頭部</strong>：表情、目の輝き、耳の動き</li>
+            <li><strong>首</strong>：太さ、筋肉の張り、しなやかさ</li>
+            <li><strong>肩</strong>：筋肉の発達具合、左右対称性</li>
+            <li><strong>胸</strong>：幅広さ、筋肉の張り</li>
+          </ul>
+        </div>
+        <div class="col-md-6">
+          <h4 class="h6">下半身（後躯）</h4>
+          <ul>
+            <li><strong>腰</strong>：力強さ、安定感</li>
+            <li><strong>臀部（お尻）</strong>：丸み、筋肉の張り</li>
+            <li><strong>後肢</strong>：筋肉のつき方、安定感</li>
+            <li><strong>蹄（ひづめ）</strong>：状態、大きさ、形</li>
+          </ul>
         </div>
       </div>
     </div>
 
-    <h3 class="h5 mt-4 mb-3">5. 汗の状態</h3>
+    <h3>5. 汗の状態</h3>
     <p>汗の出方も馬の調子を判断する重要な指標です。適度な汗は体が温まっていることを示しますが、過度の発汗は緊張や体調不良のサインかもしれません。</p>
     
     <div class="table-responsive">
-      <table class="table table-bordered">
-        <thead class="table-light">
+      <table class="content-table">
+        <thead>
           <tr>
             <th>汗の状態</th>
             <th>意味</th>
@@ -200,45 +200,34 @@
             <td><span class="text-success">◎</span></td>
           </tr>
           <tr>
-            <td>全身に均一に出ている</td>
-            <td>体が温まりすぎ、または暑い日の正常な反応</td>
-            <td><span class="text-primary">○</span></td>
-          </tr>
-          <tr>
-            <td>泡立った白い汗</td>
-            <td>過度の緊張や興奮状態</td>
+            <td>全くの無汗（暑い日でも）</td>
+            <td>緊張していない、または体調不良</td>
             <td><span class="text-warning">△</span></td>
           </tr>
           <tr>
-            <td>冷や汗（特に肩や首筋）</td>
-            <td>体調不良や緊張のサイン</td>
+            <td>全身に過度の発汗</td>
+            <td>過緊張、または体調不良</td>
             <td><span class="text-danger">×</span></td>
           </tr>
           <tr>
-            <td>全く汗をかいていない（暑い日）</td>
-            <td>体調不良または無気力状態</td>
+            <td>部分的な異常発汗（背中や首筋）</td>
+            <td>部分的な疲労や緊張</td>
+            <td><span class="text-warning">△</span></td>
+          </tr>
+          <tr>
+            <td>白い泡状の汗</td>
+            <td>過緊張、疲労の可能性大</td>
             <td><span class="text-danger">×</span></td>
           </tr>
         </tbody>
       </table>
     </div>
-
-    <div class="alert alert-warning mt-4">
-      <h4 class="h6">季節や天候による違い</h4>
-      <p class="mb-0">汗の状態は季節や天候によって大きく変わります。真夏は全身に汗をかいていても正常ですが、寒い冬に全身汗だくなら過度の緊張や体調不良かもしれません。季節や天候を考慮して判断しましょう。</p>
-    </div>
     
-    <h3 class="h5 mt-4 mb-3">6. 表情や目の輝き</h3>
-    <p>馬の表情や目の状態からも、精神状態や体調を読み取ることができます。</p>
-    <ul>
-      <li><strong>良い状態</strong>：目に輝きがある、耳が前を向いている（興味を示している）、表情が生き生きしている</li>
-      <li><strong>悪い状態</strong>：目が暗い、耳が後ろに倒れている（不満や不安）、無表情、表情が暗い</li>
-    </ul>
-    <p>特に目の輝きは重要です。元気で意欲的な馬は、目が澄んでいて輝いています。暗く濁った目は、体調不良や疲労のサインかもしれません。</p>
+    <p>特に気温の高い夏場は汗の状態が把握しやすく、馬の状態を判断するのに役立ちます。逆に寒い時期は汗が出にくいので、他の部分を重点的に観察するとよいでしょう。</p>
   </section>
 
-  <section id="good-bad" class="mb-5">
-    <h2 class="border-bottom pb-2">良い馬体と悪い馬体の見分け方</h2>
+  <section id="good-bad" class="content-section animate-fade-in delay-4">
+    <h2>良い馬体と悪い馬体の見分け方</h2>
     
     <p>馬の体調や能力を判断するには、「良い馬体」と「悪い馬体」の違いを理解することが重要です。ここでは、良い馬体と悪い馬体の特徴を比較して解説します。</p>
     
@@ -396,8 +385,8 @@
     </div>
   </section>
 
-  <section id="preparation" class="mb-5">
-    <h2 class="border-bottom pb-2">パドック観察の準備と心構え</h2>
+  <section id="preparation" class="content-section animate-fade-in delay-5">
+    <h2>パドック観察の準備と心構え</h2>
     
     <p>パドックでの馬体チェックを効果的に行うためには、いくつかの準備や心構えが必要です。初めての方でも実践できるポイントを紹介します。</p>
     
@@ -530,8 +519,8 @@
     </div>
   </section>
 
-  <section id="cases" class="mb-5">
-    <h2 class="border-bottom pb-2">具体的な事例と写真解説</h2>
+  <section id="cases" class="content-section animate-fade-in delay-6">
+    <h2>具体的な事例と写真解説</h2>
     
     <p>実際の馬体チェックをイメージしやすくするために、典型的な事例と写真による解説を紹介します。これらを参考に、実際のパドックでの観察に活かしてください。</p>
     
@@ -711,40 +700,40 @@
   </section>
 
   <!-- 関連コンテンツ -->
-  <div class="alert alert-info mb-5">
+  <div class="custom-alert custom-alert-primary mb-5 animate-fade-in">
     <h3 class="h5">馬体チェックのポイント</h3>
     <p>馬体チェックは一朝一夕で身につくものではありません。まずは毛艶と筋肉の張りなど、わかりやすいポイントから観察を始め、徐々に細部にも注目できるようになりましょう。</p>
   </div>
 
-  <div class="bg-light p-4 rounded mt-4">
-    <h3 class="h4">関連コンテンツ</h3>
+  <div class="related-content animate-fade-in">
+    <h3>関連コンテンツ</h3>
     <div class="row">
       <div class="col-md-4">
         <a href="{{ url_for('keiba_lab_content', content_path='horse/walking') }}" class="text-decoration-none">
-          <div class="card mb-3 hover-lift border-0 shadow-sm h-100">
+          <div class="related-card">
             <div class="card-body">
-              <h5 class="card-title">歩様の見方</h5>
-              <p class="card-text">馬の歩き方から調子や能力を読み取る方法について解説。</p>
+              <h5>歩様の見方</h5>
+              <p>馬の歩き方から調子や能力を読み取る方法について解説。</p>
             </div>
           </div>
         </a>
       </div>
       <div class="col-md-4">
         <a href="{{ url_for('keiba_lab_content', content_path='horse/condition') }}" class="text-decoration-none">
-          <div class="card mb-3 hover-lift border-0 shadow-sm h-100">
+          <div class="related-card">
             <div class="card-body">
-              <h5 class="card-title">馬の調子と状態</h5>
-              <p class="card-text">競走馬の調子の良し悪しを見極めるポイントを解説。</p>
+              <h5>馬の調子と状態</h5>
+              <p>競走馬の調子の良し悪しを見極めるポイントを解説。</p>
             </div>
           </div>
         </a>
       </div>
       <div class="col-md-4">
         <a href="{{ url_for('keiba_lab_content', content_path='horse/weight') }}" class="text-decoration-none">
-          <div class="card mb-3 hover-lift border-0 shadow-sm h-100">
+          <div class="related-card">
             <div class="card-body">
-              <h5 class="card-title">馬体重の見方</h5>
-              <p class="card-text">馬体重の増減から競走馬の状態を判断する方法を解説。</p>
+              <h5>馬体重の見方</h5>
+              <p>馬体重の増減から競走馬の状態を判断する方法を解説。</p>
             </div>
           </div>
         </a>

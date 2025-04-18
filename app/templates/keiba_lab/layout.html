@@ -19,80 +19,19 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Custom CSS -->
-    <style>
-        body {
-            font-family: 'Noto Sans JP', sans-serif;
-            color: #333;
-            background-color: #f8f9fa;
-        }
-        .navbar-brand {
-            font-weight: 700;
-        }
-        .hero-section {
-            background-color: #28a745;
-            color: white;
-            padding: 3rem 0;
-        }
-        .card {
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-        }
-        .card-header {
-            background-color: #f8f9fa;
-            border-bottom: 1px solid rgba(0,0,0,0.125);
-            font-weight: 500;
-        }
-        .footer {
-            background-color: #343a40;
-            color: white;
-            padding: 2rem 0;
-        }
-        .breadcrumb {
-            background-color: transparent;
-            padding: 0.75rem 0;
-        }
-        h1, h2, h3, h4, h5, h6 {
-            font-weight: 700;
-        }
-        .article-content {
-            line-height: 1.8;
-        }
-        .list-group-item.active {
-            background-color: #28a745;
-            border-color: #28a745;
-        }
-        .btn-primary {
-            background-color: #28a745;
-            border-color: #28a745;
-        }
-        .btn-primary:hover {
-            background-color: #218838;
-            border-color: #1e7e34;
-        }
-        .btn-outline-primary {
-            color: #28a745;
-            border-color: #28a745;
-        }
-        .btn-outline-primary:hover {
-            background-color: #28a745;
-            border-color: #28a745;
-        }
-        .nav-pills .nav-link.active {
-            background-color: #28a745;
-        }
-        .table-success {
-            background-color: rgba(40, 167, 69, 0.1);
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/mobile.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/keiba_lab.css') }}">
     
     {% block extra_css %}{% endblock %}
 </head>
-<body>
+<body class="keiba-lab">
     <!-- ナビゲーションバー -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
         <div class="container">
-            <a class="navbar-brand" href="{{ url_for('keiba_lab_index') }}">競馬ラボ</a>
+            <a class="navbar-brand" href="{{ url_for('keiba_lab_index') }}">
+                <span class="gradient-text">競馬ラボ</span>
+            </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -129,7 +68,7 @@
     <!-- パンくずリスト -->
     <div class="container mt-3">
         {% block breadcrumb %}
-        <nav aria-label="breadcrumb">
+        <nav aria-label="breadcrumb" class="keiba-lab-breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="{{ url_for('keiba_lab_index') }}">競馬ラボ</a></li>
                 {% block breadcrumb_items %}{% endblock %}
@@ -154,27 +93,27 @@
                 <div class="col-md-4 mb-4">
                     <h5>カテゴリー</h5>
                     <ul class="list-unstyled">
-                        <li><a href="{{ url_for('keiba_lab_content', content_path='basics') }}" class="text-white">競馬の基礎知識</a></li>
-                        <li><a href="{{ url_for('keiba_lab_content', content_path='prediction') }}" class="text-white">予想・分析法</a></li>
-                        <li><a href="{{ url_for('keiba_lab_content', content_path='betting') }}" class="text-white">馬券の知識</a></li>
-                        <li><a href="{{ url_for('keiba_lab_content', content_path='racecourse') }}" class="text-white">競馬場ガイド</a></li>
-                        <li><a href="{{ url_for('keiba_lab_content', content_path='horse') }}" class="text-white">競走馬の見方</a></li>
-                        <li><a href="{{ url_for('keiba_lab_content', content_path='bloodline') }}" class="text-white">血統の知識</a></li>
+                        <li><a href="{{ url_for('keiba_lab_content', content_path='basics') }}" class="text-muted">競馬の基礎知識</a></li>
+                        <li><a href="{{ url_for('keiba_lab_content', content_path='prediction') }}" class="text-muted">予想・分析法</a></li>
+                        <li><a href="{{ url_for('keiba_lab_content', content_path='betting') }}" class="text-muted">馬券の知識</a></li>
+                        <li><a href="{{ url_for('keiba_lab_content', content_path='racecourse') }}" class="text-muted">競馬場ガイド</a></li>
+                        <li><a href="{{ url_for('keiba_lab_content', content_path='horse') }}" class="text-muted">競走馬の見方</a></li>
+                        <li><a href="{{ url_for('keiba_lab_content', content_path='bloodline') }}" class="text-muted">血統の知識</a></li>
                     </ul>
                 </div>
                 <div class="col-md-4 mb-4">
                     <h5>役立つリンク</h5>
                     <ul class="list-unstyled">
-                        <li><a href="{{ url_for('keiba_lab_content', content_path='beginners/what-is-keiba') }}" class="text-white">競馬初心者ガイド</a></li>
-                        <li><a href="{{ url_for('keiba_lab_content', content_path='basics/terms') }}" class="text-white">競馬用語集</a></li>
-                        <li><a href="{{ url_for('keiba_lab_content', content_path='guide') }}" class="text-white">サイトマップ</a></li>
-                        <li><a href="{{ url_for('index') }}" class="text-white">UMAメモトップ</a></li>
+                        <li><a href="{{ url_for('keiba_lab_content', content_path='beginners/what-is-keiba') }}" class="text-muted">競馬初心者ガイド</a></li>
+                        <li><a href="{{ url_for('keiba_lab_content', content_path='basics/terms') }}" class="text-muted">競馬用語集</a></li>
+                        <li><a href="{{ url_for('keiba_lab_content', content_path='guide') }}" class="text-muted">サイトマップ</a></li>
+                        <li><a href="{{ url_for('index') }}" class="text-muted">UMAメモトップ</a></li>
                     </ul>
                 </div>
             </div>
             <hr class="bg-light">
             <div class="text-center">
-                <p>&copy; 2025 UMAメモ All Rights Reserved.</p>
+                <p class="text-muted">&copy; 2025 UMAメモ All Rights Reserved.</p>
             </div>
         </div>
     </footer>
