@@ -1,405 +1,115 @@
 {% extends "keiba_lab/layout.html" %}
 
-{% block title %}競走馬の歩様と走法 | 馬の動きから調子を読み解く方法【馬メモ】{% endblock %}
+{% block title %}競走馬の歩様と走り方 | 馬の動きから状態を見極める【馬メモ】{% endblock %}
 
-{% block meta_description %}競走馬の歩様（ほよう）と走法の見方を解説。パドックでの歩き方から馬の調子や能力を読み取る方法、理想的な歩様の特徴、歩様の乱れから判断する馬の状態など、実践的な知識を紹介します。{% endblock %}
+{% block meta_description %}競走馬の歩様や走り方を観察するポイントを解説。パドックでの歩き方、走法の種類、調教での動きなど、馬の状態を見極めるための知識を紹介します。{% endblock %}
 
-{% block meta_keywords %}歩様,走法,馬の歩き方,パドック観察,常歩,軽快な歩様,歩様の乱れ,競馬予想,馬の動き,脚の使い方{% endblock %}
+{% block meta_keywords %}競走馬,歩様,走り方,パドック観察,走法,フォーム,競馬予想,調教,脚さばき,競馬,馬の動き{% endblock %}
 
-{% block content %}
-<div class="container my-5">
-  <nav aria-label="breadcrumb">
-    <ol class="breadcrumb">
-      <li class="breadcrumb-item"><a href="{{ url_for('keiba_lab.index') }}">競馬ラボ</a></li>
-      <li class="breadcrumb-item"><a href="{{ url_for('keiba_lab_content', content_path='horse') }}">競走馬の見方</a></li>
-      <li class="breadcrumb-item active" aria-current="page">歩様と走法</li>
-    </ol>
-  </nav>
+{% block breadcrumbs %}
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="/">ホーム</a></li>
+    <li class="breadcrumb-item"><a href="{{ url_for('keiba_lab_index') }}">競馬ラボ</a></li>
+    <li class="breadcrumb-item"><a href="{{ url_for('keiba_lab_content', content_path='horse') }}">競走馬の見方</a></li>
+    <li class="breadcrumb-item active" aria-current="page">歩様と走り方</li>
+  </ol>
+</nav>
+{% endblock %}
 
-  <h1 class="mb-4">競走馬の歩様と走法：馬の動きから調子を読み解く</h1>
+{% block main_content %}
+<div class="container">
+  <h1 class="mb-4">競走馬の歩様と走り方 - 馬の動きから状態を見極める</h1>
   
-  <p class="lead mb-4">
-    競走馬の歩き方（歩様）や走り方（走法）は、その馬の調子や能力を判断する上で非常に重要な要素です。
-    パドックでの馬の動きを観察することで、レースでの走りを予測することができます。
-    このページでは、歩様と走法の基本と、それらから馬の状態を読み取る方法を解説します。
-  </p>
+  <p class="lead mb-4">競走馬の歩様（ほよう）や走り方は、その馬の状態や能力を知る上で非常に重要な要素です。調子の良い馬は滑らかで力強い動きをし、逆に体調不良や故障を抱えている馬は不自然な動きをすることが多いものです。このページでは、競走馬の歩様や走り方を観察するポイントについて解説します。</p>
 
-  <!-- 目次 -->
-  <div class="card mb-5">
+  <!-- 記事のインデックス -->
+  <div class="card mb-4">
     <div class="card-header">
-      <h2 class="h5 mb-0">目次</h2>
+      目次
     </div>
     <div class="card-body">
       <ol class="mb-0">
-        <li><a href="#basics">歩様と走法の基礎知識</a></li>
-        <li><a href="#ideal">理想的な歩様の特徴</a></li>
-        <li><a href="#problems">注意すべき歩様の乱れ</a></li>
-        <li><a href="#running">競走時の走法の種類と特徴</a></li>
-        <li><a href="#aptitude">歩様・走法から見る適性</a></li>
+        <li><a href="#basics">歩様と走り方の基礎知識</a></li>
+        <li><a href="#ideal">理想的な歩様・走りの特徴</a></li>
+        <li><a href="#watch-out">注意すべき歩様・走りの問題点</a></li>
+        <li><a href="#types">走法の種類と特性</a></li>
+        <li><a href="#aptitude">走り方から見る適性の見極め方</a></li>
       </ol>
     </div>
   </div>
 
+  <!-- セクション：歩様と走り方の基礎知識 -->
   <section id="basics" class="mb-5">
-    <h2 class="border-bottom pb-2">歩様と走法の基礎知識</h2>
-    <p>
-      競走馬の歩様とは、馬が歩く際の足の運び方や体の使い方のことを指します。パドックでの観察は、レース前の馬の状態を見極める重要な機会です。
-      走法は実際のレースでの走り方のことで、それぞれの馬固有の特徴があります。
-    </p>
-    
-    <h3 class="h4 mt-4">馬の基本的な歩き方</h3>
-    <div class="row mb-4">
-      <div class="col-md-6">
-        <div class="card h-100">
-          <div class="card-header bg-primary text-white">
-            常歩（なみあし）
-          </div>
-          <div class="card-body">
-            <p>
-              パドックで最も一般的に見られる歩き方で、四肢が規則正しく一本ずつ地面につく歩き方です。
-              リズミカルで安定した足運びが理想とされます。
-            </p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-6">
-        <div class="card h-100">
-          <div class="card-header bg-primary text-white">
-            速歩（はやあし）
-          </div>
-          <div class="card-body">
-            <p>
-              常歩より速い歩き方で、対角線上の二本の脚が同時に動きます。
-              パドックではあまり見られませんが、元気が良すぎる馬に見られることがあります。
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-    
-    <p>
-      パドック観察では主に常歩での動きをチェックし、馬の筋肉の使い方、関節の柔軟性、全体的なバランスなどを評価します。
-      特に重要なのは、歩様の「リズム」「伸び」「スムーズさ」です。
-    </p>
+    <h2 class="border-bottom pb-2">歩様と走り方の基礎知識</h2>
+    <p>このセクションは今後追加予定です。</p>
   </section>
 
+  <!-- セクション：理想的な歩様・走りの特徴 -->
   <section id="ideal" class="mb-5">
-    <h2 class="border-bottom pb-2">理想的な歩様の特徴</h2>
-    <p>
-      理想的な歩様を持つ馬は、レースでも高いパフォーマンスを発揮する可能性が高くなります。
-      以下に優れた歩様の特徴を紹介します。
-    </p>
-    
-    <div class="card mb-4">
-      <div class="card-header">
-        <h3 class="h5 mb-0">優れた歩様の特徴</h3>
-      </div>
-      <div class="card-body">
-        <ul class="list-group list-group-flush">
-          <li class="list-group-item">
-            <strong>軽快なフットワーク</strong>：地面を蹴る力が強く、足の運びが軽快で弾力がある
-          </li>
-          <li class="list-group-item">
-            <strong>リズミカルな足運び</strong>：一定のリズムで四肢を運び、安定感がある
-          </li>
-          <li class="list-group-item">
-            <strong>長いストライド</strong>：一歩の幅が広く、伸びやかな歩様
-          </li>
-          <li class="list-group-item">
-            <strong>スムーズな肩の動き</strong>：肩がスムーズに動き、前肢の可動域が広い
-          </li>
-          <li class="list-group-item">
-            <strong>背中のしなやかさ</strong>：背中が柔軟に動き、全身が連動している
-          </li>
-          <li class="list-group-item">
-            <strong>蹄の着地</strong>：蹄が真っ直ぐに着地し、内外に逃げない
-          </li>
-        </ul>
-      </div>
-    </div>
-    
-    <div class="alert alert-success">
-      <h4 class="h5">優れた歩様を持つ馬の例</h4>
-      <p>
-        ディープインパクトやオルフェーヴルなど、日本を代表する名馬は、パドックでも非常に軽快で伸びのある歩様を示すことが多かったです。
-        特に歩幅の広さと蹄の弾力性、全身の連動性に優れていました。
-      </p>
-    </div>
+    <h2 class="border-bottom pb-2">理想的な歩様・走りの特徴</h2>
+    <p>このセクションは今後追加予定です。</p>
   </section>
 
-  <section id="problems" class="mb-5">
-    <h2 class="border-bottom pb-2">注意すべき歩様の乱れ</h2>
-    <p>
-      歩様の乱れは、馬の体調不良や怪我、筋肉疲労などのサインである可能性があります。
-      以下のような兆候が見られる場合は注意が必要です。
-    </p>
-    
-    <div class="table-responsive">
-      <table class="table table-striped table-bordered">
-        <thead class="table-dark">
-          <tr>
-            <th>歩様の乱れ</th>
-            <th>特徴</th>
-            <th>考えられる原因</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>跛行（はこう）</td>
-            <td>明らかな足の引きずりや不自然な重心移動</td>
-            <td>怪我、蹄の問題、関節痛</td>
-          </tr>
-          <tr>
-            <td>短いストライド</td>
-            <td>歩幅が狭く、伸びがない</td>
-            <td>筋肉の疲労、柔軟性の低下</td>
-          </tr>
-          <tr>
-            <td>ふらつき</td>
-            <td>直線上を歩けず、体が左右に揺れる</td>
-            <td>バランス感覚の問題、神経系の異常</td>
-          </tr>
-          <tr>
-            <td>肩の固さ</td>
-            <td>肩の動きが硬く、前肢の可動域が狭い</td>
-            <td>肩の筋肉の張り、前肢の問題</td>
-          </tr>
-          <tr>
-            <td>内扁（うちへん）</td>
-            <td>蹄が内側を向いて着地する</td>
-            <td>肢勢の問題、バランスの崩れ</td>
-          </tr>
-          <tr>
-            <td>外扁（そとへん）</td>
-            <td>蹄が外側を向いて着地する</td>
-            <td>肢勢の問題、バランスの崩れ</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    
-    <div class="alert alert-warning mt-4">
-      <h4 class="h5">レース直前の歩様変化に注意</h4>
-      <p>
-        パドックでレース直前に急に歩様が悪くなった馬は、緊張や集中による一時的な現象の場合もありますが、
-        体調不良のサインとも考えられます。過去の歩様と比較することが重要です。
-      </p>
-    </div>
+  <!-- セクション：注意すべき歩様・走りの問題点 -->
+  <section id="watch-out" class="mb-5">
+    <h2 class="border-bottom pb-2">注意すべき歩様・走りの問題点</h2>
+    <p>このセクションは今後追加予定です。</p>
   </section>
 
-  <section id="running" class="mb-5">
-    <h2 class="border-bottom pb-2">競走時の走法の種類と特徴</h2>
-    <p>
-      競走馬は走る際に様々な走法を示します。走法はその馬の体型や血統的な要因に影響される先天的な部分と、
-      調教によって後天的に形成される部分があります。
-    </p>
-    
-    <h3 class="h4 mt-4">主な走法のタイプ</h3>
-    <div class="row mb-4">
-      <div class="col-md-6 mb-3">
-        <div class="card h-100">
-          <div class="card-header bg-info text-white">
-            ハイアクション
-          </div>
-          <div class="card-body">
-            <p>
-              膝を高く上げて走るタイプで、華麗な走りが特徴です。
-              芝コースとの相性が良い傾向にありますが、エネルギー効率はやや劣ります。
-              雨の芝など、柔らかい馬場では力を発揮しやすいです。
-            </p>
-            <p class="mb-0">
-              <strong>代表的な馬</strong>：エルコンドルパサー、アーモンドアイなど
-            </p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-6 mb-3">
-        <div class="card h-100">
-          <div class="card-header bg-info text-white">
-            ローアクション
-          </div>
-          <div class="card-body">
-            <p>
-              膝の上げが低く、地面すれすれを走るタイプです。
-              エネルギー効率が良く、スピードを維持しやすい特徴があります。
-              硬い馬場や直線での伸びに優れています。
-            </p>
-            <p class="mb-0">
-              <strong>代表的な馬</strong>：ディープインパクト、コントレイルなど
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-    
-    <h3 class="h4">前肢と後肢の使い方による分類</h3>
-    <div class="row mb-4">
-      <div class="col-md-6 mb-3">
-        <div class="card h-100">
-          <div class="card-header bg-secondary text-white">
-            前肢主導型
-          </div>
-          <div class="card-body">
-            <p>
-              前肢で地面を強く掴んで体を引っ張るように走ります。
-              スタートが早く、前に行く競馬が得意な傾向があります。
-              急坂の下りで優位性を発揮しやすいです。
-            </p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-6 mb-3">
-        <div class="card h-100">
-          <div class="card-header bg-secondary text-white">
-            後肢主導型
-          </div>
-          <div class="card-body">
-            <p>
-              後肢で地面を強く蹴って推進力を得る走り方です。
-              終盤の伸びに優れ、差し・追込タイプに多く見られます。
-              上り坂での強さがあり、長距離適性も高い傾向があります。
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-    
-    <div class="alert alert-info">
-      <h4 class="h5">走法の観察方法</h4>
-      <p>
-        実際のレース映像やパドックでの動きを比較することで、各馬の走法の特徴を把握できます。
-        特に直線での伸び方や、コーナーの回り方に注目すると走法の違いが分かりやすいでしょう。
-      </p>
-    </div>
+  <!-- セクション：走法の種類と特性 -->
+  <section id="types" class="mb-5">
+    <h2 class="border-bottom pb-2">走法の種類と特性</h2>
+    <p>このセクションは今後追加予定です。</p>
   </section>
 
+  <!-- セクション：走り方から見る適性の見極め方 -->
   <section id="aptitude" class="mb-5">
-    <h2 class="border-bottom pb-2">歩様・走法から見る適性</h2>
-    <p>
-      馬の歩様や走法は、その馬の距離適性やコース適性を判断する上での手がかりになります。
-      以下にそれぞれの特徴と適性の関係を解説します。
-    </p>
-    
-    <h3 class="h4 mt-4">コース別の適性</h3>
-    <div class="table-responsive">
-      <table class="table table-hover">
-        <thead class="table-primary">
-          <tr>
-            <th>コース</th>
-            <th>適性がある歩様・走法</th>
-            <th>理由</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>芝コース</td>
-            <td>軽快な足運び、ハイアクション気味</td>
-            <td>芝の上で蹄を滑らせることなく走れる</td>
-          </tr>
-          <tr>
-            <td>ダートコース</td>
-            <td>力強い足運び、ローアクション気味</td>
-            <td>砂に埋まりにくく、推進力を失わない</td>
-          </tr>
-          <tr>
-            <td>急坂のあるコース</td>
-            <td>後肢主導型、柔軟な背中の使い方</td>
-            <td>坂での推進力が維持できる</td>
-          </tr>
-          <tr>
-            <td>内回りコース</td>
-            <td>小回りが利く、バランスの良い走法</td>
-            <td>急なコーナーでも体勢を崩さない</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    
-    <h3 class="h4 mt-4">距離適性との関係</h3>
-    <div class="row">
-      <div class="col-md-6 mb-3">
-        <div class="card h-100">
-          <div class="card-header bg-success text-white">
-            短距離向き
-          </div>
-          <div class="card-body">
-            <ul>
-              <li>力強く地面を蹴る足運び</li>
-              <li>筋肉質で強靭な歩様</li>
-              <li>ややハイアクション気味</li>
-              <li>短いストライドでも回転の速い足運び</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-6 mb-3">
-        <div class="card h-100">
-          <div class="card-header bg-success text-white">
-            長距離向き
-          </div>
-          <div class="card-body">
-            <ul>
-              <li>効率的で無駄のない足運び</li>
-              <li>長いストライドで地面を掴む走法</li>
-              <li>大きなリズムで走るローアクション</li>
-              <li>柔軟な背中の使い方</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
-    
-    <div class="alert alert-danger mt-4">
-      <h4 class="h5">歩様と能力は必ずしも比例しない</h4>
-      <p>
-        理想的な歩様を持つ馬が必ずしも好成績を収めるとは限りません。
-        特に若馬の場合、歩様が整っていなくても成長と共に改善し、高いパフォーマンスを発揮することもあります。
-        歩様の観察は予想の一要素として捉えるべきでしょう。
-      </p>
-    </div>
+    <h2 class="border-bottom pb-2">走り方から見る適性の見極め方</h2>
+    <p>このセクションは今後追加予定です。</p>
   </section>
+
+  <!-- アラート：馬の観察ポイント -->
+  <div class="alert alert-info mb-5">
+    <h3 class="h5">馬の動きを観察するコツ</h3>
+    <p class="mb-0">競走馬の動きを観察する際は、特にパドックでの方向転換の瞬間に注目しましょう。方向転換時には、馬の体の使い方やバランスの良さが現れやすく、故障や不調がある場合にも分かりやすく表れます。</p>
+  </div>
 
   <!-- 関連コンテンツ -->
-  <div class="alert alert-info mb-5">
-    <h3 class="h5">歩様観察のコツ</h3>
-    <p>馬の歩様を観察する際は、パドックの四隅で馬が方向転換する瞬間も重要なチェックポイントです。この時に馬がスムーズに回れるかどうかで、体の柔軟性や調子を判断できます。</p>
-    <p class="mb-0">また、パドックだけでなく、輸送馬の場合は馬運車から降りてくる瞬間や、ウォーミングアップの際の動きも重要な観察ポイントです。</p>
-  </div>
-
-  <div class="bg-light p-4 rounded mt-4">
-    <h3 class="h4">関連コンテンツ</h3>
+  <section class="mb-5">
+    <h2 class="border-bottom pb-2">関連コンテンツ</h2>
     <div class="row">
-      <div class="col-md-4">
+      <div class="col-md-4 mb-3">
         <a href="{{ url_for('keiba_lab_content', content_path='horse/body') }}" class="text-decoration-none">
-          <div class="card mb-3 hover-lift border-0 shadow-sm h-100">
+          <div class="card h-100 hover-lift">
             <div class="card-body">
-              <h5 class="card-title">馬体チェックポイント</h5>
-              <p class="card-text">パドックでの馬体の見方と良し悪しの判断方法を解説。</p>
+              <h3 class="h5 card-title">馬体チェックポイント</h3>
+              <p class="card-text">競走馬の体型や筋肉の付き方から、能力や適性を見極めるポイントを解説。</p>
             </div>
           </div>
         </a>
       </div>
-      <div class="col-md-4">
+      <div class="col-md-4 mb-3">
         <a href="{{ url_for('keiba_lab_content', content_path='horse/condition') }}" class="text-decoration-none">
-          <div class="card mb-3 hover-lift border-0 shadow-sm h-100">
+          <div class="card h-100 hover-lift">
             <div class="card-body">
-              <h5 class="card-title">馬の調子と状態</h5>
-              <p class="card-text">競走馬の調子の良し悪しを見極めるポイントを解説。</p>
+              <h3 class="h5 card-title">馬の調子と状態</h3>
+              <p class="card-text">競走馬のコンディションを見極めるポイントと、好調・不調のサインを解説。</p>
             </div>
           </div>
         </a>
       </div>
-      <div class="col-md-4">
+      <div class="col-md-4 mb-3">
         <a href="{{ url_for('keiba_lab_content', content_path='prediction/running-style') }}" class="text-decoration-none">
-          <div class="card mb-3 hover-lift border-0 shadow-sm h-100">
+          <div class="card h-100 hover-lift">
             <div class="card-body">
-              <h5 class="card-title">脚質と走り方の特徴</h5>
-              <p class="card-text">逃げ・先行・差し・追込などの脚質と特徴について解説。</p>
+              <h3 class="h5 card-title">脚質とレース展開</h3>
+              <p class="card-text">競走馬の脚質（逃げ、先行、差し、追込）とレース展開の関係を解説。</p>
             </div>
           </div>
         </a>
       </div>
     </div>
-  </div>
+  </section>
 </div>
 {% endblock %} 
