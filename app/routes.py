@@ -5186,23 +5186,23 @@ def keiba_lab_content(content_path):
         
         # 競馬場・コース関連
         'racecourse/jra': 'racecourse/jra',             # JRA主要競馬場
-        'racecourse/course': 'racecourse/course',       # コースの構造と特性
+        'racecourse/course': 'racecourse/course',       # コースの構造と特性（修正）
         
         # 馬券・投資関連
         'betting/strategy': 'betting/index',            # 馬券の組み立て方
         
         # 血統関連
         'bloodline/major': 'bloodline/index',           # 主要血統ライン
-        'bloodline/combination': 'bloodline/roles',     # 配合理論の基礎
-        'bloodline/aptitude': 'bloodline/aptitude',     # 血統と適性
+        'bloodline/combination': 'bloodline/roles',     # 配合理論の基礎（修正）
+        'bloodline/aptitude': 'bloodline/aptitude',     # 血統と適性（修正）
         
-        # 競走馬関連
+        # 競走馬関連 - 既存のファイルにマッピングするよう修正
         'horse/condition': 'horse/condition',           # 馬の調子と状態
         
         # コース攻略関連
         'course/shape': 'course/shape',                 # コース形状と戦略
         'course/track-condition': 'course/track-condition', # 馬場状態の理解
-        'course/season': 'course/index',                # 季節とコース特性
+        'course/season': 'course',                      # 季節とコース特性（修正）
         
         # 馬券投資関連
         'investment/money': 'investment/index',         # 資金管理の基本

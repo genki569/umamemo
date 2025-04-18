@@ -10,8 +10,8 @@
 <div class="container my-5">
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
-      <li class="breadcrumb-item"><a href="{{ url_for('keiba_lab.index') }}">競馬ラボ</a></li>
-      <li class="breadcrumb-item"><a href="{{ url_for('keiba_lab.racecourse') }}">競馬場ガイド</a></li>
+      <li class="breadcrumb-item"><a href="{{ url_for('keiba_lab_index') }}">競馬ラボ</a></li>
+      <li class="breadcrumb-item"><a href="{{ url_for('keiba_lab_content', content_path='racecourse') }}">競馬場ガイド</a></li>
       <li class="breadcrumb-item active" aria-current="page">JRA主要競馬場</li>
     </ol>
   </nav>
@@ -43,7 +43,7 @@
           <p>日本ダービー、天皇賞（春）、安田記念、ジャパンカップなど</p>
           <h3 class="h6">アクセス</h3>
           <p>JR中央線「武蔵小金井駅」または「東小金井駅」からバス</p>
-          <a href="{{ url_for('keiba_lab.racecourse_tokyo') }}" class="btn btn-primary">詳細を見る</a>
+          <a href="{{ url_for('keiba_lab_content', content_path='racecourse/jra/tokyo') }}" class="btn btn-primary">詳細を見る</a>
         </div>
       </div>
     </div>
@@ -67,7 +67,7 @@
           <p>有馬記念、皐月賞、スプリンターズステークス、中山大障害など</p>
           <h3 class="h6">アクセス</h3>
           <p>JR総武線「船橋駅」または京成線「船橋競馬場駅」からバス</p>
-          <a href="{{ url_for('keiba_lab.racecourse_nakayama') }}" class="btn btn-primary">詳細を見る</a>
+          <a href="{{ url_for('keiba_lab_content', content_path='racecourse/jra/nakayama') }}" class="btn btn-primary">詳細を見る</a>
         </div>
       </div>
     </div>
@@ -94,7 +94,7 @@
           <p>宝塚記念、大阪杯、阪神ジュベナイルフィリーズ、高松宮記念など</p>
           <h3 class="h6">アクセス</h3>
           <p>阪急今津線「仁川駅」から徒歩約10分</p>
-          <a href="{{ url_for('keiba_lab.racecourse_hanshin') }}" class="btn btn-primary">詳細を見る</a>
+          <a href="{{ url_for('keiba_lab_content', content_path='racecourse/jra/hanshin') }}" class="btn btn-primary">詳細を見る</a>
         </div>
       </div>
     </div>
@@ -118,7 +118,7 @@
           <p>菊花賞、天皇賞（秋）、エリザベス女王杯、マイルチャンピオンシップなど</p>
           <h3 class="h6">アクセス</h3>
           <p>阪急京都線「桂駅」から徒歩約15分、または地下鉄・阪急から京都市バス</p>
-          <a href="{{ url_for('keiba_lab.racecourse_kyoto') }}" class="btn btn-primary">詳細を見る</a>
+          <a href="{{ url_for('keiba_lab_content', content_path='racecourse/jra/kyoto') }}" class="btn btn-primary">詳細を見る</a>
         </div>
       </div>
     </div>
@@ -145,7 +145,7 @@
           <p>チャンピオンズカップ、CBC賞、高松宮記念など</p>
           <h3 class="h6">アクセス</h3>
           <p>地下鉄鶴舞線「豊明駅」から徒歩約10分</p>
-          <a href="{{ url_for('keiba_lab.racecourse_chukyo') }}" class="btn btn-primary">詳細を見る</a>
+          <a href="{{ url_for('keiba_lab_content', content_path='racecourse/jra/chukyo') }}" class="btn btn-primary">詳細を見る</a>
         </div>
       </div>
     </div>
@@ -169,7 +169,7 @@
           <p>七夕賞、福島記念、福島牝馬ステークスなど</p>
           <h3 class="h6">アクセス</h3>
           <p>JR東北本線「福島駅」からバス</p>
-          <a href="{{ url_for('keiba_lab.racecourse_fukushima') }}" class="btn btn-primary">詳細を見る</a>
+          <a href="{{ url_for('keiba_lab_content', content_path='racecourse/jra/fukushima') }}" class="btn btn-primary">詳細を見る</a>
         </div>
       </div>
     </div>
@@ -195,7 +195,7 @@
           <p>新潟記念、新潟2歳ステークス、アイビスサマーダッシュなど</p>
           <h3 class="h6">アクセス</h3>
           <p>JR上越新幹線「新潟駅」からバス</p>
-          <a href="{{ url_for('keiba_lab.racecourse_niigata') }}" class="btn btn-primary">詳細を見る</a>
+          <a href="{{ url_for('keiba_lab_content', content_path='racecourse/jra/niigata') }}" class="btn btn-primary">詳細を見る</a>
         </div>
       </div>
     </div>
@@ -205,20 +205,21 @@
         <div class="card-body">
           <h2 class="card-title h4">函館競馬場</h2>
           <p class="card-text">
-            北海道函館市にある風光明媚な競馬場で、芝の内回りコース（1,800m）と
-            ダートコース（1,700m）を持ちます。小回りのきいたコンパクトなコース形状が特徴で、
-            夏季のみ開催される特色ある競馬場です。
+            北海道函館市にある競馬場で、夏季限定の開催が特徴です。
+            芝コース（1,800m）とダートコース（1,700m）を持ち、
+            芝コースの最後の直線が短く（262m）急坂がある特徴的なコース形状です。
+            函館記念などの重賞レースが行われます。
           </p>
           <h3 class="h6">コース特性</h3>
           <ul>
-            <li>芝コース：小回りで直線が短い（300m）ため、位置取りが重要</li>
-            <li>ダートコース：急なカーブがあり内枠有利の傾向</li>
+            <li>芝コース：直線が短く急坂があり、ポジション取りが重要</li>
+            <li>ダートコース：最初のコーナーまでの距離が短いため内枠有利</li>
           </ul>
           <h3 class="h6">主な開催レース</h3>
-          <p>函館記念、函館スプリントステークス、函館2歳ステークスなど</p>
+          <p>函館記念、函館スプリントステークスなど</p>
           <h3 class="h6">アクセス</h3>
-          <p>JR函館本線「函館駅」から市電またはバス</p>
-          <a href="{{ url_for('keiba_lab.racecourse_hakodate') }}" class="btn btn-primary">詳細を見る</a>
+          <p>JR函館本線「函館駅」から市電</p>
+          <a href="{{ url_for('keiba_lab_content', content_path='racecourse/jra/hakodate') }}" class="btn btn-primary">詳細を見る</a>
         </div>
       </div>
     </div>
@@ -231,20 +232,21 @@
         <div class="card-body">
           <h2 class="card-title h4">札幌競馬場</h2>
           <p class="card-text">
-            北海道札幌市にある競馬場で、芝の内回りコース（1,800m）と
-            ダートコース（1,700m）を持ちます。芝コースは平坦で直線が短く（266m）、
-            ダートコースは急なカーブがあるのが特徴です。夏季のみ開催されます。
+            北海道札幌市にある競馬場で、夏季限定の開催が特徴です。
+            芝コース（1,800m）とダートコース（1,700m）を持ち、
+            両コースとも平坦で直線が比較的長い（325m）特徴があります。
+            札幌記念などの重賞レースが行われます。
           </p>
           <h3 class="h6">コース特性</h3>
           <ul>
-            <li>芝コース：平坦で直線が短いため、前残りになりやすい</li>
-            <li>ダートコース：急なカーブがあり内枠有利の傾向</li>
+            <li>芝コース：平坦で直線が長めのため、差し・追い込み馬も好走</li>
+            <li>ダートコース：平坦で広いコーナーのため、差し・追い込み馬も通用</li>
           </ul>
           <h3 class="h6">主な開催レース</h3>
-          <p>札幌記念、クイーンステークス、札幌2歳ステークスなど</p>
+          <p>札幌記念、クイーンステークスなど</p>
           <h3 class="h6">アクセス</h3>
-          <p>JR函館本線「桑園駅」から徒歩約15分</p>
-          <a href="{{ url_for('keiba_lab.racecourse_sapporo') }}" class="btn btn-primary">詳細を見る</a>
+          <p>地下鉄東豊線「福住駅」からバス</p>
+          <a href="{{ url_for('keiba_lab_content', content_path='racecourse/jra/sapporo') }}" class="btn btn-primary">詳細を見る</a>
         </div>
       </div>
     </div>
@@ -254,20 +256,21 @@
         <div class="card-body">
           <h2 class="card-title h4">小倉競馬場</h2>
           <p class="card-text">
-            福岡県北九州市にある九州唯一のJRA競馬場で、芝の内回りコース（1,800m）と
-            ダートコース（1,700m）を持ちます。小回りがきいたコンパクトなコース形状が特徴で、
-            夏と冬のシーズンに開催されます。
+            福岡県北九州市にある競馬場で、芝コース（1,800m）と
+            ダートコース（1,700m）を持ちます。
+            芝コースは直線が短めの上り坂、ダートコースは最初のコーナーが
+            近いのが特徴です。小倉記念などの重賞レースが行われます。
           </p>
           <h3 class="h6">コース特性</h3>
           <ul>
-            <li>芝コース：小回りで直線が短く（293m）、テンの上がるレース展開になりやすい</li>
-            <li>ダートコース：急なカーブがあり内枠有利の傾向</li>
+            <li>芝コース：直線が短め（347m）で上り坂、ポジション取りが重要</li>
+            <li>ダートコース：最初のコーナーまでの距離が短く、内枠有利の傾向</li>
           </ul>
           <h3 class="h6">主な開催レース</h3>
-          <p>小倉記念、小倉大賞典、小倉2歳ステークスなど</p>
+          <p>小倉記念、小倉2歳ステークスなど</p>
           <h3 class="h6">アクセス</h3>
           <p>JR鹿児島本線「小倉駅」からバス</p>
-          <a href="{{ url_for('keiba_lab.racecourse_kokura') }}" class="btn btn-primary">詳細を見る</a>
+          <a href="{{ url_for('keiba_lab_content', content_path='racecourse/jra/kokura') }}" class="btn btn-primary">詳細を見る</a>
         </div>
       </div>
     </div>
