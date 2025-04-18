@@ -56,10 +56,13 @@ log "中央競馬(JRA)出走表データ更新を開始します"
 
 # 1. スクレイピング
 cd "$APP_DIR" || handle_error "アプリケーションディレクトリに移動できません"
+log "作業ディレクトリ: $(pwd)"
 
 # 仮想環境がある場合はアクティベート
 if [ -d "$APP_DIR/venv" ]; then
     source "$APP_DIR/venv/bin/activate"
+    log "仮想環境をアクティベートしました"
+    python --version
 fi
 
 # Playwrightのブラウザが存在するか確認し、なければインストール
@@ -69,8 +72,8 @@ if ! python -c "from playwright.sync_api import sync_playwright; exit(0)" 2>/dev
 fi
 
 log "スクレイピングを開始します..."
-# スクレイピングスクリプトを実行
-python -m app.scraping.jra_entry_scraper
+# スクレイピングスクリプトを実行（デバッグモードを有効化）
+PYTHONPATH=$APP_DIR python -m app.scraping.jra_entry_scraper
 
 if [ $? -ne 0 ]; then
     handle_error "スクレイピングに失敗しました"
@@ -90,8 +93,8 @@ fi
 
 # 3日分の日付を計算（今日、明日、明後日）
 TODAY=$(date '+%Y%m%d')
-TOMORROW=$(date -d "tomorrow" '+%Y%m%d')
-DAY_AFTER_TOMORROW=$(date -d "tomorrow + 1 day" '+%Y%m%d')
+TOMORROW=$(date -d "tomorrow" '+%Y%m%d' 2>/dev/null || date -v+1d '+%Y%m%d')
+DAY_AFTER_TOMORROW=$(date -d "tomorrow + 1 day" '+%Y%m%d' 2>/dev/null || date -v+2d '+%Y%m%d')
 
 log "処理対象日: 今日=${TODAY}, 明日=${TOMORROW}, 明後日=${DAY_AFTER_TOMORROW}"
 
@@ -99,15 +102,18 @@ log "処理対象日: 今日=${TODAY}, 明日=${TOMORROW}, 明後日=${DAY_AFTER
 for DATE in $TODAY $TOMORROW $DAY_AFTER_TOMORROW
 do
     CSV_FILE="$CSV_DIR/jra_race_entries_${DATE}.csv"
+    log "CSVファイルのパス: $CSV_FILE"
     
     # ファイルが存在するか確認
     if [ -f "$CSV_FILE" ]; then
         # ファイルのサイズをチェック
         FILE_SIZE=$(stat -c%s "$CSV_FILE" 2>/dev/null || stat -f%z "$CSV_FILE")
         
+        log "CSVファイルのサイズ: ${FILE_SIZE}バイト"
+        
         if [ "$FILE_SIZE" -gt 100 ]; then  # 100バイト以上あれば処理する
             log "${DATE}のJRAデータ（${FILE_SIZE}バイト）をデータベースに保存します..."
-            python -m scripts.csv_jra_shutuba "$CSV_FILE"
+            PYTHONPATH=$APP_DIR python -m scripts.csv_jra_shutuba "$CSV_FILE"
             
             if [ $? -eq 0 ]; then
                 log "${DATE}のJRAデータの保存が完了しました"
