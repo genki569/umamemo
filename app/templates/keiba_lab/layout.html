@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}競馬ラボ | UMAメモ{% endblock %}</title>
+    <meta name="description" content="{% block meta_description %}競馬の基礎知識から予想法まで幅広く学べる競馬ラボ。初心者から上級者まで役立つ情報を提供します。{% endblock %}">
+    <meta name="keywords" content="{% block meta_keywords %}競馬,競馬予想,馬券,競馬入門,競馬分析{% endblock %}">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            color: #333;
+            background-color: #f8f9fa;
+        }
+        .navbar-brand {
+            font-weight: 700;
+        }
+        .hero-section {
+            background-color: #28a745;
+            color: white;
+            padding: 3rem 0;
+        }
+        .card {
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .card-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid rgba(0,0,0,0.125);
+            font-weight: 500;
+        }
+        .footer {
+            background-color: #343a40;
+            color: white;
+            padding: 2rem 0;
+        }
+        .breadcrumb {
+            background-color: transparent;
+            padding: 0.75rem 0;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            font-weight: 700;
+        }
+        .article-content {
+            line-height: 1.8;
+        }
+        .list-group-item.active {
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+        .btn-primary {
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+        .btn-primary:hover {
+            background-color: #218838;
+            border-color: #1e7e34;
+        }
+        .btn-outline-primary {
+            color: #28a745;
+            border-color: #28a745;
+        }
+        .btn-outline-primary:hover {
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+        .nav-pills .nav-link.active {
+            background-color: #28a745;
+        }
+        .table-success {
+            background-color: rgba(40, 167, 69, 0.1);
+        }
+    </style>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- ナビゲーションバー -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('keiba_lab_index') }}">競馬ラボ</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('keiba_lab_index') }}">ホーム</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('keiba_lab_content', content_path='basics') }}">競馬の基礎知識</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('keiba_lab_content', content_path='prediction') }}">予想・分析法</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('keiba_lab_content', content_path='betting') }}">馬券の知識</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('keiba_lab_content', content_path='racecourse') }}">競馬場ガイド</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('keiba_lab_content', content_path='horse') }}">競走馬の見方</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('index') }}">UMAメモトップへ</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- パンくずリスト -->
+    <div class="container mt-3">
+        {% block breadcrumb %}
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('keiba_lab_index') }}">競馬ラボ</a></li>
+                {% block breadcrumb_items %}{% endblock %}
+            </ol>
+        </nav>
+        {% endblock %}
+    </div>
+
+    <!-- メインコンテンツ -->
+    <div class="container py-4">
+        {% block content %}{% endblock %}
+    </div>
+
+    <!-- フッター -->
+    <footer class="footer mt-auto">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <h5>競馬ラボについて</h5>
+                    <p>競馬の初心者から上級者まで役立つ情報を提供する総合ポータルサイトです。基礎知識、予想方法、馬券購入のコツなど、競馬をより楽しむための情報が満載です。</p>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <h5>カテゴリー</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="{{ url_for('keiba_lab_content', content_path='basics') }}" class="text-white">競馬の基礎知識</a></li>
+                        <li><a href="{{ url_for('keiba_lab_content', content_path='prediction') }}" class="text-white">予想・分析法</a></li>
+                        <li><a href="{{ url_for('keiba_lab_content', content_path='betting') }}" class="text-white">馬券の知識</a></li>
+                        <li><a href="{{ url_for('keiba_lab_content', content_path='racecourse') }}" class="text-white">競馬場ガイド</a></li>
+                        <li><a href="{{ url_for('keiba_lab_content', content_path='horse') }}" class="text-white">競走馬の見方</a></li>
+                        <li><a href="{{ url_for('keiba_lab_content', content_path='bloodline') }}" class="text-white">血統の知識</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <h5>役立つリンク</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="{{ url_for('keiba_lab_content', content_path='beginners/what-is-keiba') }}" class="text-white">競馬初心者ガイド</a></li>
+                        <li><a href="{{ url_for('keiba_lab_content', content_path='basics/terms') }}" class="text-white">競馬用語集</a></li>
+                        <li><a href="{{ url_for('keiba_lab_content', content_path='guide') }}" class="text-white">サイトマップ</a></li>
+                        <li><a href="{{ url_for('index') }}" class="text-white">UMAメモトップ</a></li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="bg-light">
+            <div class="text-center">
+                <p>&copy; 2025 UMAメモ All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html> 
