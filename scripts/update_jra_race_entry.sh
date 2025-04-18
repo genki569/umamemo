@@ -56,21 +56,51 @@ log "中央競馬(JRA)出走表データ更新を開始します"
 
 # 1. スクレイピング
 cd "$APP_DIR" || handle_error "アプリケーションディレクトリに移動できません"
+log "作業ディレクトリ: $(pwd)"
+
+# 実行環境情報を出力
+log "システム情報:"
+uname -a
+log "Pythonのバージョン:"
+python --version
+log "ディスク容量:"
+df -h .
 
 # 仮想環境がある場合はアクティベート
 if [ -d "$APP_DIR/venv" ]; then
     source "$APP_DIR/venv/bin/activate"
+    log "仮想環境をアクティベートしました"
+    python --version
+fi
+
+# Pythonのパスを設定
+export PYTHONPATH="$APP_DIR:$PYTHONPATH"
+log "PYTHONPATH: $PYTHONPATH"
+
+# Playwrightのインストール状態を確認
+if ! python -c "from playwright.sync_api import sync_playwright; print('Playwright is installed')" 2>/dev/null; then
+    log "Playwrightがインストールされていません。インストールを試みます..."
+    pip install playwright
+    python -m playwright install
 fi
 
 # Playwrightのブラウザが存在するか確認し、なければインストール
-if ! python -c "from playwright.sync_api import sync_playwright; exit(0)" 2>/dev/null; then
-    log "Playwrightのブラウザをインストールします..."
-    python -m playwright install chromium
+log "Playwrightブラウザのインストール状態を確認しています..."
+BROWSER_CHECK=$(python -m playwright install --help 2>&1)
+log "ブラウザチェック結果: $BROWSER_CHECK"
+
+python -m playwright install chromium
+log "Chromiumブラウザがインストールされていることを確認しました"
+
+# ブラウザのキャッシュをクリア（問題解決のため）
+if [ -d "$HOME/.cache/ms-playwright" ]; then
+    log "Playwrightのキャッシュディレクトリが存在します"
+    du -sh "$HOME/.cache/ms-playwright" 2>/dev/null || log "キャッシュサイズを取得できません"
 fi
 
 log "スクレイピングを開始します..."
-# スクレイピングスクリプトを実行
-python -m app.scraping.jra_entry_scraper
+# スクレイピングスクリプトを実行（デバッグモードで）
+PYTHONUNBUFFERED=1 python -m app.scraping.jra_entry_scraper
 
 if [ $? -ne 0 ]; then
     handle_error "スクレイピングに失敗しました"
@@ -88,10 +118,14 @@ if [ ! -d "$CSV_DIR" ]; then
     log "CSVディレクトリを作成しました: $CSV_DIR"
 fi
 
+# CSVファイルの一覧を表示
+log "生成されたCSVファイル一覧:"
+ls -la "$CSV_DIR/"
+
 # 3日分の日付を計算（今日、明日、明後日）
 TODAY=$(date '+%Y%m%d')
-TOMORROW=$(date -d "tomorrow" '+%Y%m%d')
-DAY_AFTER_TOMORROW=$(date -d "tomorrow + 1 day" '+%Y%m%d')
+TOMORROW=$(date -d "tomorrow" '+%Y%m%d' 2>/dev/null || date -v+1d '+%Y%m%d')
+DAY_AFTER_TOMORROW=$(date -d "tomorrow + 1 day" '+%Y%m%d' 2>/dev/null || date -v+2d '+%Y%m%d')
 
 log "処理対象日: 今日=${TODAY}, 明日=${TOMORROW}, 明後日=${DAY_AFTER_TOMORROW}"
 
@@ -99,11 +133,13 @@ log "処理対象日: 今日=${TODAY}, 明日=${TOMORROW}, 明後日=${DAY_AFTER
 for DATE in $TODAY $TOMORROW $DAY_AFTER_TOMORROW
 do
     CSV_FILE="$CSV_DIR/jra_race_entries_${DATE}.csv"
+    log "CSVファイルのパス: $CSV_FILE"
     
     # ファイルが存在するか確認
     if [ -f "$CSV_FILE" ]; then
         # ファイルのサイズをチェック
         FILE_SIZE=$(stat -c%s "$CSV_FILE" 2>/dev/null || stat -f%z "$CSV_FILE")
+        log "CSVファイルのサイズ: ${FILE_SIZE}バイト"
         
         if [ "$FILE_SIZE" -gt 100 ]; then  # 100バイト以上あれば処理する
             log "${DATE}のJRAデータ（${FILE_SIZE}バイト）をデータベースに保存します..."
@@ -116,6 +152,8 @@ do
             fi
         else
             log "${DATE}のJRA CSVファイルは空か破損しています: $CSV_FILE（${FILE_SIZE}バイト）"
+            # ファイルの中身を表示（デバッグ用）
+            head -n 10 "$CSV_FILE" 2>/dev/null || log "ファイル内容を表示できません"
         fi
     else
         log "${DATE}のJRA CSVファイルが見つかりません: $CSV_FILE"
