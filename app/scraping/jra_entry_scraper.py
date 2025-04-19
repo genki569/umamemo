@@ -602,20 +602,77 @@ def get_race_urls_for_date(page, context, date_str: str) -> List[str]:
             return document.querySelectorAll('dl.RaceList_DataList').length > 0;
         }''')
         
+        print(f"ページの準備状況: {is_ready}")
+        
         if not is_ready:
             print("ページの準備ができていません。さらに待機します...")
             page.wait_for_timeout(5000)
+            
+            # 別のセレクタも試してみる
+            alternative_selectors = [
+                '.RaceList_DataList', 'dl.RaceList_DataList', '.RaceList_Item', 
+                '.RaceList_DataTitle', '.RaceMainMenu', '.Race_Btn', 
+                'a[href*="shutuba.html"]', 'a[href*="race_id="]'
+            ]
+            
+            for selector in alternative_selectors:
+                count = page.evaluate(f'''() => {{
+                    return document.querySelectorAll('{selector}').length;
+                }}''')
+                print(f"セレクタ '{selector}' の要素数: {count}")
         
         # デバッグ用にHTMLを保存
         os.makedirs('debug', exist_ok=True)
         html_content = page.content()
         with open(f"debug/html_{date_param}.html", "w", encoding="utf-8") as f:
             f.write(html_content)
+            
+        # ページの全テキストを出力（デバッグ用）
+        page_text = page.evaluate('''() => {
+            return document.body.innerText;
+        }''')
+        print("\nページのテキスト内容（一部）:")
+        print(page_text[:500] + "...")  # 最初の500文字だけ表示
+        
+        # 今日のレース情報を含むテキストがあるか確認
+        today_race_text = "本日のレース" in page_text
+        print(f"'本日のレース'テキストの有無: {today_race_text}")
+        
+        # すべてのリンクを取得してレース関連のものを探す
+        all_links = page.evaluate('''() => {
+            const links = Array.from(document.querySelectorAll('a'));
+            return links.map(a => {
+                return {
+                    href: a.href,
+                    text: a.innerText.trim()
+                };
+            }).filter(item => item.href.includes('race_id=') || item.href.includes('shutuba.html'));
+        }''')
+        
+        print(f"\n見つかったレース関連リンク数: {len(all_links)}")
+        for i, link in enumerate(all_links[:10]):  # 最初の10件だけ表示
+            print(f"リンク {i+1}: {link.get('text', '')} - {link.get('href', '')}")
         
         # 開催場所のブロックを取得
         venue_blocks = page.query_selector_all('dl.RaceList_DataList')
         print(f"開催場所のブロック数: {len(venue_blocks)}")
         
+        # セレクタを調整して試してみる
+        if len(venue_blocks) == 0:
+            alternative_venue_selectors = [
+                '.RaceList_DataList', '.RaceList_Item', '.Race_Calendar_List', 
+                '.Race_Calendar_Main', '.RaceList', '.RacePast'
+            ]
+            
+            for selector in alternative_venue_selectors:
+                blocks = page.query_selector_all(selector)
+                print(f"セレクタ '{selector}' によるブロック数: {len(blocks)}")
+                if len(blocks) > 0:
+                    venue_blocks = blocks
+                    print(f"新しいセレクタ '{selector}' でブロックを取得しました")
+                    break
+        
+        # 以下は元のコードと同じ...
         for venue_idx, venue_block in enumerate(venue_blocks, 1):
             try:
                 # 開催場所名を取得
@@ -734,6 +791,21 @@ def get_race_urls_for_date(page, context, date_str: str) -> List[str]:
             race_links = page.query_selector_all('a[href*="race/shutuba.html"]')
             print(f"メインページの出走表リンク数: {len(race_links)}")
             
+            # より汎用的なセレクタを試す
+            if len(race_links) == 0:
+                broader_selectors = [
+                    'a[href*="race_id="]', 'a[href*="/race/"]', 
+                    'a[href*="shutuba"]', '.RaceList_DataItem a'
+                ]
+                
+                for selector in broader_selectors:
+                    broader_links = page.query_selector_all(selector)
+                    print(f"セレクタ '{selector}' によるリンク数: {len(broader_links)}")
+                    if len(broader_links) > 0:
+                        race_links = broader_links
+                        print(f"新しいセレクタ '{selector}' でリンクを取得しました")
+                        break
+            
             for link in race_links:
                 href = link.get_attribute('href')
                 if href and "race_id=" in href:
@@ -782,6 +854,36 @@ def get_race_urls_for_date(page, context, date_str: str) -> List[str]:
                 print(f"URL {i}: {url}")
         else:
             print(f"{date_str}のレースはありません")
+            # 直接日付からURLを生成してみる最後の手段
+            print("日付から直接URLを生成してテストします")
+            today = datetime.now()
+            year = today.year
+            month = today.month
+            day = today.day
+            
+            # メジャーな競馬場のコード
+            venue_codes = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10"]
+            
+            # 一般的なレースIDパターンを試す
+            for venue in venue_codes:
+                test_race_id = f"{year}{venue}01{day:02d}01"  # 簡易的なパターン
+                test_url = f"https://race.netkeiba.com/race/shutuba.html?race_id={test_race_id}"
+                print(f"テスト用URL: {test_url}")
+                
+                try:
+                    test_page = context.new_page()
+                    test_page.goto(test_url, wait_until='domcontentloaded', timeout=10000)
+                    
+                    # ページタイトルを取得
+                    title = test_page.title()
+                    print(f"ページタイトル: {title}")
+                    
+                    # 有効なページか確認
+                    if "エラー" not in title and "見つかりません" not in title and "404" not in title:
+                        all_race_urls.append(test_url)
+                        print(f"有効なURLを発見: {test_url}")
+                finally:
+                    test_page.close()
         
         return all_race_urls
         
