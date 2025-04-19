@@ -1,0 +1,119 @@
+{% extends "keiba_lab/layout.html" %}
+
+{% block keiba_lab_title %}馬体重の見方 | 増減の意味と好走のカラクリ【馬メモ】{% endblock %}
+
+{% block keiba_lab_description %}競走馬の馬体重の見方を解説。前走比での増減の意味、適正体重の探し方、季節による変化など、馬体重から馬のコンディションを読み解くポイントを紹介します。{% endblock %}
+
+{% block keiba_lab_keywords %}馬体重,増減,競走馬,適正体重,前走比,体重増加,体重減少,季節変化,馬体,コンディション,好調馬{% endblock %}
+
+{% block keiba_lab_breadcrumb %}
+<li class="breadcrumb-item"><a href="{{ url_for('keiba_lab_content', content_path='horse') }}">競走馬の見方</a></li>
+<li class="breadcrumb-item active" aria-current="page">馬体重の見方</li>
+{% endblock %}
+
+{% block keiba_lab_page_title %}馬体重の見方{% endblock %}
+{% block keiba_lab_lead %}増減の意味と好走のカラクリ{% endblock %}
+
+{% block keiba_lab_content %}
+<div class="content-container">
+  <section id="introduction" class="content-section animate-fade-in">
+    <h2>馬体重とは</h2>
+    
+    <p>競走馬のコンディションを知る上で、最も客観的かつ数値化された指標が「馬体重」です。競馬場では各レースの出走前に馬体重が発表され、前走時との増減も表示されます。この数値の変化から、馬の調子や仕上がり具合を推測することができます。</p>
+    
+    <p>馬体重は単なる体重ではなく、筋肉量や脂肪量、水分量などを総合した数値です。適切な体重管理は競走馬のパフォーマンスに直結するため、調教師や厩務員は細心の注意を払って管理しています。</p>
+    
+    <div class="alert alert-primary mb-4">
+      <div class="row">
+        <div class="col-md-1 text-center">
+          <i class="fas fa-info-circle fa-3x"></i>
+        </div>
+        <div class="col-md-11">
+          <h4 class="alert-heading">馬体重の基本知識</h4>
+          <ul class="mb-0">
+            <li>中央競馬の平均的な馬体重は、サラブレッドで約450〜480kg程度</li>
+            <li>個体差が大きく、400kg台前半から520kg以上まで様々</li>
+            <li>年齢によっても異なり、2歳馬は成長途中で変化が大きい</li>
+            <li>レース前に発表され、馬番順に表示される</li>
+            <li>前走からの増減も「±○kg」の形で表示される</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    
+    <p>このページでは、馬体重の変化が持つ意味や、体重から馬のコンディションを読み解く方法について詳しく解説します。数字の奥に隠された真実を見抜くことで、より精度の高い予想につなげましょう。</p>
+  </section>
+
+  <section id="meaning" class="content-section animate-fade-in delay-1">
+    <h2>馬体重の増減が意味すること</h2>
+    
+    <p>競走馬の体重変化には様々な要因が考えられます。単純に「増えた＝悪い」「減った＝良い」とは言えず、その馬の特性や前走時の状態、調教内容、季節などを総合的に判断する必要があります。</p>
+    
+    <div class="row mb-4">
+      <div class="col-md-6">
+        <div class="card h-100 border-success">
+          <div class="card-header bg-success text-white">
+            <h3 class="h5 mb-0">体重増加のケース</h3>
+          </div>
+          <div class="card-body">
+            <h4 class="h6">良い変化の可能性</h4>
+            <ul>
+              <li><strong>充実した筋肉量の増加</strong>：特に若馬や休養明けの場合</li>
+              <li><strong>食欲が旺盛で体調が良い</strong>：元気な証拠</li>
+              <li><strong>前走が減量しすぎていた</strong>：適正体重への回復</li>
+              <li><strong>冬季への移行期</strong>：寒さに備えた自然な増加</li>
+            </ul>
+            
+            <h4 class="h6">悪い変化の可能性</h4>
+            <ul>
+              <li><strong>太りすぎ、トレーニング不足</strong>：調教が軽すぎる</li>
+              <li><strong>筋肉ではなく脂肪の増加</strong>：締まりのない体</li>
+              <li><strong>体内の水分貯留</strong>：疲労や体調不良のサイン</li>
+              <li><strong>急激な増加（+15kg以上）</strong>：調整ミスの可能性</li>
+            </ul>
+            
+            <div class="alert alert-light mt-3 mb-0">
+              <p class="small mb-0"><strong>判別のポイント：</strong>馬体全体の張りや毛艶、歩様の軽快さを確認。筋肉質な増加なら前向きに評価できる。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card h-100 border-danger">
+          <div class="card-header bg-danger text-white">
+            <h3 class="h5 mb-0">体重減少のケース</h3>
+          </div>
+          <div class="card-body">
+            <h4 class="h6">良い変化の可能性</h4>
+            <ul>
+              <li><strong>仕上がりへの調整</strong>：余分な脂肪を落とした</li>
+              <li><strong>トレーニング効果</strong>：引き締まった体に変化</li>
+              <li><strong>夏季への移行期</strong>：暑さに備えた自然な減少</li>
+              <li><strong>前走が太りすぎていた</strong>：適正体重への回復</li>
+            </ul>
+            
+            <h4 class="h6">悪い変化の可能性</h4>
+            <ul>
+              <li><strong>過度の調教で消耗</strong>：使いすぎによる疲労</li>
+              <li><strong>体調不良や食欲不振</strong>：病気の可能性</li>
+              <li><strong>筋肉量の減少</strong>：パワー不足につながる</li>
+              <li><strong>急激な減少（-15kg以上）</strong>：深刻な問題の可能性</li>
+            </ul>
+            
+            <div class="alert alert-light mt-3 mb-0">
+              <p class="small mb-0"><strong>判別のポイント：</strong>毛艶や表情の明るさ、歩様の力強さを確認。引き締まった良い減少なら評価できる。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="alert alert-warning">
+      <h4 class="h6">注意すべき急激な変化</h4>
+      <p class="mb-0">
+        前走比で±15kg以上の急激な変化がある場合は注意が必要です。特に人気馬で大幅な体重変化があった場合は、慎重に判断しましょう。ただし、長期休養明けの場合は例外で、+20kg程度の増加でも問題ないケースがあります。
+      </p>
+    </div>
+  </section>
+</div>
+{% endblock %} 

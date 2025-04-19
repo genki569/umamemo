@@ -1,1036 +1,373 @@
-/* 
- * 競馬ラボ専用スタイルシート
- * UMAメモのメインデザインに合わせつつ、競馬ラボの特徴的な要素をデザイン
+/**
+ * keiba_lab.css
+ * @description 競馬ラボページのスタイル定義
+ * @overview UMAメモの競馬ラボセクション専用のスタイル
  */
 
-/* 基本設定 */
+/* 全体のスタイル */
 .keiba-lab {
-  --primary-color: #1E40AF;
-  --primary-dark: #1E3A8A;
-  --primary-light: rgba(30, 64, 175, 0.15);
-  --accent-color: #B91C1C;
-  --accent-light: rgba(185, 28, 28, 0.15);
-  --gradient-primary: linear-gradient(135deg, var(--primary-color), var(--accent-color));
-  --text-color: #1e293b;
-  --text-dark: #0f172a;
-  --text-muted: #475569;
-  --bg-white: #ffffff;
-  --bg-light: #f8fafc;
-  --bg-lighter: #f1f5f9;
-  --border-color: #e2e8f0;
-  --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
-  --card-hover-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-  --spacing-base: 1rem;
-  --border-radius: 12px;
-  --border-radius-sm: 8px;
-  --transition-base: all 0.3s ease;
-  
-  color: var(--text-color);
-  font-size: 16px;
-  line-height: 1.7;
-  letter-spacing: 0.03em;
-  background-color: var(--bg-white);
+  color: #333;
+  font-family: 'Noto Sans JP', sans-serif;
+  background-color: #f9f9f9;
 }
 
-/* トップページのメインメニューリンク強化 */
-.keiba-lab .main-category-link,
-.main-category-link {
-  color: var(--primary-dark) !important;
-  font-weight: 700 !important;
-  font-size: 1.25rem !important;
-  text-decoration: none !important;
-  transition: var(--transition-base);
-  display: block;
-  margin-bottom: 0.5rem;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);
+.keiba-lab a {
+  color: #2c3e50;
+  transition: color 0.3s;
 }
 
-.keiba-lab .main-category-link:hover,
-.main-category-link:hover {
-  color: var(--accent-color) !important;
-  transform: translateX(3px);
-}
-
-/* サブメニューリンク強化 */
-.keiba-lab a.sub-link,
-a.sub-link {
-  color: var(--primary-color) !important;
-  font-weight: 600 !important;
-  display: block;
-  padding: 0.4rem 0;
-  text-decoration: none !important;
-  position: relative;
-  padding-left: 1.2rem;
-  transition: var(--transition-base);
-}
-
-.keiba-lab a.sub-link::before,
-a.sub-link::before {
-  content: '•';
-  position: absolute;
-  left: 0.3rem;
-  color: var(--accent-color);
-}
-
-.keiba-lab a.sub-link:hover,
-a.sub-link:hover {
-  color: var(--accent-color) !important;
-  transform: translateX(3px);
-}
-
-/* グローバルリンクスタイルの強化 */
-.keiba-lab a,
-.keiba-lab .nav-link,
-body.keiba-lab a {
-  color: var(--primary-color) !important;
-  text-decoration: none;
-  font-weight: 500;
-  transition: var(--transition-base);
-}
-
-.keiba-lab a:hover,
-.keiba-lab .nav-link:hover,
-body.keiba-lab a:hover {
-  color: var(--accent-color) !important;
-  text-decoration: underline;
-}
-
-/* ナビゲーション個別設定 */
-.keiba-lab .navbar-nav .nav-link {
-  color: var(--text-dark) !important;
-  font-weight: 600;
-  padding: 0.6rem 1rem;
-  margin: 0 0.2rem;
-  border-radius: var(--border-radius-sm);
-}
-
-.keiba-lab .navbar-nav .nav-link:hover,
-.keiba-lab .navbar-nav .nav-link.active {
-  color: var(--primary-color) !important;
-  background-color: var(--primary-light);
+.keiba-lab a:hover {
+  color: #e74c3c;
   text-decoration: none;
 }
 
-/* ヘッダーセクション */
+/* ヘッダーのスタイル */
 .keiba-lab-header {
-  padding: 4rem 0;
-  background: linear-gradient(to bottom, var(--bg-light), var(--bg-white));
-  position: relative;
-  overflow: hidden;
-  margin-bottom: 2rem;
-  border-radius: 0 0 var(--border-radius) var(--border-radius);
+  padding: 2rem 0;
+  margin-bottom: 3rem;
+  border-bottom: 1px solid #eee;
 }
 
-.keiba-lab-header::before,
-.keiba-lab-header::after {
-  content: '';
-  position: absolute;
-  width: 300px;
-  height: 300px;
-  border-radius: 50%;
-  background: var(--gradient-primary);
-  opacity: 0.07;
-  filter: blur(50px);
-  z-index: 0;
-}
-
-.keiba-lab-header::before {
-  top: -150px;
-  right: -150px;
-}
-
-.keiba-lab-header::after {
-  bottom: -150px;
-  left: -150px;
-}
-
-.keiba-lab-header h1 {
-  font-size: 3rem;
-  font-weight: 800;
-  margin-bottom: 1.25rem;
-  color: var(--primary-dark);
-  position: relative;
-  z-index: 1;
-  letter-spacing: -0.02em;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-}
-
-/* グラデーションタイトル */
-.gradient-text,
-.keiba-lab .gradient-text {
-  background: var(--gradient-primary);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  color: transparent;
-  font-weight: 800;
-  font-size: 1.5rem;
-  display: inline-block;
-}
-
-/* カテゴリーカード */
-.keiba-lab .category-card,
-.category-card {
-  border-radius: var(--border-radius);
-  border: none;
-  box-shadow: var(--card-shadow);
-  transition: var(--transition-base);
-  height: 100%;
-  overflow: hidden;
-  background-color: var(--bg-white);
-}
-
-.keiba-lab .category-card:hover,
-.category-card:hover {
-  transform: translateY(-5px);
-  box-shadow: var(--card-hover-shadow);
-}
-
-.keiba-lab .category-card .card-body,
-.category-card .card-body {
-  padding: 1.75rem;
-}
-
-.keiba-lab .category-icon,
-.category-icon {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  background-color: var(--primary-light);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 1.25rem;
-  transition: var(--transition-base);
-}
-
-.keiba-lab .category-card:hover .category-icon,
-.category-card:hover .category-icon {
-  transform: scale(1.08);
-  background-color: var(--primary-color);
-}
-
-.keiba-lab .category-icon i,
-.category-icon i {
-  font-size: 1.5rem;
-  color: var(--primary-dark);
-  transition: var(--transition-base);
-}
-
-.keiba-lab .category-card:hover .category-icon i,
-.category-card:hover .category-icon i {
-  color: white;
-}
-
-.keiba-lab .category-card h2,
-.category-card h2 {
-  font-size: 1.35rem;
+.keiba-lab-title {
   font-weight: 700;
-  margin: 0;
-  color: var(--text-dark);
+  color: #2c3e50;
+  margin-bottom: 1rem;
 }
 
-.keiba-lab .category-card p,
-.category-card p {
-  color: var(--text-muted);
-  margin: 1.2rem 0;
-  line-height: 1.6;
-  font-size: 1rem;
+/* レベル表示のスタイル */
+.keiba-lab-level {
+  display: inline-block;
+  padding: 0.25rem 1rem;
+  margin-bottom: 1rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
 }
 
-/* カテゴリーリンク */
-.keiba-lab .category-links,
-.category-links {
-  list-style: none;
-  padding: 0;
-  margin: 0;
+.keiba-lab-level-beginner {
+  background-color: #74b9ff;
+  color: #fff;
 }
 
-.keiba-lab .category-links li,
-.category-links li {
-  padding: 0.85rem 0;
-  border-bottom: 1px solid var(--border-color);
+.keiba-lab-level-intermediate {
+  background-color: #55efc4;
+  color: #2d3436;
 }
 
-.keiba-lab .category-links li:last-child,
-.category-links li:last-child {
+.keiba-lab-level-advanced {
+  background-color: #fd79a8;
+  color: #fff;
+}
+
+/* セクションのスタイル */
+.keiba-lab-section {
+  margin-bottom: 3rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid #eee;
+}
+
+.keiba-lab-section:last-child {
   border-bottom: none;
 }
 
-.keiba-lab .category-links a,
-.category-links a {
-  color: var(--primary-dark) !important;
-  text-decoration: none;
-  display: block;
+.keiba-lab-section-title {
   position: relative;
-  padding-left: 1.5rem;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1.5rem;
   font-weight: 600;
-  transition: var(--transition-base);
-  line-height: 1.4;
-  font-size: 1.05rem;
+  color: #2c3e50;
 }
 
-.keiba-lab .category-links a:hover,
-.category-links a:hover {
-  color: var(--accent-color) !important;
-  text-decoration: none;
-  background-color: rgba(30, 64, 175, 0.05);
-  border-radius: 4px;
-  padding-top: 0.3rem;
-  padding-bottom: 0.3rem;
-}
-
-.keiba-lab .category-links a::before,
-.category-links a::before {
-  content: '\f105';
-  font-family: 'Font Awesome 5 Free';
-  font-weight: 900;
-  position: absolute;
-  left: 0;
-  color: var(--accent-color);
-  transition: var(--transition-base);
-}
-
-.keiba-lab .category-links a:hover::before,
-.category-links a:hover::before {
-  transform: translateX(3px);
-  color: var(--accent-color);
-}
-
-.keiba-lab .category-links .sub-links,
-.category-links .sub-links {
-  padding-left: 1.5rem;
-  margin-top: 0.6rem;
-  font-size: 0.95rem;
-}
-
-.keiba-lab .category-links .sub-links div,
-.category-links .sub-links div {
-  margin-bottom: 0.5rem;
-  color: var(--text-muted);
-  line-height: 1.5;
-}
-
-/* 特殊リンクのハイライト */
-.keiba-lab .highlight-link,
-.highlight-link {
-  color: var(--accent-color) !important;
-  font-weight: 600 !important;
-  position: relative;
-  padding-left: 1.2rem;
-}
-
-.keiba-lab .highlight-link::before,
-.highlight-link::before {
-  content: '★';
-  position: absolute;
-  left: 0;
-  color: var(--accent-color);
-}
-
-/* サイド見出し強化 */
-.keiba-lab .category-section-title,
-.category-section-title {
-  font-size: 1.4rem;
-  font-weight: 700;
-  margin-bottom: 1.25rem;
-  color: var(--text-dark);
-  position: relative;
-  padding-bottom: 0.7rem;
-}
-
-.keiba-lab .category-section-title::after,
-.category-section-title::after {
+.keiba-lab-section-title::after {
   content: '';
   position: absolute;
   bottom: 0;
   left: 0;
-  width: 70px;
   height: 3px;
-  background: var(--gradient-primary);
-  border-radius: 3px;
+  width: 50px;
+  background-color: #e74c3c;
 }
 
-/* トップページ用セクションタイトル強化 */
-.section-title {
-  text-align: center;
-  margin-bottom: 3rem;
-}
-
-.section-title h2 {
-  font-size: 2.2rem;
-  font-weight: 800;
-  color: var(--text-dark);
-  margin-bottom: 1rem;
-  position: relative;
-  display: inline-block;
-}
-
-.section-title h2::after {
-  content: '';
-  position: absolute;
-  bottom: -15px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 80px;
-  height: 4px;
-  background: var(--gradient-primary);
-  border-radius: 3px;
-}
-
-.section-title p {
-  font-size: 1.2rem;
-  color: var(--text-muted);
-  max-width: 700px;
-  margin: 0 auto;
-}
-
-/* トップページリンクカード */
-.link-card {
-  display: block;
-  padding: 1.75rem;
-  border-radius: var(--border-radius);
-  background-color: var(--bg-white);
-  box-shadow: var(--card-shadow);
-  transition: var(--transition-base);
-  height: 100%;
-  text-decoration: none !important;
-}
-
-.link-card:hover {
-  transform: translateY(-5px);
-  box-shadow: var(--card-hover-shadow);
-}
-
-.link-card h3 {
-  font-size: 1.3rem;
-  font-weight: 700;
-  margin-bottom: 0.75rem;
-  color: var(--primary-dark);
-  transition: var(--transition-base);
-}
-
-.link-card:hover h3 {
-  color: var(--accent-color);
-}
-
-.link-card p {
-  color: var(--text-muted);
-  margin-bottom: 0;
-}
-
-/* コンテンツページスタイル */
-.content-header {
-  padding: 2.5rem 0;
-  border-bottom: 1px solid var(--border-color);
-  margin-bottom: 2.5rem;
-}
-
-.content-header h1 {
-  font-size: 2.5rem;
-  font-weight: 800;
-  margin-bottom: 1.25rem;
-  color: var(--text-dark);
-  line-height: 1.2;
-  letter-spacing: -0.02em;
-}
-
-.content-header .lead {
-  font-size: 1.25rem;
-  color: var(--text-muted);
-  max-width: 800px;
-  line-height: 1.6;
-  font-weight: 400;
-}
-
-/* 目次スタイル */
-.toc-card {
-  border-radius: var(--border-radius);
+/* カードのスタイル */
+.keiba-lab-card {
+  transition: all 0.3s ease;
   border: none;
-  box-shadow: var(--card-shadow);
-  margin-bottom: 2.5rem;
-  overflow: hidden;
-  background-color: var(--bg-white);
-}
-
-.toc-card .card-header {
-  background-color: var(--primary-light);
-  padding: 1.2rem 1.75rem;
-  border-bottom: none;
-}
-
-.toc-card .card-header h2 {
-  font-size: 1.2rem;
-  font-weight: 700;
-  margin: 0;
-  color: var(--primary-dark);
-}
-
-.toc-card .card-body {
-  padding: 1.75rem;
-}
-
-.toc-card ol, .toc-card ul {
-  margin: 0;
-  padding-left: 1.5rem;
-}
-
-.toc-card li {
-  margin-bottom: 0.6rem;
-  padding: 0.3rem 0;
-}
-
-.toc-card a {
-  color: var(--text-dark);
-  text-decoration: none;
-  transition: var(--transition-base);
-  font-weight: 500;
-  padding: 0.25rem 0.5rem;
-  border-radius: var(--border-radius-sm);
-  display: inline-block;
-}
-
-.toc-card a:hover {
-  color: var(--primary-color);
-  background-color: var(--primary-light);
-}
-
-/* セクションスタイル */
-.content-section {
-  margin-bottom: 4rem;
-}
-
-.content-section h2 {
-  font-size: 1.85rem;
-  font-weight: 700;
-  margin-bottom: 1.75rem;
-  color: var(--text-dark);
-  padding-bottom: 0.85rem;
-  border-bottom: 2px solid var(--primary-light);
-  position: relative;
-  line-height: 1.3;
-}
-
-.content-section h2::after {
-  content: '';
-  position: absolute;
-  bottom: -2px;
-  left: 0;
-  width: 100px;
-  height: 2px;
-  background: var(--gradient-primary);
-}
-
-.content-section h3 {
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin: 2rem 0 1.25rem;
-  color: var(--text-dark);
-  line-height: 1.3;
-}
-
-.content-section h4 {
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin: 1.75rem 0 1rem;
-  color: var(--text-dark);
-  line-height: 1.3;
-}
-
-.content-section p {
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
   margin-bottom: 1.5rem;
-  line-height: 1.8;
-  color: var(--text-color);
-  font-size: 1.05rem;
-}
-
-.content-section strong {
-  color: var(--text-dark);
-  font-weight: 600;
-}
-
-/* リスト */
-.content-section ul, .content-section ol {
-  margin-bottom: 1.75rem;
-  padding-left: 1.5rem;
-}
-
-.content-section li {
-  margin-bottom: 0.6rem;
-  line-height: 1.7;
-  font-size: 1.05rem;
-}
-
-/* 表 */
-.content-table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  margin-bottom: 2.5rem;
-  border-radius: var(--border-radius);
-  overflow: hidden;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
-}
-
-.content-table th {
-  background-color: var(--primary-light);
-  color: var(--primary-dark);
-  font-weight: 600;
-  text-align: left;
-  padding: 1.2rem;
-  border-bottom: 1px solid var(--border-color);
-}
-
-.content-table td {
-  padding: 1.2rem;
-  border-bottom: 1px solid var(--border-color);
-  vertical-align: middle;
-}
-
-.content-table tr:last-child td {
-  border-bottom: none;
-}
-
-.content-table tr:nth-child(even) {
-  background-color: var(--bg-lighter);
-}
-
-/* アラート */
-.custom-alert {
-  border-radius: var(--border-radius);
-  padding: 1.5rem;
-  margin-bottom: 2.5rem;
-  border: none;
-  position: relative;
+  border-radius: 8px;
   overflow: hidden;
 }
 
-.custom-alert::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 5px;
-  height: 100%;
-  background: var(--gradient-primary);
-}
-
-.custom-alert-primary {
-  background-color: var(--primary-light);
-}
-
-.custom-alert-accent {
-  background-color: var(--accent-light);
-}
-
-.custom-alert h4 {
-  font-size: 1.2rem;
-  font-weight: 700;
-  margin-bottom: 0.75rem;
-  color: var(--primary-dark);
-}
-
-.custom-alert p {
-  margin-bottom: 0.5rem;
-  color: var(--text-color);
-  font-size: 1.05rem;
-}
-
-.custom-alert p:last-child {
-  margin-bottom: 0;
-}
-
-/* 関連コンテンツ */
-.related-content {
-  background-color: var(--bg-light);
-  border-radius: var(--border-radius);
-  padding: 2.5rem;
-  margin-top: 3.5rem;
-}
-
-.related-content h3 {
-  font-size: 1.6rem;
-  font-weight: 700;
-  margin-bottom: 1.75rem;
-  color: var(--text-dark);
-}
-
-.related-card {
-  height: 100%;
-  border: none;
-  box-shadow: var(--card-shadow);
-  border-radius: var(--border-radius);
-  transition: var(--transition-base);
-  overflow: hidden;
-  background-color: var(--bg-white);
-}
-
-.related-card:hover {
+.keiba-lab-card:hover {
   transform: translateY(-5px);
-  box-shadow: var(--card-hover-shadow);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
-.related-card .card-body {
-  padding: 1.75rem;
+.keiba-lab-card .card-img-top {
+  height: 160px;
+  object-fit: cover;
 }
 
-.related-card h5 {
-  font-size: 1.2rem;
-  font-weight: 700;
-  margin-bottom: 0.85rem;
-  color: var(--text-dark);
-  line-height: 1.3;
+.keiba-lab-card .card-body {
+  padding: 1.5rem;
 }
 
-.related-card p {
-  color: var(--text-muted);
-  margin-bottom: 0;
-  font-size: 1rem;
-  line-height: 1.6;
-}
-
-/* ボタン */
-.keiba-lab-btn {
-  border-radius: 50px;
-  padding: 0.85rem 1.75rem;
+.keiba-lab-card .card-title {
   font-weight: 600;
-  transition: var(--transition-base);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  text-align: center;
-  font-size: 1rem;
-  line-height: 1.5;
-  display: inline-block;
-  text-decoration: none;
+  margin-bottom: 0.75rem;
 }
 
-.keiba-lab-btn-primary {
-  background: var(--gradient-primary);
+.keiba-lab-card .card-text {
+  color: #666;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+/* サイドバーのスタイル */
+.keiba-lab-sidebar {
+  position: sticky;
+  top: 20px;
+}
+
+.keiba-lab-sidebar .card {
   border: none;
-  color: white !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
 }
 
-.keiba-lab-btn-primary:hover {
-  background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
-  transform: translateY(-2px);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
-  color: white !important;
+.keiba-lab-sidebar .card-body {
+  padding: 1.5rem;
 }
 
-.keiba-lab-btn-outline {
-  background: transparent;
-  border: 2px solid var(--primary-color);
-  color: var(--primary-color) !important;
+.keiba-lab-sidebar h3 {
+  font-weight: 600;
+  color: #2c3e50;
 }
 
-.keiba-lab-btn-outline:hover {
-  background: var(--primary-light);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-  color: var(--primary-color) !important;
+.keiba-lab-sidebar ul li a {
+  color: #2c3e50;
+  transition: color 0.3s;
 }
 
-/* パンくずリスト */
-.keiba-lab-breadcrumb {
-  padding: 1.25rem 0;
-  background: transparent;
+.keiba-lab-sidebar ul li a:hover {
+  color: #e74c3c;
 }
 
-.keiba-lab-breadcrumb ol {
-  padding: 0;
-  margin: 0;
-  list-style: none;
-  display: flex;
-  flex-wrap: wrap;
-}
-
-.keiba-lab-breadcrumb li {
+/* 人気順位のバッジスタイル */
+.keiba-lab-sidebar .badge {
+  width: 24px;
+  height: 24px;
+  line-height: 18px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
-  font-size: 0.95rem;
+  justify-content: center;
 }
 
-.keiba-lab-breadcrumb li:not(:last-child)::after {
-  content: '\f105';
-  font-family: 'Font Awesome 5 Free';
-  font-weight: 900;
-  margin: 0 0.85rem;
-  color: var(--text-muted);
-}
-
-.keiba-lab-breadcrumb a {
-  color: var(--text-muted);
-  text-decoration: none;
-  transition: var(--transition-base);
-  font-weight: 500;
-}
-
-.keiba-lab-breadcrumb a:hover {
-  color: var(--primary-color);
-}
-
-.keiba-lab-breadcrumb .active {
-  color: var(--text-dark);
-  font-weight: 600;
-}
-
-/* フッター */
-.keiba-lab .footer {
-  background-color: var(--bg-light);
-  padding: 4rem 0 2rem;
-  border-top: 1px solid var(--border-color);
-  margin-top: 4rem;
-  position: relative;
-}
-
-.keiba-lab .footer h5 {
-  color: var(--text-dark);
-  font-size: 1.2rem;
-  font-weight: 700;
+/* 特集記事のスタイル */
+.keiba-lab-content {
+  background-color: #fff;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
   margin-bottom: 1.5rem;
 }
 
-.keiba-lab .footer p {
-  color: var(--text-muted);
-  line-height: 1.6;
-  margin-bottom: 1.25rem;
+.keiba-lab-content h3 {
+  font-weight: 600;
+  color: #2c3e50;
 }
 
-.keiba-lab .footer ul {
+.keiba-lab-content p {
+  color: #666;
+  margin-bottom: 1rem;
+}
+
+/* 目次のスタイル */
+.keiba-lab-toc {
+  background-color: #fff;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
   margin-bottom: 2rem;
 }
 
-.keiba-lab .footer ul li {
-  margin-bottom: 0.75rem;
+.keiba-lab-toc h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #eee;
 }
 
-.keiba-lab .footer a.text-muted {
-  color: var(--primary-color) !important;
-  opacity: 0.9;
+.keiba-lab-toc ul {
+  list-style: none;
+  padding-left: 0;
+  margin-bottom: 0;
+}
+
+.keiba-lab-toc ul li {
+  margin-bottom: 0.5rem;
+}
+
+.keiba-lab-toc ul li a {
+  display: block;
+  padding: 0.35rem 0;
+  color: #2c3e50;
   text-decoration: none;
-  transition: var(--transition-base);
-  display: inline-block;
-  padding: 0.2rem 0;
+  transition: all 0.3s;
 }
 
-.keiba-lab .footer a.text-muted:hover {
-  color: var(--accent-color) !important;
-  opacity: 1;
-  transform: translateX(3px);
+.keiba-lab-toc ul li a:hover,
+.keiba-lab-toc ul li a.active {
+  color: #e74c3c;
+  padding-left: 5px;
 }
 
-.keiba-lab .footer hr {
-  border-color: var(--border-color);
+/* 記事詳細ページのスタイル */
+.keiba-lab-article {
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.keiba-lab-article h1 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: #2c3e50;
+}
+
+.keiba-lab-article h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #e74c3c;
+  color: #2c3e50;
+}
+
+.keiba-lab-article h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+  color: #2c3e50;
+}
+
+.keiba-lab-article p {
+  margin-bottom: 1.5rem;
+  line-height: 1.8;
+}
+
+.keiba-lab-article img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 5px;
+  margin-bottom: 1.5rem;
+}
+
+.keiba-lab-article blockquote {
+  padding: 1rem 1.5rem;
+  margin: 0 0 1.5rem;
+  border-left: 4px solid #e74c3c;
+  background-color: #f8f9fa;
+  font-style: italic;
+  color: #6c757d;
+}
+
+.keiba-lab-article ul,
+.keiba-lab-article ol {
+  margin-bottom: 1.5rem;
+  padding-left: 1.5rem;
+}
+
+.keiba-lab-article li {
+  margin-bottom: 0.5rem;
+}
+
+.keiba-lab-article table {
+  width: 100%;
+  margin-bottom: 1.5rem;
+  border-collapse: collapse;
+}
+
+.keiba-lab-article th,
+.keiba-lab-article td {
+  padding: 0.75rem;
+  border: 1px solid #dee2e6;
+}
+
+.keiba-lab-article th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+}
+
+/* 著者情報のスタイル */
+.keiba-lab-author {
+  display: flex;
+  align-items: center;
+  padding: 1.5rem;
   margin: 2rem 0;
+  background-color: #f8f9fa;
+  border-radius: 8px;
 }
 
-/* モバイル対応 */
-@media (max-width: 992px) {
-  .keiba-lab-header {
-    padding: 3rem 0;
-  }
-  
-  .keiba-lab-header h1 {
-    font-size: 2.5rem;
-  }
-  
-  .keiba-lab-header p.lead {
-    font-size: 1.2rem;
-  }
-  
-  .content-header h1 {
-    font-size: 2rem;
-  }
-  
-  .content-section h2 {
-    font-size: 1.7rem;
-  }
-  
-  .content-section h3 {
-    font-size: 1.4rem;
-  }
-  
-  .content-section p, 
-  .content-section li {
-    font-size: 1rem;
-  }
+.keiba-lab-author-avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-right: 1rem;
 }
 
-@media (max-width: 768px) {
-  .keiba-lab {
-    font-size: 15px;
-  }
-  
-  .keiba-lab-header {
-    padding: 2.5rem 0;
-  }
-  
-  .keiba-lab-header h1 {
-    font-size: 2.2rem;
-  }
-  
-  .keiba-lab-header p.lead {
-    font-size: 1.1rem;
-  }
-  
-  .category-card .card-body {
-    padding: 1.5rem;
-  }
-  
-  .category-icon {
-    width: 50px;
-    height: 50px;
-  }
-  
-  .category-card h2 {
-    font-size: 1.3rem;
-  }
-  
-  .content-header {
-    padding: 2rem 0;
-  }
-  
-  .content-header h1 {
-    font-size: 1.85rem;
-  }
-  
-  .content-header .lead {
-    font-size: 1.05rem;
-  }
-  
-  .content-section h2 {
-    font-size: 1.6rem;
-  }
-  
-  .content-section h3 {
-    font-size: 1.3rem;
-  }
-  
-  .content-section h4 {
-    font-size: 1.15rem;
-  }
-  
-  .toc-card {
-    margin-bottom: 2rem;
-  }
-  
-  .related-content {
-    padding: 2rem;
-  }
-  
-  .keiba-lab .footer {
-    padding: 3rem 0 2rem;
-  }
-}
-
-@media (max-width: 576px) {
-  .keiba-lab-header {
-    padding: 2rem 0;
-  }
-  
-  .keiba-lab-header h1 {
-    font-size: 2rem;
-  }
-  
-  .category-links .sub-links {
-    padding-left: 1.25rem;
-  }
-  
-  .content-table th,
-  .content-table td {
-    padding: 1rem;
-  }
-  
-  .custom-alert {
-    padding: 1.25rem;
-  }
-  
-  .related-card .card-body {
-    padding: 1.5rem;
-  }
-  
-  .keiba-lab-btn {
-    padding: 0.75rem 1.5rem;
-    font-size: 0.95rem;
-  }
-  
-  .content-section p, 
-  .content-section li {
-    font-size: 0.95rem;
-  }
-  
-  .related-content {
-    padding: 1.5rem;
-  }
-}
-
-/* 装飾要素 */
-.gradient-border {
-  position: relative;
-  border-radius: var(--border-radius);
-  padding: 4px;
-  background: var(--gradient-primary);
-}
-
-.gradient-border::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
+.keiba-lab-author-avatar img {
   width: 100%;
   height: 100%;
-  border-radius: var(--border-radius);
-  background: white;
-  margin: 2px;
-  z-index: 0;
+  object-fit: cover;
 }
 
-.gradient-border > * {
-  position: relative;
-  z-index: 1;
+.keiba-lab-author-info h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
 }
 
-/* アニメーション */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
+.keiba-lab-author-info p {
+  font-size: 0.9rem;
+  margin-bottom: 0;
+  color: #6c757d;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 767.98px) {
+  .keiba-lab-header {
+    padding: 1.5rem 0;
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+  
+  .keiba-lab-title {
+    font-size: 2rem;
   }
-}
-
-.animate-fade-in {
-  animation: fadeIn 0.8s ease-out forwards;
-}
-
-/* 遅延アニメーション */
-.delay-1 { animation-delay: 0.1s; }
-.delay-2 { animation-delay: 0.2s; }
-.delay-3 { animation-delay: 0.3s; }
-.delay-4 { animation-delay: 0.4s; }
-.delay-5 { animation-delay: 0.5s; }
-
-/* アクセシビリティ向上 */
-.keiba-lab a:focus,
-.keiba-lab button:focus,
-.keiba-lab input:focus,
-.keiba-lab select:focus,
-.keiba-lab textarea:focus {
-  outline: 2px solid var(--primary-color);
-  outline-offset: 2px;
-}
-
-/* リンクスタイルの強化 */
-.keiba-lab a {
-  color: var(--primary-color);
-  text-decoration: none;
-  font-weight: 500;
-  transition: var(--transition-base);
-}
-
-.keiba-lab a:hover {
-  color: var(--primary-dark);
-  text-decoration: underline;
+  
+  .keiba-lab-card .card-img-top {
+    height: 140px;
+  }
+  
+  .keiba-lab-article {
+    padding: 1.5rem;
+  }
+  
+  .keiba-lab-article h1 {
+    font-size: 1.5rem;
+  }
+  
+  .keiba-lab-article h2 {
+    font-size: 1.3rem;
+  }
+  
+  .keiba-lab-article h3 {
+    font-size: 1.1rem;
+  }
 } 

@@ -1,125 +1,145 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}競馬ラボ | UMAメモ{% endblock %}</title>
-    <meta name="description" content="{% block meta_description %}競馬の基礎知識から予想法まで幅広く学べる競馬ラボ。初心者から上級者まで役立つ情報を提供します。{% endblock %}">
-    <meta name="keywords" content="{% block meta_keywords %}競馬,競馬予想,馬券,競馬入門,競馬分析{% endblock %}">
-    
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
-    
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/mobile.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/keiba_lab.css') }}">
-    
-    {% block extra_css %}{% endblock %}
-</head>
-<body class="keiba-lab">
-    <!-- ナビゲーションバー -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
-        <div class="container">
-            <a class="navbar-brand" href="{{ url_for('keiba_lab_index') }}">
-                <span class="gradient-text">競馬ラボ</span>
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('keiba_lab_index') }}">ホーム</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('keiba_lab_content', content_path='basics') }}">競馬の基礎知識</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('keiba_lab_content', content_path='prediction') }}">予想・分析法</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('keiba_lab_content', content_path='betting') }}">馬券の知識</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('keiba_lab_content', content_path='racecourse') }}">競馬場ガイド</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('keiba_lab_content', content_path='horse') }}">競走馬の見方</a>
-                    </li>
-                </ul>
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('index') }}">UMAメモトップへ</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+{% extends "base.html" %}
 
-    <!-- パンくずリスト -->
-    <div class="container mt-3">
-        {% block breadcrumb %}
-        <nav aria-label="breadcrumb" class="keiba-lab-breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{{ url_for('keiba_lab_index') }}">競馬ラボ</a></li>
-                {% block breadcrumb_items %}{% endblock %}
-            </ol>
-        </nav>
-        {% endblock %}
-    </div>
+{% block title %}{% block keiba_lab_title %}競馬ラボ | 初心者から上級者まで競馬の全てを学べる情報サイト【馬メモ】{% endblock %}{% endblock %}
 
-    <!-- メインコンテンツ -->
-    <div class="container py-4">
-        {% block content %}{% endblock %}
-    </div>
+{% block meta_description %}{% block keiba_lab_description %}競馬の基礎知識から予想法、血統理論まで幅広く学べる競馬ラボ。初心者向けの競馬入門から中級者・上級者向けの専門的な内容まで、競馬に関する様々な情報を提供しています。{% endblock %}{% endblock %}
 
-    <!-- フッター -->
-    <footer class="footer mt-auto">
+{% block meta_keywords %}{% block keiba_lab_keywords %}競馬,競馬予想,馬券,競馬入門,競馬分析,血統理論,馬券種類,コース特性,騎手,調教師{% endblock %}{% endblock %}
+
+{% block extra_css %}
+{% include "keiba_lab/include/common-styles.html" %}
+{% block keiba_lab_page_css %}{% endblock %}
+{% endblock %}
+
+{% block extra_js %}
+{% include "keiba_lab/include/common-scripts.html" %}
+{% block keiba_lab_page_js %}{% endblock %}
+{% endblock %}
+
+{% block content %}
+<div class="keiba-lab">
+    <!-- 共通ヘッダー -->
+    <div class="keiba-lab-header mb-5">
         <div class="container">
             <div class="row">
-                <div class="col-md-4 mb-4">
-                    <h5>競馬ラボについて</h5>
-                    <p>競馬の初心者から上級者まで役立つ情報を提供する総合ポータルサイトです。基礎知識、予想方法、馬券購入のコツなど、競馬をより楽しむための情報が満載です。</p>
-                </div>
-                <div class="col-md-4 mb-4">
-                    <h5>カテゴリー</h5>
-                    <ul class="list-unstyled">
-                        <li><a href="{{ url_for('keiba_lab_content', content_path='basics') }}" class="text-muted">競馬の基礎知識</a></li>
-                        <li><a href="{{ url_for('keiba_lab_content', content_path='prediction') }}" class="text-muted">予想・分析法</a></li>
-                        <li><a href="{{ url_for('keiba_lab_content', content_path='betting') }}" class="text-muted">馬券の知識</a></li>
-                        <li><a href="{{ url_for('keiba_lab_content', content_path='racecourse') }}" class="text-muted">競馬場ガイド</a></li>
-                        <li><a href="{{ url_for('keiba_lab_content', content_path='horse') }}" class="text-muted">競走馬の見方</a></li>
-                        <li><a href="{{ url_for('keiba_lab_content', content_path='bloodline') }}" class="text-muted">血統の知識</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-4 mb-4">
-                    <h5>役立つリンク</h5>
-                    <ul class="list-unstyled">
-                        <li><a href="{{ url_for('keiba_lab_content', content_path='beginners/what-is-keiba') }}" class="text-muted">競馬初心者ガイド</a></li>
-                        <li><a href="{{ url_for('keiba_lab_content', content_path='basics/terms') }}" class="text-muted">競馬用語集</a></li>
-                        <li><a href="{{ url_for('keiba_lab_content', content_path='guide') }}" class="text-muted">サイトマップ</a></li>
-                        <li><a href="{{ url_for('index') }}" class="text-muted">UMAメモトップ</a></li>
-                    </ul>
+                <div class="col-12">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{{ url_for('index') }}">ホーム</a></li>
+                            <li class="breadcrumb-item"><a href="{{ url_for('keiba_lab_index') }}">競馬ラボ</a></li>
+                            {% block keiba_lab_breadcrumb %}{% endblock %}
+                        </ol>
+                    </nav>
                 </div>
             </div>
-            <hr class="bg-light">
-            <div class="text-center">
-                <p class="text-muted">&copy; 2025 UMAメモ All Rights Reserved.</p>
+            
+            <div class="row">
+                <div class="col-lg-8 mx-auto text-center">
+                    <h1 class="keiba-lab-title">{% block keiba_lab_page_title %}競馬ラボ{% endblock %}</h1>
+                    <p class="lead">{% block keiba_lab_lead %}競馬の知識と分析のための総合情報サイト{% endblock %}</p>
+                </div>
             </div>
         </div>
-    </footer>
-
-    <!-- Bootstrap Bundle with Popper -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    {% block scripts %}{% endblock %}
-</body>
-</html> 
+    </div>
+    
+    <!-- メインコンテンツ -->
+    <div class="container mb-5">
+        <div class="row">
+            <!-- コンテンツ本体 -->
+            <div class="col-lg-8">
+                <div class="keiba-lab-content">
+                    {% block keiba_lab_content %}{% endblock %}
+                </div>
+            </div>
+            
+            <!-- サイドバー -->
+            <div class="col-lg-4">
+                <div class="keiba-lab-sidebar sticky-top" style="top: 2rem;">
+                    <!-- 検索ボックス -->
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-body">
+                            <h4 class="h5 mb-3">コンテンツ検索</h4>
+                            <form action="{{ url_for('keiba_lab_search') }}" method="get">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" placeholder="キーワードを入力" name="q">
+                                    <button class="btn btn-primary" type="submit">検索</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <!-- カテゴリーリスト -->
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-body">
+                            <h4 class="h5 mb-3">カテゴリー</h4>
+                            <ul class="list-unstyled mb-0">
+                                <li class="mb-2"><a href="{{ url_for('keiba_lab_content', content_path='basics') }}">競馬基礎知識</a></li>
+                                <li class="mb-2"><a href="{{ url_for('keiba_lab_content', content_path='racecourse') }}">競馬場ガイド</a></li>
+                                <li class="mb-2"><a href="{{ url_for('keiba_lab_content', content_path='prediction') }}">予想の基本理論</a></li>
+                                <li class="mb-2"><a href="{{ url_for('keiba_lab_content', content_path='betting') }}">馬券の知識</a></li>
+                                <li class="mb-2"><a href="{{ url_for('keiba_lab_content', content_path='bloodline') }}">血統の知識</a></li>
+                                <li class="mb-2"><a href="{{ url_for('keiba_lab_content', content_path='horse') }}">競走馬の見方</a></li>
+                                <li class="mb-2"><a href="{{ url_for('keiba_lab_content', content_path='course') }}">コース攻略</a></li>
+                                <li><a href="{{ url_for('keiba_lab_content', content_path='investment') }}">馬券投資の基本</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <!-- レベル別コンテンツ -->
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-body">
+                            <h4 class="h5 mb-3">レベル別コンテンツ</h4>
+                            <div class="list-group list-group-flush">
+                                <a href="{{ url_for('keiba_lab_content', content_path='beginners') }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                    初心者向け
+                                    <span class="badge bg-primary rounded-pill">基礎</span>
+                                </a>
+                                <a href="{{ url_for('keiba_lab_content', content_path='intermediate') }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                    中級者向け
+                                    <span class="badge bg-success rounded-pill">応用</span>
+                                </a>
+                                <a href="{{ url_for('keiba_lab_content', content_path='advanced') }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                    上級者向け
+                                    <span class="badge bg-danger rounded-pill">専門</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 人気コンテンツ -->
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <h4 class="h5 mb-3">人気コンテンツ</h4>
+                            <div class="list-group list-group-flush">
+                                <a href="{{ url_for('keiba_lab_content', content_path='basics/enjoy/first-time') }}" class="list-group-item list-group-item-action">初めての競馬観戦ガイド</a>
+                                <a href="{{ url_for('keiba_lab_content', content_path='prediction/pro-tips') }}" class="list-group-item list-group-item-action">プロが教える馬券の選び方</a>
+                                <a href="{{ url_for('keiba_lab_content', content_path='horse/paddock-check') }}" class="list-group-item list-group-item-action">パドックでチェックすべきポイント</a>
+                                <a href="{{ url_for('keiba_lab_content', content_path='bloodline/basics') }}" class="list-group-item list-group-item-action">競走馬の血統基礎</a>
+                                <a href="{{ url_for('keiba_lab_content', content_path='betting/types') }}" class="list-group-item list-group-item-action">馬券の種類と特徴</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- フッターCTA -->
+    <div class="container mb-5">
+        <div class="row">
+            <div class="col-12">
+                <div class="card bg-primary text-white shadow">
+                    <div class="card-body p-4 text-center">
+                        <h3 class="mb-3">競馬をもっと楽しむなら</h3>
+                        <p class="lead mb-4">あなたの競馬ライフを豊かにする情報がいっぱい！</p>
+                        <div class="d-flex justify-content-center gap-3 flex-wrap">
+                            <a href="{{ url_for('keiba_lab_content', content_path='guide') }}" class="btn btn-light">全コンテンツ一覧</a>
+                            <a href="{{ url_for('keiba_lab_content', content_path='beginners/what-is-keiba') }}" class="btn btn-outline-light">初心者向けガイド</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

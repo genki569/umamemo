@@ -1,0 +1,342 @@
+{% extends "base.html" %}
+
+{% block title %}UMAメモ | 競馬ラボ - 競馬の分析と予想技術を学ぶ{% endblock %}
+
+{% block meta_description %}競馬の傾向分析、予想テクニック、データ分析方法などを初心者から上級者まで幅広く解説するUMAメモの競馬ラボです。{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/keiba_lab.css') }}">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.24.1/themes/prism.css">
+{% endblock %}
+
+{% block content %}
+<div class="keiba-lab">
+  <div class="container py-5">
+    <!-- ヘッダーセクション -->
+    <header class="keiba-lab-header text-center">
+      <h1 class="keiba-lab-title">競馬ラボ</h1>
+      <p class="lead">競馬の分析と予想技術を学ぶ知識の宝庫</p>
+    </header>
+
+    <div class="row">
+      <!-- メインコンテンツエリア -->
+      <div class="col-lg-8">
+        <!-- 検索とフィルターエリア -->
+        <div class="keiba-lab-controls mb-4">
+          <div class="card">
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-6 mb-3 mb-md-0">
+                  <div class="input-group">
+                    <input type="text" class="form-control keiba-lab-search-input" placeholder="記事を検索...">
+                    <button class="btn btn-outline-secondary" type="button">
+                      <i class="fas fa-search"></i>
+                    </button>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="btn-group w-100" role="group">
+                    <button type="button" class="btn btn-outline-primary keiba-lab-level-filter active" data-filter="all">すべて</button>
+                    <button type="button" class="btn btn-outline-primary keiba-lab-level-filter" data-filter="beginner">初心者</button>
+                    <button type="button" class="btn btn-outline-primary keiba-lab-level-filter" data-filter="intermediate">中級者</button>
+                    <button type="button" class="btn btn-outline-primary keiba-lab-level-filter" data-filter="advanced">上級者</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 特集記事セクション -->
+        <section class="keiba-lab-section">
+          <h2 class="keiba-lab-section-title">特集記事</h2>
+          <div class="keiba-lab-featured">
+            <div class="card mb-4">
+              <div class="row g-0">
+                <div class="col-md-4">
+                  <img src="{{ url_for('static', filename='images/keiba_lab_featured.jpg') }}" class="img-fluid rounded-start h-100 w-100" style="object-fit: cover;" alt="特集記事">
+                </div>
+                <div class="col-md-8">
+                  <div class="card-body">
+                    <span class="keiba-lab-level keiba-lab-level-intermediate">中級者向け</span>
+                    <h3 class="card-title">JRA-VANデータを活用した狙い馬の見つけ方</h3>
+                    <p class="card-text">JRA-VANデータラボの膨大なデータから、上がり最速や上昇度などの指標を使って好調馬を見極める方法を解説します。データ分析の初歩から実践的な活用方法まで幅広くカバー。</p>
+                    <p class="card-text"><small class="text-muted">更新日: 2023年11月10日</small></p>
+                    <a href="{{ url_for('keiba_lab_article', article_id='jravan-data-analysis') }}" class="btn btn-primary">読む</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 最新記事セクション -->
+        <section class="keiba-lab-section">
+          <h2 class="keiba-lab-section-title">最新記事</h2>
+          <div class="row keiba-lab-articles">
+            {% for article in latest_articles %}
+            <div class="col-md-6 mb-4">
+              <div class="keiba-lab-card card h-100" data-level="{{ article.level }}">
+                <img src="{{ article.image }}" class="card-img-top" alt="{{ article.title }}">
+                <div class="card-body">
+                  <span class="keiba-lab-level keiba-lab-level-{{ article.level }}">
+                    {% if article.level == 'beginner' %}初心者向け
+                    {% elif article.level == 'intermediate' %}中級者向け
+                    {% elif article.level == 'advanced' %}上級者向け
+                    {% endif %}
+                  </span>
+                  <h5 class="card-title">{{ article.title }}</h5>
+                  <p class="card-text">{{ article.excerpt }}</p>
+                  <div class="d-flex justify-content-between align-items-center">
+                    <a href="{{ url_for('keiba_lab_article', article_id=article.id) }}" class="btn btn-outline-primary btn-sm">続きを読む</a>
+                    <small class="text-muted">{{ article.date }}</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+          
+          <!-- ページネーション -->
+          <nav aria-label="記事ページナビゲーション">
+            <ul class="pagination justify-content-center">
+              <li class="page-item {% if current_page == 1 %}disabled{% endif %}">
+                <a class="page-link" href="{{ url_for('keiba_lab', page=current_page-1) if current_page > 1 else '#' }}" tabindex="-1" aria-disabled="true">前へ</a>
+              </li>
+              {% for page in range(1, total_pages + 1) %}
+              <li class="page-item {% if page == current_page %}active{% endif %}">
+                <a class="page-link" href="{{ url_for('keiba_lab', page=page) }}">{{ page }}</a>
+              </li>
+              {% endfor %}
+              <li class="page-item {% if current_page == total_pages %}disabled{% endif %}">
+                <a class="page-link" href="{{ url_for('keiba_lab', page=current_page+1) if current_page < total_pages else '#' }}">次へ</a>
+              </li>
+            </ul>
+          </nav>
+        </section>
+
+        <!-- カテゴリ別記事セクション -->
+        <section class="keiba-lab-section">
+          <h2 class="keiba-lab-section-title">カテゴリ別の記事</h2>
+          
+          <!-- タブナビゲーション -->
+          <ul class="nav nav-tabs mb-4" id="categoryTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button class="nav-link active" id="analysis-tab" data-bs-toggle="tab" data-bs-target="#analysis" type="button" role="tab" aria-controls="analysis" aria-selected="true">傾向分析</button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="handicap-tab" data-bs-toggle="tab" data-bs-target="#handicap" type="button" role="tab" aria-controls="handicap" aria-selected="false">馬券術</button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="data-tab" data-bs-toggle="tab" data-bs-target="#data" type="button" role="tab" aria-controls="data" aria-selected="false">データ活用</button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="course-tab" data-bs-toggle="tab" data-bs-target="#course" type="button" role="tab" aria-controls="course" aria-selected="false">コース別攻略</button>
+            </li>
+          </ul>
+          
+          <!-- タブコンテンツ -->
+          <div class="tab-content" id="categoryTabsContent">
+            <!-- 傾向分析タブ -->
+            <div class="tab-pane fade show active" id="analysis" role="tabpanel" aria-labelledby="analysis-tab">
+              <div class="row">
+                {% for article in category_articles.analysis %}
+                <div class="col-md-6 mb-4">
+                  <div class="keiba-lab-card card h-100" data-level="{{ article.level }}">
+                    <img src="{{ article.image }}" class="card-img-top" alt="{{ article.title }}">
+                    <div class="card-body">
+                      <span class="keiba-lab-level keiba-lab-level-{{ article.level }}">
+                        {% if article.level == 'beginner' %}初心者向け
+                        {% elif article.level == 'intermediate' %}中級者向け
+                        {% elif article.level == 'advanced' %}上級者向け
+                        {% endif %}
+                      </span>
+                      <h5 class="card-title">{{ article.title }}</h5>
+                      <p class="card-text">{{ article.excerpt }}</p>
+                      <a href="{{ url_for('keiba_lab_article', article_id=article.id) }}" class="btn btn-outline-primary btn-sm">続きを読む</a>
+                    </div>
+                  </div>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+            
+            <!-- 馬券術タブ -->
+            <div class="tab-pane fade" id="handicap" role="tabpanel" aria-labelledby="handicap-tab">
+              <div class="row">
+                {% for article in category_articles.handicap %}
+                <div class="col-md-6 mb-4">
+                  <div class="keiba-lab-card card h-100" data-level="{{ article.level }}">
+                    <img src="{{ article.image }}" class="card-img-top" alt="{{ article.title }}">
+                    <div class="card-body">
+                      <span class="keiba-lab-level keiba-lab-level-{{ article.level }}">
+                        {% if article.level == 'beginner' %}初心者向け
+                        {% elif article.level == 'intermediate' %}中級者向け
+                        {% elif article.level == 'advanced' %}上級者向け
+                        {% endif %}
+                      </span>
+                      <h5 class="card-title">{{ article.title }}</h5>
+                      <p class="card-text">{{ article.excerpt }}</p>
+                      <a href="{{ url_for('keiba_lab_article', article_id=article.id) }}" class="btn btn-outline-primary btn-sm">続きを読む</a>
+                    </div>
+                  </div>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+            
+            <!-- データ活用タブ -->
+            <div class="tab-pane fade" id="data" role="tabpanel" aria-labelledby="data-tab">
+              <div class="row">
+                {% for article in category_articles.data %}
+                <div class="col-md-6 mb-4">
+                  <div class="keiba-lab-card card h-100" data-level="{{ article.level }}">
+                    <img src="{{ article.image }}" class="card-img-top" alt="{{ article.title }}">
+                    <div class="card-body">
+                      <span class="keiba-lab-level keiba-lab-level-{{ article.level }}">
+                        {% if article.level == 'beginner' %}初心者向け
+                        {% elif article.level == 'intermediate' %}中級者向け
+                        {% elif article.level == 'advanced' %}上級者向け
+                        {% endif %}
+                      </span>
+                      <h5 class="card-title">{{ article.title }}</h5>
+                      <p class="card-text">{{ article.excerpt }}</p>
+                      <a href="{{ url_for('keiba_lab_article', article_id=article.id) }}" class="btn btn-outline-primary btn-sm">続きを読む</a>
+                    </div>
+                  </div>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+            
+            <!-- コース別攻略タブ -->
+            <div class="tab-pane fade" id="course" role="tabpanel" aria-labelledby="course-tab">
+              <div class="row">
+                {% for article in category_articles.course %}
+                <div class="col-md-6 mb-4">
+                  <div class="keiba-lab-card card h-100" data-level="{{ article.level }}">
+                    <img src="{{ article.image }}" class="card-img-top" alt="{{ article.title }}">
+                    <div class="card-body">
+                      <span class="keiba-lab-level keiba-lab-level-{{ article.level }}">
+                        {% if article.level == 'beginner' %}初心者向け
+                        {% elif article.level == 'intermediate' %}中級者向け
+                        {% elif article.level == 'advanced' %}上級者向け
+                        {% endif %}
+                      </span>
+                      <h5 class="card-title">{{ article.title }}</h5>
+                      <p class="card-text">{{ article.excerpt }}</p>
+                      <a href="{{ url_for('keiba_lab_article', article_id=article.id) }}" class="btn btn-outline-primary btn-sm">続きを読む</a>
+                    </div>
+                  </div>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+      
+      <!-- サイドバー -->
+      <div class="col-lg-4">
+        <div class="keiba-lab-sidebar">
+          <!-- 人気記事 -->
+          <div class="card mb-4">
+            <div class="card-body">
+              <h3 class="card-title mb-3">人気の記事</h3>
+              <ul class="list-unstyled">
+                {% for article in popular_articles %}
+                <li class="d-flex align-items-center mb-3">
+                  <span class="badge bg-primary me-2">{{ loop.index }}</span>
+                  <a href="{{ url_for('keiba_lab_article', article_id=article.id) }}">{{ article.title }}</a>
+                </li>
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+          
+          <!-- カテゴリ一覧 -->
+          <div class="card mb-4">
+            <div class="card-body">
+              <h3 class="card-title mb-3">カテゴリ</h3>
+              <ul class="list-group list-group-flush">
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                  <a href="{{ url_for('keiba_lab_category', category='analysis') }}">傾向分析</a>
+                  <span class="badge bg-primary rounded-pill">{{ category_counts.analysis }}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                  <a href="{{ url_for('keiba_lab_category', category='handicap') }}">馬券術</a>
+                  <span class="badge bg-primary rounded-pill">{{ category_counts.handicap }}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                  <a href="{{ url_for('keiba_lab_category', category='data') }}">データ活用</a>
+                  <span class="badge bg-primary rounded-pill">{{ category_counts.data }}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                  <a href="{{ url_for('keiba_lab_category', category='course') }}">コース別攻略</a>
+                  <span class="badge bg-primary rounded-pill">{{ category_counts.course }}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                  <a href="{{ url_for('keiba_lab_category', category='race') }}">重賞研究</a>
+                  <span class="badge bg-primary rounded-pill">{{ category_counts.race }}</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+          
+          <!-- レベル別記事 -->
+          <div class="card mb-4">
+            <div class="card-body">
+              <h3 class="card-title mb-3">レベル別記事</h3>
+              <div class="list-group">
+                <a href="{{ url_for('keiba_lab_level', level='beginner') }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                  <span><i class="fas fa-user me-2 text-primary"></i>初心者向け</span>
+                  <span class="badge bg-primary rounded-pill">{{ level_counts.beginner }}</span>
+                </a>
+                <a href="{{ url_for('keiba_lab_level', level='intermediate') }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                  <span><i class="fas fa-user-graduate me-2 text-success"></i>中級者向け</span>
+                  <span class="badge bg-success rounded-pill">{{ level_counts.intermediate }}</span>
+                </a>
+                <a href="{{ url_for('keiba_lab_level', level='advanced') }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                  <span><i class="fas fa-user-tie me-2 text-danger"></i>上級者向け</span>
+                  <span class="badge bg-danger rounded-pill">{{ level_counts.advanced }}</span>
+                </a>
+              </div>
+            </div>
+          </div>
+          
+          <!-- おすすめツール -->
+          <div class="card mb-4">
+            <div class="card-body">
+              <h3 class="card-title mb-3">おすすめツール</h3>
+              <div class="list-group">
+                <a href="{{ url_for('tools_odds_calculator') }}" class="list-group-item list-group-item-action">
+                  <i class="fas fa-calculator me-2"></i>配当金計算機
+                </a>
+                <a href="{{ url_for('tools_race_analyzer') }}" class="list-group-item list-group-item-action">
+                  <i class="fas fa-chart-line me-2"></i>レース分析ツール
+                </a>
+                <a href="{{ url_for('tools_jockey_stats') }}" class="list-group-item list-group-item-action">
+                  <i class="fas fa-user me-2"></i>騎手成績チェッカー
+                </a>
+                <a href="{{ url_for('tools_race_calendar') }}" class="list-group-item list-group-item-action">
+                  <i class="fas fa-calendar-alt me-2"></i>年間レースカレンダー
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- ページトップへ戻るボタン -->
+  <a href="#" class="keiba-lab-back-to-top">
+    <i class="fas fa-arrow-up"></i>
+  </a>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.24.1/prism.min.js"></script>
+<script src="{{ url_for('static', filename='js/keiba_lab.js') }}"></script>
+{% endblock %} 
