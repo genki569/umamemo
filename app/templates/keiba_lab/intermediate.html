@@ -16,54 +16,145 @@
         <div class="col-lg-8 mx-auto">
             <h1 class="mb-4">中級者向けコンテンツ</h1>
             
-            <div class="alert alert-warning mb-4">
-                <div class="d-flex">
-                    <div class="me-3">
-                        <i class="fas fa-exclamation-triangle fa-2x"></i>
-                    </div>
-                    <div>
-                        <h5 class="alert-heading">ページ準備中</h5>
-                        <p class="mb-0">このページは現在準備中です。近日中に公開予定ですので、しばらくお待ちください。</p>
-                    </div>
-                </div>
-            </div>
+            <p class="lead">基本的な競馬の知識を習得した方向けに、より実践的で深い分析手法や予想テクニックを紹介します。このセクションのコンテンツを学ぶことで、より的確なレース分析と馬券選択ができるようになります。</p>
             
-            <div class="card shadow-sm mb-4">
-                <div class="card-body">
-                    <h2 class="h4 mb-3">このページで紹介予定のコンテンツ</h2>
-                    <ul class="mb-0">
-                        <li>データ分析の実践的テクニック</li>
-                        <li>脚質と馬場適性の組み合わせ分析</li>
-                        <li>血統理論の実践的活用法</li>
-                        <li>回収率を高めるための馬券組み立て術</li>
-                        <li>条件別レース傾向の読み解き方</li>
-                    </ul>
-                </div>
-            </div>
-
-            <p>準備が整い次第、充実したコンテンツをお届けします。その間、以下の関連コンテンツもご覧ください。</p>
-            
-            <h3 class="h5 mb-3 mt-5">おすすめコンテンツ</h3>
-            <div class="row g-4">
-                <div class="col-md-6">
-                    <div class="card h-100">
-                        <div class="card-body">
-                            <h5 class="card-title">データ分析の基礎</h5>
-                            <p class="card-text">馬柱の読み方、タイム・上がり3Fの意味、斤量・体重の見方などを解説します。</p>
-                            <a href="{{ url_for('keiba_lab_content', content_path='prediction/data-analysis') }}" class="stretched-link"></a>
+            <!-- メインコンテンツセクション -->
+            <section class="my-5">
+                <h2 class="h3 mb-4 border-bottom pb-2">データ分析の実践</h2>
+                
+                <div class="row g-4 mb-5">
+                    <div class="col-md-6">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body">
+                                <h3 class="h5 card-title">データ分析の基礎</h3>
+                                <p class="card-text">馬柱の読み方、タイム・上がり3Fの意味、斤量・体重の見方など、データ分析の基本を学びます。</p>
+                                <a href="{{ url_for('keiba_lab_content', content_path='prediction/data-analysis') }}" class="btn btn-outline-primary mt-auto">詳細を見る</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body">
+                                <h3 class="h5 card-title">タイム分析の応用</h3>
+                                <p class="card-text">レースペース、上がりタイム、ラップ分析など、タイムを多角的に分析する方法を解説します。</p>
+                                <a href="{{ url_for('keiba_lab_content', content_path='prediction/time-analysis') }}" class="btn btn-outline-primary mt-auto">詳細を見る</a>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6">
-                    <div class="card h-100">
-                        <div class="card-body">
-                            <h5 class="card-title">血統と適性</h5>
-                            <p class="card-text">血統から見る距離適性、血統から見る馬場適性など、血統の実践的な活用法を解説します。</p>
-                            <a href="{{ url_for('keiba_lab_content', content_path='bloodline/surface') }}" class="stretched-link"></a>
+                
+                <h2 class="h3 mb-4 border-bottom pb-2">脚質と馬場適性</h2>
+                
+                <div class="row g-4 mb-5">
+                    <div class="col-md-6">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body">
+                                <h3 class="h5 card-title">脚質と展開予想</h3>
+                                <p class="card-text">各脚質の特徴、レース展開の予測方法、脚質と枠順の関係性など、展開予想の実践テクニックを学びます。</p>
+                                <a href="{{ url_for('keiba_lab_content', content_path='prediction/race-pattern') }}" class="btn btn-outline-primary mt-auto">詳細を見る</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body">
+                                <h3 class="h5 card-title">馬場状態の見極め方</h3>
+                                <p class="card-text">馬場状態の判断基準、各馬場状態での適性馬の特徴、時計の見方など、馬場を読み解くスキルを習得します。</p>
+                                <a href="{{ url_for('keiba_lab_content', content_path='course/track-condition') }}" class="btn btn-outline-primary mt-auto">詳細を見る</a>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+                
+                <h2 class="h3 mb-4 border-bottom pb-2">血統と適性分析</h2>
+                
+                <div class="row g-4 mb-5">
+                    <div class="col-md-6">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body">
+                                <h3 class="h5 card-title">血統と距離適性</h3>
+                                <p class="card-text">父系・母系から見る距離適性、血統背景から予測できる成長曲線、血統と競走能力の関係性を解説します。</p>
+                                <a href="{{ url_for('keiba_lab_content', content_path='bloodline/distance') }}" class="btn btn-outline-primary mt-auto">詳細を見る</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body">
+                                <h3 class="h5 card-title">血統と馬場適性</h3>
+                                <p class="card-text">芝・ダート適性の血統的特徴、馬場状態への適応性と血統の関係、サイアーラインの特性などを学びます。</p>
+                                <a href="{{ url_for('keiba_lab_content', content_path='bloodline/surface') }}" class="btn btn-outline-primary mt-auto">詳細を見る</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <h2 class="h3 mb-4 border-bottom pb-2">馬券戦略</h2>
+                
+                <div class="row g-4 mb-5">
+                    <div class="col-md-6">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body">
+                                <h3 class="h5 card-title">馬券の組み立て方</h3>
+                                <p class="card-text">レース特性に応じた馬券種の選択、点数配分の最適化、回収率を意識した馬券設計の方法を解説します。</p>
+                                <a href="{{ url_for('keiba_lab_content', content_path='betting/strategy') }}" class="btn btn-outline-primary mt-auto">詳細を見る</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body">
+                                <h3 class="h5 card-title">的中率と回収率の両立</h3>
+                                <p class="card-text">長期的な収支プラスを目指すための馬券選択、投資配分、リスク管理の基本を学びます。</p>
+                                <a href="{{ url_for('keiba_lab_content', content_path='investment/basics') }}" class="btn btn-outline-primary mt-auto">詳細を見る</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- おすすめ学習順序 -->
+            <section class="my-5">
+                <h2 class="h3 mb-4">おすすめ学習順序</h2>
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <ol class="mb-0">
+                            <li class="mb-2">データ分析の基礎 → タイム分析の応用</li>
+                            <li class="mb-2">脚質と展開予想 → 馬場状態の見極め方</li>
+                            <li class="mb-2">血統と距離適性 → 血統と馬場適性</li>
+                            <li class="mb-2">馬券の組み立て方 → 的中率と回収率の両立</li>
+                            <li>上記の知識を総合して、<a href="{{ url_for('keiba_lab_content', content_path='advanced') }}">上級者向けコンテンツ</a>へ進む</li>
+                        </ol>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- 実践演習 -->
+            <section class="my-5">
+                <h2 class="h3 mb-4">実践演習</h2>
+                <p>学んだ知識を実際のレースで試してみましょう。以下のケーススタディでは、実際のレースを題材に分析手法を適用する練習ができます。</p>
+                
+                <div class="list-group shadow-sm">
+                    <a href="{{ url_for('keiba_lab_content', content_path='prediction/case-study1') }}" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">ケーススタディ1：中山芝1800mのレース分析</h5>
+                        </div>
+                        <p class="mb-1">内枠有利の特性を持つ中山芝1800mのレース分析と馬券戦略</p>
+                    </a>
+                    <a href="{{ url_for('keiba_lab_content', content_path='prediction/case-study2') }}" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">ケーススタディ2：夏の札幌競馬場での予想法</h5>
+                        </div>
+                        <p class="mb-1">暑さと馬場状態の関係性を踏まえた札幌競馬での分析アプローチ</p>
+                    </a>
+                    <a href="{{ url_for('keiba_lab_content', content_path='prediction/case-study3') }}" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">ケーススタディ3：雨の日の東京ダート1600m</h5>
+                        </div>
+                        <p class="mb-1">悪条件下での東京ダートレースにおける脚質と血統の重要性</p>
+                    </a>
+                </div>
+            </section>
         </div>
     </div>
 </div>
