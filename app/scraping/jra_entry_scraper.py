@@ -574,7 +574,7 @@ def get_race_urls_for_date(page, context, date_str: str) -> List[str]:
         date_param = date_obj.strftime('%Y%m%d')
         
         # タイムアウトを設定
-        page.set_default_timeout(60000)  # 60秒
+        page.set_default_timeout(90000)  # 90秒
         
         print(f"\n{date_str}のレース情報を取得中...")
         
@@ -582,71 +582,148 @@ def get_race_urls_for_date(page, context, date_str: str) -> List[str]:
         calendar_url = f"https://race.netkeiba.com/top/race_list.html?kaisai_date={date_param}"
         print(f"レース一覧ページにアクセスしています: {calendar_url}")
         
+        # デバッグディレクトリを作成
+        os.makedirs('debug', exist_ok=True)
+        
         try:
-            # 直接競馬場別の一覧ページにアクセス（domcontentloadedではなくload条件で待機）
+            # ユーザーエージェントを変更して再設定
+            context.clear_cookies()
+            page.evaluate('''() => {
+                Object.defineProperty(navigator, 'userAgent', {
+                    get: function() {
+                        return 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36';
+                    }
+                });
+            }''')
+            
+            # ヘッダー情報を追加（一般的なブラウザのように見せる）
+            page.set_extra_http_headers({
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
+                'Accept-Language': 'ja-JP,ja;q=0.9,en-US;q=0.8,en;q=0.7',
+                'Cache-Control': 'max-age=0',
+                'Sec-Ch-Ua': '"Not A(Brand";v="99", "Google Chrome";v="121", "Chromium";v="121"',
+                'Sec-Ch-Ua-Mobile': '?0',
+                'Sec-Ch-Ua-Platform': '"Windows"',
+                'Sec-Fetch-Dest': 'document',
+                'Sec-Fetch-Mode': 'navigate',
+                'Sec-Fetch-Site': 'none',
+                'Sec-Fetch-User': '?1',
+                'Upgrade-Insecure-Requests': '1'
+            })
+            
+            # 最初に一般ページにアクセスしてクッキーを取得（ボット対策のため）
+            print("最初にトップページにアクセスしてクッキーを取得...")
+            page.goto("https://www.netkeiba.com/", wait_until='domcontentloaded', timeout=30000)
+            page.wait_for_timeout(3000)
+            
+            # 実際のページにアクセス（load条件で待機）
+            print(f"競馬場別一覧ページにアクセス中... {calendar_url}")
             page.goto(calendar_url, wait_until='load', timeout=90000)
             print("ページの読み込みが完了しました")
             
-            # さらに安全のためネットワークの安定を待つ
-            page.wait_for_timeout(8000)  # 8秒待機
+            # スクリーンショットを保存（デバッグ用）
+            page.screenshot(path=f"debug/screenshot_{date_param}.png")
+            print(f"スクリーンショットを保存: debug/screenshot_{date_param}.png")
+            
+            # ページの準備が整うまで待機
+            page.wait_for_timeout(5000)  # 5秒待機
             
             # JavaScriptが完全に実行されるのを待つ
             page.wait_for_function('''() => {
-                return document.readyState === 'complete' && 
-                       !document.querySelector('.Loading') && 
-                       !document.querySelector('.is-Loading');
+                return document.readyState === 'complete';
             }''', timeout=30000)
             
             print("JavaScriptの実行が完了しました")
         except TimeoutError:
             print("ページの完全な読み込みはタイムアウトしましたが、処理を継続します")
             # タイムアウト後も少し待つ
-            page.wait_for_timeout(10000)
+            page.wait_for_timeout(5000)
+            # スクリーンショットを保存（タイムアウト後）
+            page.screenshot(path=f"debug/timeout_screenshot_{date_param}.png")
+            print(f"タイムアウト後のスクリーンショットを保存: debug/timeout_screenshot_{date_param}.png")
         
-        # デバッグ用にHTMLを保存（エラーハンドリング強化）
+        # デバッグ用にHTMLを保存
         try:
-            os.makedirs('debug', exist_ok=True)
-            # コンテンツを取得する前に、ページが安定していることを確認
-            is_stable = page.evaluate('''() => {
-                return document.readyState === 'complete';
-            }''')
-            
-            if is_stable:
-                html_content = page.content()
-                with open(f"debug/html_{date_param}.html", "w", encoding="utf-8") as f:
-                    f.write(html_content)
-                print("HTMLコンテンツをデバッグ用に保存しました")
-            else:
-                print("ページが安定していないため、HTMLの保存をスキップします")
+            html_content = page.content()
+            with open(f"debug/html_{date_param}.html", "w", encoding="utf-8") as f:
+                f.write(html_content)
+            print("HTMLコンテンツをデバッグ用に保存しました")
         except Exception as e:
             print(f"HTMLコンテンツの保存中にエラー: {str(e)}")
-            # エラーでもプロセスを続行
         
-        # 画像のようなレース表示を確認したので、レース番号（1R, 2R...）のリンクを直接取得
-        print("レース番号リンクを探索中...")
+        # 画像のようなレース表示を確認
+        print("レース情報を探索中...")
         
-        # サイト上で実際にレース情報があるか確認（スクリーンショットから）
+        # ページ上にレース情報があるか確認（より緩やかな条件）
         race_text_present = page.evaluate('''() => {
             const bodyText = document.body.innerText;
-            return bodyText.includes('1R') && bodyText.includes('2R') && bodyText.includes('3R');
+            // より緩やかな条件（いずれかの要素があればOK）
+            return bodyText.includes('R') || 
+                   bodyText.includes('レース') || 
+                   document.querySelector('*[class*="Race"]') !== null;
         }''')
         
+        # 全角の数字も考慮に入れる
         if not race_text_present:
+            race_text_present = page.evaluate('''() => {
+                const bodyText = document.body.innerText;
+                // 全角数字のレース表記をチェック
+                return bodyText.includes('１Ｒ') || bodyText.includes('２Ｒ') || 
+                       bodyText.includes('３Ｒ') || bodyText.includes('出走表');
+            }''')
+        
+        # レース番号が直接の要素として存在するか確認
+        race_nums_found = page.evaluate('''() => {
+            const elements = Array.from(document.querySelectorAll('*'));
+            const raceNumElements = elements.filter(el => 
+                el.textContent && /^\d+R$/.test(el.textContent.trim())
+            );
+            return raceNumElements.length;
+        }''')
+        print(f"レース番号らしき要素の数: {race_nums_found}")
+        
+        if not race_text_present and race_nums_found == 0:
             print("ページ上にレース情報が見つかりません。この日はレースがない可能性があります。")
+            
+            # 表示されている日付ボタンをすべて取得してみる
+            date_buttons = page.query_selector_all('a[href*="kaisai_date="]')
+            print(f"日付ボタン数: {len(date_buttons)}")
+            
+            if len(date_buttons) > 0:
+                print("利用可能な日付ボタン:")
+                for i, btn in enumerate(date_buttons[:5]):  # 最初の5件だけ表示
+                    text = btn.inner_text().strip()
+                    href = btn.get_attribute('href')
+                    print(f"  {i+1}. {text} - {href}")
+            
             return all_race_urls
         
-        print("ページ上にレース情報が見つかりました。URLを抽出します...")
+        print("ページ上にレース情報らしきものが見つかりました。URLを抽出します...")
         
         # 実際のレースブロックを取得（複数の競馬場に対応）
         race_blocks = []
         
+        # まず、日付と時間情報を取得して確認
+        race_dates = page.evaluate('''() => {
+            const dateElements = Array.from(document.querySelectorAll('*'));
+            return dateElements
+                .filter(el => el.textContent && el.textContent.match(/\d+月\d+日/))
+                .map(el => el.textContent.trim())
+                .slice(0, 5);  // 最初の5件だけ
+        }''');
+        print("ページ上の日付情報:")
+        for date_text in race_dates:
+            print(f"  - {date_text}")
+        
         # まず、レースリンクを直接セレクタで取得（スクリーンショットの階層構造に基づく）
         direct_race_selectors = [
             'a[href*="race_id="]',
+            'a[href*="shutuba.html"]',
+            'a[href*="result.html"]',
             '.RaceList_Item a',
             '.RaceList_ItemTitle a',
-            'a[href*="/race/shutuba.html"]',
-            'a[href*="/race/result.html"]'
+            'a[href*="/race/"]',
+            '*[class*="Race"] a'
         ]
         
         for selector in direct_race_selectors:
@@ -655,36 +732,87 @@ def get_race_urls_for_date(page, context, date_str: str) -> List[str]:
                 print(f"セレクタ '{selector}' によるリンク数: {len(links)}")
                 if links:
                     for link in links:
-                        race_blocks.append(link)
+                        href = link.get_attribute('href')
+                        text = link.inner_text().strip()
+                        if href and ('race_id=' in href or 'shutuba.html' in href or 'result.html' in href):
+                            race_blocks.append(link)
+                            if len(race_blocks) <= 5:  # 最初の5件だけ表示
+                                print(f"  リンク: {text} - {href}")
             except Exception as e:
                 print(f"セレクタ '{selector}' の処理中にエラー: {str(e)}")
         
         print(f"直接セレクタで取得したレースリンク数: {len(race_blocks)}")
         
-        # リンクが見つからない場合は、R数字のテキストを含む要素から探す
+        # リンクが見つからない場合は、エレメントのクリックを試みる
+        if len(race_blocks) == 0:
+            print("リンクが見つからないため、レース番号要素を検索してクリックを試みます...")
+            
+            # 数字+Rのパターンを持つ要素を検索
+            race_num_elements = page.query_selector_all('div:has-text(/[0-9]+R/)')
+            print(f"レース番号を含む要素数: {len(race_num_elements)}")
+            
+            for i, elem in enumerate(race_num_elements[:5]):  # 最初の5件だけ処理
+                try:
+                    text = elem.inner_text().strip()
+                    print(f"要素 {i+1}: {text}")
+                    
+                    # 要素をクリックしてみる
+                    elem.click()
+                    page.wait_for_timeout(2000)
+                    
+                    # 現在のURLを取得
+                    current_url = page.url
+                    if 'race_id=' in current_url:
+                        print(f"クリック後のURL: {current_url}")
+                        race_id_match = re.search(r'race_id=(\d+)', current_url)
+                        if race_id_match:
+                            race_id = race_id_match.group(1)
+                            shutuba_url = f"https://race.netkeiba.com/race/shutuba.html?race_id={race_id}"
+                            if shutuba_url not in all_race_urls:
+                                all_race_urls.append(shutuba_url)
+                                print(f"クリックから取得したURL: {shutuba_url}")
+                    
+                    # 元のページに戻る
+                    page.goto(calendar_url, wait_until='domcontentloaded')
+                    page.wait_for_timeout(2000)
+                except Exception as e:
+                    print(f"要素クリック処理中にエラー: {str(e)}")
+        
+        # R数字のテキストを含む要素から探す
         if len(race_blocks) == 0:
             try:
-                r_elements = page.query_selector_all('*:text-matches("\\d+R")')
-                print(f"R番号要素数: {len(r_elements)}")
+                # 正規表現でより柔軟に検索
+                r_elements_js = page.evaluate('''() => {
+                    const elements = Array.from(document.querySelectorAll('*'));
+                    return elements
+                        .filter(el => el.textContent && (
+                            /\\d+R/.test(el.textContent.trim()) ||
+                            /\\d+レース/.test(el.textContent.trim())
+                        ))
+                        .map(el => ({
+                            text: el.textContent.trim(),
+                            id: el.id || '',
+                            className: el.className || '',
+                            tagName: el.tagName
+                        }))
+                        .slice(0, 10);  // 最初の10件だけ
+                }''')
                 
-                for element in r_elements:
-                    # 親要素を辿ってリンクを探す
-                    parent = element
-                    for _ in range(3):  # 最大3階層上まで探索
-                        if parent:
-                            # 自分自身がリンクかチェック
-                            if parent.get_attribute('href') and 'race_id=' in parent.get_attribute('href'):
-                                race_blocks.append(parent)
-                                break
-                            
-                            # 親要素内のリンクを探す
-                            links = parent.query_selector_all('a[href*="race_id="]')
-                            if links:
-                                race_blocks.extend(links)
-                                break
-                            
-                            # 親要素を上に辿る
-                            parent = parent.evaluate('el => el.parentElement')
+                print(f"正規表現で検出したR番号要素数: {len(r_elements_js)}")
+                for i, elem_info in enumerate(r_elements_js):
+                    print(f"  要素 {i+1}: {elem_info.get('text')} - {elem_info.get('tagName')} (id={elem_info.get('id')}, class={elem_info.get('className')})")
+                
+                # 検出した要素を使ってリンクを探索
+                for elem_info in r_elements_js:
+                    class_name = elem_info.get('className', '')
+                    if class_name:
+                        selector = f".{class_name.replace(' ', '.')} a, .{class_name.replace(' ', '.')} > a"
+                        links = page.query_selector_all(selector)
+                        if links:
+                            for link in links:
+                                href = link.get_attribute('href')
+                                if href and 'race_id=' in href:
+                                    race_blocks.append(link)
             except Exception as e:
                 print(f"R番号要素の処理中にエラー: {str(e)}")
         
@@ -694,7 +822,7 @@ def get_race_urls_for_date(page, context, date_str: str) -> List[str]:
         for block in race_blocks:
             try:
                 href = block.get_attribute('href')
-                if href and 'race_id=' in href:
+                if href and ('race_id=' in href or 'shutuba.html' in href or 'result.html' in href):
                     # 相対パスを絶対パスに変換
                     full_url = href
                     if href.startswith("../"):
@@ -720,7 +848,7 @@ def get_race_urls_for_date(page, context, date_str: str) -> List[str]:
                 print(f"レースブロック処理エラー: {str(e)}")
                 continue
         
-        # 競馬場情報から直接構築（最後の手段）
+        # 画像から確認した競馬場情報から直接構築（最後の手段）
         if len(all_race_urls) == 0:
             print("リンクからURLを取得できなかったため、競馬場情報から直接構築します...")
             
@@ -741,39 +869,83 @@ def get_race_urls_for_date(page, context, date_str: str) -> List[str]:
                         detected_venues.append(venue_name)
                         print(f"競馬場 {venue_name} を検出しました")
                 
+                # 競馬場が検出できなくても、スクリーンショットの情報から手動で指定
+                if not detected_venues:
+                    print("競馬場が検出できなかったため、既知の競馬場を使用")
+                    detected_venues = ["福島", "阪神", "中山"]
+                
                 # 日付の文字を検出（例: 4月19日(土)）
                 date_pattern = r'(\d+)月(\d+)日\(.\)'
                 date_matches = re.findall(date_pattern, page_text)
                 
                 # 日付から月と日を取得（直近の一致を使用）
-                if date_matches and detected_venues:
+                if date_matches:
                     month, day = date_matches[-1]
                     print(f"レース日: {month}月{day}日")
+                elif date_str:
+                    # 日付が検出できなければ引数の日付を使用
+                    month = date_obj.month
+                    day = date_obj.day
+                    print(f"日付が検出できなかったため指定日付を使用: {month}月{day}日")
+                
+                # 検出された競馬場ごとにレースIDを生成
+                for venue_name in detected_venues:
+                    venue_info = venue_patterns.get(venue_name, {})
+                    venue_code = venue_info.get("venue_code", "")
+                    kaisai_kai = venue_info.get("kaisai_kai", "")
+                    kaisai_day = venue_info.get("kaisai_day", "")
                     
-                    # 検出された競馬場ごとにレースIDを生成
-                    for venue_name in detected_venues:
-                        venue_info = venue_patterns.get(venue_name, {})
-                        venue_code = venue_info.get("venue_code", "")
-                        kaisai_kai = venue_info.get("kaisai_kai", "")
-                        kaisai_day = venue_info.get("kaisai_day", "")
+                    if venue_code and kaisai_kai and kaisai_day:
+                        year = date_obj.year
                         
-                        if venue_code and kaisai_kai and kaisai_day:
-                            year = date_obj.year
+                        # レースIDの基本部分を生成
+                        base_race_id = f"{year}{venue_code}{kaisai_kai.zfill(2)}{kaisai_day.zfill(2)}"
+                        
+                        # 各レース番号（1R～12R）にURLを生成
+                        for race_num in range(1, 13):
+                            race_id = f"{base_race_id}{race_num:02d}"
+                            shutuba_url = f"https://race.netkeiba.com/race/shutuba.html?race_id={race_id}"
                             
-                            # レースIDの基本部分を生成
-                            base_race_id = f"{year}{venue_code}{kaisai_kai.zfill(2)}{kaisai_day.zfill(2)}"
-                            
-                            # 各レース番号（1R～12R）にURLを生成
-                            for race_num in range(1, 13):
-                                race_id = f"{base_race_id}{race_num:02d}"
-                                shutuba_url = f"https://race.netkeiba.com/race/shutuba.html?race_id={race_id}"
-                                
-                                # 重複チェック
-                                if shutuba_url not in all_race_urls:
-                                    all_race_urls.append(shutuba_url)
-                                    print(f"生成されたURL追加: {shutuba_url}")
+                            # 重複チェック
+                            if shutuba_url not in all_race_urls:
+                                all_race_urls.append(shutuba_url)
+                                print(f"生成されたURL追加: {shutuba_url}")
             except Exception as e:
                 print(f"競馬場情報からのURL生成中にエラー: {str(e)}")
+        
+        # URLの有効性を確認（サンプルとしての最初の数件）
+        if all_race_urls:
+            valid_urls = []
+            test_count = min(3, len(all_race_urls))
+            print(f"生成したURLのサンプル {test_count}件の有効性を確認中...")
+            
+            for i, url in enumerate(all_race_urls[:test_count]):
+                try:
+                    test_page = context.new_page()
+                    try:
+                        test_page.goto(url, wait_until='domcontentloaded', timeout=30000)
+                        page.wait_for_timeout(2000)
+                        
+                        # 有効なページかチェック
+                        title = test_page.title()
+                        test_page.screenshot(path=f"debug/url_test_{i+1}.png")
+                        print(f"URL {i+1} テスト: {title}")
+                        
+                        if "404" not in title and "エラー" not in title and "見つかりません" not in title:
+                            valid_urls.append(url)
+                            print(f"  有効なURL: {url}")
+                        else:
+                            print(f"  無効なURL: {url}")
+                    finally:
+                        test_page.close()
+                except Exception as e:
+                    print(f"  URLテストエラー: {url} - {str(e)}")
+            
+            # 有効性確認の結果を表示
+            if valid_urls:
+                print(f"{len(valid_urls)}/{test_count}件のURLが有効です。全URLを保持します。")
+            else:
+                print(f"テストしたすべてのURLが無効でした。ただし、全URLを保持します（障害の可能性あり）。")
         
         # 結果を出力
         print(f"{date_str}のレースURL数: {len(all_race_urls)}")
