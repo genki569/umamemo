@@ -1,1 +1,866 @@
- 
+{% extends "base.html" %}
+
+{% block title %}パドックでの馬体チェック方法 | 競馬初心者から上級者まで【馬メモ】{% endblock %}
+
+{% block meta_description %}競馬場でのパドックチェックの方法を詳しく解説。初心者でもわかる馬体の見方から上級者向けの細かなチェックポイントまで、実践的なパドック観察術を紹介します。{% endblock %}
+
+{% block meta_keywords %}パドック,馬体チェック,競馬,馬の見方,馬体観察,競馬予想,パドック観察法,馬体診断,パドックの見方,馬体の良し悪し{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+  <nav aria-label="breadcrumb" class="keiba-lab-breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{{ url_for('keiba_lab_index') }}">競馬ラボ</a></li>
+      <li class="breadcrumb-item"><a href="{{ url_for('keiba_lab_content', content_path='horse') }}">競走馬の見方</a></li>
+      <li class="breadcrumb-item active" aria-current="page">パドックチェック法</li>
+    </ol>
+  </nav>
+
+  <div class="content-header animate-fade-in">
+    <h1>パドックチェック法：馬場見聞の極意</h1>
+    
+    <p class="lead">
+      パドックは、レース前に馬の状態を確認できる最も重要な場所です。
+      このページでは、初心者から上級者まで段階的に実践できる効果的なパドックチェックの方法を解説します。
+      馬場見聞（ばじょうけんぶん）の極意を身につけて、予想の精度を高めましょう。
+    </p>
+  </div>
+
+  <!-- 目次 -->
+  <div class="toc-card animate-fade-in delay-1">
+    <div class="card-header">
+      <h2>目次</h2>
+    </div>
+    <div class="card-body">
+      <ol class="mb-0">
+        <li><a href="#basic">パドックチェックの基本</a></li>
+        <li><a href="#step-by-step">ステップ別パドック観察法</a></li>
+        <li><a href="#points">レベル別チェックポイント</a></li>
+        <li><a href="#examples">具体的な事例と写真解説</a></li>
+        <li><a href="#tips">プロが教えるパドック観察のコツ</a></li>
+      </ol>
+    </div>
+  </div>
+
+  <section id="basic" class="content-section animate-fade-in delay-2">
+    <h2>パドックチェックの基本</h2>
+    
+    <p>パドックとは、レース前に馬が周回する場所で、実際に馬の状態を観察できる貴重な機会です。ここでの観察が馬券の成績を左右すると言っても過言ではありません。</p>
+    
+    <div class="row mb-4">
+      <div class="col-lg-7">
+        <h3>パドックチェックの目的</h3>
+        <ul>
+          <li><strong>馬の当日のコンディション確認</strong>：調子の良し悪しを直接目で確認できます</li>
+          <li><strong>データには表れない情報収集</strong>：紙面データだけでは判断できない馬の状態を把握できます</li>
+          <li><strong>穴馬の発見</strong>：オッズに表れていない好調馬を見つけることができます</li>
+          <li><strong>不調馬の見極め</strong>：人気馬でも調子が悪ければ見送る判断ができます</li>
+        </ul>
+      </div>
+      <div class="col-lg-5">
+        <div class="custom-alert custom-alert-primary">
+          <h4>パドックチェックの重要性</h4>
+          <p>プロの予想家の多くは、パドックでの馬の観察を非常に重視しています。データ分析だけでは見えてこない「馬の本調子」を直接確認できるからです。特に人気薄の好調馬（穴馬）を見つける上で、パドック観察は欠かせない要素となっています。</p>
+        </div>
+      </div>
+    </div>
+    
+    <h3>パドック観察の基本姿勢</h3>
+    <p>効果的なパドック観察をするためには、以下の基本姿勢を心がけましょう。</p>
+    
+    <div class="row mb-4">
+      <div class="col-md-6">
+        <div class="card h-100">
+          <div class="card-header bg-primary text-white">
+            <h4 class="h5 mb-0">観察のポイント</h4>
+          </div>
+          <div class="card-body">
+            <ul class="mb-0">
+              <li><strong>全体を見る</strong>：まずは馬の全体的な印象をつかむ</li>
+              <li><strong>比較する</strong>：他の馬と比較して相対的に判断する</li>
+              <li><strong>経時変化を見る</strong>：パドック内での変化を観察する</li>
+              <li><strong>前走と比較する</strong>：可能であれば前走時の状態と比較する</li>
+              <li><strong>複数周回観察する</strong>：1周だけでなく複数周の様子を見る</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card h-100">
+          <div class="card-header bg-danger text-white">
+            <h4 class="h5 mb-0">観察時の注意点</h4>
+          </div>
+          <div class="card-body">
+            <ul class="mb-0">
+              <li><strong>先入観を持たない</strong>：データや人気に惑わされず客観的に見る</li>
+              <li><strong>一点だけで判断しない</strong>：複数の要素を総合的に判断する</li>
+              <li><strong>自分の目を信じる</strong>：他人の意見に流されすぎない</li>
+              <li><strong>焦らない</strong>：短時間で全ての馬を見ようとしすぎない</li>
+              <li><strong>記録する</strong>：可能であれば気づいたことをメモする</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <h3>パドック観察に必要な道具</h3>
+    <p>効果的なパドック観察のために、以下の道具を準備しておくと便利です。</p>
+    
+    <div class="table-responsive mb-4">
+      <table class="table table-bordered">
+        <thead class="table-light">
+          <tr>
+            <th>必要な道具</th>
+            <th>用途</th>
+            <th>推奨</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>双眼鏡</strong></td>
+            <td>遠くからでも細部まで観察できる</td>
+            <td>8倍〜10倍程度のコンパクトなもの</td>
+          </tr>
+          <tr>
+            <td><strong>メモ帳とペン</strong></td>
+            <td>気づいたことを記録する</td>
+            <td>ポケットサイズのもの</td>
+          </tr>
+          <tr>
+            <td><strong>競馬新聞</strong></td>
+            <td>馬番と馬名の確認、メモ書き</td>
+            <td>自分が使いやすいもの</td>
+          </tr>
+          <tr>
+            <td><strong>スマートフォン</strong></td>
+            <td>写真撮影、過去のパドック映像確認</td>
+            <td>バッテリー残量に注意</td>
+          </tr>
+          <tr>
+            <td><strong>帽子・サングラス</strong></td>
+            <td>日差しを遮り、観察しやすくする</td>
+            <td>晴れた日は特に重要</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    
+    <div class="alert alert-info mb-4">
+      <h4 class="alert-heading">初心者へのアドバイス</h4>
+      <p class="mb-0">
+        パドックチェックは最初は難しく感じるかもしれませんが、継続することで徐々に「馬を見る目」が養われていきます。
+        最初は全ての要素を一度に見ようとせず、毛艶や全体的な印象など、一つのポイントに絞って観察することから始めてみましょう。
+        また、レース後のパドック映像を振り返り、好走した馬の特徴を学ぶことも効果的です。
+      </p>
+    </div>
+  </section>
+
+  <section id="step-by-step" class="content-section animate-fade-in delay-3">
+    <h2>ステップ別パドック観察法</h2>
+    
+    <p>効果的なパドック観察は、単に馬を見るだけではなく、ある程度の手順に従って進めることで、より多くの情報を得ることができます。以下に、初心者から上級者まで段階的に実践できるパドック観察の手順を紹介します。</p>
+    
+    <div class="card mb-4">
+      <div class="card-header bg-primary text-white">
+        <h3 class="h4 mb-0">ステップ1：全体把握（最初の1周）</h3>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-lg-8">
+            <h4 class="h5">観察のポイント</h4>
+            <p>最初の1周では、馬の全体的な印象をつかむことを目的とします。この段階では細部にこだわらず、大きな視点で観察しましょう。</p>
+            
+            <h4 class="h6">チェック項目</h4>
+            <ul>
+              <li><strong>全体的なオーラ・迫力</strong>：周囲を圧倒するような存在感があるか</li>
+              <li><strong>体の大きさ・骨格</strong>：同世代・同性馬と比較して体格はどうか</li>
+              <li><strong>動きの軽快さ</strong>：全体的に軽やかに動いているか</li>
+              <li><strong>毛艶（つや）</strong>：全体的に艶があり健康的に見えるか</li>
+              <li><strong>馬体の充実度</strong>：筋肉が適度についているか、痩せすぎ・太りすぎではないか</li>
+            </ul>
+            
+            <div class="alert alert-success mt-3">
+              <h5 class="h6 alert-heading">初心者へのアドバイス</h5>
+              <p class="mb-0">
+                最初は「どの馬が一番カッコいいか」「どの馬が一番元気そうに見えるか」という単純な基準で見ることからでも十分です。
+                直感的な印象も大切な判断材料になります。
+              </p>
+            </div>
+          </div>
+          <div class="col-lg-4">
+            <div class="card">
+              <div class="card-body bg-light">
+                <h5 class="h6">観察のコツ</h5>
+                <ol class="mb-0">
+                  <li>最初はパドック全体を見渡せる高い位置から観察する</li>
+                  <li>馬の全体像を捉えるために少し離れた位置から見る</li>
+                  <li>競馬新聞の馬番と実際の馬を照合しておく</li>
+                  <li>特に気になった馬をメモしておく</li>
+                  <li>この段階では決めつけず、次のステップのための「候補出し」と考える</li>
+                </ol>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="card mb-4">
+      <div class="card-header bg-primary text-white">
+        <h3 class="h4 mb-0">ステップ2：細部観察（2周目以降）</h3>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-lg-8">
+            <h4 class="h5">観察のポイント</h4>
+            <p>2周目以降は、ステップ1で気になった馬や人気馬を中心に、より詳細なチェックを行います。双眼鏡を使用すると効果的です。</p>
+            
+            <h4 class="h6">チェック項目</h4>
+            <ul>
+              <li><strong>筋肉の状態</strong>：首、肩、胸、お尻の筋肉の張り具合と左右対称性</li>
+              <li><strong>足元の状態</strong>：歩様の安定性、脚の太さ、関節の状態</li>
+              <li><strong>表情と目の輝き</strong>：生き生きとした表情か、目に力があるか</li>
+              <li><strong>汗の出方</strong>：適度な汗か、過度の発汗か、部分的な冷や汗か</li>
+              <li><strong>呼吸の状態</strong>：落ち着いた呼吸か、荒い呼吸か</li>
+              <li><strong>尻尾の動き</strong>：リラックスしているか、過度に振っているか</li>
+            </ul>
+            
+            <div class="alert alert-warning mt-3">
+              <h5 class="h6 alert-heading">中級者以上のポイント</h5>
+              <p class="mb-0">
+                この段階では「良い状態」「悪い状態」の差が微妙なケースも多いです。
+                できるだけ多くのレースで観察を重ね、比較対象を増やすことで判断精度が向上します。
+              </p>
+            </div>
+          </div>
+          <div class="col-lg-4">
+            <div class="card">
+              <div class="card-body bg-light">
+                <h5 class="h6">重点観察の対象</h5>
+                <ul class="mb-0">
+                  <li>ステップ1で良い印象を受けた馬</li>
+                  <li>人気上位馬（本当に人気に見合う状態か確認）</li>
+                  <li>前走と大きく斤量が変わった馬</li>
+                  <li>休み明けの馬</li>
+                  <li>斤量の軽い馬（状態次第で伸びしろがある）</li>
+                  <li>上位人気と同じ厩舎の馬（厩舎の仕上げ方を比較）</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="card mb-4">
+      <div class="card-header bg-primary text-white">
+        <h3 class="h4 mb-0">ステップ3：変化の観察（最終周回）</h3>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-lg-8">
+            <h4 class="h5">観察のポイント</h4>
+            <p>最終周回では、パドック内での馬の変化を観察します。良い馬は時間の経過とともに良くなる傾向があります。</p>
+            
+            <h4 class="h6">チェック項目</h4>
+            <ul>
+              <li><strong>リラックス度の変化</strong>：徐々に落ち着いてきたか、逆に興奮してきたか</li>
+              <li><strong>歩様の変化</strong>：徐々に歩きが良くなったか、悪くなったか</li>
+              <li><strong>汗の状態変化</strong>：汗が引いてきたか、逆に増えてきたか</li>
+              <li><strong>精神状態の変化</strong>：集中力が増してきたか、気が散ってきたか</li>
+              <li><strong>騎手との関係</strong>：騎手が乗った時の反応はどうか</li>
+            </ul>
+            
+            <div class="alert alert-info mt-3">
+              <h5 class="h6 alert-heading">上級者のポイント</h5>
+              <p class="mb-0">
+                最終周回では特に「馬と騎手の相性」にも注目します。
+                騎手が乗った際に馬がリラックスする、あるいは逆に気合いが入るといった反応も、
+                レースの展開予想に役立つ情報となります。
+              </p>
+            </div>
+          </div>
+          <div class="col-lg-4">
+            <div class="card">
+              <div class="card-body bg-light">
+                <h5 class="h6">良い変化のサイン</h5>
+                <ul class="mb-2">
+                  <li>最初は緊張していたが徐々にリラックス</li>
+                  <li>歩様が徐々に良くなる</li>
+                  <li>過度の汗が適度に引いてくる</li>
+                  <li>騎手が乗ると気合いが入る</li>
+                </ul>
+                <h5 class="h6">悪い変化のサイン</h5>
+                <ul class="mb-0">
+                  <li>徐々に興奮して暴れだす</li>
+                  <li>次第に歩様が乱れてくる</li>
+                  <li>汗が増えてくる（特に局所的な冷や汗）</li>
+                  <li>騎手が乗っても反応が鈍い</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="card mb-4">
+      <div class="card-header bg-primary text-white">
+        <h3 class="h4 mb-0">ステップ4：馬場入場後の観察</h3>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-lg-8">
+            <h4 class="h5">観察のポイント</h4>
+            <p>パドックから馬場に入場した後の様子も重要です。多くの馬は馬場に出ると、さらに本来の姿を見せることがあります。</p>
+            
+            <h4 class="h6">チェック項目</h4>
+            <ul>
+              <li><strong>馬場での歩き方</strong>：軽快に歩いているか、重そうか</li>
+              <li><strong>駆け足（キャンター）の様子</strong>：軽やかで伸びのある動きか</li>
+              <li><strong>気配の変化</strong>：馬場に出て気合いが入ったか</li>
+              <li><strong>馬場との相性</strong>：馬場状態に合った動きをしているか</li>
+              <li><strong>返し馬の様子</strong>：スタート地点に向かう際の動きはどうか</li>
+            </ul>
+            
+            <div class="alert alert-danger mt-3">
+              <h5 class="h6 alert-heading">最終判断のポイント</h5>
+              <p class="mb-0">
+                パドックと馬場での様子を総合的に判断して、最終的な馬券の判断をします。
+                この段階で、それまで良かった馬が急に悪くなることもあれば、
+                パドックでは目立たなかった馬が馬場で急に良くなることもあります。
+                柔軟な判断が重要です。
+              </p>
+            </div>
+          </div>
+          <div class="col-lg-4">
+            <div class="card">
+              <div class="card-body bg-light">
+                <h5 class="h6">駆け足（キャンター）での注目点</h5>
+                <p>馬場でのキャンターは、馬の本来の能力がよく現れる瞬間です。</p>
+                <ul class="mb-0">
+                  <li>伸びやかな動き</li>
+                  <li>リズミカルな足運び</li>
+                  <li>バネのある蹄の着地</li>
+                  <li>スムーズな流れるような動き</li>
+                  <li>余裕のある呼吸</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="alert alert-primary mb-4">
+      <div class="row">
+        <div class="col-md-1 text-center">
+          <i class="fas fa-lightbulb fa-3x"></i>
+        </div>
+        <div class="col-md-11">
+          <h4>パドック観察の時間配分</h4>
+          <p class="mb-0">
+            レース間隔は通常20〜30分程度です。効率的に観察するためには、以下のような時間配分がおすすめです：<br>
+            <strong>前のレース終了〜10分</strong>：結果確認、次レースの予習<br>
+            <strong>10〜20分</strong>：パドック観察（ステップ1〜3）<br>
+            <strong>20〜25分</strong>：馬場入場後の観察（ステップ4）<br>
+            <strong>25分〜発走</strong>：馬券購入、最終チェック
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="points" class="content-section animate-fade-in delay-4">
+    <h2>レベル別チェックポイント</h2>
+    
+    <p>パドック観察のチェックポイントは、経験や知識によって異なります。ここでは、初心者から上級者までのレベル別チェックポイントを紹介します。自分のレベルに合わせて、徐々にステップアップしていきましょう。</p>
+    
+    <div class="row mb-4">
+      <div class="col-lg-4 mb-4">
+        <div class="card h-100">
+          <div class="card-header bg-success text-white">
+            <h3 class="h5 mb-0">初心者レベル</h3>
+          </div>
+          <div class="card-body">
+            <p>最初は誰でも簡単に見分けられる要素から始めましょう。</p>
+            <ul>
+              <li><strong>毛艶（つや）</strong>：光沢があるか、くすんでいるか</li>
+              <li><strong>体型のバランス</strong>：全体的にまとまりがあるか</li>
+              <li><strong>元気さ</strong>：活気があるか、無気力か</li>
+              <li><strong>歩き方の基本</strong>：スムーズに歩いているか</li>
+              <li><strong>馬体の大きさ</strong>：他の馬と比べて大きいか小さいか</li>
+            </ul>
+            <div class="alert alert-success mt-3">
+              <h4 class="h6 alert-heading">初心者のコツ</h4>
+              <p class="mb-0">
+                「どの馬が一番元気そうか」「どの馬が一番カッコいいか」という感覚的な基準でもOKです。
+                最初は自分の直感を信じて、その馬が好走したかどうかを確認することで学習していきましょう。
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4 mb-4">
+        <div class="card h-100">
+          <div class="card-header bg-primary text-white">
+            <h3 class="h5 mb-0">中級者レベル</h3>
+          </div>
+          <div class="card-body">
+            <p>基本を押さえたら、より細かい要素にも注目してみましょう。</p>
+            <ul>
+              <li><strong>筋肉の張り具合</strong>：部位別の発達具合と左右対称性</li>
+              <li><strong>歩様の詳細</strong>：リズム、蹄の上げ方、踏み込みの深さ</li>
+              <li><strong>汗の質と量</strong>：汗の出る場所と量、良い汗か悪い汗か</li>
+              <li><strong>表情と目の状態</strong>：生き生きとした表情か、集中しているか</li>
+              <li><strong>馬と騎手の関係</strong>：騎手が乗った時の反応</li>
+              <li><strong>馬体重の変化</strong>：前走からの増減と適正体重</li>
+            </ul>
+            <div class="alert alert-primary mt-3">
+              <h4 class="h6 alert-heading">中級者のコツ</h4>
+              <p class="mb-0">
+                中級レベルでは「比較」が重要です。同じレースの他の馬との比較だけでなく、
+                その馬の前走時との比較、同じ厩舎の馬との比較なども行うことで、
+                より正確な判断ができるようになります。
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4 mb-4">
+        <div class="card h-100">
+          <div class="card-header bg-danger text-white">
+            <h3 class="h5 mb-0">上級者レベル</h3>
+          </div>
+          <div class="card-body">
+            <p>経験を積んだら、プロに近い視点でさらに細かい要素を見ていきましょう。</p>
+            <ul>
+              <li><strong>筋肉の質</strong>：筋肉の硬さ、柔軟性、弾力性</li>
+              <li><strong>関節の状態</strong>：関節の可動域、違和感の有無</li>
+              <li><strong>呼吸のリズム</strong>：呼吸の深さ、規則性</li>
+              <li><strong>微細な歩様の変化</strong>：パドック内での歩様の変化</li>
+              <li><strong>気配の変化</strong>：場面ごとの気配の変化</li>
+              <li><strong>馬場状態との相性</strong>：当日の馬場状態に合った体調か</li>
+              <li><strong>距離適性との一致</strong>：体調と当日の距離との相性</li>
+            </ul>
+            <div class="alert alert-danger mt-3">
+              <h4 class="h6 alert-heading">上級者のコツ</h4>
+              <p class="mb-0">
+                上級レベルでは、馬の個体差（性格、体質など）を理解した上で判断することが重要です。
+                同じ状態でも馬によって評価が異なる場合があります。
+                過去のレースでの状態と結果の関係を積み重ねることで、精度が向上します。
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <h3>馬体の良し悪しを見分けるポイント</h3>
+    <p>経験レベルに関わらず、以下のポイントは馬体の良し悪しを判断する上で重要な指標となります。</p>
+    
+    <div class="table-responsive mb-4">
+      <table class="table table-striped table-bordered">
+        <thead class="table-dark">
+          <tr>
+            <th>チェックポイント</th>
+            <th>良い状態のサイン</th>
+            <th>悪い状態のサイン</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>毛艶（つや）</strong></td>
+            <td>光沢があり、健康的な輝き</td>
+            <td>くすんでいる、艶がない、毛が逆立つ</td>
+          </tr>
+          <tr>
+            <td><strong>筋肉の状態</strong></td>
+            <td>適度に張りがあり、左右対称</td>
+            <td>張りがない、硬すぎる、左右非対称</td>
+          </tr>
+          <tr>
+            <td><strong>歩様</strong></td>
+            <td>リズミカルで弾力のある歩き</td>
+            <td>ぎこちない、足を引きずる、リズムが不規則</td>
+          </tr>
+          <tr>
+            <td><strong>汗の状態</strong></td>
+            <td>適度な汗、均一に分布</td>
+            <td>過度の発汗、特定部位の冷や汗</td>
+          </tr>
+          <tr>
+            <td><strong>表情と目</strong></td>
+            <td>生き生きとした表情、目に力がある</td>
+            <td>無気力な表情、目に力がない、警戒しすぎ</td>
+          </tr>
+          <tr>
+            <td><strong>呼吸</strong></td>
+            <td>落ち着いた深い呼吸</td>
+            <td>荒い呼吸、口を開けた呼吸</td>
+          </tr>
+          <tr>
+            <td><strong>全体的な気配</strong></td>
+            <td>自信に満ちた堂々とした様子</td>
+            <td>不安そう、緊張しすぎ、無気力</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    
+    <div class="alert alert-warning mb-4">
+      <div class="row">
+        <div class="col-md-1 text-center">
+          <i class="fas fa-exclamation-triangle fa-3x"></i>
+        </div>
+        <div class="col-md-11">
+          <h4>馬の個体差を理解する</h4>
+          <p class="mb-0">
+            馬にも人間と同じように「個性」があります。同じ状態でも馬によって評価が異なる場合があります。<br>
+            例えば、普段から汗をかきやすい馬もいれば、いつも興奮しやすい馬もいます。<br>
+            可能であれば、その馬の過去のパドックでの様子を知っておくと、当日の状態をより正確に判断できます。<br>
+            特に初めて見る馬については、極端な判断は避け、他の要素と合わせて総合的に評価することが重要です。
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="examples" class="content-section animate-fade-in delay-5">
+    <h2>具体的な事例と写真解説</h2>
+    
+    <p>実際のパドック観察をイメージしやすいように、具体的な事例と写真による解説を紹介します。これらの例を参考に、実際のパドックでの観察に役立てましょう。</p>
+    
+    <div class="row mb-5">
+      <div class="col-lg-6 mb-4">
+        <div class="card h-100">
+          <div class="card-header bg-success text-white">
+            <h3 class="h5 mb-0">好調馬の典型例</h3>
+          </div>
+          <div class="card-body">
+            <div class="text-center mb-3">
+              <img src="{{ url_for('static', filename='images/keiba_lab/horse/good_condition.jpg') }}" alt="好調な馬の例" class="img-fluid rounded">
+            </div>
+            <h4 class="h6">好調馬の特徴</h4>
+            <ul>
+              <li><strong>毛艶が良く、コートが光っている</strong></li>
+              <li><strong>筋肉に適度な張りがあり、特に首や臀部が充実している</strong></li>
+              <li><strong>歩様がリズミカルで弾力がある</strong></li>
+              <li><strong>表情が生き生きとしていて、目に力がある</strong></li>
+              <li><strong>全体的に落ち着きがあり、自信に満ちた様子</strong></li>
+              <li><strong>適度な汗をかいている（暑い日の場合）</strong></li>
+            </ul>
+            <p>
+              このような状態の馬は、体調が良く、レースに向けてベストコンディションに仕上がっている可能性が高いです。
+              特に人気薄の馬がこのような状態であれば、穴馬として狙い目になります。
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6 mb-4">
+        <div class="card h-100">
+          <div class="card-header bg-danger text-white">
+            <h3 class="h5 mb-0">不調馬の典型例</h3>
+          </div>
+          <div class="card-body">
+            <div class="text-center mb-3">
+              <img src="{{ url_for('static', filename='images/keiba_lab/horse/bad_condition.jpg') }}" alt="不調な馬の例" class="img-fluid rounded">
+            </div>
+            <h4 class="h6">不調馬の特徴</h4>
+            <ul>
+              <li><strong>毛艶がなく、コートがくすんでいる</strong></li>
+              <li><strong>筋肉が張りなく、全体的にシャープさに欠ける</strong></li>
+              <li><strong>歩様が硬く、リズムが不規則</strong></li>
+              <li><strong>表情に生気がなく、目に力がない</strong></li>
+              <li><strong>無気力か逆に過度に興奮している</strong></li>
+              <li><strong>冷や汗をかいている、または暑くないのに異常な汗</strong></li>
+            </ul>
+            <p>
+              このような状態の馬は、体調が優れないか、調教が上手くいっていない可能性があります。
+              たとえ人気馬であっても、このような状態であれば馬券から外すことも検討すべきでしょう。
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <h3>具体的な状態別解説</h3>
+    <p>より具体的な馬の状態について、写真とともに解説します。</p>
+    
+    <div class="row mb-5">
+      <div class="col-md-6 mb-4">
+        <div class="card h-100">
+          <div class="card-header">
+            <h4 class="h6 mb-0">理想的な毛艶と筋肉の状態</h4>
+          </div>
+          <div class="card-body">
+            <div class="text-center mb-3">
+              <img src="{{ url_for('static', filename='images/keiba_lab/horse/good_muscle.jpg') }}" alt="理想的な筋肉の状態" class="img-fluid rounded">
+            </div>
+            <p class="mb-0">
+              理想的な状態の馬は、毛艶があり光沢に満ちています。筋肉は適度に発達し、特に首、肩、臀部に張りがあります。
+              体全体がバランスよく引き締まっていて、余分な脂肪がなく、かといって痩せすぎてもいない状態です。
+              このような馬は体調が良く、レースに向けて適切に調教されている可能性が高いです。
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6 mb-4">
+        <div class="card h-100">
+          <div class="card-header">
+            <h4 class="h6 mb-0">理想的な歩様と動き</h4>
+          </div>
+          <div class="card-body">
+            <div class="text-center mb-3">
+              <img src="{{ url_for('static', filename='images/keiba_lab/horse/good_walking.jpg') }}" alt="理想的な歩様" class="img-fluid rounded">
+            </div>
+            <p class="mb-0">
+              良好な歩様の馬は、リズミカルで弾力のある歩きをします。
+              四肢の動きが規則正しく、蹄の着地が力強いのが特徴です。
+              前肢は膝を曲げて高く上げ、後肢は深く踏み込みます。
+              このような歩様は、馬の関節や筋肉が健康で、故障の心配が少ないことを示しています。
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="row mb-5">
+      <div class="col-md-6 mb-4">
+        <div class="card h-100">
+          <div class="card-header">
+            <h4 class="h6 mb-0">好調時の精神状態と表情</h4>
+          </div>
+          <div class="card-body">
+            <div class="text-center mb-3">
+              <img src="{{ url_for('static', filename='images/keiba_lab/horse/good_mental.jpg') }}" alt="良好な精神状態" class="img-fluid rounded">
+            </div>
+            <p class="mb-0">
+              好調時の馬は、自信に満ちた表情で、目に力があります。
+              耳の動きが活発で、周囲の音に反応しつつも過度に敏感になりすぎていません。
+              適度な緊張感と集中力があり、かつ落ち着いた様子も見せます。
+              このような精神状態の馬は、レースへの準備が整っていて、実力を発揮できる可能性が高いです。
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6 mb-4">
+        <div class="card h-100">
+          <div class="card-header">
+            <h4 class="h6 mb-0">レースに向いた発汗状態</h4>
+          </div>
+          <div class="card-body">
+            <div class="text-center mb-3">
+              <img src="{{ url_for('static', filename='images/keiba_lab/horse/good_sweat.jpg') }}" alt="適切な発汗状態" class="img-fluid rounded">
+            </div>
+            <p class="mb-0">
+              適切な発汗状態の馬は、気温に応じた汗をかいています。
+              暑い日なら全体的に薄く均一に汗をかき、涼しい日ならほとんど汗をかいていない状態が理想的です。
+              首筋や胸あたりにかく「運動汗」は問題ありませんが、局所的な「冷や汗」（特に肩や臀部）は
+              緊張や体調不良のサインなので注意が必要です。
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="alert alert-info mb-5">
+      <div class="row">
+        <div class="col-md-1 text-center">
+          <i class="fas fa-camera fa-3x"></i>
+        </div>
+        <div class="col-md-11">
+          <h4>馬の観察を記録する</h4>
+          <p class="mb-0">
+            自分の観察を記録しておくことは、パドック観察の腕を上げるために非常に有効です。
+            可能であればスマートフォンなどで馬の写真を撮影し、レース後にその馬の成績と照らし合わせることで、
+            「どのような状態の馬が好走するか」というパターンが見えてきます。
+            撮影する際は、他の観客の迷惑にならないよう配慮しましょう。
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="tips" class="content-section animate-fade-in delay-6">
+    <h2>プロが教えるパドック観察のコツ</h2>
+    
+    <p>長年の経験を持つプロの予想家やトラックマンが実践している、パドック観察のコツを紹介します。これらのテクニックを取り入れることで、あなたのパドック観察スキルをさらに向上させることができるでしょう。</p>
+    
+    <div class="row mb-5">
+      <div class="col-lg-6 mb-4">
+        <div class="card h-100">
+          <div class="card-header bg-dark text-white">
+            <h3 class="h5 mb-0">パドック観察の効率化テクニック</h3>
+          </div>
+          <div class="card-body">
+            <h4 class="h6">1. 事前準備で時間を有効活用</h4>
+            <p>
+              レース前に馬柱や出走表をチェックし、特に注目したい馬をあらかじめピックアップしておきましょう。
+              全頭を同じように見るのではなく、重点的に観察する馬を決めておくことで効率的に観察できます。
+            </p>
+            
+            <h4 class="h6">2. 位置取りの工夫</h4>
+            <p>
+              パドックの高い場所から全体を見渡せる位置と、馬が近くを通る低い位置の両方で観察するのが理想的です。
+              特に最初は高い位置から全体を見て、気になる馬が見つかったら近くで詳細に観察するという方法が効果的です。
+            </p>
+            
+            <h4 class="h6">3. 比較の視点を持つ</h4>
+            <p>
+              単独で馬を評価するのではなく、常に「比較」の視点を持ちましょう。
+              同じレースの他の馬との比較、その馬の前走時との比較、同じ厩舎の馬との比較など、
+              複数の観点から相対的に評価することが重要です。
+            </p>
+            
+            <h4 class="h6">4. 記録の習慣化</h4>
+            <p>
+              観察結果をメモし、レース後の結果と照らし合わせる習慣をつけましょう。
+              これにより、どのような状態の馬が好走するかというパターンが見えてきます。
+              スマートフォンのメモ機能や専用のアプリを活用すると便利です。
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6 mb-4">
+        <div class="card h-100">
+          <div class="card-header bg-dark text-white">
+            <h3 class="h5 mb-0">プロが見る「穴馬」のサイン</h3>
+          </div>
+          <div class="card-body">
+            <h4 class="h6">1. 前走より明らかに良化している馬</h4>
+            <p>
+              前走では地味な競馬だった馬が、今回は毛艶や筋肉の状態、歩様などが明らかに良くなっている場合は
+              一発大駆けの可能性があります。特に休養明けや乗り替わりで人気がない馬は要注目です。
+            </p>
+            
+            <h4 class="h6">2. 普段と違う「気合い」が感じられる馬</h4>
+            <p>
+              普段は大人しい馬が、今回は気合いに満ちた様子を見せている、あるいはその逆のケースも
+              好走のサインとなることがあります。馬の性格を知っていると、このような変化に気づきやすくなります。
+            </p>
+            
+            <h4 class="h6">3. 不良馬場で体格が活きる馬</h4>
+            <p>
+              不良馬場の日には、筋肉質で体格の良い馬に注目しましょう。
+              特に脚元がしっかりしていて、力強さを感じさせる馬は、不良馬場での好走率が高い傾向があります。
+            </p>
+            
+            <h4 class="h6">4. 環境の変化で覚醒する馬</h4>
+            <p>
+              初めての重賞参戦や、久々の遠征など、環境の変化があった馬が
+              普段よりも活き活きとした様子を見せている場合は要注目です。
+              環境の変化がプラスに働くケースとマイナスに働くケースがあるので、馬の反応を観察することが重要です。
+            </p>
+            
+            <h4 class="h6">5. オッズと状態が釣り合わない馬</h4>
+            <p>
+              高いオッズなのに状態が極めて良い馬や、素人目でも「一番良い」と感じるのに人気が無い馬は、
+              大きなリターンを得られる可能性があります。
+              オッズと実際の状態のギャップに注目することで、価値ある馬券を見つけられます。
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="row mb-5">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header bg-primary text-white">
+            <h3 class="h5 mb-0">プロの予想家の事前リサーチテクニック</h3>
+          </div>
+          <div class="card-body">
+            <p>
+              プロの予想家は、パドックに行く前に様々な事前リサーチを行っています。
+              これにより、限られたパドック観察の時間をより効果的に使うことができます。
+            </p>
+            
+            <div class="row">
+              <div class="col-md-6">
+                <h4 class="h6">厩舎情報のチェック</h4>
+                <ul>
+                  <li>調教師のコメントや談話をチェック</li>
+                  <li>厩舎の最近の調子や仕上げパターンを把握</li>
+                  <li>調教助手や厩務員からの情報を収集</li>
+                  <li>馬主の意向（本番目標か叩き台か）を把握</li>
+                </ul>
+                
+                <h4 class="h6">調教内容の確認</h4>
+                <ul>
+                  <li>調教タイムや内容のチェック</li>
+                  <li>併せ馬の相手と結果を確認</li>
+                  <li>調教コースと本番コースの関連性</li>
+                  <li>追い切りの強弱と仕上がり具合</li>
+                </ul>
+              </div>
+              <div class="col-md-6">
+                <h4 class="h6">過去のパドック評価との比較</h4>
+                <ul>
+                  <li>前走や好走時のパドック評価を振り返る</li>
+                  <li>馬の適正体重帯を把握しておく</li>
+                  <li>季節による体型変化の傾向を知る</li>
+                  <li>休養明けの馬の仕上がり傾向を調査</li>
+                </ul>
+                
+                <h4 class="h6">その他の重要情報</h4>
+                <ul>
+                  <li>輸送方法や到着時期（長距離移動の場合）</li>
+                  <li>馬場状態と馬の適性の関連</li>
+                  <li>馬の気性と騎手の相性</li>
+                  <li>前走での不利や不本意な結果の有無</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="alert alert-primary mb-5">
+      <div class="row">
+        <div class="col-md-1 text-center">
+          <i class="fas fa-quote-left fa-3x"></i>
+        </div>
+        <div class="col-md-11">
+          <h4>プロの予想家からのアドバイス</h4>
+          <p class="font-italic">
+            「パドックでの馬体チェックは、競馬予想において私が最も重視している要素の一つです。
+            どれだけデータを分析しても、実際の馬の状態を見なければ本当の判断はできません。
+            特に大事なのは、自分の目で見て感じた印象を大切にすることです。
+            最初は違いがわからなくても、継続して観察することで徐々に目が養われていきます。
+            自信を持って、自分の感じたことを信じてください。」
+          </p>
+          <p class="text-right mb-0">— 某競馬雑誌予想家</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="row">
+      <div class="col-12">
+        <div class="card bg-light">
+          <div class="card-body">
+            <h3 class="h5">まとめ：パドック観察の継続が成功への鍵</h3>
+            <p>
+              パドック観察のスキルは一朝一夕で身につくものではありません。
+              しかし、継続的に実践し、自分なりの観察ポイントを増やしていくことで、
+              確実に予想の精度は向上していきます。
+            </p>
+            <p>
+              初心者の方は無理せず、まずは基本的なポイントから始めて、徐々にレベルアップしていきましょう。
+              中級者以上の方は、このページで紹介したプロのテクニックも取り入れて、
+              さらに精度の高いパドック観察を目指してください。
+            </p>
+            <p class="mb-0">
+              何よりも大切なのは「楽しむこと」です。
+              パドックで馬を見ることは競馬の醍醐味の一つ。
+              馬券的中という結果だけでなく、馬と騎手の一体感や美しさを感じることも
+              パドック観察の喜びです。ぜひ実践してみてください。
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+{% endblock %} 
