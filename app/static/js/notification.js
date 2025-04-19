@@ -7,7 +7,7 @@ async function fetchNotifications() {
             throw new Error('通知の取得に失敗しました');
         }
         const data = await response.json();
-        return data;
+        return data.notifications || []; // レスポンスから通知配列を取得
     } catch (error) {
         console.error('通知の取得中にエラーが発生しました:', error);
         return [];
@@ -27,12 +27,20 @@ function displayNotifications(notifications, containerId = 'dashboard-notificati
     container.innerHTML = '';
     notifications.forEach(notification => {
         const notificationItem = document.createElement('div');
-        notificationItem.className = `notification-item ${notification.read ? '' : 'unread'}`;
+        notificationItem.className = `notification-item ${notification.is_read ? '' : 'unread'}`; // readをis_readに修正
         notificationItem.dataset.id = notification.id;
+        
+        // 通知タイプに基づくアイコンクラスの設定
+        let iconClass = 'fa-bell';
+        if (notification.type === 'favorite_horse_entry') {
+            iconClass = 'fa-horse';
+        } else if (notification.type === 'memo_comment') {
+            iconClass = 'fa-comment';
+        }
         
         notificationItem.innerHTML = `
             <div class="notification-icon">
-                <i class="fas ${notification.icon_class || 'fa-bell'}"></i>
+                <i class="fas ${notification.icon_class || iconClass}"></i>
             </div>
             <div class="notification-content">
                 <p class="notification-text">${notification.message}</p>
@@ -40,8 +48,16 @@ function displayNotifications(notifications, containerId = 'dashboard-notificati
             </div>
         `;
         
-        // 通知をクリックしたときの処理
-        notificationItem.addEventListener('click', () => markAsRead(notification.id));
+        // リンクがある場合はクリック時の挙動を変更
+        if (notification.link) {
+            notificationItem.addEventListener('click', () => {
+                markAsRead(notification.id);
+                window.location.href = notification.link;
+            });
+        } else {
+            // リンクがない場合は既読のみにする
+            notificationItem.addEventListener('click', () => markAsRead(notification.id));
+        }
         
         container.appendChild(notificationItem);
     });
@@ -99,7 +115,7 @@ async function markAsRead(notificationId) {
 document.addEventListener('DOMContentLoaded', async () => {
     const notificationsContainer = document.getElementById('dashboard-notifications');
     if (notificationsContainer) {
-        const notifications = await fetchNotifications();
-        displayNotifications(notifications);
+        const data = await fetchNotifications();
+        displayNotifications(data);
     }
 }); 

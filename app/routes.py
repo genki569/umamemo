@@ -4201,44 +4201,62 @@ def get_race_statistics(race_id):
         current_app.logger.error(f"Error getting race statistics: {str(e)}")
         return None
 
-def create_favorite_horse_notifications(race_id, horse_id):
-    """お気に入り馬の出走通知を作成"""
+def create_favorite_horse_notifications(race_id, entry_horse_ids):
+    """お気に入り馬の出走通知を作成する"""
     try:
-        # お気に入りユーザーと必要な情報を一括取得
-        favorites = db.session.query(
-            User.id,
-            Horse.name,
-            Race.name,
-            Race.date
-        ).join(
-            Favorite, User.id == Favorite.user_id  # FavoriteHorseではなくFavoriteを使用
-        ).join(
-            Horse, Favorite.horse_id == Horse.id
-        ).join(
-            Race, Race.id == race_id
-        ).filter(
-            Favorite.horse_id == horse_id
-        ).all()
-
-        # 通知を一括作成
-        notifications = [
-            Notification(
-                user_id=user_id,
-                type='favorite_horse_entry',
-                message=f'お気に入りの{horse_name}が{race_name}({race_date.strftime("%Y/%m/%d")})に出走予定です',  # contentではなくmessage
-                related_id=race_id,
-                is_read=False
-            )
-            for user_id, horse_name, race_name, race_date in favorites
-        ]
+        # レース情報を取得
+        race = Race.query.get(race_id)
+        if not race:
+            app.logger.error(f"Race not found: {race_id}")
+            return
         
-        if notifications:
-            db.session.bulk_save_objects(notifications)
-            db.session.commit()
+        # 1つの馬IDが渡された場合は配列に変換
+        if not isinstance(entry_horse_ids, list):
+            entry_horse_ids = [entry_horse_ids]
             
+        # お気に入りに登録しているユーザーを取得
+        favorites = Favorite.query.filter(Favorite.horse_id.in_(entry_horse_ids)).all()
+        
+        # ユーザーごとにグループ化
+        user_favorites = {}
+        for fav in favorites:
+            if fav.user_id not in user_favorites:
+                user_favorites[fav.user_id] = []
+            user_favorites[fav.user_id].append(fav.horse_id)
+        
+        # 通知設定がオンのユーザーにのみ通知
+        for user_id, horse_ids in user_favorites.items():
+            # ユーザーの通知設定を確認
+            settings = UserSettings.query.filter_by(user_id=user_id).first()
+            if not settings or not settings.notification_race:
+                continue
+                
+            # 各馬ごとに通知を作成
+            for horse_id in horse_ids:
+                horse = Horse.query.get(horse_id)
+                if not horse:
+                    continue
+                    
+                # 通知内容を作成
+                message = f"お気に入りの馬「{horse.name}」が{race.date.strftime('%Y年%m月%d日')}の{race.name}に出走予定です。"
+                link = url_for('race_detail', race_id=race_id)
+                
+                # 通知を保存
+                notification = Notification(
+                    user_id=user_id,
+                    type='favorite_horse_entry',
+                    message=message,
+                    link=link,
+                    is_read=False,
+                    created_at=datetime.utcnow()
+                )
+                db.session.add(notification)
+        
+        db.session.commit()
+        app.logger.info(f"Created favorite horse notifications for race: {race_id}")
     except Exception as e:
         db.session.rollback()
-        current_app.logger.error(f"Error creating notifications: {str(e)}")
+        app.logger.error(f"Error creating notifications: {str(e)}")
 
 @app.route('/races/<int:race_id>/entries', methods=['POST'])
 @login_required
@@ -4650,60 +4668,6 @@ def debug_models():
         return jsonify({
             'error': str(e)
         }), 500
-
-# 出馬表更新時の通知処理を追加
-def create_favorite_horse_notifications(race_id, entry_horse_ids):
-    """お気に入り馬の出走通知を作成する"""
-    try:
-        # レース情報を取得
-        race = Race.query.get(race_id)
-        if not race:
-            app.logger.error(f"Race not found: {race_id}")
-            return
-            
-        # お気に入りに登録しているユーザーを取得
-        favorites = Favorite.query.filter(Favorite.horse_id.in_(entry_horse_ids)).all()
-        
-        # ユーザーごとにグループ化
-        user_favorites = {}
-        for fav in favorites:
-            if fav.user_id not in user_favorites:
-                user_favorites[fav.user_id] = []
-            user_favorites[fav.user_id].append(fav.horse_id)
-        
-        # 通知設定がオンのユーザーにのみ通知
-        for user_id, horse_ids in user_favorites.items():
-            # ユーザーの通知設定を確認
-            settings = UserSettings.query.filter_by(user_id=user_id).first()
-            if not settings or not settings.notification_race:
-                continue
-                
-            # 各馬ごとに通知を作成
-            for horse_id in horse_ids:
-                horse = Horse.query.get(horse_id)
-                if not horse:
-                    continue
-                    
-                # 通知内容を作成
-                content = f"お気に入りの馬「{horse.name}」が{race.date.strftime('%Y年%m月%d日')}の{race.name}に出走予定です。"
-                link = url_for('race_detail', race_id=race_id)
-                
-                # 通知を保存
-                notification = Notification(
-                    user_id=user_id,
-                    type='favorite_horse_entry',
-                    content=content,
-                    link=link,
-                    horse_id=horse_id,
-                    race_id=race_id
-                )
-                db.session.add(notification)
-        
-        db.session.commit()
-        app.logger.info(f"Created favorite horse notifications for race: {race_id}")
-    except Exception as e:
-        db.session.rollback()
-        app.logger.error(f"Error creating notifications: {str(e)}")
 
 @app.route('/mypage/notifications')
 @login_required
@@ -5236,3 +5200,58 @@ def keiba_lab_content(content_path):
             # どちらのテンプレートも見つからない場合は404を返す
             app.logger.error(f"Template not found for path '{content_path}'. Tried:\n1. {direct_template_path}\n2. {directory_template_path}\nErrors: {str(e1)}, {str(e2)}")
             return render_template('errors/404.html'), 404
+
+@app.route('/mypage/api/notifications')
+@login_required
+def get_user_notifications_api():
+    """ユーザーの通知一覧を取得するAPI"""
+    try:
+        # 通知を取得（未読を先頭に、作成日時の降順）
+        notifications = Notification.query.filter_by(user_id=current_user.id).order_by(
+            Notification.is_read.asc(),
+            Notification.created_at.desc()
+        ).limit(30).all()  # 取得数を制限
+        
+        # JSON形式で返すためのデータ変換
+        notification_data = [{
+            'id': notification.id,
+            'message': notification.message,
+            'type': notification.type,
+            'is_read': notification.is_read,
+            'created_at': notification.created_at.isoformat() if notification.created_at else None,
+            'link': notification.link
+        } for notification in notifications]
+        
+        # 未読数のカウント
+        unread_count = Notification.query.filter_by(
+            user_id=current_user.id, 
+            is_read=False
+        ).count()
+        
+        return jsonify({
+            'notifications': notification_data,
+            'unread_count': unread_count
+        })
+        
+    except Exception as e:
+        app.logger.error(f"Error in get_user_notifications_api: {str(e)}")
+        return jsonify({'error': str(e), 'notifications': [], 'unread_count': 0}), 500
+
+@app.route('/mypage/api/notifications/<int:notification_id>/read', methods=['POST'])
+@login_required
+def mark_notification_read(notification_id):
+    """個別の通知を既読にするAPI"""
+    try:
+        notification = Notification.query.filter_by(
+            id=notification_id,
+            user_id=current_user.id
+        ).first_or_404()
+        
+        notification.is_read = True
+        db.session.commit()
+        
+        return jsonify({'status': 'success'})
+    except Exception as e:
+        db.session.rollback()
+        app.logger.error(f"Error marking notification as read: {str(e)}")
+        return jsonify({'status': 'error', 'message': str(e)}), 500
