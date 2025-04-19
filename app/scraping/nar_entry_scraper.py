@@ -12,6 +12,16 @@ from app import app, db
 from app.models import Race, Horse, Jockey, ShutubaEntry
 import traceback
 import sys
+import random
+
+# ユーザーエージェントのリスト
+USER_AGENTS = [
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.1 Safari/605.1.15',
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:89.0) Gecko/20100101 Firefox/89.0',
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Safari/537.36',
+    'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.107 Safari/537.36'
+]
 
 def generate_race_id(race_url: str) -> str:
     """レースURLからレースIDを生成（15桁）"""
@@ -289,19 +299,38 @@ def get_race_urls_for_date(page, context, date_str: str) -> List[str]:
         # タイムアウトを設定
         page.set_default_timeout(60000)  # 60秒
         
-        # まずトップページにアクセス
+        # アクセス制限対策としてCookieをクリア
+        context.clear_cookies()
+        
+        # サーバー負荷軽減のためより長い待機時間を設定
+        initial_wait = random.randint(10000, 15000)  # 10-15秒の待機
+        print(f"サイトアクセス前に{initial_wait/1000}秒待機します...")
+        page.wait_for_timeout(initial_wait)
+        
+        # まずトップページにアクセス（再試行ロジック追加）
         print("トップページにアクセスしています...")
-        page.goto("https://nar.netkeiba.com/", wait_until='domcontentloaded')
-        page.wait_for_timeout(3000)
+        max_retries = 3
+        for attempt in range(max_retries):
+            try:
+                page.goto("https://nar.netkeiba.com/", wait_until='domcontentloaded', timeout=60000)
+                break
+            except Exception as e:
+                print(f"トップページアクセスエラー (試行 {attempt+1}/{max_retries}): {str(e)}")
+                if attempt == max_retries - 1:
+                    raise
+                # リトライ前に長めに待機（アクセス制限対策）
+                retry_wait = random.randint(20000, 30000)  # 20-30秒
+                print(f"再試行前に{retry_wait/1000}秒待機...")
+                page.wait_for_timeout(retry_wait)
+                
+                # 新しいページを作成して再試行
+                page.close()
+                page = context.new_page()
         
-        # 次に目的のページに遷移
-        print(f"レース一覧ページにアクセスしています: {url}")
-        try:
-            page.goto(url, wait_until='domcontentloaded', timeout=60000)
-        except TimeoutError:
-            print("ページの完全な読み込みはタイムアウトしましたが、処理を継続します")
-        
-        page.wait_for_timeout(5000)
+        # 一定時間待機
+        wait_time = random.randint(5000, 10000)  # 5-10秒
+        print(f"トップページ読み込み後、{wait_time/1000}秒待機します...")
+        page.wait_for_timeout(wait_time)
         
         # JavaScriptを実行してページの準備ができているか確認
         is_ready = page.evaluate('''() => {
@@ -336,10 +365,33 @@ def get_race_info_for_next_three_days():
     """今日から3日分のレース情報を取得"""
     try:
         with sync_playwright() as p:
-            browser = p.chromium.launch(headless=True)
+            # プロキシ設定（必要に応じて値を設定）
+            # proxy_host = os.environ.get('PROXY_HOST', None)
+            # proxy_port = os.environ.get('PROXY_PORT', None)
+            # プロキシ設定
+            browser_options = {
+                'headless': True,
+                # 'proxy': {
+                #     'server': f'http://{proxy_host}:{proxy_port}' if proxy_host and proxy_port else None
+                # }
+            }
+            
+            # ブラウザの起動
+            browser = p.chromium.launch(**browser_options)
+            
+            # ランダムなユーザーエージェントを選択
+            user_agent = random.choice(USER_AGENTS)
+            
+            # 追加されたカスタムヘッダー
             context = browser.new_context(
                 viewport={'width': 1920, 'height': 1080},
-                user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
+                user_agent=user_agent,
+                extra_http_headers={
+                    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+                    'Accept-Language': 'ja,en-US;q=0.7,en;q=0.3',
+                    'Cache-Control': 'no-cache',
+                    'Pragma': 'no-cache'
+                }
             )
             
             try:
