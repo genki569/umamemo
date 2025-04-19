@@ -9,26 +9,53 @@ netkeiba.comから中央競馬の出馬表データを取得し、CSVファイ�
 - 指定された日付の全レースURLを取得
 - 各レースの出走表情報（馬名、騎手名、斤量など）を抽出
 - 抽出したデータをCSV形式で保存
-- データベースへの保存機能
 
 制限事項:
 - netkeiba.comの仕様変更によりスクレイピングが失敗する可能性があります
 - 大量のリクエストを短時間に送ると制限される可能性があります
+
+参考: 
+- https://webscraper.blog/archives/307
 """
 
-from playwright.sync_api import sync_playwright, TimeoutError
-import time
-from bs4 import BeautifulSoup
-from datetime import datetime, timedelta
-from typing import List, Dict
-import pandas as pd
 import os
-import csv
 import re
+import csv
+import time
 import json
 import traceback
 import sys
 import argparse
+from datetime import datetime, timedelta
+from typing import List, Dict, Optional
+
+# 依存関係の確認とインストール
+try:
+    from bs4 import BeautifulSoup
+    from selenium import webdriver
+    from selenium.webdriver.chrome.options import Options
+    from selenium.webdriver.chrome.service import Service
+    from selenium.webdriver.common.by import By
+    from selenium.webdriver.support import expected_conditions as EC
+    from selenium.webdriver.support.ui import WebDriverWait
+except ImportError as e:
+    print(f"必要なモジュールが見つかりません: {e}")
+    print("必要なパッケージをインストールします...")
+    import subprocess
+    try:
+        subprocess.check_call([sys.executable, "-m", "pip", "install", "beautifulsoup4", "selenium", "lxml"])
+        print("必要なパッケージのインストールが完了しました。スクリプトを再実行します。")
+        # モジュールを再度インポート
+        from bs4 import BeautifulSoup
+        from selenium import webdriver
+        from selenium.webdriver.chrome.options import Options
+        from selenium.webdriver.chrome.service import Service
+        from selenium.webdriver.common.by import By
+        from selenium.webdriver.support import expected_conditions as EC
+        from selenium.webdriver.support.ui import WebDriverWait
+    except Exception as install_error:
+        print(f"パッケージのインストールに失敗しました: {install_error}")
+        sys.exit(1)
 
 # FLASKのインポートエラーを回避するために条件分岐を追加
 try:
@@ -39,998 +66,565 @@ except ImportError:
     app = None
     db = None
 
-def generate_race_id(race_url: str) -> str:
+# 定数
+USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+DEBUG_DIR = 'debug'
+CSV_DIR = 'data/race_entries'
+
+def log(message):
     """
-    レースURLからレースIDを生成する関数
+    ログメッセージを標準出力に出力する関数
     
-    @param race_url: レースのURL（文字列）
-    @return: 抽出されたレースID（文字列）、エラー時はNone
-    
-    レースIDはネット競馬のURLから「race_id=」の後ろの部分を抽出します。
-    例: https://race.netkeiba.com/race/shutuba.html?race_id=202306050611 → 202306050611
+    @param message: 出力するメッセージ
     """
+    time_str = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    print(f"[{time_str}] {message}")
+
+def setup_driver() -> webdriver.Chrome:
+    """
+    Seleniumのドライバーを設定して返す関数
+    
+    @return: 設定済みのChromeドライバー
+    """
+    log("Chromeドライバーを設定中...")
+    options = Options()
+    options.add_argument('--headless')  # ヘッドレスモード
+    options.add_argument('--no-sandbox')
+    options.add_argument('--disable-dev-shm-usage')
+    options.add_argument(f'user-agent={USER_AGENT}')
+    
+    # 環境変数からディスプレイ設定を取得
+    display = os.environ.get('DISPLAY')
+    if display:
+        log(f"ディスプレイ設定を使用: {display}")
+    else:
+        log("ディスプレイ設定がありません。完全ヘッドレスモードで実行します。")
+    
+    # ディレクトリが存在することを確認
+    os.makedirs(DEBUG_DIR, exist_ok=True)
+    os.makedirs(CSV_DIR, exist_ok=True)
+    
     try:
-        # URLからrace_idパラメータを抽出
-        race_id = race_url.split('race_id=')[1].split('&')[0]
-        return race_id
+        driver = webdriver.Chrome(options=options)
+        driver.set_window_size(1280, 1024)
+        log("Chromeドライバーの設定が完了しました")
+        return driver
     except Exception as e:
-        print(f"レースID生成エラー: {str(e)}")
-        return None
+        log(f"ドライバー初期化エラー: {e}")
+        raise
 
-def generate_venue_code(venue_name: str) -> str:
+def get_kaisai_dates(year: int, month: int, driver: webdriver.Chrome) -> List[str]:
     """
-    開催場所から3桁のコードを生成する関数
+    特定の年月の開催日一覧を取得する関数
     
-    @param venue_name: 開催場所の名前（文字列）
-    @return: 対応する3桁のコード（文字列）、不明な場合は'999'
-    
-    場所名と対応するコードのマッピングを定義し、指定された場所のコードを返します。
-    中央競馬場は101-110、地方競馬場は201-215のコード範囲を使用。
+    @param year: 取得対象年（整数）
+    @param month: 取得対象月（整数）
+    @param driver: Seleniumのドライバー
+    @return: 開催日のリスト（YYYYMMDD形式）
     """
-    venue_codes = {
-        '札幌': '101',
-        '函館': '102',
-        '福島': '103',
-        '新潟': '104',
-        '東京': '105',
-        '中山': '106',
-        '中京': '107',
-        '京都': '108',
-        '阪神': '109',
-        '小倉': '110',
-        '門別': '201',
-        '帯広': '202',
-        '盛岡': '203',
-        '水沢': '204',
-        '浦和': '205',
-        '船橋': '206',
-        '大井': '207',
-        '川崎': '208',
-        '金沢': '209',
-        '笠松': '210',
-        '名古屋': '211',
-        '園田': '212',
-        '姫路': '213',
-        '高知': '214',
-        '佐賀': '215'
+    url = f'https://race.netkeiba.com/top/calendar.html?year={year}&month={month}'
+    log(f"カレンダーページにアクセス中: {url}")
+    
+    try:
+        driver.get(url)
+        wait = WebDriverWait(driver, 10)
+        wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, '.Calendar_Table')))
+        
+        # デバッグ用にページを保存
+        with open(f"{DEBUG_DIR}/calendar_{year}{month:02d}.html", "w", encoding="utf-8") as f:
+            f.write(driver.page_source)
+        
+        # スクリーンショットの保存
+        driver.save_screenshot(f"{DEBUG_DIR}/calendar_{year}{month:02d}.png")
+        
+        # BeautifulSoupでパース
+        soup = BeautifulSoup(driver.page_source, 'lxml')
+        
+        kaisai_dates = []
+        
+        # カレンダーテーブルから開催日を探す（すべてのリンクをチェック）
+        for a_tag in soup.select('.Calendar_Table td a'):
+            href = a_tag.get('href', '')
+            match = re.search(r'kaisai_date=(\d+)', href)
+            if match:
+                kaisai_date = match.group(1)
+                kaisai_dates.append(kaisai_date)
+        
+        log(f"取得した開催日: {kaisai_dates}")
+        return kaisai_dates
+    
+    except Exception as e:
+        log(f"開催日取得エラー: {e}")
+        traceback.print_exc()
+        return []
+
+def get_race_ids(kaisai_date: str, driver: webdriver.Chrome) -> List[str]:
+    """
+    特定の開催日のレースID一覧を取得する関数
+    
+    @param kaisai_date: 開催日（YYYYMMDD形式）
+    @param driver: Seleniumのドライバー
+    @return: レースIDのリスト
+    """
+    url = f'https://race.netkeiba.com/top/race_list.html?kaisai_date={kaisai_date}'
+    log(f"レース一覧ページにアクセス中: {url}")
+    
+    try:
+        driver.get(url)
+        wait = WebDriverWait(driver, 10)
+        wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, 'body')))
+        
+        # ページの読み込みを待機（少し余分に待つ）
+        time.sleep(3)
+        
+        # デバッグ用にページを保存
+        with open(f"{DEBUG_DIR}/race_list_{kaisai_date}.html", "w", encoding="utf-8") as f:
+            f.write(driver.page_source)
+        
+        # スクリーンショットも保存
+        driver.save_screenshot(f"{DEBUG_DIR}/race_list_{kaisai_date}.png")
+        
+        # BeautifulSoupでパース
+        soup = BeautifulSoup(driver.page_source, 'lxml')
+        
+        race_ids = []
+        
+        # 記事のセレクタを使用
+        for a_tag in soup.select('.RaceList_DataItem > a:first-of-type'):
+            href = a_tag.get('href', '')
+            match = re.search(r'race_id=([^&]+)', href)
+            if match:
+                race_id = match.group(1)
+                race_ids.append(race_id)
+        
+        # バックアップ方法：他のセレクタも試す
+        if not race_ids:
+            for a_tag in soup.select('a[href*="race_id="]'):
+                href = a_tag.get('href', '')
+                match = re.search(r'race_id=([^&]+)', href)
+                if match:
+                    race_id = match.group(1)
+                    if race_id not in race_ids:
+                        race_ids.append(race_id)
+        
+        log(f"取得したレースID数: {len(race_ids)}")
+        if race_ids:
+            for i, race_id in enumerate(race_ids[:3], 1):  # 最初の3件だけ表示
+                log(f"レースID {i}: {race_id}")
+        
+        return race_ids
+    
+    except Exception as e:
+        log(f"レースID取得エラー: {e}")
+        traceback.print_exc()
+        return []
+
+def get_shutuba_data(race_id: str, driver: webdriver.Chrome) -> Dict:
+    """
+    特定のレースIDの出馬表データを取得する関数
+    
+    @param race_id: レースID
+    @param driver: Seleniumのドライバー
+    @return: 出馬表データを含む辞書
+    """
+    url = f'https://race.netkeiba.com/race/shutuba.html?race_id={race_id}'
+    log(f"出馬表ページにアクセス中: {race_id} - {url}")
+    
+    race_info = {
+        'race_id': race_id,
+        'race_name': '',
+        'race_date': '',
+        'venue': '',
+        'race_number': 0,
+        'race_details': '',
+        'entries': []
     }
-    return venue_codes.get(venue_name, '999')  # 不明な場合は999を返す
-
-def generate_entry_id(race_id, horse_number):
-    """
-    エントリーIDを生成する関数
     
-    @param race_id: レースID（15桁の文字列）
-    @param horse_number: 馬番（数値または文字列）
-    @return: 17桁のエントリーID（整数）、エラー時はNone
-    
-    レースID(15桁) + 馬番(2桁)の形式で17桁のIDを生成します。
-    例: レースID=202306050611、馬番=7 の場合 → 20230605061107
-    """
     try:
-        # 馬番を2桁の文字列に変換してレースIDと結合
-        return int(f"{race_id}{str(int(horse_number)).zfill(2)}")
-    except:
-        return None
-
-def generate_horse_id(horse_name: str) -> int:
-    """
-    馬名から一意なIDを生成する関数
-    
-    @param horse_name: 馬の名前（文字列）
-    @return: 10桁の馬ID（整数）
-    
-    馬名から一貫性のあるハッシュを生成し、それを10桁のIDに変換します。
-    同じ馬名には常に同じIDを返すように設計されています。
-    IDの先頭は1で始まり、名前の各文字に位置の重みをつけてハッシュ化しています。
-    """
-    if not hasattr(generate_horse_id, 'used_ids'):
-        generate_horse_id.used_ids = set()
-        generate_horse_id.name_to_id = {}
-
-    # 既に生成済みのIDがあればそれを返す
-    if horse_name in generate_horse_id.name_to_id:
-        return generate_horse_id.name_to_id[horse_name]
-
-    # 馬名からハッシュ値を生成（位置ごとに重み付け）
-    name_hash = 0
-    for i, char in enumerate(horse_name):
-        position_weight = (i + 1) * 100
-        char_value = ord(char) * position_weight
-        name_hash = (name_hash * 31 + char_value) & 0xFFFFFFFF
-
-    # ハッシュ値を10桁のIDに変換（先頭は1）
-    base_id = int(f"1{abs(name_hash) % 999999999:09d}")
-
-    # 衝突回避（既に使用されているIDの場合はインクリメント）
-    while base_id in generate_horse_id.used_ids:
-        base_id += 1
-        if base_id % 1000000000 == 0:
-            base_id = 1000000000
-
-    # 生成したIDを記録
-    generate_horse_id.used_ids.add(base_id)
-    generate_horse_id.name_to_id[horse_name] = base_id
-
-    return base_id
-
-def generate_jockey_id(jockey_name: str) -> int:
-    """
-    騎手名から一意なIDを生成する関数
-    
-    @param jockey_name: 騎手の名前（文字列）
-    @return: 10桁の騎手ID（整数）
-    
-    騎手名から一貫性のあるハッシュを生成し、それを10桁のIDに変換します。
-    同じ騎手名には常に同じIDを返すように設計されています。
-    IDの先頭は2で始まり、名前の文字コードの合計をハッシュ化しています。
-    """
-    if not hasattr(generate_jockey_id, 'used_ids'):
-        generate_jockey_id.used_ids = set()
-        generate_jockey_id.name_to_id = {}
-
-    # 既に生成済みのIDがあればそれを返す
-    if jockey_name in generate_jockey_id.name_to_id:
-        return generate_jockey_id.name_to_id[jockey_name]
-
-    # 騎手名からハッシュ値を生成（単純な文字コードの合計）
-    name_hash = sum(ord(c) for c in jockey_name)
-    
-    # ハッシュ値を10桁のIDに変換（先頭は2）
-    base_id = int(f"2{abs(name_hash) % 999999999:09d}")
-
-    # 衝突回避（既に使用されているIDの場合はインクリメント）
-    while base_id in generate_jockey_id.used_ids:
-        base_id += 1
-        if base_id % 1000000000 == 0:
-            base_id = 2000000000
-
-    # 生成したIDを記録
-    generate_jockey_id.used_ids.add(base_id)
-    generate_jockey_id.name_to_id[jockey_name] = base_id
-
-    return base_id
-
-def scrape_race_entry(page, race_url: str) -> Dict[str, any]:
-    """
-    レースの出走表ページから情報を取得する関数
-    
-    @param page: Playwrightのページオブジェクト
-    @param race_url: スクレイピング対象のレースURL（文字列）
-    @return: レース情報と出走馬情報を含む辞書、エラー時はNone
-    
-    レースの基本情報（レース名、番号、開催場所など）と
-    出走馬の詳細情報（馬名、騎手名、斤量など）を抽出します。
-    BeautifulSoupを使用してHTML要素を解析し、正規表現でテキストから必要な情報を抽出します。
-    """
-    try:
-        # レースページにアクセス
-        print(f"レースページアクセス中: {race_url}")
-        try:
-            page.goto(race_url, wait_until='domcontentloaded', timeout=60000)
-        except TimeoutError:
-            print("ページの完全な読み込みはタイムアウトしましたが、処理を継続します")
+        driver.get(url)
+        wait = WebDriverWait(driver, 10)
+        wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, 'body')))
+        
+        # ページの読み込みを待機（少し余分に待つ）
+        time.sleep(2)
+        
+        # デバッグ用にページを保存
+        with open(f"{DEBUG_DIR}/shutuba_{race_id}.html", "w", encoding="utf-8") as f:
+            f.write(driver.page_source)
+        
+        # スクリーンショットの保存
+        driver.save_screenshot(f"{DEBUG_DIR}/shutuba_{race_id}.png")
+        
+        # BeautifulSoupでパース
+        soup = BeautifulSoup(driver.page_source, 'lxml')
+        
+        # レース名
+        race_name_elem = soup.select_one('.RaceData_TitleName, .RaceMainMenu .RaceName')
+        if race_name_elem:
+            race_info['race_name'] = race_name_elem.text.strip()
+        
+        # レース番号
+        race_num_elem = soup.select_one('.RaceData_Num, .RaceNum')
+        if race_num_elem:
+            race_number_text = race_num_elem.text.strip()
+            match = re.search(r'(\d+)', race_number_text)
+            if match:
+                race_info['race_number'] = int(match.group(1))
+        
+        # 開催場所と日付
+        race_data_elem = soup.select_one('.RaceData_Data')
+        if race_data_elem:
+            race_data_text = race_data_elem.text.strip()
             
-        page.wait_for_timeout(5000)  # ページの読み込み完了を待機
-        
-        # HTMLが存在するか簡単に確認
-        page_title = page.title()
-        if "404" in page_title or "エラー" in page_title or "見つかりません" in page_title:
-            print(f"ページが存在しません: {race_url}")
-            return None
-        
-        # ページのHTMLを取得してBeautifulSoupで解析
-        html_content = page.content()
-        soup = BeautifulSoup(html_content, 'html.parser')
-        
-        # レース情報の取得
-        race_id = generate_race_id(race_url)
-        if not race_id:
-            print(f"レースIDの生成に失敗しました: {race_url}")
-            return None
-        
-        # レース名と番号を取得（複数の可能性のあるセレクタを試す）
-        race_num_text = ""
-        for selector in ['.RaceNum', '.RaceMainMenu .RaceNum', '.RaceData .RaceNum']:
-            elem = soup.select_one(selector)
-            if elem:
-                race_num_text = elem.text.strip()
-                break
-                
-        if not race_num_text:
-            print("レース番号が見つかりません。クラス名が変更された可能性があります。")
-            race_num_text = ""
+            # 開催場所
+            venue_match = re.search(r'(\d+回)([^\d]+)(\d+日)', race_data_text)
+            if venue_match:
+                race_info['venue'] = venue_match.group(2)
             
-        race_name = ""
-        for selector in ['.RaceName', '.RaceMainMenu .RaceName', '.RaceData .RaceName']:
-            elem = soup.select_one(selector)
-            if elem:
-                race_name = elem.text.strip()
-                break
-                
-        if not race_name:
-            print("レース名が見つかりません。クラス名が変更された可能性があります。")
-            race_name = ""
-            
-        race_number = int(race_num_text.replace('R', '')) if race_num_text else 0
-        
-        # 開催場所と日付を取得（複数の可能性のあるセレクタを試す）
-        race_data = ""
-        for selector in ['.RaceData', '.RaceMainMenu .RaceData', '.RaceSubData']:
-            elem = soup.select_one(selector)
-            if elem:
-                race_data = elem.text.strip()
-                break
-                
-        if not race_data:
-            print("レースデータが見つかりません。クラス名が変更された可能性があります。")
-            race_data = ""
-            
-        race_datetime_text = ""
-        for selector in ['.RaceData01', '.RaceMainMenu .RaceData01', '.RaceSubData']:
-            elem = soup.select_one(selector)
-            if elem:
-                race_datetime_text = elem.text.strip()
-                break
-                
-        if not race_datetime_text:
-            print("レース日時が見つかりません。クラス名が変更された可能性があります。")
-            race_datetime_text = ""
-        
-        # ページソースを保存（デバッグ用）
-        with open(f"debug/race_page_{race_id}.html", "w", encoding="utf-8") as f:
-            f.write(html_content)
-        
-        # 開催場所の抽出（例: "東京"）
-        venue = ""
-        venue_pattern = r'(\d+回)([^\d]+)(\d+日)'
-        venue_match = re.search(venue_pattern, race_data)
-        if venue_match:
-            venue = venue_match.group(2)
-        else:
-            # 別のパターンで試す
-            venue_pattern2 = r'([^\d]+)(競馬場|ウインズ)'
-            venue_match2 = re.search(venue_pattern2, race_data)
-            if venue_match2:
-                venue = venue_match2.group(1)
-                
-        venue_code = generate_venue_code(venue)
-        
-        # 日付の抽出（例: "2023年6月3日"）
-        race_date = ""
-        # 複数のパターンで試す
-        date_patterns = [
-            r'(\d+年\d+月\d+日)',
-            r'(\d+/\d+/\d+)',
-            r'(\d+-\d+-\d+)'
-        ]
-        
-        for pattern in date_patterns:
-            date_match = re.search(pattern, race_datetime_text)
+            # 日付
+            date_match = re.search(r'(\d{4})年(\d{1,2})月(\d{1,2})日', race_data_text)
             if date_match:
-                race_date_text = date_match.group(1)
-                # 日付フォーマットを統一
-                if '年' in race_date_text:
-                    race_date = race_date_text.replace('年', '-').replace('月', '-').replace('日', '')
-                elif '/' in race_date_text:
-                    parts = race_date_text.split('/')
-                    if len(parts) == 3:
-                        race_date = f"{parts[0]}-{parts[1]}-{parts[2]}"
-                else:
-                    race_date = race_date_text
-                break
+                year, month, day = date_match.groups()
+                race_info['race_date'] = f"{year}-{month.zfill(2)}-{day.zfill(2)}"
         
-        # 出馬表テーブルから馬情報を抽出（複数のセレクタを試す）
-        horse_entries = []
-        horse_rows = []
+        # レース詳細情報
+        race_info_elem = soup.select_one('.RaceData.fc')
+        if race_info_elem:
+            race_info['race_details'] = race_info_elem.text.strip()
         
-        # 複数の可能性のあるセレクタで馬リストを取得
-        for selector in ['table.Shutuba_Table tr.HorseList', 'table.RaceTable01 tr']:
-            rows = soup.select(selector)
-            if rows:
-                horse_rows = rows
-                break
-        
-        if not horse_rows:
-            print(f"馬情報が見つかりません: {race_url}")
-            return None
-        
-        print(f"出走馬数: {len(horse_rows)}")
+        # 出走馬情報
+        horse_rows = soup.select('table.Shutuba_Table tr.HorseList')
         
         for row in horse_rows:
             try:
-                # スタイルによって馬番のセレクタが異なるため複数試す
-                horse_number_elem = None
-                for selector in ['.Waku span', '.Umaban', 'td:first-child']:
-                    elem = row.select_one(selector)
-                    if elem and elem.text.strip().isdigit():
-                        horse_number_elem = elem
-                        break
-                        
-                horse_number = int(horse_number_elem.text.strip()) if horse_number_elem else 0
+                horse_data = {}
                 
-                if horse_number == 0:
-                    # おそらくヘッダー行なのでスキップ
-                    continue
+                # 馬番
+                umaban_elem = row.select_one('.Umaban')
+                if umaban_elem:
+                    horse_data['horse_number'] = int(umaban_elem.text.strip())
                 
                 # 枠番
-                waku_num = 0
-                waku_element = row.select_one('.Waku')
-                if waku_element:
-                    waku_class = waku_element.get('class', [])
-                    # 枠番のクラス名から番号を抽出（例: "Waku1" → 1）
-                    for class_name in waku_class:
-                        if class_name.startswith('Waku') and len(class_name) > 4:
+                waku_elem = row.select_one('.Waku')
+                if waku_elem:
+                    waku_class = waku_elem.get('class', [])
+                    for cls in waku_class:
+                        if cls.startswith('Waku'):
                             try:
-                                waku_num = int(class_name[4:])
+                                horse_data['frame_number'] = int(cls[4:])
+                                break
                             except ValueError:
                                 pass
                 
-                # 馬名 - 複数のセレクタを試す
-                horse_name = ""
-                for selector in ['.HorseName a', '.HorseInfo a', 'td a[href*="horse"]']:
-                    elem = row.select_one(selector)
-                    if elem:
-                        horse_name = elem.text.strip()
-                        break
-                        
-                horse_id = generate_horse_id(horse_name) if horse_name else 0
+                # 馬名
+                horse_name_elem = row.select_one('.HorseName a')
+                if horse_name_elem:
+                    horse_data['horse_name'] = horse_name_elem.text.strip()
                 
-                # 馬齢と性別 - 複数のセレクタを試す
-                horse_info = ""
-                for selector in ['.Barei', '.HorseInfo span', 'td:nth-child(4)']:
-                    elem = row.select_one(selector)
-                    if elem:
-                        info_text = elem.text.strip()
-                        # 性別年齢のパターン（例: 牡3, 牝5, セ6）をチェック
-                        if re.match(r'^[牡牝セ]\d+$', info_text):
-                            horse_info = info_text
-                            break
-                
-                # 性別と年齢を抽出（例: "牡3" → 性別="牡", 年齢=3）
-                gender = ""
-                age = 0
-                if horse_info:
-                    gender = horse_info[0]  # 最初の文字（牡/牝/セ）
-                    try:
-                        age = int(horse_info[1:])
-                    except ValueError:
-                        pass
-                
-                # 斤量 - 複数のセレクタを試す
-                weight = ""
-                for selector in ['.Jockey .JockeyWeight', '.Jockey', 'td:nth-child(6)']:
-                    elem = row.select_one(selector)
-                    if elem:
-                        text = elem.text.strip()
-                        # 斤量のパターン（例: 54.0, 53.5）を検出
-                        weight_match = re.search(r'\d+\.\d+', text)
-                        if weight_match:
-                            weight = weight_match.group(0)
-                            break
-                
-                # 騎手 - 複数のセレクタを試す
-                jockey_name = ""
-                for selector in ['.Jockey a', 'td a[href*="jockey"]']:
-                    elem = row.select_one(selector)
-                    if elem:
-                        jockey_name = elem.text.strip()
-                        break
-                        
-                jockey_id = generate_jockey_id(jockey_name) if jockey_name else 0
-                
-                # 馬体重 - 複数のセレクタを試す
-                horse_weight_text = ""
-                for selector in ['.Weight', 'td:nth-child(9)', 'td.Weight']:
-                    elem = row.select_one(selector)
-                    if elem:
-                        text = elem.text.strip()
-                        # 馬体重のパターン（例: 466(+4), 480(-2)）を検出
-                        if re.search(r'\d+\([+-]?\d+\)', text):
-                            horse_weight_text = text
-                            break
-                
-                # 馬体重と増減を抽出（例: "466(+4)" → 体重=466, 増減=+4）
-                horse_weight = 0
-                weight_diff = 0
-                
-                if horse_weight_text:
-                    weight_match = re.search(r'(\d+)\(([+-]?\d+)\)', horse_weight_text)
-                    if weight_match:
-                        horse_weight = int(weight_match.group(1))
-                        weight_diff = int(weight_match.group(2))
-                    else:
+                # 性齢
+                horse_info_elem = row.select_one('.Barei')
+                if horse_info_elem:
+                    info_text = horse_info_elem.text.strip()
+                    if info_text:
+                        horse_data['gender'] = info_text[0]  # 最初の文字（牡/牝/セ）
                         try:
-                            horse_weight = int(horse_weight_text)
+                            horse_data['age'] = int(info_text[1:])
                         except ValueError:
-                            pass
+                            horse_data['age'] = 0
                 
-                # エントリーID生成
-                entry_id = generate_entry_id(race_id, horse_number)
+                # 斤量
+                weight_elem = row.select_one('.Jockey .JockeyWeight')
+                if weight_elem:
+                    weight_text = weight_elem.text.strip()
+                    weight_match = re.search(r'(\d+\.\d+)', weight_text)
+                    if weight_match:
+                        horse_data['weight'] = weight_match.group(1)
                 
-                # 馬の詳細情報を辞書に格納
-                entry = {
-                    'entry_id': entry_id,
-                    'race_id': race_id,
-                    'race_date': race_date,
-                    'venue': venue,
-                    'venue_code': venue_code,
-                    'race_number': race_number,
-                    'race_name': race_name,
-                    'horse_number': horse_number,
-                    'frame_number': waku_num,
-                    'horse_id': horse_id,
-                    'horse_name': horse_name,
-                    'gender': gender,
-                    'age': age,
-                    'weight': weight,
-                    'jockey_id': jockey_id,
-                    'jockey_name': jockey_name,
-                    'horse_weight': horse_weight,
-                    'weight_diff': weight_diff,
-                    'odds': 0.0,  # オッズ情報がある場合は抽出
-                    'popularity': 0,  # 人気順があれば抽出
-                    'race_url': race_url
-                }
+                # 騎手
+                jockey_elem = row.select_one('.Jockey a')
+                if jockey_elem:
+                    horse_data['jockey_name'] = jockey_elem.text.strip()
                 
-                # 最低限の情報が含まれているか確認
-                if horse_name and jockey_name:
-                    horse_entries.append(entry)
+                # 馬体重
+                horse_weight_elem = row.select_one('.Weight')
+                if horse_weight_elem:
+                    weight_text = horse_weight_elem.text.strip()
+                    weight_match = re.search(r'(\d+)\(([+-]?\d+)\)', weight_text)
+                    if weight_match:
+                        horse_data['horse_weight'] = int(weight_match.group(1))
+                        horse_data['weight_diff'] = int(weight_match.group(2))
                 
-            except Exception as horse_error:
-                print(f"馬データ処理中にエラー: {str(horse_error)}")
+                # エントリーとして追加（最低限の情報が含まれていれば）
+                if 'horse_name' in horse_data and 'jockey_name' in horse_data:
+                    horse_data['entry_id'] = f"{race_id}{horse_data.get('horse_number', 0):02d}"
+                    # シェルスクリプトとの互換性のために空フィールドを追加
+                    horse_data['odds'] = 0.0
+                    horse_data['popularity'] = 0
+                    horse_data['trainer_name'] = ''
+                    horse_data['race_id'] = race_id
+                    
+                    race_info['entries'].append(horse_data)
+            
+            except Exception as e:
+                log(f"出走馬データ取得エラー: {e}")
+                traceback.print_exc()
                 continue
         
-        # 全体のレース情報と馬リストをまとめる
-        race_entry = {
-            'race_id': race_id,
-            'race_date': race_date,
-            'venue': venue,
-            'venue_code': venue_code,
-            'race_number': race_number,
-            'race_name': race_name,
-            'race_url': race_url,
-            'entries': horse_entries
-        }
-        
-        return race_entry
+        log(f"取得した出走馬数: {len(race_info['entries'])}")
+        return race_info
     
     except Exception as e:
-        # エラー発生時の処理
-        print(f"レース情報スクレイピングエラー ({race_url}): {str(e)}")
+        log(f"出馬表取得エラー: {e}")
         traceback.print_exc()
-        return None
+        return race_info
 
-def save_to_csv(data: List[Dict], csv_path: str, mode: str = 'w') -> bool:
+def save_to_csv(entries: List[Dict], date_str: str) -> bool:
     """
-    スクレイピングしたデータをCSVファイルに保存する関数
+    取得したエントリー情報をCSVファイルに保存する関数
     
-    @param data: 保存するデータのリスト
-    @param csv_path: 保存先のCSVファイルパス
-    @param mode: ファイルオープンモード（'w':上書き, 'a':追記）
-    @return: 保存が成功したかどうかのブール値
-    
-    エントリー情報を指定されたCSVファイルに保存します。
-    モードは'w'（新規作成/上書き）または'a'（追記）で指定可能です。
-    ファイルが存在しない場合はヘッダー行を含めて新規作成します。
+    @param entries: エントリー情報のリスト
+    @param date_str: 日付文字列（YYYYMMDD形式）
+    @return: 保存に成功したかどうかのブール値
     """
-    if not data or len(data) == 0:
-        print("保存するデータがありません")
+    if not entries:
+        log(f"{date_str}: 保存するエントリーがありません")
         return False
     
     try:
-        # ディレクトリが存在しない場合は作成
-        os.makedirs(os.path.dirname(csv_path), exist_ok=True)
+        filepath = os.path.join(CSV_DIR, f'jra_race_entries_{date_str}.csv')
         
-        # ファイルが存在しない、またはモードが'w'の場合はヘッダーを書き込む
-        file_exists = os.path.isfile(csv_path) and mode == 'a'
-        
-        with open(csv_path, mode, newline='', encoding='utf-8') as f:
-            # CSV列のフィールド名を定義
+        with open(filepath, 'w', newline='', encoding='utf-8') as f:
+            # フィールド名を定義（シェルスクリプトと互換性のある順序と名前）
             fieldnames = [
-                'entry_id', 'race_id', 'horse_number', 'waku_number',
-                'horse_id', 'horse_name', 'gender', 'age',
-                'jockey_id', 'jockey_name', 'weight', 'horse_weight',
-                'weight_diff', 'trainer_name', 'odds', 'popularity'
+                'entry_id', 'race_id', 'horse_number', 'frame_number',
+                'horse_name', 'gender', 'age', 'weight', 'jockey_name',
+                'horse_weight', 'weight_diff', 'trainer_name', 'odds', 'popularity'
             ]
             
             writer = csv.DictWriter(f, fieldnames=fieldnames)
+            writer.writeheader()
             
-            # ファイルが新規の場合はヘッダーを書き込む
-            if not file_exists:
-                writer.writeheader()
-            
-            # データを書き込む
-            for row in data:
+            for entry in entries:
+                # シェルスクリプトとの互換性のために馬番を整数から文字列に変換
+                for key in ['horse_number', 'frame_number', 'age']:
+                    if key in entry and entry[key] is not None:
+                        entry[key] = str(entry[key])
+                        
+                # 必要なフィールドだけを含む辞書を作成して書き込む
+                row = {field: entry.get(field, '') for field in fieldnames}
                 writer.writerow(row)
         
-        print(f"{len(data)}件のデータをCSVに保存しました: {csv_path}")
+        log(f"{date_str}: {len(entries)}件のエントリーを保存しました: {filepath}")
+        
+        # ファイルサイズを確認
+        file_size = os.path.getsize(filepath)
+        log(f"CSVファイルのサイズ: {file_size}バイト")
+        
         return True
     
     except Exception as e:
-        # エラー発生時の処理
-        error_trace = traceback.format_exc()
-        print(f"CSVファイル保存エラー: {str(e)}")
-        print(error_trace)
+        log(f"CSV保存エラー: {e}")
+        traceback.print_exc()
         return False
 
-def get_race_urls_for_date(page, context, date_str: str) -> List[str]:
+def is_race_day(date_str: str, driver: webdriver.Chrome) -> bool:
     """
-    指定された日付のレースURLリストを取得する関数
+    指定された日付がレース開催日かどうかを確認する関数
     
-    @param page: Playwrightのページオブジェクト
-    @param context: Playwrightのコンテキストオブジェクト
-    @param date_str: 日付文字列 (YYYY-MM-DD形式)
-    @return: レースURLのリスト、エラー時は空リスト
-    
-    指定された日付のnetkeibaのカレンダーページにアクセスし、
-    その日に開催される全レースのURLを抽出します。
+    @param date_str: 確認する日付（YYYY-MM-DD形式）
+    @param driver: Seleniumのドライバー
+    @return: レース開催日ならTrue、そうでなければFalse
     """
-    all_race_urls = []  # 返却用のリスト
+    date_obj = datetime.strptime(date_str, '%Y-%m-%d')
+    year = date_obj.year
+    month = date_obj.month
+    date_param = date_obj.strftime('%Y%m%d')
     
-    try:
-        # 日付をYYYYMMDD形式に変換
-        date_obj = datetime.strptime(date_str, '%Y-%m-%d')
-        date_param = date_obj.strftime('%Y%m%d')
-        
-        # タイムアウトを設定
-        page.set_default_timeout(90000)  # 90秒
-        
-        print(f"\n{date_str}のレース情報を取得中...")
-        
-        # デバッグディレクトリを作成
-        os.makedirs('debug', exist_ok=True)
-        
-        # 有効なユーザーエージェントをセット（調整が必要）
-        user_agent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-        
-        # 最初に月間カレンダーページにアクセス
-        year = date_obj.year
-        month = date_obj.month
-        calendar_url = f"https://race.netkeiba.com/top/calendar.html?year={year}&month={month}"
-        print(f"カレンダーページにアクセスしています: {calendar_url}")
-        
-        context.clear_cookies()
-        
-        # ヘッダー情報を追加（一般的なブラウザのように見せる）
-        page.set_extra_http_headers({
-            'User-Agent': user_agent,
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
-            'Accept-Language': 'ja-JP,ja;q=0.9,en-US;q=0.8,en;q=0.7',
-            'Cache-Control': 'max-age=0',
-            'Sec-Ch-Ua': '"Chromium";v="120", "Google Chrome";v="120"',
-            'Sec-Ch-Ua-Mobile': '?0',
-            'Sec-Ch-Ua-Platform': '"macOS"',
-            'Sec-Fetch-Dest': 'document',
-            'Sec-Fetch-Mode': 'navigate',
-            'Sec-Fetch-Site': 'none',
-            'Sec-Fetch-User': '?1',
-            'Upgrade-Insecure-Requests': '1'
-        })
-        
+    # その月の開催日を取得
+    kaisai_dates = get_kaisai_dates(year, month, driver)
+    
+    # 開催日リストに含まれているか確認
+    if date_param in kaisai_dates:
+        log(f"{date_str}はレース開催日です")
+        return True
+    
+    # 土日の場合は開催されている可能性が高い（バックアップ）
+    if date_obj.weekday() >= 5:  # 5=土曜日, 6=日曜日
+        # 直接レース一覧ページにアクセスして確認
+        url = f'https://race.netkeiba.com/top/race_list.html?kaisai_date={date_param}'
         try:
-            # まずnetkeiba.comトップページにアクセス
-            print("最初にトップページにアクセスしてクッキーを取得...")
-            page.goto("https://www.netkeiba.com/", wait_until='domcontentloaded', timeout=30000)
-            page.wait_for_timeout(3000)
+            driver.get(url)
+            time.sleep(2)
             
-            # カレンダーページにアクセス
-            print(f"カレンダーページにアクセス中: {calendar_url}")
-            page.goto(calendar_url, wait_until='domcontentloaded', timeout=30000)
-            page.wait_for_timeout(5000)
+            # スクリーンショットを保存
+            driver.save_screenshot(f"{DEBUG_DIR}/race_check_{date_param}.png")
             
-            # スクリーンショット保存
-            page.screenshot(path=f"debug/calendar_{year}_{month}.png")
-            print(f"カレンダーのスクリーンショットを保存: debug/calendar_{year}_{month}.png")
+            # ページソースを保存
+            with open(f"{DEBUG_DIR}/race_check_{date_param}.html", "w", encoding="utf-8") as f:
+                f.write(driver.page_source)
             
-            # カレンダー内のリンクを持つ日付を探す（レース開催日のチェック）
-            kaisai_dates = page.evaluate('''() => {
-                const dates = [];
-                document.querySelectorAll('.Calendar_Table td a[href*="kaisai_date"]').forEach(a => {
-                    const match = a.href.match(/kaisai_date=(.+)/);
-                    if (match) {
-                        dates.push(match[1]);
-                    }
-                });
-                
-                // セレクタが一致しない場合はより汎用的な方法を試す
-                if (dates.length === 0) {
-                    // すべてのリンクを検索してkaisai_dateを含むものを探す
-                    document.querySelectorAll('a[href*="kaisai_date="]').forEach(a => {
-                        const match = a.href.match(/kaisai_date=([0-9]+)/);
-                        if (match) {
-                            dates.push(match[1]);
-                        }
-                    });
-                }
-                
-                // それでも見つからない場合は、カレンダー表示の日付要素を直接特定
-                if (dates.length === 0) {
-                    // 色付きのセルや特別なクラスを持つセルを探す（開催日の特徴）
-                    const specialCells = Array.from(document.querySelectorAll('table td'))
-                        .filter(td => {
-                            // 背景色がある、またはリンクを含む、または特定のクラスを持つセル
-                            return td.style.backgroundColor || 
-                                td.querySelector('a') || 
-                                (td.className && td.className !== 'Week');
-                        });
-                    
-                    // 中央競馬は土日に開催されることが多いので、土日の日付を推測
-                    specialCells.forEach(td => {
-                        const dateText = td.textContent.trim();
-                        if (/^[0-9]+$/.test(dateText)) { // 数字のみの場合は日付
-                            const day = parseInt(dateText, 10);
-                            // 年月と日を組み合わせて日付を生成
-                            const date = new Date(year, month - 1, day);
-                            // 土日のみを対象
-                            if (date.getDay() === 0 || date.getDay() === 6) {
-                                const dateStr = `${year}${(month).toString().padStart(2, '0')}${day.toString().padStart(2, '0')}`;
-                                dates.push(dateStr);
-                            }
-                        }
-                    });
-                }
-                
-                return dates;
-            }''')
-            
-            print(f"取得した開催日: {kaisai_dates}")
-            
-            # 指定した日付が開催日かチェック
-            if date_param not in kaisai_dates:
-                print(f"{date_str}はレース開催日ではないようです。")
-                
-                # カレンダー画像から直接確認できる開催日情報を手動で追加
-                # スクリーンショットの情報に基づく
-                manual_dates = []
-                if year == 2025 and month == 4:
-                    manual_dates = ['20250412', '20250413', '20250419', '20250420', '20250426', '20250427']
-                    print(f"カレンダー画像から確認: 2025年4月の開催日は {', '.join(manual_dates)}")
-                    
-                # 指定された日付に最も近い開催日を選択
-                if manual_dates:
-                    kaisai_dates = manual_dates  # 手動追加の日付を使用
-                
-                # 近い開催日を探す
-                future_dates = [d for d in kaisai_dates if d >= date_param]
-                if future_dates:
-                    closest_date = future_dates[0]
-                    print(f"最も近い開催日は {closest_date} です。")
-                    date_param = closest_date
-                else:
-                    past_dates = [d for d in kaisai_dates if d < date_param]
-                    if past_dates:
-                        closest_date = past_dates[-1]
-                        print(f"直近の開催日は {closest_date} でした。こちらを使用します。")
-                        date_param = closest_date
-                    else:
-                        # 最終手段：指定された日付が週末なら開催されていると仮定
-                        if date_obj.weekday() >= 5:  # 5=土曜, 6=日曜
-                            print(f"開催日リストはありませんが、{date_str}は週末なのでレース開催日と仮定します。")
-                        else:
-                            # 次の土曜日を計算
-                            days_to_saturday = (5 - date_obj.weekday()) % 7
-                            next_saturday = date_obj + timedelta(days=days_to_saturday)
-                            next_saturday_str = next_saturday.strftime('%Y%m%d')
-                            print(f"開催日が見つからないため、次の土曜日 {next_saturday_str} を使用します。")
-                            date_param = next_saturday_str
-            
-            # レース一覧ページにアクセス
-            race_list_url = f"https://race.netkeiba.com/top/race_list.html?kaisai_date={date_param}"
-            print(f"レース一覧ページにアクセスしています: {race_list_url}")
-            
-            page.goto(race_list_url, wait_until='domcontentloaded', timeout=60000)
-            page.wait_for_timeout(5000)
-            
-            # スクリーンショット保存
-            page.screenshot(path=f"debug/race_list_{date_param}.png")
-            print(f"レース一覧のスクリーンショットを保存: debug/race_list_{date_param}.png")
-            
-            # HTML保存
-            html_content = page.content()
-            with open(f"debug/race_list_{date_param}.html", "w", encoding="utf-8") as f:
-                f.write(html_content)
-            
-            # レースIDを取得（記事の例に従う）
-            print("レースIDを取得中...")
-            race_ids = page.evaluate('''() => {
-                const ids = [];
-                document.querySelectorAll('.RaceList_DataItem > a:first-of-type').forEach(a => {
-                    const match = a.href.match(/race_id=([^&]+)/);
-                    if (match) {
-                        ids.push(match[1]);
-                    }
-                });
-                
-                // バックアップ方法 - どのリンクでもrace_idパラメータを含むものを探す
-                if (ids.length === 0) {
-                    document.querySelectorAll('a[href*="race_id="]').forEach(a => {
-                        const match = a.href.match(/race_id=([^&]+)/);
-                        if (match && !ids.includes(match[1])) {
-                            ids.push(match[1]);
-                        }
-                    });
-                }
-                return ids;
-            }''')
-            
-            print(f"取得したレースID数: {len(race_ids)}")
-            
-            if len(race_ids) > 0:
-                for i, race_id in enumerate(race_ids[:3], 1):
-                    print(f"レースID {i}: {race_id}")
-            else:
-                print("レースIDが見つかりませんでした。別の方法を試みます...")
-                
-                # 要素を直接探索
-                race_elements = page.query_selector_all('.RaceList_DataList')
-                print(f"レース要素数: {len(race_elements)}")
-                
-                # 別のセレクタで試す
-                alternative_selectors = [
-                    '.RaceList_Data a',
-                    '.RaceList_Item a',
-                    '.RaceMainMenu a',
-                    'a[href*="shutuba.html"]',
-                    'a[href*="result.html"]'
-                ]
-                
-                for selector in alternative_selectors:
-                    links = page.query_selector_all(selector)
-                    print(f"セレクタ '{selector}' によるリンク数: {len(links)}")
-                    
-                    for link in links:
-                        href = link.get_attribute('href')
-                        if href and 'race_id=' in href:
-                            race_id_match = re.search(r'race_id=([^&]+)', href)
-                            if race_id_match:
-                                race_id = race_id_match.group(1)
-                                if race_id not in race_ids:
-                                    race_ids.append(race_id)
-                                    print(f"追加のレースID: {race_id}")
-            
-            # 取得したレースIDから出走表URLを生成
-            for race_id in race_ids:
-                shutuba_url = f"https://race.netkeiba.com/race/shutuba.html?race_id={race_id}"
-                if shutuba_url not in all_race_urls:
-                    all_race_urls.append(shutuba_url)
-                    print(f"レースURL追加: {shutuba_url}")
-            
-            # 開催会場のサブページが必要な場合の処理 (古い機能との互換性確保)
-            if len(all_race_urls) == 0:
-                # カイサイIDを探す
-                kaisai_ids = page.evaluate('''() => {
-                    const ids = [];
-                    document.querySelectorAll('a[href*="kaisai_id="]').forEach(a => {
-                        const match = a.href.match(/kaisai_id=([^&]+)/);
-                        if (match && !ids.includes(match[1])) {
-                            ids.push(match[1]);
-                        }
-                    });
-                    return ids;
-                }''')
-                
-                print(f"取得した開催ID数: {len(kaisai_ids)}")
-                
-                for kaisai_id in kaisai_ids:
-                    venue_url = f"https://race.netkeiba.com/top/race_list_sub.html?kaisai_id={kaisai_id}&kaisai_date={date_param}"
-                    print(f"開催場所の詳細ページにアクセス: {venue_url}")
-                    
-                    venue_page = context.new_page()
-                    try:
-                        venue_page.goto(venue_url, wait_until='domcontentloaded', timeout=30000)
-                        venue_page.wait_for_timeout(3000)
-                        
-                        venue_page.screenshot(path=f"debug/venue_{kaisai_id}.png")
-                        
-                        # この開催場所のレースIDを取得
-                        sub_race_ids = venue_page.evaluate('''() => {
-                            const ids = [];
-                            document.querySelectorAll('a[href*="race_id="]').forEach(a => {
-                                const match = a.href.match(/race_id=([^&]+)/);
-                                if (match && !ids.includes(match[1])) {
-                                    ids.push(match[1]);
-                                }
-                            });
-                            return ids;
-                        }''')
-                        
-                        print(f"開催ID {kaisai_id} から取得したレースID数: {len(sub_race_ids)}")
-                        
-                        for race_id in sub_race_ids:
-                            shutuba_url = f"https://race.netkeiba.com/race/shutuba.html?race_id={race_id}"
-                            if shutuba_url not in all_race_urls:
-                                all_race_urls.append(shutuba_url)
-                                print(f"サブページからレースURL追加: {shutuba_url}")
-                    except Exception as e:
-                        print(f"開催場所ページ処理エラー: {str(e)}")
-                    finally:
-                        venue_page.close()
-            
-            # 結果を出力
-            print(f"{date_str}のレースURL数: {len(all_race_urls)}")
-            
-            if len(all_race_urls) > 0:
-                for i, url in enumerate(all_race_urls[:3], 1):  # 最初の3件だけ表示
-                    print(f"URL {i}: {url}")
-            else:
-                print(f"{date_str}のレースはありません")
-                
-                # 最終手段: 既知のレースIDパターンを使用
-                year_str = str(date_obj.year)
-                month_str = f"{date_obj.month:02d}"
-                day_str = f"{date_obj.day:02d}"
-                
-                # 主要競馬場コード
-                venue_codes = ["05", "06", "07", "08", "09"]  # 東京、中山、中京、京都、阪神
-                
-                for venue_code in venue_codes:
-                    for kaisai_kai in range(1, 4):  # 1-3回開催
-                        for kaisai_day in range(1, 9):  # 1-8日目
-                            for race_num in range(1, 13):  # 1-12R
-                                race_id = f"{year_str}{venue_code}{kaisai_kai:02d}{kaisai_day:02d}{race_num:02d}"
-                                shutuba_url = f"https://race.netkeiba.com/race/shutuba.html?race_id={race_id}"
-                                
-                                # テストURLとして追加（最初のいくつかのみ）
-                                if kaisai_kai == 1 and kaisai_day == 1 and race_num <= 3:
-                                    all_race_urls.append(shutuba_url)
-                                    print(f"生成されたURL追加: {shutuba_url}")
-            
+            # ページソースを確認
+            if 'レース不在' not in driver.page_source and '開催されません' not in driver.page_source:
+                # レースリンクの存在を確認
+                race_links = driver.find_elements(By.CSS_SELECTOR, 'a[href*="race_id="]')
+                if race_links:
+                    log(f"{date_str}はレース開催日のようです（リンク検出）")
+                    return True
         except Exception as e:
-            print(f"ページアクセスエラー: {str(e)}")
-            traceback.print_exc()
-        
-        return all_race_urls
-        
-    except Exception as e:
-        # エラー発生時の処理
-        print(f"レースURL取得エラー: {str(e)}")
-        traceback.print_exc()
-        return all_race_urls
+            log(f"レース開催確認中にエラー: {e}")
+    
+    log(f"{date_str}はレース開催日ではないようです")
+    return False
 
-def get_jra_race_info_for_dates(dates_list):
+def get_jra_race_info_for_dates(dates_list: List[str]) -> Dict[str, List[Dict]]:
     """
     指定された日付リストのJRAレース情報を取得する関数
     
     @param dates_list: 日付文字列のリスト (YYYY-MM-DD形式)
-    @return: 取得したエントリー情報のリスト
-    
-    この関数は、指定された複数日付のJRAレース出走表情報を一括で取得します。
-    Playwrightを使用してブラウザを操作し、各日付のレースページにアクセスしてデータをスクレイピングします。
+    @return: 日付ごとのエントリー情報を含む辞書
     """
-    all_entries = []
-    entries_by_date = {}
+    result = {}
+    driver = None
     
     try:
-        # Playwrightの設定
-        with sync_playwright() as playwright:
-            # ブラウザの起動（ヘッドレスモード）
-            browser = playwright.chromium.launch(headless=True)
-            context = browser.new_context(
-                viewport={'width': 1920, 'height': 1080},
-                user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.127 Safari/537.36'
-            )
-            page = context.new_page()
-            
-            # 各日付のレース情報を取得
-            print(f"\n処理対象日: {', '.join(dates_list)}")
-            for date_str in dates_list:
-                try:
-                    print(f"\n{date_str}のレース情報を取得します...")
-                    
-                    # URLを取得（contextも渡す）
-                    race_urls = get_race_urls_for_date(page, context, date_str)
-                    print(f"{date_str}のレースURL数: {len(race_urls)}")
-                    
-                    if race_urls:
-                        success_count = 0
-                        date_entries = []  # この日付用のエントリーリスト
-                        
-                        # 各レースの出馬表を取得
-                        for idx, race_url in enumerate(race_urls, 1):
-                            try:
-                                print(f"[{idx}/{len(race_urls)}] スクレイピング中: {race_url}")
-                                race_entry = scrape_race_entry(page, race_url)
-                                
-                                if race_entry and race_entry.get('entries') and len(race_entry['entries']) > 0:
-                                    # この日付のエントリーリストに追加
-                                    date_entries.extend(race_entry['entries'])
-                                    # 全体のエントリーリストにも追加
-                                    all_entries.extend(race_entry['entries'])
-                                    success_count += 1
-                                    print(f"取得成功: {race_entry.get('venue', '不明')} {race_entry.get('race_number', '?')}R")
-                                else:
-                                    print(f"スキップ: 有効なエントリーがありません - {race_url}")
-                                
-                                # アクセス間隔を空ける（サーバー負荷軽減のため）
-                                time.sleep(3)
-                                
-                            except Exception as e:
-                                print(f"レース処理中にエラー: {str(e)}")
-                                traceback.print_exc()
-                                continue
-                        
-                        # 日付ごとにエントリーを記録
-                        if date_entries:
-                            date_key = date_str.replace('-', '')
-                            entries_by_date[date_key] = date_entries
-                            print(f"{date_str}の出走馬データ: {len(date_entries)}件")
-                        
-                        print(f"{date_str}の処理完了: {success_count}/{len(race_urls)}件のレースを取得")
-                    else:
-                        print(f"{date_str}のレースが見つかりませんでした")
-                
-                except Exception as e:
-                    print(f"{date_str}の処理中にエラー: {str(e)}")
-                    traceback.print_exc()
-                    continue
-            
-            # ブラウザの終了
-            browser.close()
+        # Seleniumドライバーを設定
+        driver = setup_driver()
         
-        # 日付ごとのエントリー情報を保存
-        for date_key, entries in entries_by_date.items():
-            output_dir = 'data/race_entries'
-            os.makedirs(output_dir, exist_ok=True)
-            output_path = os.path.join(output_dir, f'jra_race_entries_{date_key}.csv')
+        # 各日付の処理
+        for date_str in dates_list:
+            try:
+                log(f"\n==== {date_str} の処理を開始 ====")
+                
+                # 日付をYYYYMMDD形式に変換
+                date_obj = datetime.strptime(date_str, '%Y-%m-%d')
+                date_param = date_obj.strftime('%Y%m%d')
+                
+                # レース開催日かどうか確認
+                if not is_race_day(date_str, driver):
+                    log(f"{date_str}はレース開催日ではありません")
+                    continue
+                
+                # レースIDを取得
+                race_ids = get_race_ids(date_param, driver)
+                
+                if not race_ids:
+                    log(f"{date_str}のレースIDが取得できませんでした")
+                    continue
+                
+                entries = []
+                
+                # 各レースの処理
+                for race_id in race_ids:
+                    try:
+                        # 出馬表データの取得
+                        race_data = get_shutuba_data(race_id, driver)
+                        
+                        if race_data and race_data['entries']:
+                            entries.extend(race_data['entries'])
+                            log(f"レースID {race_id}: {len(race_data['entries'])}頭の出走馬情報を取得")
+                        else:
+                            log(f"レースID {race_id}: 出走馬情報なし")
+                        
+                        # アクセス間隔を空ける
+                        time.sleep(2)
+                    
+                    except Exception as e:
+                        log(f"レース {race_id} の処理中にエラー: {e}")
+                        continue
+                
+                # 結果を保存
+                if entries:
+                    result[date_param] = entries
+                    # CSVに保存
+                    save_to_csv(entries, date_param)
+                    log(f"{date_str}: 合計 {len(entries)}頭の出走馬情報を取得")
+                else:
+                    log(f"{date_str}: 出走馬情報なし")
             
-            if entries and len(entries) > 0:
-                save_to_csv(entries, output_path)
-                print(f"{date_key}: {len(entries)}件のエントリーを保存しました: {output_path}")
-            else:
-                print(f"{date_key}: エントリーがないためCSVは保存しませんでした")
+            except Exception as e:
+                log(f"{date_str}の処理中にエラー: {e}")
+                traceback.print_exc()
+                continue
         
     except Exception as e:
-        print(f"全体の処理中にエラー発生: {str(e)}")
+        log(f"全体処理エラー: {e}")
         traceback.print_exc()
+        return result
+    finally:
+        # ドライバーを閉じる
+        if driver:
+            try:
+                driver.quit()
+                log("Chromeドライバーを終了しました")
+            except:
+                pass
     
-    return all_entries
+    return result
 
-if __name__ == '__main__':
-    """
-    スクリプト実行時のメイン処理
-    
-    コマンドライン引数に基づいて、以下のいずれかの処理を実行します:
-    1. 引数なし: 今日から3日間の出走表情報を取得します
-    2. 日付指定: 指定された日付の出走表情報を取得します
-    
-    取得したデータはCSVファイルに保存され、処理の進捗状況はコンソールに表示されます。
-    """
+def main():
+    """メイン実行関数"""
     parser = argparse.ArgumentParser(description='JRAの出走表情報をスクレイピングするツール')
     parser.add_argument('--date', type=str, help='スクレイピングする日付（YYYY-MM-DD形式）')
+    parser.add_argument('--debug', action='store_true', help='デバッグモードを有効にする')
     args = parser.parse_args()
     
-    # スクリプト実行のタイプを表示
-    script_type = "単体スクリプト" if __name__ == '__main__' else "モジュール"
-    print(f"JRA出走表スクレイピングを開始します（実行モード: {script_type}）")
+    # デバッグディレクトリの作成
+    os.makedirs(DEBUG_DIR, exist_ok=True)
+    os.makedirs(CSV_DIR, exist_ok=True)
     
-    # 引数で日付が指定されている場合はその日付のデータを取得
-    if args.date:
-        try:
-            # 日付形式の検証
-            target_date = datetime.strptime(args.date, '%Y-%m-%d').strftime('%Y-%m-%d')
-            print(f"指定された日付 {target_date} の出走表情報を取得します...")
+    log("JRA出走表スクレイピングを開始します")
+    
+    # 開始時刻を記録
+    start_time = datetime.now()
+    log(f"開始時刻: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
+    
+    try:
+        if args.date:
+            try:
+                # 日付形式の検証
+                target_date = datetime.strptime(args.date, '%Y-%m-%d').strftime('%Y-%m-%d')
+                log(f"指定された日付 {target_date} の出走表情報を取得します")
+                
+                # 指定された日付のレース情報を取得
+                result = get_jra_race_info_for_dates([target_date])
+                if not result:
+                    log(f"{target_date}の出走表情報が取得できませんでした")
+                    sys.exit(1)
+                
+            except ValueError:
+                log("日付の形式が不正です。YYYY-MM-DD形式で指定してください")
+                sys.exit(1)
+        else:
+            # 今日から3日間のデータを取得
+            log("今日から3日間の出走表情報を取得します")
             
-            # 指定された日付のレース情報を取得
-            get_jra_race_info_for_dates([target_date])
+            # 今日から3日間の日付を生成
+            today = datetime.now()
+            dates = [(today + timedelta(days=i)).strftime('%Y-%m-%d') for i in range(3)]
+            log(f"処理対象日: {', '.join(dates)}")
             
-        except ValueError:
-            # 日付形式が不正な場合のエラー処理
-            print("日付の形式が不正です。YYYY-MM-DD形式で指定してください")
-            sys.exit(1)
-    else:
-        # 引数がない場合は今日から3日間のデータを取得
-        print("今日から3日間の出走表情報を取得します...")
+            # 3日分のレース情報を取得
+            result = get_jra_race_info_for_dates(dates)
+            if not result:
+                log("出走表情報が取得できませんでした")
+                sys.exit(1)
         
-        # 今日から3日間の日付を取得
-        today = datetime.now()
-        dates = [(today + timedelta(days=i)).strftime('%Y-%m-%d') for i in range(3)]
-        print(f"処理対象日: {', '.join(dates)}")
+        # 終了時刻を記録
+        end_time = datetime.now()
+        processing_time = (end_time - start_time).total_seconds()
+        log(f"処理時間: {processing_time:.2f}秒")
         
-        # 3日分のレース情報を取得
-        get_jra_race_info_for_dates(dates)
+        log("\nすべての処理が完了しました")
+        log(f"CSVファイルは {CSV_DIR} ディレクトリに保存されています")
+        log("ファイル名形式: jra_race_entries_YYYYMMDD.csv")
         
-        # 処理完了メッセージ
-        print("\nすべての処理が完了しました")
-        print("CSVファイルは data/race_entries/ ディレクトリに保存されています")
-        print("ファイル名形式: jra_race_entries_YYYYMMDD.csv") 
+        return 0  # 正常終了
+        
+    except Exception as e:
+        log(f"予期しないエラーが発生しました: {e}")
+        traceback.print_exc()
+        return 1  # エラー終了
+
+if __name__ == '__main__':
+    exit_code = main()
+    sys.exit(exit_code) 
