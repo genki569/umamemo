@@ -1,5 +1,11 @@
 {% extends "base.html" %}
 
+{% block title %}プレミアム機能 | 馬メモ{% endblock %}
+
+{% block meta_description %}馬メモのプレミアム会員限定の高度な分析機能。AI分析、ラップ分析、血統分析など、より精度の高い競馬予想をサポートする機能をご利用いただけます。{% endblock %}
+
+{% block meta_keywords %}競馬,プレミアム,AI分析,ラップ分析,血統分析,データ分析,競馬予想{% endblock %}
+
 {% block content %}
 <div class="container py-5">
     <div class="alert alert-success" role="alert">
@@ -8,40 +14,193 @@
     </div>
 
     <!-- AI分析機能 -->
-    <div class="card shadow-sm mb-4">
-        <div class="card-body">
-            <h5 class="card-title">
+    <div class="card shadow-sm mb-5">
+        <div class="card-header bg-primary text-white">
+            <h2 class="h5 mb-0">
                 <i class="fas fa-robot me-2"></i>AI分析
-            </h5>
-            <p class="text-muted">現在準備中です。近日公開予定！</p>
-            <div class="text-center py-4">
-                <i class="fas fa-cog fa-spin fa-3x text-muted"></i>
+            </h2>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-7">
+                    <p>最新の人工知能技術を活用した競馬予想支援システムです。過去10年間の膨大なレースデータを学習したAIが、各馬の勝率や複勝率を予測します。</p>
+                    
+                    <h3 class="h6 mt-4 mb-3">主な機能</h3>
+                    <ul>
+                        <li>勝率予測：各馬の勝利確率をパーセンテージで表示</li>
+                        <li>複勝圏内率：各馬の3着以内に入る確率を算出</li>
+                        <li>条件適性分析：距離・馬場状態・コースとの相性を数値化</li>
+                        <li>激走指数：予想オッズと予測勝率のギャップから穴馬を発見</li>
+                    </ul>
+                    
+                    <div class="d-flex mt-4">
+                        <a href="{{ url_for('premium_ai_analysis') }}" class="btn btn-primary me-2">
+                            <i class="fas fa-chart-bar me-1"></i> AI分析を利用する
+                        </a>
+                        <a href="{{ url_for('premium_ai_tutorial') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-question-circle me-1"></i> 使い方を見る
+                        </a>
+                    </div>
+                </div>
+                <div class="col-md-5">
+                    <div class="card mb-3">
+                        <div class="card-body p-0">
+                            <img src="{{ url_for('static', filename='images/premium/ai_analysis_sample.jpg') }}" alt="AI分析サンプル画面" class="img-fluid rounded">
+                        </div>
+                    </div>
+                    <div class="alert alert-info mb-0">
+                        <div class="d-flex">
+                            <div class="me-3">
+                                <i class="fas fa-info-circle fa-lg"></i>
+                            </div>
+                            <div>
+                                <p class="mb-0"><strong>更新頻度：</strong>毎週金曜日18時に週末レースの予測データを更新</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- ラップ分析 -->
-    <div class="card shadow-sm mb-4">
-        <div class="card-body">
-            <h5 class="card-title">
+    <div class="card shadow-sm mb-5">
+        <div class="card-header bg-primary text-white">
+            <h2 class="h5 mb-0">
                 <i class="fas fa-chart-line me-2"></i>ラップ分析
-            </h5>
-            <p class="text-muted">現在準備中です。近日公開予定！</p>
-            <div class="text-center py-4">
-                <i class="fas fa-cog fa-spin fa-3x text-muted"></i>
+            </h2>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-7">
+                    <p>詳細なラップタイムを分析し、レースペースとの相性や各馬の適性を評価するツールです。ペース予測からレース展開をシミュレーションします。</p>
+                    
+                    <h3 class="h6 mt-4 mb-3">主な機能</h3>
+                    <ul>
+                        <li>区間ラップ比較：各馬の区間ごとのタイムを視覚的に比較</li>
+                        <li>ペース適性評価：ハイペース・スローペースそれぞれでの適性を数値化</li>
+                        <li>上がり3F順位表：前3F・後3Fのタイムをランキング形式で表示</li>
+                        <li>理想ラップ計算：各馬の能力を最大化するペース配分を算出</li>
+                    </ul>
+                    
+                    <div class="d-flex mt-4">
+                        <a href="{{ url_for('premium_lap_analysis') }}" class="btn btn-primary me-2">
+                            <i class="fas fa-stopwatch me-1"></i> ラップ分析を利用する
+                        </a>
+                        <a href="{{ url_for('premium_lap_tutorial') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-question-circle me-1"></i> 使い方を見る
+                        </a>
+                    </div>
+                </div>
+                <div class="col-md-5">
+                    <div class="card mb-3">
+                        <div class="card-body p-0">
+                            <img src="{{ url_for('static', filename='images/premium/lap_analysis_sample.jpg') }}" alt="ラップ分析サンプル画面" class="img-fluid rounded">
+                        </div>
+                    </div>
+                    <div class="alert alert-info mb-0">
+                        <div class="d-flex">
+                            <div class="me-3">
+                                <i class="fas fa-info-circle fa-lg"></i>
+                            </div>
+                            <div>
+                                <p class="mb-0"><strong>データ範囲：</strong>過去5年間の全JRAレースと主要地方競馬のラップデータを収録</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- 血統分析 -->
-    <div class="card shadow-sm">
-        <div class="card-body">
-            <h5 class="card-title">
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-primary text-white">
+            <h2 class="h5 mb-0">
                 <i class="fas fa-dna me-2"></i>血統分析
-            </h5>
-            <p class="text-muted">現在準備中です。近日公開予定！</p>
-            <div class="text-center py-4">
-                <i class="fas fa-cog fa-spin fa-3x text-muted"></i>
+            </h2>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-7">
+                    <p>5代血統表をベースに、血統の特徴、活躍傾向、相性の良いレース条件などを総合的に分析するツールです。初心者でも理解しやすい視覚的な解説付き。</p>
+                    
+                    <h3 class="h6 mt-4 mb-3">主な機能</h3>
+                    <ul>
+                        <li>血統適性解析：距離・馬場状態・コース形状との適性を評価</li>
+                        <li>ニックス分析：父系と母系の相性を評価し、成功確率を表示</li>
+                        <li>兄弟馬成績表：兄弟馬の活躍実績からポテンシャルを予測</li>
+                        <li>血統継承シミュレーション：どの先祖の特徴が強く出ているかを解析</li>
+                    </ul>
+                    
+                    <div class="d-flex mt-4">
+                        <a href="{{ url_for('premium_bloodline_analysis') }}" class="btn btn-primary me-2">
+                            <i class="fas fa-dna me-1"></i> 血統分析を利用する
+                        </a>
+                        <a href="{{ url_for('premium_bloodline_tutorial') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-question-circle me-1"></i> 使い方を見る
+                        </a>
+                    </div>
+                </div>
+                <div class="col-md-5">
+                    <div class="card mb-3">
+                        <div class="card-body p-0">
+                            <img src="{{ url_for('static', filename='images/premium/bloodline_analysis_sample.jpg') }}" alt="血統分析サンプル画面" class="img-fluid rounded">
+                        </div>
+                    </div>
+                    <div class="alert alert-info mb-0">
+                        <div class="d-flex">
+                            <div class="me-3">
+                                <i class="fas fa-info-circle fa-lg"></i>
+                            </div>
+                            <div>
+                                <p class="mb-0"><strong>収録頭数：</strong>現役競走馬全頭＋引退馬（2000年以降の重賞勝ち馬）</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- プレミアム特典 -->
+    <div class="card bg-light border-0 mt-5">
+        <div class="card-body">
+            <h3 class="h5 mb-4">プレミアム会員特典</h3>
+            <div class="row">
+                <div class="col-md-4 mb-3 mb-md-0">
+                    <div class="d-flex">
+                        <div class="me-3 text-primary">
+                            <i class="fas fa-crown fa-2x"></i>
+                        </div>
+                        <div>
+                            <h4 class="h6">広告非表示</h4>
+                            <p class="mb-0 small text-muted">ページ内の全ての広告が非表示になり、快適に閲覧できます。</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3 mb-md-0">
+                    <div class="d-flex">
+                        <div class="me-3 text-primary">
+                            <i class="fas fa-cloud-download-alt fa-2x"></i>
+                        </div>
+                        <div>
+                            <h4 class="h6">データエクスポート</h4>
+                            <p class="mb-0 small text-muted">分析結果をCSV/Excel形式でダウンロードして活用できます。</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="d-flex">
+                        <div class="me-3 text-primary">
+                            <i class="fas fa-headset fa-2x"></i>
+                        </div>
+                        <div>
+                            <h4 class="h6">優先サポート</h4>
+                            <p class="mb-0 small text-muted">お問い合わせに対して優先的に対応いたします。</p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

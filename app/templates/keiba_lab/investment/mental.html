@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "keiba_lab/layout.html" %}
 
 {% block title %}競馬投資のメンタル管理 | 長期的に勝つための心理学【馬メモ】{% endblock %}
 
@@ -14,7 +14,7 @@
 {% block twitter_description %}競馬投資における効果的なメンタル管理法を解説。感情に左右されない判断力、損失との向き合い方、長期的視点の持ち方など、競馬で勝ち続けるための心理的アプローチを紹介します。{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
+<div class="keiba-lab-content">
   <!-- パンくずリスト -->
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
@@ -198,117 +198,7 @@
               <li>「この馬は絶対に勝つ」という確信</li>
               <li>「取り返すためにいつもより多く賭ける」</li>
               <li>「今日は勝たないと生活が苦しい」</li>
-              <li>「この馬券が外れたら誰かのせいだ」</li>
-              <li>計画していなかったレースに突然参加</li>
-              <li>馬券を買った後の強い後悔や不安</li>
-              <li>予想や検討を省略して直感で買う</li>
             </ul>
-          </div>
-        </div>
-        
-        <div class="card">
-          <div class="card-header bg-light">
-            <strong>心理的罠のテスト</strong>
-          </div>
-          <div class="card-body">
-            <p>以下の質問で自己診断してみましょう：</p>
-            <ol class="mb-0">
-              <li>負けが続くと賭け金を増やしますか？</li>
-              <li>自分の予想と違う結果になると、言い訳を探しますか？</li>
-              <li>「今日は絶対に勝てる」と思うことがありますか？</li>
-              <li>勝っている時に無謀な勝負に出ますか？</li>
-              <li>競馬の結果が日常生活の気分に大きく影響しますか？</li>
-            </ol>
-            <p class="small mt-2">3つ以上「はい」なら要注意。メンタル管理を見直しましょう。</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- 効果的なメンタル管理法 -->
-  <section id="strategies" class="mb-5">
-    <h2 class="border-bottom pb-2 mb-4">効果的なメンタル管理法</h2>
-    <div class="row">
-      <div class="col-lg-8">
-        <p>心理的罠を回避し、安定したメンタルを維持するためには、効果的なメンタル管理法を実践することが重要です。以下に、競馬投資で役立つメンタル管理の方法を紹介します。</p>
-        
-        <h3 class="h5 mt-4">明確なルールの設定</h3>
-        <p>感情に流されないよう、事前に明確なルールを設定しておくことが重要です。</p>
-        <ul>
-          <li><strong>資金管理ルール</strong>：1日・1レースの最大投資額、1ヶ月の予算など</li>
-          <li><strong>馬券購入ルール</strong>：買う条件、買わない条件を明確に</li>
-          <li><strong>損切りルール</strong>：いくら負けたら手を引くかを決めておく</li>
-          <li><strong>利確ルール</strong>：いくら勝ったら終了するかを決めておく</li>
-          <li><strong>休憩ルール</strong>：連敗したら一定期間休むなど</li>
-        </ul>
-        <p>これらのルールは紙に書いて、競馬をする際に常に目に見える場所に置いておくと効果的です。</p>
-        
-        <h3 class="h5 mt-4">感情と行動の分離</h3>
-        <p>感情自体は自然なものですが、それに基づく行動は制御できます。</p>
-        <ul>
-          <li><strong>感情の認識</strong>：自分の感情（興奮、焦り、恐怖など）に気づく</li>
-          <li><strong>一時停止</strong>：感情を感じたら、一度深呼吸して冷静になる</li>
-          <li><strong>客観的判断</strong>：感情を脇に置き、事前のルールや分析に基づいて判断する</li>
-          <li><strong>行動の選択</strong>：感情ではなく、理性に基づいた行動を選択する</li>
-        </ul>
-        
-        <h3 class="h5 mt-4">競馬日記の活用</h3>
-        <p>競馬日記（記録ノート）をつけることで、客観性を保ち、学びを蓄積できます。</p>
-        <ul>
-          <li><strong>予想の記録</strong>：レース前の予想と根拠を記録</li>
-          <li><strong>結果の記録</strong>：的中・不的中の結果を記録</li>
-          <li><strong>感情の記録</strong>：レース前後の感情や心理状態を記録</li>
-          <li><strong>分析と反省</strong>：何が良かったか、悪かったかを分析</li>
-          <li><strong>学びの抽出</strong>：次回に活かせる教訓を抽出</li>
-        </ul>
-        
-        <h3 class="h5 mt-4">マインドフルネスの実践</h3>
-        <p>マインドフルネス（今この瞬間に意識を集中すること）は、感情をコントロールする上で役立ちます。</p>
-        <ul>
-          <li><strong>呼吸法</strong>：深呼吸で心を落ち着かせる</li>
-          <li><strong>現在への集中</strong>：過去の損失や未来の不安ではなく、今の判断に集中</li>
-          <li><strong>感情の観察</strong>：感情を判断せず、ただ観察する姿勢</li>
-          <li><strong>定期的な休憩</strong>：集中力が切れる前に意識的に休憩を取る</li>
-        </ul>
-        
-        <div class="alert alert-success mt-4">
-          <h4 class="h6 alert-heading">プロのメンタル習慣</h4>
-          <p class="mb-0">プロの競馬投資家は、勝っても負けても感情を表に出さない「ポーカーフェイス」を心がけています。また、彼らは一つのレースの結果に一喜一憂せず、「サンプル数の一つ」として淡々と捉える習慣があります。さらに、自分の弱点（例：大穴を狙いすぎる傾向など）を正確に把握し、常に自己修正を行っています。</p>
-        </div>
-      </div>
-      <div class="col-lg-4">
-        <div class="card mb-4">
-          <div class="card-header bg-light">
-            <strong>心理的余裕を生む習慣</strong>
-          </div>
-          <div class="card-body">
-            <ul class="mb-0">
-              <li><strong>前日準備</strong><br>レース前日に予想を完了させる</li>
-              <li><strong>十分な睡眠</strong><br>疲労はメンタルを弱める</li>
-              <li><strong>適度な運動</strong><br>ストレス解消と脳機能向上</li>
-              <li><strong>健全な食事</strong><br>血糖値の乱高下は判断力に影響</li>
-              <li><strong>競馬以外の趣味</strong><br>発散先を複数持つ</li>
-              <li><strong>良好な人間関係</strong><br>共感してくれる仲間の存在</li>
-            </ul>
-          </div>
-        </div>
-        
-        <div class="card">
-          <div class="card-header bg-primary text-white">
-            <strong>メンタル崩壊時の応急処置</strong>
-          </div>
-          <div class="card-body">
-            <p>メンタルが崩れそうになったら：</p>
-            <ol class="mb-0">
-              <li><strong>一時停止</strong><br>その場で馬券購入を中止</li>
-              <li><strong>その場を離れる</strong><br>競馬場なら席を立つ、PCなら画面から離れる</li>
-              <li><strong>深呼吸</strong><br>ゆっくり5回以上の深呼吸</li>
-              <li><strong>水分補給</strong><br>水を飲んで冷静さを取り戻す</li>
-              <li><strong>振り返り</strong><br>なぜ感情的になったか考える</li>
-              <li><strong>再開判断</strong><br>冷静に戻れたか自問する</li>
-            </ol>
-            <p class="small mt-2">冷静さを取り戻せない場合は、その日の競馬を終了するべきです。</p>
           </div>
         </div>
       </div>

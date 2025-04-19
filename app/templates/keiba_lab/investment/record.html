@@ -1,16 +1,20 @@
-{% extends "base.html" %}
+{% extends "keiba_lab/layout.html" %}
 
 {% block title %}馬券投資の記録と分析方法 | 収支管理でプラス収支を目指す【馬メモ】{% endblock %}
 
-{% block description %}競馬の馬券投資を成功させるための記録方法と分析手法を解説。日々の投資記録をつけることで自分の強みと弱みを知り、長期的な収支改善につなげる方法を紹介します。{% endblock %}
+{% block meta_description %}競馬の馬券投資を成功させるための記録方法と分析手法を解説。日々の投資記録をつけることで自分の強みと弱みを知り、長期的な収支改善につなげる方法を紹介します。{% endblock %}
 
-{% block keywords %}馬券投資,記録,分析,収支管理,回収率計算,傾向分析,競馬投資,投資記録,馬券成績,収支表,エクセル,スプレッドシート{% endblock %}
+{% block meta_keywords %}馬券投資,記録,分析,収支管理,回収率計算,傾向分析,競馬投資,投資記録,馬券成績,収支表,エクセル,スプレッドシート{% endblock %}
 
-{% block keiba_lab_content %}
+{% block content %}
 <div class="keiba-lab-content">
-  <div class="breadcrumbs">
-    <a href="/keiba_lab/">競馬ラボ</a> &gt; <a href="/keiba_lab/investment/">競馬投資の基礎知識</a> &gt; 馬券投資の記録と分析
-  </div>
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/keiba_lab/">競馬ラボ</a></li>
+      <li class="breadcrumb-item"><a href="/keiba_lab/investment/">競馬投資の基礎知識</a></li>
+      <li class="breadcrumb-item active" aria-current="page">馬券投資の記録と分析</li>
+    </ol>
+  </nav>
 
   <h1>馬券投資の記録と分析 - 収支管理でプラス収支を目指す</h1>
 
@@ -198,122 +202,78 @@
             <th>入力例</th>
           </tr>
           <tr>
-            <td>A</td>
             <td>日付</td>
-            <td>2023/06/04</td>
+            <td>レース実施日</td>
+            <td>2023/10/15</td>
           </tr>
           <tr>
-            <td>B</td>
-            <td>競馬場</td>
+            <td>開催</td>
+            <td>競馬場名</td>
             <td>東京</td>
           </tr>
           <tr>
-            <td>C</td>
+            <td>R</td>
             <td>レース番号</td>
-            <td>11R</td>
+            <td>11</td>
           </tr>
           <tr>
-            <td>D</td>
             <td>レース名</td>
-            <td>安田記念(G1)</td>
+            <td>レース名称</td>
+            <td>府中牝馬S（G2）</td>
           </tr>
           <tr>
-            <td>E</td>
             <td>馬券種</td>
-            <td>三連単</td>
+            <td>馬券の種類</td>
+            <td>馬連</td>
           </tr>
           <tr>
-            <td>F</td>
             <td>買い目</td>
-            <td>1-2-3</td>
+            <td>購入した馬番</td>
+            <td>3-8</td>
           </tr>
           <tr>
-            <td>G</td>
-            <td>投資金額</td>
-            <td>1,000円</td>
+            <td>点数</td>
+            <td>購入点数</td>
+            <td>1</td>
           </tr>
           <tr>
-            <td>H</td>
-            <td>的中有無</td>
+            <td>1点単価</td>
+            <td>1点あたりの金額</td>
+            <td>1,000</td>
+          </tr>
+          <tr>
+            <td>投資額</td>
+            <td>総投資金額</td>
+            <td>1,000</td>
+          </tr>
+          <tr>
             <td>的中</td>
+            <td>的中の有無</td>
+            <td>○（または×）</td>
           </tr>
           <tr>
-            <td>I</td>
-            <td>払戻金額</td>
-            <td>10,500円</td>
+            <td>払戻金</td>
+            <td>的中時の払戻金</td>
+            <td>5,200</td>
           </tr>
           <tr>
-            <td>J</td>
-            <td>差額（I-G）</td>
-            <td>9,500円</td>
+            <td>収支</td>
+            <td>払戻金-投資額</td>
+            <td>4,200</td>
           </tr>
           <tr>
-            <td>K</td>
-            <td>回収率（I÷G）</td>
-            <td>1050%</td>
+            <td>回収率</td>
+            <td>払戻金÷投資額×100</td>
+            <td>520%</td>
           </tr>
           <tr>
-            <td>L</td>
             <td>予想根拠</td>
-            <td>1番人気の信頼性、2番との相性</td>
+            <td>買った理由</td>
+            <td>前走好調、得意コース</td>
           </tr>
         </table>
-        <p>J列とK列は計算式を入れておくと便利です。また、条件付き書式を使って、的中したセルを緑色、不的中を赤色にするなどの工夫も視覚的に分かりやすくなります。</p>
       </div>
     </div>
   </section>
-
-  <section>
-    <h2>実際の分析事例</h2>
-    <div class="card">
-      <h3>ある投資家の分析例</h3>
-      <div class="card-content">
-        <p>あるベテラン競馬ファンの3年間の記録から見えた傾向の例：</p>
-        <ul>
-          <li>芝のG1レースでは回収率120%と好成績</li>
-          <li>ダート重馬場では回収率が65%と低迷</li>
-          <li>単勝・複勝の回収率は85%だが、三連単は65%と低い</li>
-          <li>東京・阪神での回収率は105%と好調だが、中京は70%と不調</li>
-          <li>自信度「高」と記録したレースの回収率は130%だが、「低」は50%</li>
-        </ul>
-        <p>この分析から、この方は「芝のG1」「東京・阪神開催」で「単勝・複勝」を、自信度が高い時に集中投資するスタイルに変更。その結果、年間回収率が85%から110%に向上した例があります。</p>
-      </div>
-    </div>
-  </section>
-
-  <section>
-    <h2>記録・分析を継続するコツ</h2>
-    <div class="card">
-      <div class="card-content">
-        <p>記録と分析を習慣化するためのコツをご紹介します：</p>
-        <ul>
-          <li><strong>シンプルに始める</strong>：最初は必要最低限の項目だけ記録し、慣れてきたら詳細化する</li>
-          <li><strong>即時入力</strong>：レース終了後すぐに記録する習慣をつける</li>
-          <li><strong>定期的な分析時間</strong>：週末や月末など、定期的な分析時間を設ける</li>
-          <li><strong>目標設定</strong>：「月間回収率100%以上」など、具体的な目標を立てる</li>
-          <li><strong>仲間と共有</strong>：信頼できる仲間と分析結果を共有し、意見交換する</li>
-        </ul>
-        <p>継続することが最も重要です。一時的な負けに落胆せず、長期的な視点で改善を続けましょう。</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- まとめ -->
-  <div class="summary">
-    <h2>まとめ - 記録と分析から始まる馬券投資の成功</h2>
-    <p>馬券投資で成功するには、感覚や勘だけに頼るのではなく、客観的なデータに基づいた分析が不可欠です。日々の投資記録をつけ、それを定期的に分析することで、自分自身の強みと弱みを知り、投資戦略を最適化していくことができます。</p>
-    <p>最初は面倒に感じるかもしれませんが、記録と分析の習慣が身につくと、より合理的な馬券購入ができるようになり、長期的な収支改善につながります。競馬は運の要素もありますが、データに基づいた分析を続ければ、運に左右されない安定した投資スタイルを構築できるでしょう。</p>
-    <p>ぜひ今日から馬券投資の記録を始めて、自分だけの勝ちパターンを見つけてください。</p>
-  </div>
-  
-  <div class="related-articles">
-    <h3>関連記事</h3>
-    <ul>
-      <li><a href="/keiba_lab/investment/index.html">競馬投資の基礎知識</a></li>
-      <li><a href="/keiba_lab/investment/mental.html">競馬投資のメンタル管理</a></li>
-      <li><a href="/keiba_lab/betting/types.html">馬券の種類と特徴</a></li>
-      <li><a href="/keiba_lab/prediction/fundamental.html">競馬予想の基本</a></li>
-    </ul>
-  </div>
 </div>
 {% endblock %} 
