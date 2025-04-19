@@ -440,7 +440,7 @@ def is_race_day(date_str: str, driver: webdriver.Chrome) -> bool:
     month = date_obj.month
     date_param = date_obj.strftime('%Y%m%d')
     
-    # 土日は自動的にレース開催日と見なす（重要：カレンダーページのスクレイピングが失敗しているため）
+　　    # 土日は自動的にレース開催日と見なす（重要：カレンダーページのスクレイピングが失敗しているため）
     if date_obj.weekday() >= 5:  # 5=土曜日, 6=日曜日
         log(f"{date_str}は週末のためレース開催日と見なします")
         return True
