@@ -16,204 +16,55 @@
         <div class="col-lg-8 mx-auto">
             <h1 class="mb-4">上級者向けコンテンツ</h1>
             
-            <p class="lead">中級レベルの知識を習得した方向けに、より高度な分析手法と馬券投資戦略を紹介します。この上級者向けセクションでは、プロの予想家も活用している専門的な手法や理論に踏み込み、長期的な収支向上を目指します。</p>
+            <div class="alert alert-warning mb-4">
+                <div class="d-flex">
+                    <div class="me-3">
+                        <i class="fas fa-exclamation-triangle fa-2x"></i>
+                    </div>
+                    <div>
+                        <h5 class="alert-heading">ページ準備中</h5>
+                        <p class="mb-0">このページは現在準備中です。近日中に公開予定ですので、しばらくお待ちください。</p>
+                    </div>
+                </div>
+            </div>
             
-            <!-- メインコンテンツセクション -->
-            <section class="my-5">
-                <h2 class="h3 mb-4 border-bottom pb-2">投資戦略の高度化</h2>
-                
-                <div class="row g-4 mb-5">
-                    <div class="col-md-6">
-                        <div class="card h-100 shadow-sm">
-                            <div class="card-body">
-                                <h3 class="h5 card-title">期待値に基づく投資理論</h3>
-                                <p class="card-text">数学的期待値の計算方法、オッズと勝率の関係性、長期的な収益性の分析など、投資理論の本質を解説します。</p>
-                                <a href="{{ url_for('keiba_lab_content', content_path='investment/expected-value') }}" class="btn btn-outline-primary mt-auto">詳細を見る</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="card h-100 shadow-sm">
-                            <div class="card-body">
-                                <h3 class="h5 card-title">資金管理の高度な手法</h3>
-                                <p class="card-text">ケリー基準、ポートフォリオ理論、リスク分散戦略など、プロが実践する資金管理テクニックを学びます。</p>
-                                <a href="{{ url_for('keiba_lab_content', content_path='investment/bankroll') }}" class="btn btn-outline-primary mt-auto">詳細を見る</a>
-                            </div>
-                        </div>
-                    </div>
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h2 class="h4 mb-3">このページで紹介予定のコンテンツ</h2>
+                    <ul class="mb-0">
+                        <li>期待値に基づいた馬券投資戦略</li>
+                        <li>本格的な血統理論とクロス分析</li>
+                        <li>統計学を用いたレース分析手法</li>
+                        <li>馬場バイアスの詳細分析と活用法</li>
+                        <li>長期的な回収率向上のための資金管理術</li>
+                    </ul>
                 </div>
-                
-                <div class="row g-4 mb-5">
-                    <div class="col-md-6">
-                        <div class="card h-100 shadow-sm">
-                            <div class="card-body">
-                                <h3 class="h5 card-title">ヘッジング戦略</h3>
-                                <p class="card-text">リスクを軽減しながら利益を最大化するためのヘッジ戦略、複数の馬券種を組み合わせた最適な投資配分を解説します。</p>
-                                <a href="{{ url_for('keiba_lab_content', content_path='investment/hedging') }}" class="btn btn-outline-primary mt-auto">詳細を見る</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="card h-100 shadow-sm">
-                            <div class="card-body">
-                                <h3 class="h5 card-title">市場心理と裁定取引</h3>
-                                <p class="card-text">オッズの歪みを見つける方法、集団心理が生み出す不合理な評価の活用法、裁定機会の特定と活用戦略を解説します。</p>
-                                <a href="{{ url_for('keiba_lab_content', content_path='investment/market-psychology') }}" class="btn btn-outline-primary mt-auto">詳細を見る</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <h2 class="h3 mb-4 border-bottom pb-2">高度なデータ分析と予測モデル</h2>
-                
-                <div class="row g-4 mb-5">
-                    <div class="col-md-6">
-                        <div class="card h-100 shadow-sm">
-                            <div class="card-body">
-                                <h3 class="h5 card-title">統計学的アプローチ</h3>
-                                <p class="card-text">回帰分析、相関分析、確率統計など、統計学の手法を競馬予想に応用するための実践的方法を解説します。</p>
-                                <a href="{{ url_for('keiba_lab_content', content_path='prediction/statistics') }}" class="btn btn-outline-primary mt-auto">詳細を見る</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="card h-100 shadow-sm">
-                            <div class="card-body">
-                                <h3 class="h5 card-title">自作指数の開発</h3>
-                                <p class="card-text">独自の予想指数の作成方法、要素の重み付け、データの正規化、継続的な検証と改善プロセスを学びます。</p>
-                                <a href="{{ url_for('keiba_lab_content', content_path='prediction/custom-index') }}" class="btn btn-outline-primary mt-auto">詳細を見る</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="row g-4 mb-5">
-                    <div class="col-md-6">
-                        <div class="card h-100 shadow-sm">
-                            <div class="card-body">
-                                <h3 class="h5 card-title">レース条件の多変量解析</h3>
-                                <p class="card-text">コース形状、馬場状態、天候、季節など複数の要素を組み合わせた総合的なレース分析手法を解説します。</p>
-                                <a href="{{ url_for('keiba_lab_content', content_path='prediction/multivariate') }}" class="btn btn-outline-primary mt-auto">詳細を見る</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="card h-100 shadow-sm">
-                            <div class="card-body">
-                                <h3 class="h5 card-title">タイム理論の応用</h3>
-                                <p class="card-text">ラップ分析の高度な応用、馬場状態補正、脚質と距離を考慮したタイム評価など、専門的なタイム分析を学びます。</p>
-                                <a href="{{ url_for('keiba_lab_content', content_path='prediction/advanced-time') }}" class="btn btn-outline-primary mt-auto">詳細を見る</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <h2 class="h3 mb-4 border-bottom pb-2">専門的な血統・調教分析</h2>
-                
-                <div class="row g-4 mb-5">
-                    <div class="col-md-6">
-                        <div class="card h-100 shadow-sm">
-                            <div class="card-body">
-                                <h3 class="h5 card-title">ニックス理論の詳細分析</h3>
-                                <p class="card-text">血統配合パターンの成功率分析、ニックスレーティングの計算方法、現代の日本競馬に適応したニックス理論を解説します。</p>
-                                <a href="{{ url_for('keiba_lab_content', content_path='bloodline/nicks') }}" class="btn btn-outline-primary mt-auto">詳細を見る</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="card h-100 shadow-sm">
-                            <div class="card-body">
-                                <h3 class="h5 card-title">血統クロス効果の分析</h3>
-                                <p class="card-text">3代、4代、5代までさかのぼった血統の重複パターン、インブリード・クロスの効果分析、特定クロスの適性条件を学びます。</p>
-                                <a href="{{ url_for('keiba_lab_content', content_path='bloodline/cross') }}" class="btn btn-outline-primary mt-auto">詳細を見る</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="row g-4 mb-5">
-                    <div class="col-md-6">
-                        <div class="card h-100 shadow-sm">
-                            <div class="card-body">
-                                <h3 class="h5 card-title">専門的な調教分析</h3>
-                                <p class="card-text">調教師別の仕上げパターン、好走前の調教サイン、併せ馬の質的評価など、プロの視点による調教分析を解説します。</p>
-                                <a href="{{ url_for('keiba_lab_content', content_path='horse/training-analysis') }}" class="btn btn-outline-primary mt-auto">詳細を見る</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="card h-100 shadow-sm">
-                            <div class="card-body">
-                                <h3 class="h5 card-title">馬体と走法の専門的評価</h3>
-                                <p class="card-text">骨格と筋肉の発達度合い、走法の力学的分析、馬体と競走能力の相関など、専門家の視点による馬体評価を学びます。</p>
-                                <a href="{{ url_for('keiba_lab_content', content_path='horse/biomechanics') }}" class="btn btn-outline-primary mt-auto">詳細を見る</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
+            </div>
+
+            <p>準備が整い次第、充実したコンテンツをお届けします。その間、以下の関連コンテンツもご覧ください。</p>
             
-            <!-- 上級者向け学習ロードマップ -->
-            <section class="my-5">
-                <h2 class="h3 mb-4">上級者向け学習ロードマップ</h2>
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <p class="mb-3">上級者向けコンテンツの学習には、以下のステップを推奨します：</p>
-                        <ol class="mb-0">
-                            <li class="mb-2">期待値に基づく投資理論 → 資金管理の高度な手法 → ヘッジング戦略 → 市場心理と裁定取引</li>
-                            <li class="mb-2">統計学的アプローチ → 自作指数の開発 → レース条件の多変量解析 → タイム理論の応用</li>
-                            <li class="mb-2">ニックス理論の詳細分析 → 血統クロス効果の分析 → 専門的な調教分析 → 馬体と走法の専門的評価</li>
-                            <li>上記の知識を総合的に活用し、独自の予想システムの構築へ</li>
-                        </ol>
+            <h3 class="h5 mb-3 mt-5">おすすめコンテンツ</h3>
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">血統理論の実践</h5>
+                            <p class="card-text">ニックス理論の応用、クロス配合の成功パターン、海外血統の影響など、深い血統分析を解説します。</p>
+                            <a href="{{ url_for('keiba_lab_content', content_path='bloodline/combination') }}" class="stretched-link"></a>
+                        </div>
                     </div>
                 </div>
-            </section>
-            
-            <!-- ケーススタディ -->
-            <section class="my-5">
-                <h2 class="h3 mb-4">上級者向けケーススタディ</h2>
-                <p>これらのケーススタディでは、複数の高度な分析手法を組み合わせて実際のレースを分析し、投資戦略を構築する過程を詳細に解説しています。</p>
-                
-                <div class="list-group shadow-sm">
-                    <a href="{{ url_for('keiba_lab_content', content_path='investment/case-study1') }}" class="list-group-item list-group-item-action">
-                        <div class="d-flex w-100 justify-content-between">
-                            <h5 class="mb-1">有力馬不在のG1レースの攻略法</h5>
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">投資戦略の基礎</h5>
+                            <p class="card-text">期待値理論の基本、リスク分散の方法、ヘッジングの考え方など、長期的に利益を出すための戦略を解説します。</p>
+                            <a href="{{ url_for('keiba_lab_content', content_path='investment/strategy') }}" class="stretched-link"></a>
                         </div>
-                        <p class="mb-1">市場が混乱するオープンなG1レースで裁定機会を見つけ、期待値の高い投資を行う方法</p>
-                    </a>
-                    <a href="{{ url_for('keiba_lab_content', content_path='investment/case-study2') }}" class="list-group-item list-group-item-action">
-                        <div class="d-flex w-100 justify-content-between">
-                            <h5 class="mb-1">少頭数の重賞レースでの投資戦略</h5>
-                        </div>
-                        <p class="mb-1">人気が集中し配当が低くなりがちな少頭数レースでも利益を出すための高度な投資アプローチ</p>
-                    </a>
-                    <a href="{{ url_for('keiba_lab_content', content_path='investment/case-study3') }}" class="list-group-item list-group-item-action">
-                        <div class="d-flex w-100 justify-content-between">
-                            <h5 class="mb-1">季節替わりの混戦レースの分析</h5>
-                        </div>
-                        <p class="mb-1">春→夏、夏→秋など、季節の変わり目に起こる能力変化をデータから読み解く方法</p>
-                    </a>
-                </div>
-            </section>
-            
-            <!-- プロへの道 -->
-            <section class="my-5">
-                <h2 class="h3 mb-4">馬券投資家としてのキャリア構築</h2>
-                <div class="card shadow-sm bg-light">
-                    <div class="card-body">
-                        <h3 class="h5 mb-3">長期的な視点で見る馬券投資</h3>
-                        <p>競馬を純粋な投資として捉え、長期的な収益を目指す方向けのアドバイス：</p>
-                        <ul class="mb-0">
-                            <li>最低1年間の収支記録を取り、客観的な自己分析を行う</li>
-                            <li>得意なレースタイプ・条件を絞り込み、専門性を高める</li>
-                            <li>感情を排除した投資判断を徹底する</li>
-                            <li>常に学習を続け、予想システムを進化させる</li>
-                            <li>他の投資と同様に、リスク管理と資産配分を考慮する</li>
-                        </ul>
                     </div>
                 </div>
-            </section>
+            </div>
         </div>
     </div>
 </div>
-{% endblock %}
+{% endblock %} 
