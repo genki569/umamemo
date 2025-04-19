@@ -26,11 +26,18 @@ import os
 import csv
 import re
 import json
-from app import app, db
-from app.models import Race, Horse, Jockey, ShutubaEntry
 import traceback
 import sys
 import argparse
+
+# FLASKのインポートエラーを回避するために条件分岐を追加
+try:
+    from app import app, db
+    from app.models import Race, Horse, Jockey, ShutubaEntry
+except ImportError:
+    print("警告: Flaskアプリケーションモジュールがインポートできません。スタンドアロンモードで実行します。")
+    app = None
+    db = None
 
 def generate_race_id(race_url: str) -> str:
     """
@@ -438,30 +445,56 @@ def get_race_urls_for_date(page, date_str: str) -> List[str]:
         
         # カレンダーページにアクセス
         calendar_url = f"https://race.netkeiba.com/top/race_list.html?kaisai_date={date_param}"
+        print(f"カレンダーページアクセス中: {calendar_url}")
         page.goto(calendar_url, wait_until='domcontentloaded', timeout=30000)
-        page.wait_for_timeout(3000)
+        page.wait_for_timeout(5000)  # 待機時間を増やす
         
         # ページのHTMLを取得してBeautifulSoupで解析
         html_content = page.content()
         soup = BeautifulSoup(html_content, 'html.parser')
         
-        # レースリンクを取得（すべてのレース）
+        # レースリンクを取得
         race_links = []
-        race_card_elements = soup.select('div.RaceList_DataItem')
         
-        for element in race_card_elements:
-            # すべてのレースのURLを抽出（中央競馬フィルタリングを削除）
-            race_elems = element.select('li.RaceList_DataItem')
-            for race in race_elems:
-                link_elem = race.select_one('a')
-                if link_elem and 'href' in link_elem.attrs:
-                    relative_link = link_elem['href']
-                    if 'shutuba.html' in relative_link:
+        # 直接aタグから出馬表リンクを検索
+        all_links = soup.select('a[href*="/race/shutuba.html"]')
+        for link in all_links:
+            if 'href' in link.attrs:
+                relative_link = link['href']
+                if 'shutuba.html' in relative_link:
+                    if relative_link.startswith('/'):
                         absolute_link = f"https://race.netkeiba.com{relative_link}"
-                        race_links.append(absolute_link)
+                    else:
+                        absolute_link = f"https://race.netkeiba.com/{relative_link}"
+                    race_links.append(absolute_link)
+        
+        # JavaScriptを使用してリンクを取得（上記方法で見つからない場合）
+        if not race_links:
+            print("JavaScriptを使用してリンクを取得します...")
+            js_links = page.evaluate('''
+                () => {
+                    const links = Array.from(document.querySelectorAll('a')).filter(a => 
+                        a.href && a.href.includes('/race/shutuba.html'));
+                    return links.map(a => a.href);
+                }
+            ''')
+            race_links = js_links
         
         # デバッグ出力
         print(f"{date_str}のレースURL取得: {len(race_links)}件")
+        if len(race_links) > 0:
+            print(f"最初のURL: {race_links[0]}")
+        else:
+            print("レースURLが見つかりませんでした。HTMLのデバッグが必要です。")
+            # ページ内容をデバッグのためにファイルに保存
+            debug_file = f"debug_page_{date_param}.html"
+            try:
+                with open(debug_file, "w", encoding="utf-8") as f:
+                    f.write(html_content)
+                print(f"デバッグ用にHTMLを{debug_file}に保存しました")
+            except Exception as e:
+                print(f"デバッグファイル保存エラー: {str(e)}")
+            
         return race_links
     
     except Exception as e:
@@ -471,29 +504,19 @@ def get_race_urls_for_date(page, date_str: str) -> List[str]:
         print(error_trace)
         return []
 
-def get_race_info_for_next_three_days():
+def get_jra_race_info_for_dates(dates_list):
     """
-    今日から3日間のレース情報を取得する関数
+    指定された日付リストのJRAレース情報を取得する関数
     
-    @return: なし（処理結果はファイルに保存されます）
+    @param dates_list: 日付文字列のリスト (YYYY-MM-DD形式)
+    @return: 取得したエントリー情報のリスト
     
-    この関数は、現在日から3日間分のJRAレース出走表情報を取得し、
-    CSVファイルに保存します。Playwrightを使用してブラウザを操作し、
-    各日のレースページにアクセスしてデータをスクレイピングします。
+    この関数は、指定された複数日付のJRAレース出走表情報を一括で取得します。
+    Playwrightを使用してブラウザを操作し、各日付のレースページにアクセスしてデータをスクレイピングします。
     """
+    all_entries = []
+    
     try:
-        # 今日から3日間の日付を取得
-        today = datetime.now()
-        dates = [(today + timedelta(days=i)).strftime('%Y-%m-%d') for i in range(3)]
-        
-        # 出力ファイル名の設定
-        current_date = today.strftime('%Y%m%d')
-        filename = f'jra_race_entries_{current_date}.csv'
-        
-        # データディレクトリの作成
-        os.makedirs('data/race_entries', exist_ok=True)
-        output_path = os.path.join('data/race_entries', filename)
-        
         # Playwrightの設定
         with sync_playwright() as playwright:
             # ブラウザの起動（ヘッドレスモード）
@@ -504,9 +527,10 @@ def get_race_info_for_next_three_days():
             page = context.new_page()
             
             # 各日付のレース情報を取得
-            all_entries = []
-            for date_str in dates:
+            for date_str in dates_list:
                 try:
+                    print(f"\n{date_str}のレース情報を取得します...")
+                    
                     # URLを取得
                     race_urls = get_race_urls_for_date(page, date_str)
                     print(f"{date_str}のレースURL数: {len(race_urls)}")
@@ -518,14 +542,17 @@ def get_race_info_for_next_three_days():
                             try:
                                 print(f"[{idx}/{len(race_urls)}] スクレイピング中: {race_url}")
                                 race_entry = scrape_race_entry(page, race_url)
+                                
                                 if race_entry and race_entry.get('entries') and len(race_entry['entries']) > 0:
-                                    save_to_csv(race_entry['entries'], filename)
+                                    all_entries.extend(race_entry['entries'])
                                     success_count += 1
-                                    print(f"保存完了: {race_entry.get('venue', '不明')} {race_entry.get('race_number', '?')}R（成功: {success_count}/{idx}）")
-                                    # アクセス間隔を空ける（サーバー負荷軽減のため）
-                                    time.sleep(2)
+                                    print(f"取得成功: {race_entry.get('venue', '不明')} {race_entry.get('race_number', '?')}R")
                                 else:
                                     print(f"スキップ: 有効なエントリーがありません - {race_url}")
+                                
+                                # アクセス間隔を空ける（サーバー負荷軽減のため）
+                                time.sleep(3)
+                                
                             except Exception as e:
                                 print(f"レース処理中にエラー: {str(e)}")
                                 traceback.print_exc()
@@ -542,80 +569,12 @@ def get_race_info_for_next_three_days():
             
             # ブラウザの終了
             browser.close()
-            
+        
     except Exception as e:
         print(f"全体の処理中にエラー発生: {str(e)}")
         traceback.print_exc()
-
-def scrape_jra_entries_for_date(date_str: str):
-    """
-    指定された日付のJRAレースエントリー情報をスクレイピングする関数
     
-    @param date_str: 日付文字列（YYYY-MM-DD形式）
-    @return: なし（処理結果はファイルに保存されます）
-    
-    指定された日付のJRAレースの出走表情報を取得し、
-    CSVファイルに保存します。単一日付のスクレイピングに特化しています。
-    """
-    try:
-        # 出力ファイル名の設定
-        filename = f'jra_race_entries_{date_str.replace("-", "")}.csv'
-        output_path = os.path.join('data/race_entries', filename)
-        
-        # データディレクトリの作成
-        os.makedirs('data/race_entries', exist_ok=True)
-        
-        # Playwrightの設定と実行
-        with sync_playwright() as playwright:
-            # ブラウザの起動
-            browser = playwright.chromium.launch(headless=True)
-            context = browser.new_context(
-                user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.127 Safari/537.36'
-            )
-            page = context.new_page()
-            
-            race_urls = get_race_urls_for_date(page, date_str)
-            print(f"{len(race_urls)}件のレースURLを取得しました")
-            
-            # 各レースの出馬表を取得
-            all_entries = []
-            success_count = 0
-            
-            for idx, race_url in enumerate(race_urls, 1):
-                try:
-                    print(f"[{idx}/{len(race_urls)}] スクレイピング中: {race_url}")
-                    race_entry = scrape_race_entry(page, race_url)
-                    
-                    if race_entry and race_entry.get('entries') and len(race_entry['entries']) > 0:
-                        for entry in race_entry['entries']:
-                            all_entries.append(entry)
-                        
-                        success_count += 1
-                        print(f"取得成功: {race_entry.get('venue', '不明')} {race_entry.get('race_number', '?')}R")
-                    else:
-                        print(f"スキップ: 有効なエントリーがありません - {race_url}")
-                    
-                    # アクセス間隔を空ける（サーバー負荷軽減のため）
-                    time.sleep(3)
-                    
-                except Exception as e:
-                    print(f"レース処理中にエラー: {str(e)}")
-                    traceback.print_exc()
-                    continue
-            
-            # 取得したデータをCSVに保存
-            if all_entries:
-                save_to_csv(all_entries, output_path)
-                print(f"合計{len(all_entries)}件のエントリーを保存しました: {output_path}")
-            else:
-                print("保存するデータがありません")
-            
-            # ブラウザの終了
-            browser.close()
-        
-    except Exception as e:
-        print(f"スクレイピング処理中にエラー発生: {str(e)}")
-        traceback.print_exc()
+    return all_entries
 
 if __name__ == '__main__':
     """
@@ -639,15 +598,18 @@ if __name__ == '__main__':
             print(f"指定された日付 {target_date} の出走表情報を取得します...")
             
             # 指定された日付のレース情報を取得
-            race_entries = scrape_jra_entries_for_date(target_date)
+            entries = get_jra_race_info_for_dates([target_date])
             
-            if race_entries:
-                # CSV保存処理
-                save_status = save_to_csv(race_entries, target_date)
-                if save_status:
-                    print(f"{target_date}の出走表情報を正常に保存しました")
-                else:
-                    print(f"{target_date}の出走表情報の保存中にエラーが発生しました")
+            # CSVファイル名を設定
+            date_str = target_date.replace('-', '')
+            output_dir = 'data/race_entries'
+            os.makedirs(output_dir, exist_ok=True)
+            output_path = os.path.join(output_dir, f'jra_race_entries_{date_str}.csv')
+            
+            # データをCSVに保存
+            if entries and len(entries) > 0:
+                save_to_csv(entries, output_path)
+                print(f"{len(entries)}件のエントリーを保存しました: {output_path}")
             else:
                 print(f"{target_date}にレースデータが見つかりませんでした")
         except ValueError:
@@ -658,28 +620,33 @@ if __name__ == '__main__':
         # 引数がない場合は今日から3日間のデータを取得
         print("今日から3日間の出走表情報を取得します...")
         
-        # 次の3日間のレース情報を取得
-        race_info = get_race_info_for_next_three_days()
+        # 今日から3日間の日付を取得
+        today = datetime.now()
+        dates = [(today + timedelta(days=i)).strftime('%Y-%m-%d') for i in range(3)]
         
-        if race_info and len(race_info) > 0:
-            # 取得したレース情報を日付ごとに処理
-            for date, races in race_info.items():
-                if races and len(races) > 0:
-                    print(f"{date}のレース情報: {len(races)}レース")
-                    
-                    # 指定日のレース情報をスクレイピング
-                    race_entries = scrape_jra_entries_for_date(date)
-                    
-                    if race_entries:
-                        # CSV保存処理
-                        save_status = save_to_csv(race_entries, date)
-                        if save_status:
-                            print(f"{date}の出走表情報を正常に保存しました")
-                        else:
-                            print(f"{date}の出走表情報の保存中にエラーが発生しました")
-                    else:
-                        print(f"{date}の出走表情報の取得に失敗しました")
-                else:
-                    print(f"{date}には開催レースがありません")
+        # 3日分のレース情報を取得
+        all_entries = get_jra_race_info_for_dates(dates)
+        
+        # 各日付ごとにCSVに保存
+        if all_entries and len(all_entries) > 0:
+            # 日付ごとにエントリーを分類
+            entries_by_date = {}
+            for entry in all_entries:
+                race_date = entry.get('race_date')
+                if race_date:
+                    date_key = race_date.replace('-', '')
+                    if date_key not in entries_by_date:
+                        entries_by_date[date_key] = []
+                    entries_by_date[date_key].append(entry)
+            
+            # 日付ごとにCSVに保存
+            output_dir = 'data/race_entries'
+            os.makedirs(output_dir, exist_ok=True)
+            
+            for date_key, entries in entries_by_date.items():
+                output_path = os.path.join(output_dir, f'jra_race_entries_{date_key}.csv')
+                if entries and len(entries) > 0:
+                    save_to_csv(entries, output_path)
+                    print(f"{date_key}: {len(entries)}件のエントリーを保存しました: {output_path}")
         else:
             print("今後3日間の開催レース情報が見つかりませんでした") 
