@@ -1,0 +1,271 @@
+{% extends "base.html" %}
+
+{% block title %}初めての競馬観戦ガイド | 持ち物から楽しみ方まで | 競馬ラボ | 馬メモ{% endblock %}
+
+{% block meta_description %}初めて競馬場に行く方のための完全ガイド。持ち物、チケット購入方法、場内の過ごし方、パドックの見方など、初心者が知っておくべき情報を徹底解説しています。{% endblock %}
+
+{% block meta_keywords %}競馬,初心者,競馬場,観戦,持ち物,入場券,パドック,楽しみ方,マナー,JRA{% endblock %}
+
+{% block og_title %}初めての競馬観戦ガイド | 持ち物から楽しみ方まで | 競馬ラボ | 馬メモ{% endblock %}
+{% block og_description %}初めて競馬場に行く方のための完全ガイド。持ち物、チケット購入方法、場内の過ごし方、パドックの見方など、初心者が知っておくべき情報を徹底解説しています。{% endblock %}
+{% block og_type %}article{% endblock %}
+
+{% block twitter_title %}初めての競馬観戦ガイド | 持ち物から楽しみ方まで | 競馬ラボ | 馬メモ{% endblock %}
+{% block twitter_description %}初めて競馬場に行く方のための完全ガイド。持ち物、チケット購入方法、場内の過ごし方、パドックの見方など、初心者が知っておくべき情報を徹底解説しています。{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('index') }}">ホーム</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('keiba_lab_index') }}">競馬ラボ</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('keiba_lab_content', content_path='basics') }}">競馬基礎知識</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('keiba_lab_content', content_path='basics/enjoy') }}">競馬の楽しみ方</a></li>
+            <li class="breadcrumb-item active" aria-current="page">初めての競馬観戦ガイド</li>
+        </ol>
+    </nav>
+
+    <div class="row mb-4">
+        <div class="col-lg-8">
+            <article>
+                <header class="mb-4">
+                    <h1 class="display-5 fw-bold text-primary">初めての競馬観戦ガイド</h1>
+                    <p class="lead text-muted">初めて競馬場に行く方のための完全ガイド。持ち物から楽しみ方まで徹底解説</p>
+                    <div class="d-flex align-items-center text-muted small mb-2">
+                        <i class="far fa-calendar-alt me-1"></i>
+                        <span>公開日: 2024年11月28日</span>
+                        <span class="mx-2">|</span>
+                        <i class="far fa-clock me-1"></i>
+                        <span>読了時間: 約10分</span>
+                    </div>
+                </header>
+
+                <section class="card shadow-sm mb-5 border-0">
+                    <div class="card-body">
+                        <h2 class="h3 text-primary mb-3">初めての競馬場訪問に向けて</h2>
+                        <p>競馬場は迫力あるレースを間近で観戦できる興奮の場所であり、初めて訪れる方にとって新鮮な体験の宝庫です。しかし、初めて競馬場に行く際には、どのような準備をすればいいのか、何を持っていけばいいのか、どのように過ごせばいいのかなど、様々な疑問があるでしょう。</p>
+                        <p>この記事では、初めて競馬場を訪れる方が事前に知っておくべき情報や、当日の楽しみ方について詳しく解説します。これを読めば、初めての競馬場でも迷うことなく、充実した一日を過ごすことができるはずです。</p>
+                    </div>
+                </section>
+
+                <section class="card shadow-sm mb-5 border-0">
+                    <div class="card-body">
+                        <h2 class="h3 text-primary mb-3">訪問前の準備</h2>
+                        
+                        <h3 class="h5 mt-4">競馬場の選び方と交通アクセス</h3>
+                        <p>日本には、JRA（日本中央競馬会）が運営する10ヶ所の競馬場があります。初めての方におすすめなのは、アクセスの良い主要競馬場です。</p>
+                        <ul>
+                            <li><strong>東京競馬場</strong>：府中市にあり、京王線府中駅または武蔵野線府中本町駅から徒歩約10分</li>
+                            <li><strong>中山競馬場</strong>：船橋市にあり、JR総武線船橋駅からバスで約15分</li>
+                            <li><strong>阪神競馬場</strong>：宝塚市にあり、JR福知山線・阪急宝塚線宝塚駅からバスで約10分</li>
+                            <li><strong>京都競馬場</strong>：京都市にあり、阪急京都線桂駅または地下鉄東西線東山駅からバスで約15分</li>
+                        </ul>
+                        <p>訪問先を決めたら、競馬場の公式サイトでアクセス方法や最寄り駅からの行き方を確認しておきましょう。公共交通機関の利用がおすすめです。特にレースの開催日は周辺道路が混雑することが多いため、車での来場は避けた方が良いでしょう。</p>
+                        
+                        <h3 class="h5 mt-4">開催日とレーススケジュールの確認</h3>
+                        <p>競馬は基本的に土曜日と日曜日に開催されます。各競馬場の開催日程は、JRAの公式サイトやスマートフォンアプリで確認できます。</p>
+                        <ul>
+                            <li><strong>通常開催日</strong>：一般的なレースが行われる日</li>
+                            <li><strong>重賞開催日</strong>：GⅠ、GⅡ、GⅢなどの格の高いレースが行われる日（混雑します）</li>
+                            <li><strong>平日開催</strong>：祝日などに行われることもある（比較的空いていることが多い）</li>
+                        </ul>
+                        <p>初めて競馬場に行く方は、通常の開催日や平日開催を選ぶと、比較的余裕を持って観戦できます。特に大きなレースが開催される日は非常に混雑するため、慣れてからの訪問がおすすめです。</p>
+
+                        <h3 class="h5 mt-4">持ち物リスト</h3>
+                        <p>快適に競馬場で過ごすための持ち物リストを紹介します。</p>
+                        <ul>
+                            <li><strong>現金</strong>：馬券購入や飲食に必要です（一般的に2,000〜5,000円程度、本格的に楽しむなら1万円以上）</li>
+                            <li><strong>競馬新聞</strong>：出走馬の情報を確認するために必須（競馬場内でも購入可能、800円程度）</li>
+                            <li><strong>筆記用具</strong>：競馬新聞に書き込んだり、予想をメモしたりするために便利</li>
+                            <li><strong>双眼鏡</strong>：馬の動きを詳しく観察するのに役立ちます（レンタルもあります）</li>
+                            <li><strong>防寒・日焼け対策</strong>：季節に応じた対策をしましょう（夏は帽子・日焼け止め、冬は防寒着）</li>
+                            <li><strong>レジャーシート</strong>：芝生席で観戦する場合に便利</li>
+                            <li><strong>飲み物</strong>：長時間の観戦には水分補給が必要（場内で購入も可能）</li>
+                            <li><strong>スマートフォン</strong>：情報収集やオッズ確認、写真撮影などに活用できます</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <section class="card shadow-sm mb-5 border-0">
+                    <div class="card-body">
+                        <h2 class="h3 text-primary mb-3">競馬場での過ごし方</h2>
+                        
+                        <h3 class="h5 mt-4">入場から席取りまで</h3>
+                        <p>競馬場に到着したら、まずは入場ゲートで入場券を購入します。</p>
+                        <ul>
+                            <li><strong>入場料</strong>：一般的に100〜200円程度（特別な日は変更あり）</li>
+                            <li><strong>開門時間</strong>：通常、第1レースの2時間前（午前9時頃）</li>
+                            <li><strong>席の種類</strong>：
+                                <ul>
+                                    <li>一般席（無料）：先着順で自由に座れる席</li>
+                                    <li>指定席（有料）：事前予約や当日購入が必要な席</li>
+                                    <li>芝生席：芝生エリアでシートを敷いて観戦できる場所</li>
+                                </ul>
+                            </li>
+                        </ul>
+                        <p>初めての方は、まず場内マップを入手し、トイレや飲食店、馬券販売窓口などの場所を確認しておくと安心です。混雑する日は、早めに到着して良い席を確保することをおすすめします。</p>
+                        
+                        <h3 class="h5 mt-4">パドックの見方</h3>
+                        <p>パドックとは、レース前に馬が周回する場所で、馬の状態を間近で見ることができる重要なスポットです。</p>
+                        <ul>
+                            <li><strong>観察のポイント</strong>：
+                                <ul>
+                                    <li>馬の歩き方：スムーズに歩いているかどうか</li>
+                                    <li>体の張り具合：筋肉が引き締まっているか</li>
+                                    <li>毛艶：ツヤがあるかどうか</li>
+                                    <li>気性：落ち着いているか、神経質になっていないか</li>
+                                    <li>汗の量：過度に汗をかいていないか</li>
+                                </ul>
+                            </li>
+                            <li><strong>パドック観察の時間</strong>：レース15〜20分前から始まり、約10分間</li>
+                        </ul>
+                        <p>初めての方は、他の観客の反応や解説放送に耳を傾けることで、徐々にポイントを掴むことができます。特に人気馬が登場すると、歓声が上がることが多いので、注目すると良いでしょう。</p>
+                        
+                        <h3 class="h5 mt-4">馬券購入の基本</h3>
+                        <p>馬券は競馬の楽しみ方の一つです。初めての方は、シンプルな馬券から始めましょう。</p>
+                        <ul>
+                            <li><strong>馬券の種類</strong>：
+                                <ul>
+                                    <li>単勝：1着の馬を当てる（最もシンプル）</li>
+                                    <li>複勝：3着以内に入る馬を当てる（的中率が高い）</li>
+                                    <li>馬連：1着と2着になる2頭の馬を当てる（順不同）</li>
+                                </ul>
+                            </li>
+                            <li><strong>購入方法</strong>：
+                                <ul>
+                                    <li>窓口：係員に「○レース、△の□□、××円で」と伝える</li>
+                                    <li>自動発売機：タッチパネルで選択して購入</li>
+                                </ul>
+                            </li>
+                            <li><strong>予算</strong>：初めての方は少額（100円や500円）から始めることをおすすめします</li>
+                        </ul>
+                        <p>馬券を購入する際は、事前に競馬新聞で情報を確認し、ある程度予想を立ててから臨むと楽しさが増します。また、自分の予算内で楽しむことが大切です。</p>
+                        
+                        <h3 class="h5 mt-4">レース観戦のポイント</h3>
+                        <p>レース観戦をより楽しむためのポイントを紹介します。</p>
+                        <ul>
+                            <li><strong>観戦場所</strong>：
+                                <ul>
+                                    <li>スタンド：全体を見渡せる</li>
+                                    <li>ゴール前：迫力ある決着を見られる</li>
+                                    <li>コーナー付近：馬の脚さばきが観察できる</li>
+                                </ul>
+                            </li>
+                            <li><strong>注目ポイント</strong>：
+                                <ul>
+                                    <li>スタート直後の位置取り</li>
+                                    <li>コーナーでの進路選択</li>
+                                    <li>直線での追い込み</li>
+                                    <li>騎手の騎乗技術</li>
+                                </ul>
+                            </li>
+                        </ul>
+                        <p>双眼鏡があれば、離れた場所にいる馬の動きも詳しく観察できます。また、場内に設置されている大型スクリーンでもレースの様子を確認できます。</p>
+                    </div>
+                </section>
+
+                <section class="card shadow-sm mb-5 border-0">
+                    <div class="card-body">
+                        <h2 class="h3 text-primary mb-3">レース間の楽しみ方</h2>
+                        
+                        <h3 class="h5 mt-4">場内施設の活用</h3>
+                        <p>競馬場には、レース以外にも楽しめる様々な施設があります。</p>
+                        <ul>
+                            <li><strong>飲食施設</strong>：レストラン、フードコート、売店など多様な飲食オプションがあります</li>
+                            <li><strong>競馬博物館・展示コーナー</strong>：競馬の歴史や名馬に関する展示などが楽しめます</li>
+                            <li><strong>馬とのふれあいコーナー</strong>：引退した競走馬との写真撮影や触れ合いができる場所もあります</li>
+                            <li><strong>ショップ</strong>：競馬グッズや記念品を購入できます</li>
+                            <li><strong>イベントスペース</strong>：特別な日にはトークショーやミニコンサートなどが開催されることも</li>
+                        </ul>
+                        <p>レース間の30分程度の時間を利用して、これらの施設を訪れると一日を通して楽しむことができます。</p>
+                        
+                        <h3 class="h5 mt-4">次のレースの予想</h3>
+                        <p>レース間の時間を使って、次のレースの予想をするのも競馬の楽しみ方の一つです。</p>
+                        <ul>
+                            <li><strong>予想の基本ステップ</strong>：
+                                <ul>
+                                    <li>競馬新聞で出走馬の情報を確認</li>
+                                    <li>人気馬（オッズの低い馬）をチェック</li>
+                                    <li>パドックで馬の状態を観察</li>
+                                    <li>自分なりの予想を立てる</li>
+                                    <li>予算内で馬券を購入</li>
+                                </ul>
+                            </li>
+                        </ul>
+                        <p>初めての方は、競馬新聞の予想や場内アナウンスの情報を参考にするのも良いでしょう。</p>
+                    </div>
+                </section>
+
+                <section class="card shadow-sm mb-5 border-0">
+                    <div class="card-body">
+                        <h2 class="h3 text-primary mb-3">競馬場でのマナー</h2>
+                        <p>快適に過ごすために、いくつかの基本マナーを守りましょう。</p>
+                        <ul>
+                            <li><strong>座席利用のマナー</strong>：長時間の不在時に荷物で席を確保しないようにしましょう</li>
+                            <li><strong>パドックでのマナー</strong>：大声を出したり、フラッシュを使って写真を撮ったりして馬を驚かせないようにしましょう</li>
+                            <li><strong>ゴミの処理</strong>：ゴミは指定されたゴミ箱に捨てましょう</li>
+                            <li><strong>通路の確保</strong>：通路や階段での立ち止まりは避けましょう</li>
+                            <li><strong>馬券購入のマナー</strong>：窓口では整然と並び、自分の番になる前に購入内容を決めておきましょう</li>
+                        </ul>
+                        <p>他の観客と協力し合い、お互いに気持ちよく過ごすための配慮を忘れないようにしましょう。</p>
+                    </div>
+                </section>
+
+                <div class="card shadow-sm mb-5 border-0 bg-light">
+                    <div class="card-body">
+                        <h2 class="h4 text-primary">まとめ</h2>
+                        <p>初めての競馬場訪問は、準備さえしっかりすれば、非常に楽しい経験になります。この記事で紹介した持ち物リストや過ごし方のポイントを参考に、ぜひ競馬場での観戦を楽しんでください。</p>
+                        <p>最初は慣れないことも多いかもしれませんが、レースの迫力や競馬場の雰囲気は、実際に体験してみると格別です。無理せず自分のペースで楽しむことが、長く競馬を楽しむ秘訣です。</p>
+                        <p>初めての競馬場訪問が素晴らしい思い出になることを願っています。それでは、競馬場でお会いしましょう！</p>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between mb-5">
+                    <a href="{{ url_for('keiba_lab_content', content_path='basics/enjoy') }}" class="btn btn-outline-primary">&larr; 競馬の楽しみ方</a>
+                    <a href="{{ url_for('keiba_lab_content', content_path='beginners/what-is-keiba') }}" class="btn btn-primary">競馬とは？基本的な仕組み &rarr;</a>
+                </div>
+            </article>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="position-sticky" style="top: 2rem;">
+                <div class="card shadow-sm mb-4 border-0">
+                    <div class="card-body">
+                        <h3 class="h5 card-title">目次</h3>
+                        <ul class="list-unstyled mb-0">
+                            <li class="mb-2"><a href="#" class="text-decoration-none">初めての競馬場訪問に向けて</a></li>
+                            <li class="mb-2"><a href="#" class="text-decoration-none">訪問前の準備</a></li>
+                            <li class="mb-2"><a href="#" class="text-decoration-none">競馬場での過ごし方</a></li>
+                            <li class="mb-2"><a href="#" class="text-decoration-none">レース間の楽しみ方</a></li>
+                            <li><a href="#" class="text-decoration-none">競馬場でのマナー</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm mb-4 border-0">
+                    <div class="card-body">
+                        <h3 class="h5 card-title">関連コンテンツ</h3>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item bg-transparent border-0 ps-0">
+                                <a href="{{ url_for('keiba_lab_content', content_path='beginners/what-is-keiba') }}" class="text-decoration-none">
+                                    <i class="fas fa-chevron-right text-primary me-2"></i>競馬とは？基本的な仕組みと楽しみ方
+                                </a>
+                            </li>
+                            <li class="list-group-item bg-transparent border-0 ps-0">
+                                <a href="{{ url_for('keiba_lab_content', content_path='beginners/how-to-bet') }}" class="text-decoration-none">
+                                    <i class="fas fa-chevron-right text-primary me-2"></i>馬券の種類と購入方法ガイド
+                                </a>
+                            </li>
+                            <li class="list-group-item bg-transparent border-0 ps-0">
+                                <a href="{{ url_for('keiba_lab_content', content_path='racecourse/jra') }}" class="text-decoration-none">
+                                    <i class="fas fa-chevron-right text-primary me-2"></i>JRA主要競馬場ガイド
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

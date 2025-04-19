@@ -121,11 +121,40 @@ def scrape_race_entry(page, race_url: str) -> Dict[str, any]:
         # ナビゲーション前に短い待機時間を追加
         page.wait_for_timeout(2000)
         
-        # ナビゲーションタイムアウト時間を延長し、遷移が確実に完了するまで待機
-        page.goto(race_url, wait_until='networkidle', timeout=60000)
+        # 再試行ロジックを追加（最大3回まで試行）
+        max_retries = 3
+        for attempt in range(max_retries):
+            try:
+                # より緩やかな待機条件に変更し、タイムアウト時間を短縮
+                print(f"ページ読み込み試行 {attempt+1}/{max_retries}: {race_url}")
+                page.goto(race_url, wait_until='domcontentloaded', timeout=30000)
+                
+                # ページが正しく読み込まれたことを確認
+                is_loaded = page.evaluate('''() => {
+                    return document.querySelector('.RaceList_Item02') !== null;
+                }''')
+                
+                if not is_loaded:
+                    print("ページが正しく読み込まれていません。さらに待機します...")
+                    page.wait_for_timeout(5000)
+                    # 読み込みを再確認
+                    is_loaded = page.evaluate('''() => {
+                        return document.querySelector('.RaceList_Item02') !== null;
+                    }''')
+                    if not is_loaded and attempt < max_retries - 1:
+                        raise Exception("ページが正しく読み込まれていません。再試行します。")
+                
+                # 正常に読み込まれたらループを抜ける
+                break
+                
+            except Exception as e:
+                print(f"ページ読み込みエラー (試行 {attempt+1}/{max_retries}): {str(e)}")
+                if attempt == max_retries - 1:  # 最後の試行でもエラーが発生した場合
+                    raise  # エラーを再発生させる
+                page.wait_for_timeout(5000)  # リトライ前に待機
         
-        # ナビゲーション後の待機時間を増やす
-        page.wait_for_timeout(5000)
+        # ナビゲーション後の待機時間
+        page.wait_for_timeout(3000)
         
         # race_idを取得（URLから）
         race_id = race_url.split('race_id=')[1].split('&')[0]
@@ -362,6 +391,9 @@ def get_race_info_for_next_three_days():
                         race_urls = get_race_urls_for_date(page, context, date_str)
                         print(f"{date_str}のレースURL数: {len(race_urls)}")
                         
+                        # 日ごとのレース情報を保持するリスト
+                        day_race_entries = []
+                        
                         if race_urls:  # レースURLが存在する場合のみ処理
                             for i, race_url in enumerate(race_urls):
                                 try:
@@ -372,8 +404,9 @@ def get_race_info_for_next_three_days():
                                     
                                     race_entry = scrape_race_entry(page, race_url)
                                     if race_entry and race_entry['entries'] and len(race_entry['entries']) > 0:
-                                        save_to_csv(race_entry, filename)
-                                        print(f"保存完了: {race_entry['venue_name']} {race_entry['race_number']}R")
+                                        # メモリに保存（CSV書き込みは後でまとめて行う）
+                                        day_race_entries.append(race_entry)
+                                        print(f"取得完了: {race_entry['venue_name']} {race_entry['race_number']}R")
                                     
                                     # 各リクエスト間に十分な間隔を空ける
                                     page.wait_for_timeout(3000)
@@ -383,6 +416,13 @@ def get_race_info_for_next_three_days():
                                     traceback.print_exc()
                                     # エラー後も十分な待機時間を設ける
                                     page.wait_for_timeout(5000)
+                            
+                            # すべてのレース情報を取得後、一括でCSVに保存
+                            if day_race_entries:
+                                print(f"{date_str}のレース情報（{len(day_race_entries)}件）をCSVに保存中...")
+                                save_races_to_csv(day_race_entries, filename)
+                                print(f"{date_str}の一括CSV保存が完了しました")
+                            
                             print(f"{date_str}の処理が完了しました")
                         else:
                             print(f"{date_str}のレースはありません")
@@ -403,6 +443,52 @@ def get_race_info_for_next_three_days():
         return False
     
     return True
+
+def save_races_to_csv(race_entries: List[Dict], filename: str = None):
+    """複数のレース情報をまとめてCSVに保存する"""
+    if not race_entries:
+        print("保存するレース情報がありません")
+        return
+        
+    try:
+        os.makedirs('data/race_entries', exist_ok=True)
+        
+        if filename is None:
+            current_date = datetime.now().strftime('%Y%m%d')
+            filename = f'data/race_entries/nar_race_entries_{current_date}.csv'
+        else:
+            filename = f'data/race_entries/{filename}'
+        
+        # ファイルが存在するかチェック
+        file_exists = os.path.isfile(filename)
+        
+        with open(filename, 'w', newline='', encoding='utf-8') as f:
+            writer = csv.writer(f)
+            
+            # ヘッダーを書き込む
+            writer.writerow([
+                'race_id', 'race_name', 'race_number', 'venue_name', 
+                'start_time', 'course_info', 'race_details', 'entries'
+            ])
+            
+            # すべてのレース情報を一括で書き込む
+            for race_entry in race_entries:
+                writer.writerow([
+                    race_entry['race_id'],
+                    race_entry['race_name'],
+                    race_entry['race_number'],
+                    race_entry['venue_name'],
+                    race_entry['start_time'],
+                    race_entry['course_info'],
+                    race_entry['race_details'],
+                    json.dumps(race_entry['entries'], ensure_ascii=False)  # 出走馬情報をJSON形式で保存
+                ])
+            
+        print(f"{len(race_entries)}件のレース情報をCSVに保存しました: {filename}")
+            
+    except Exception as e:
+        print(f"CSV一括保存エラー: {str(e)}")
+        traceback.print_exc()
 
 def scrape_race_entries(date_str=None):
     """指定された日付のレース出走表をスクレイピング"""
@@ -453,6 +539,11 @@ def scrape_race_entries(date_str=None):
                 page.wait_for_timeout(5000)
         
         browser.close()
+    
+    # 取得したレース情報をまとめてCSVに保存
+    if race_entries:
+        filename = f"nar_race_entries_{date_str}.csv"
+        save_races_to_csv(race_entries, filename)
     
     print(f"{len(race_entries)}件のレース情報を取得しました")
     return race_entries
