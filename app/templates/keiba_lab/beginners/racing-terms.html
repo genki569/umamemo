@@ -1,0 +1,295 @@
+{% extends "base.html" %}
+
+{% block title %}競馬用語集：初心者が知っておきたい基本用語 | 競馬ラボ | 馬メモ{% endblock %}
+
+{% block meta_description %}競馬初心者のための用語解説集。レース、馬の状態、脚質、馬場状態など、競馬を楽しむために知っておきたい基本用語を分かりやすく解説します。{% endblock %}
+
+{% block meta_keywords %}競馬,用語,初心者,脚質,馬場状態,競馬場,競走馬,重賞,GⅠ,障害,馬券{% endblock %}
+
+{% block og_title %}競馬用語集：初心者が知っておきたい基本用語 | 競馬ラボ | 馬メモ{% endblock %}
+{% block og_description %}競馬初心者のための用語解説集。レース、馬の状態、脚質、馬場状態など、競馬を楽しむために知っておきたい基本用語を分かりやすく解説します。{% endblock %}
+{% block og_type %}article{% endblock %}
+
+{% block twitter_title %}競馬用語集：初心者が知っておきたい基本用語 | 競馬ラボ | 馬メモ{% endblock %}
+{% block twitter_description %}競馬初心者のための用語解説集。レース、馬の状態、脚質、馬場状態など、競馬を楽しむために知っておきたい基本用語を分かりやすく解説します。{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('index') }}">ホーム</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('keiba_lab_index') }}">競馬ラボ</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('keiba_lab_content', content_path='beginners/what-is-keiba') }}">競馬初心者ガイド</a></li>
+            <li class="breadcrumb-item active" aria-current="page">競馬用語集</li>
+        </ol>
+    </nav>
+
+    <div class="row mb-4">
+        <div class="col-lg-8">
+            <article>
+                <header class="mb-4">
+                    <h1 class="display-5 fw-bold text-primary">競馬用語集：初心者が知っておきたい基本用語</h1>
+                    <p class="lead text-muted">競馬を楽しむために覚えておきたい基本用語を分かりやすく解説</p>
+                    <div class="d-flex align-items-center text-muted small mb-2">
+                        <i class="far fa-calendar-alt me-1"></i>
+                        <span>公開日: 2024年11月22日</span>
+                        <span class="mx-2">|</span>
+                        <i class="far fa-clock me-1"></i>
+                        <span>読了時間: 約15分</span>
+                    </div>
+                </header>
+
+                <section class="card shadow-sm mb-5 border-0">
+                    <div class="card-body">
+                        <h2 class="h3 text-primary mb-3">競馬用語の基礎知識</h2>
+                        <p>競馬には独特の専門用語が数多く存在します。競馬新聞やレース中継を見ていると、「逃げ」「差し」「上がり3F」「馬場渋る」など様々な用語が飛び交い、初心者の方は戸惑うことも多いでしょう。</p>
+                        <p>この記事では、競馬を楽しむ上で知っておくと便利な基本用語を、カテゴリごとに分かりやすく解説します。少しずつ覚えていくことで、競馬の理解が深まり、より一層楽しめるようになりますよ。</p>
+                    </div>
+                </section>
+
+                <section class="card shadow-sm mb-5 border-0">
+                    <div class="card-body">
+                        <h2 class="h3 text-primary mb-3">レース関連用語</h2>
+                        
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <h3 class="h5 mt-3">重賞（じゅうしょう）</h3>
+                                <p>格式が高く、賞金も多い特別レースのこと。GⅠ、GⅡ、GⅢの3段階に区分され、最も格が高いのがGⅠです。日本ダービーや有馬記念などの大レースはGⅠに分類されます。</p>
+                                
+                                <h3 class="h5 mt-3">GⅠ（グレードワン）</h3>
+                                <p>最も格式の高いレースのカテゴリー。日本では、年間約20レースが開催されます。日本ダービー、有馬記念、宝塚記念などが代表的です。</p>
+                                
+                                <h3 class="h5 mt-3">条件戦</h3>
+                                <p>出走できる馬に条件が設けられているレース。「3歳以上500万円以下」などと表記され、獲得賞金やクラスによって出走条件が異なります。</p>
+                                
+                                <h3 class="h5 mt-3">オープン</h3>
+                                <p>条件戦の上位クラスで、基本的に獲得賞金による出走制限がないレース区分。重賞レースはオープンに含まれます。</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h3 class="h5 mt-3">ハンデ戦</h3>
+                                <p>馬の実力差を埋めるために、能力の高い馬ほど多くの重りを背負わせるレース。斤量（馬が背負う重り）に差をつけることで、競争を均等化します。</p>
+                                
+                                <h3 class="h5 mt-3">障害レース</h3>
+                                <p>コース内に設置された障害物を飛び越えながら走るレース。芝やダートのみを走る平地競走と区別されます。</p>
+                                
+                                <h3 class="h5 mt-3">新馬戦</h3>
+                                <p>まだ一度も勝利したことのない競走馬（新馬）だけが出走できるレース。デビュー戦となることが多いです。</p>
+                                
+                                <h3 class="h5 mt-3">メイクデビュー</h3>
+                                <p>競走馬が初めて出走するレースのこと。「今日メイクデビュー」といえば、その馬が初レースであることを意味します。</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="card shadow-sm mb-5 border-0">
+                    <div class="card-body">
+                        <h2 class="h3 text-primary mb-3">馬の脚質・特性に関する用語</h2>
+                        
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <h3 class="h5 mt-3">逃げ馬（にげうま）</h3>
+                                <p>スタートから先頭に立ち、最後まで前で粘る走り方をする馬。レースの流れを主導しやすい特徴があります。</p>
+                                
+                                <h3 class="h5 mt-3">先行馬（せんこううま）</h3>
+                                <p>スタート後、先頭集団につけて走る馬。逃げ馬の後ろで好位置をキープしながら進み、最後に仕掛ける走法です。</p>
+                                
+                                <h3 class="h5 mt-3">差し馬（さしうま）</h3>
+                                <p>レース中盤は中団から後方につけ、最後の直線で一気に加速して前の馬を追い抜く走り方をする馬。</p>
+                                
+                                <h3 class="h5 mt-3">追い込み馬（おいこみうま）</h3>
+                                <p>レース序盤から中盤にかけて後方に位置し、最後の直線で大きく差を詰めてくる走り方をする馬。</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h3 class="h5 mt-3">上がり3F（あがりさんはろん）</h3>
+                                <p>レース終盤の最後の3ハロン（約600m）のタイム。脚力の持続力や瞬発力を示す重要な指標です。</p>
+                                
+                                <h3 class="h5 mt-3">スタミナ</h3>
+                                <p>長い距離を走り続ける持久力のこと。長距離レースでは特に重要な要素となります。</p>
+                                
+                                <h3 class="h5 mt-3">瞬発力</h3>
+                                <p>短距離の加速能力や、最後の直線での伸びる力のこと。短距離レースや最後の直線での競り合いで重要です。</p>
+                                
+                                <h3 class="h5 mt-3">たたき（叩き）</h3>
+                                <p>調整のために敢えて厳しいレースを使うこと。「叩き一戦」などと表現され、次走に向けての調整や仕上げの意味合いがあります。</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="card shadow-sm mb-5 border-0">
+                    <div class="card-body">
+                        <h2 class="h3 text-primary mb-3">競馬場・コース関連用語</h2>
+                        
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <h3 class="h5 mt-3">芝コース</h3>
+                                <p>芝生が植えられたコースで行われるレース。芝の状態は天候や季節によって変化し、レースの展開に影響します。</p>
+                                
+                                <h3 class="h5 mt-3">ダートコース</h3>
+                                <p>砂や土、クッション材などを混ぜたコースで行われるレース。芝に比べて重くなりやすい特徴があります。</p>
+                                
+                                <h3 class="h5 mt-3">馬場状態</h3>
+                                <p>コースの状態を表す言葉。「良」「稍重（やや重い）」「重」「不良」の4段階で表されます。雨の影響などで変化します。</p>
+                                
+                                <h3 class="h5 mt-3">内回り・外回り</h3>
+                                <p>同じ競馬場内で内側と外側に分かれたコースのこと。東京競馬場や中山競馬場などでは、レースによって使い分けられています。</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h3 class="h5 mt-3">直線</h3>
+                                <p>最後の直線コースのこと。コーナーを曲がった後の直線部分で、ここでの競り合いが勝敗を分けることが多いです。</p>
+                                
+                                <h3 class="h5 mt-3">パドック</h3>
+                                <p>レース前に馬を観察できる場所。ここでの馬の様子を見て、調子や気性を判断することができます。</p>
+                                
+                                <h3 class="h5 mt-3">返し馬（かえしば）</h3>
+                                <p>出走前に馬をパドックからスタート地点に向かわせること。この間の馬の動きも調子を判断する材料になります。</p>
+                                
+                                <h3 class="h5 mt-3">乗り込み</h3>
+                                <p>パドックで馬に騎手が騎乗すること。「騎乗」とも言います。</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="card shadow-sm mb-5 border-0">
+                    <div class="card-body">
+                        <h2 class="h3 text-primary mb-3">馬の状態・調教に関する用語</h2>
+                        
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <h3 class="h5 mt-3">馬体重</h3>
+                                <p>競走馬の体重のこと。レース直前に計測され、前走からの増減が発表されます。馬の調子を判断する材料の一つです。</p>
+                                
+                                <h3 class="h5 mt-3">調教（ちょうきょう）</h3>
+                                <p>レースに向けて馬をトレーニングすること。調教師の指示のもと、騎手や調教助手が行います。</p>
+                                
+                                <h3 class="h5 mt-3">追い切り</h3>
+                                <p>本番のレースに向けた最終調整の強い調教のこと。通常はレース直前の週に行われます。</p>
+                                
+                                <h3 class="h5 mt-3">休み明け</h3>
+                                <p>一定期間レースに出走せず、休養後に出走すること。調整の程度や状態が気になる場合が多いです。</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h3 class="h5 mt-3">放牧</h3>
+                                <p>馬を牧場に出して自由に走らせ、休養させること。ケガの回復や気分転換のために行われます。</p>
+                                
+                                <h3 class="h5 mt-3">ゲート</h3>
+                                <p>スタート時に馬を並べる枠のこと。スタートの良し悪しはレース結果に大きく影響します。</p>
+                                
+                                <h3 class="h5 mt-3">併せ馬</h3>
+                                <p>調教で他の馬と一緒に走らせること。実戦を想定した調教方法で、馬の能力や調子を見極めるために行われます。</p>
+                                
+                                <h3 class="h5 mt-3">輸送熱</h3>
+                                <p>馬が長距離移動によってストレスを受け、体調を崩す現象。遠征レースでは特に注意が必要です。</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="card shadow-sm mb-5 border-0">
+                    <div class="card-body">
+                        <h2 class="h3 text-primary mb-3">その他の競馬用語</h2>
+                        
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <h3 class="h5 mt-3">馬券</h3>
+                                <p>競馬で勝ち馬を予想して購入する投票券。単勝、複勝、馬連、馬単、三連複、三連単などの種類があります。</p>
+                                
+                                <h3 class="h5 mt-3">JRA</h3>
+                                <p>日本中央競馬会（Japan Racing Association）の略称。国が監督する特殊法人で、中央競馬を運営しています。</p>
+                                
+                                <h3 class="h5 mt-3">地方競馬</h3>
+                                <p>地方自治体が運営する競馬。NAR（地方競馬全国協会）が統括し、大井、川崎、船橋、浦和などの競馬場があります。</p>
+                                
+                                <h3 class="h5 mt-3">枠番</h3>
+                                <p>スタート位置を示す番号。内枠（1〜3番）、中枠（4〜6番）、外枠（7番以降）と区分され、コースによって有利・不利があります。</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h3 class="h5 mt-3">斤量（きんりょう）</h3>
+                                <p>競走馬が背負う重り（鞍や騎手の体重など）の総重量。馬の性別、年齢、レースの格によって設定されます。</p>
+                                
+                                <h3 class="h5 mt-3">血統</h3>
+                                <p>競走馬の家系のこと。父系（父馬の系統）と母系（母馬の系統）があり、能力や適性に影響します。</p>
+                                
+                                <h3 class="h5 mt-3">サラブレッド</h3>
+                                <p>競走馬として使われる馬の品種。スピードと持久力を兼ね備えた純血種（thoroughbred）です。</p>
+                                
+                                <h3 class="h5 mt-3">オッズ</h3>
+                                <p>馬券の予想配当倍率。人気が高い馬ほどオッズは低く、人気のない馬ほど高くなります。</p>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-info mt-4">
+                            <div class="d-flex">
+                                <div class="me-3">
+                                    <i class="fas fa-info-circle fa-2x"></i>
+                                </div>
+                                <div>
+                                    <h4 class="h6 alert-heading">用語の覚え方のコツ</h4>
+                                    <p class="mb-0">競馬用語は一度に全て覚える必要はありません。レース観戦や競馬新聞を読む中で少しずつ覚えていきましょう。最初は基本的な用語から理解し、徐々に語彙を増やしていくことをおすすめします。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="card shadow-sm mb-5 border-0 bg-light">
+                    <div class="card-body">
+                        <h2 class="h4 text-primary">まとめ</h2>
+                        <p>競馬用語は一見難しく感じるかもしれませんが、一つひとつ理解していくことで競馬をより深く楽しむことができます。この記事で紹介した基本用語を参考に、競馬の魅力をさらに発見してください。</p>
+                        <p>実際のレース観戦や競馬新聞、競馬番組などを通じて、これらの用語が使われる場面に触れることで、自然と知識が身についていきます。</p>
+                        <p>馬メモでは、初心者の方向けに様々な競馬情報を提供しています。ぜひ他の記事もチェックして、競馬の世界をさらに楽しんでください。</p>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between mb-5">
+                    <a href="{{ url_for('keiba_lab_content', content_path='beginners/how-to-bet') }}" class="btn btn-outline-primary">&larr; 前の記事：馬券の種類と購入方法</a>
+                    <a href="{{ url_for('keiba_lab_content', content_path='basics/enjoy') }}" class="btn btn-primary">次の記事：競馬の楽しみ方 &rarr;</a>
+                </div>
+            </article>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="position-sticky" style="top: 2rem;">
+                <div class="card shadow-sm mb-4 border-0">
+                    <div class="card-body">
+                        <h3 class="h5 card-title">目次</h3>
+                        <ul class="list-unstyled mb-0">
+                            <li class="mb-2"><a href="#" class="text-decoration-none">競馬用語の基礎知識</a></li>
+                            <li class="mb-2"><a href="#" class="text-decoration-none">レース関連用語</a></li>
+                            <li class="mb-2"><a href="#" class="text-decoration-none">馬の脚質・特性に関する用語</a></li>
+                            <li class="mb-2"><a href="#" class="text-decoration-none">競馬場・コース関連用語</a></li>
+                            <li class="mb-2"><a href="#" class="text-decoration-none">馬の状態・調教に関する用語</a></li>
+                            <li><a href="#" class="text-decoration-none">その他の競馬用語</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm mb-4 border-0">
+                    <div class="card-body">
+                        <h3 class="h5 card-title">関連コンテンツ</h3>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item bg-transparent border-0 ps-0">
+                                <a href="{{ url_for('keiba_lab_content', content_path='beginners/what-is-keiba') }}" class="text-decoration-none">
+                                    <i class="fas fa-chevron-right text-primary me-2"></i>競馬とは？基本的な仕組みと楽しみ方
+                                </a>
+                            </li>
+                            <li class="list-group-item bg-transparent border-0 ps-0">
+                                <a href="{{ url_for('keiba_lab_content', content_path='beginners/how-to-bet') }}" class="text-decoration-none">
+                                    <i class="fas fa-chevron-right text-primary me-2"></i>馬券の種類と購入方法ガイド
+                                </a>
+                            </li>
+                            <li class="list-group-item bg-transparent border-0 ps-0">
+                                <a href="{{ url_for('keiba_lab_content', content_path='horse/body-basics') }}" class="text-decoration-none">
+                                    <i class="fas fa-chevron-right text-primary me-2"></i>馬体の基礎知識：各部の名称と役割
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

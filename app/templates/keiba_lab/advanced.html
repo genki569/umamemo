@@ -1,1 +1,70 @@
- 
+{% extends "base.html" %}
+
+{% block title %}上級者向けコンテンツ | 競馬ラボ | 馬メモ{% endblock %}
+
+{% block meta_description %}競馬ラボの上級者向けコンテンツ集。本格的な血統理論、データ分析の応用、投資としての馬券戦略など、さらに深い競馬の知識や分析手法を習得したい方向けの解説記事を提供します。{% endblock %}
+
+{% block meta_keywords %}競馬,上級者,血統理論,データ分析,回収率,投資戦略,競馬予想,期待値{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item active" aria-current="page">上級者向けコンテンツ</li>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <h1 class="mb-4">上級者向けコンテンツ</h1>
+            
+            <div class="alert alert-warning mb-4">
+                <div class="d-flex">
+                    <div class="me-3">
+                        <i class="fas fa-exclamation-triangle fa-2x"></i>
+                    </div>
+                    <div>
+                        <h5 class="alert-heading">ページ準備中</h5>
+                        <p class="mb-0">このページは現在準備中です。近日中に公開予定ですので、しばらくお待ちください。</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h2 class="h4 mb-3">このページで紹介予定のコンテンツ</h2>
+                    <ul class="mb-0">
+                        <li>期待値に基づいた馬券投資戦略</li>
+                        <li>本格的な血統理論とクロス分析</li>
+                        <li>統計学を用いたレース分析手法</li>
+                        <li>馬場バイアスの詳細分析と活用法</li>
+                        <li>長期的な回収率向上のための資金管理術</li>
+                    </ul>
+                </div>
+            </div>
+
+            <p>準備が整い次第、充実したコンテンツをお届けします。その間、以下の関連コンテンツもご覧ください。</p>
+            
+            <h3 class="h5 mb-3 mt-5">おすすめコンテンツ</h3>
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">血統理論の実践</h5>
+                            <p class="card-text">ニックス理論の応用、クロス配合の成功パターン、海外血統の影響など、深い血統分析を解説します。</p>
+                            <a href="{{ url_for('keiba_lab_content', content_path='bloodline/combination') }}" class="stretched-link"></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">投資戦略の基礎</h5>
+                            <p class="card-text">期待値理論の基本、リスク分散の方法、ヘッジングの考え方など、長期的に利益を出すための戦略を解説します。</p>
+                            <a href="{{ url_for('keiba_lab_content', content_path='investment/strategy') }}" class="stretched-link"></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

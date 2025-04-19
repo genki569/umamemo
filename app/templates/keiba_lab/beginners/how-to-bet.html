@@ -1,0 +1,297 @@
+{% extends "base.html" %}
+
+{% block title %}馬券の種類と購入方法ガイド | 競馬初心者向け | 競馬ラボ | 馬メモ{% endblock %}
+
+{% block meta_description %}競馬の馬券には単勝・複勝・馬連・馬単など様々な種類があります。初心者向けに馬券の種類、特徴、買い方をわかりやすく解説。競馬場での購入方法からネット投票まで丁寧に説明します。{% endblock %}
+
+{% block meta_keywords %}競馬,馬券,単勝,複勝,馬連,馬単,三連複,三連単,IPAT,購入方法,初心者,JRA{% endblock %}
+
+{% block og_title %}馬券の種類と購入方法ガイド | 競馬初心者向け | 競馬ラボ | 馬メモ{% endblock %}
+{% block og_description %}競馬の馬券には単勝・複勝・馬連・馬単など様々な種類があります。初心者向けに馬券の種類、特徴、買い方をわかりやすく解説。競馬場での購入方法からネット投票まで丁寧に説明します。{% endblock %}
+{% block og_type %}article{% endblock %}
+
+{% block twitter_title %}馬券の種類と購入方法ガイド | 競馬初心者向け | 競馬ラボ | 馬メモ{% endblock %}
+{% block twitter_description %}競馬の馬券には単勝・複勝・馬連・馬単など様々な種類があります。初心者向けに馬券の種類、特徴、買い方をわかりやすく解説。競馬場での購入方法からネット投票まで丁寧に説明します。{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('index') }}">ホーム</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('keiba_lab_index') }}">競馬ラボ</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('keiba_lab_content', content_path='beginners/what-is-keiba') }}">競馬初心者ガイド</a></li>
+            <li class="breadcrumb-item active" aria-current="page">馬券の種類と購入方法ガイド</li>
+        </ol>
+    </nav>
+
+    <div class="row mb-4">
+        <div class="col-lg-8">
+            <article>
+                <header class="mb-4">
+                    <h1 class="display-5 fw-bold text-primary">馬券の種類と購入方法ガイド</h1>
+                    <p class="lead text-muted">競馬初心者のための馬券購入完全マニュアル</p>
+                    <div class="d-flex align-items-center text-muted small mb-2">
+                        <i class="far fa-calendar-alt me-1"></i>
+                        <span>公開日: 2024年11月25日</span>
+                        <span class="mx-2">|</span>
+                        <i class="far fa-clock me-1"></i>
+                        <span>読了時間: 約12分</span>
+                    </div>
+                </header>
+
+                <section class="card shadow-sm mb-5 border-0">
+                    <div class="card-body">
+                        <h2 class="h3 text-primary mb-3">馬券とは</h2>
+                        <p>馬券とは、競馬において勝ち馬や着順を予想して購入する投票券のことです。JRAの場合、最低100円から購入でき、予想が当たると配当金を受け取ることができます。馬券には様々な種類があり、予想方法や難易度、配当金の期待値もそれぞれ異なります。</p>
+                        <p>馬券の種類を理解し、自分の予想スタイルに合った馬券を選ぶことが、競馬を楽しむための第一歩です。この記事では、馬券の種類や特徴、購入方法について詳しく解説します。</p>
+                    </div>
+                </section>
+
+                <section class="card shadow-sm mb-5 border-0">
+                    <div class="card-body">
+                        <h2 class="h3 text-primary mb-3">馬券の種類と特徴</h2>
+                        
+                        <h3 class="h5 mt-4">単勝（タンショウ）</h3>
+                        <p>最もシンプルな馬券で、1着になる馬を当てるものです。</p>
+                        <ul>
+                            <li><strong>特徴：</strong>的中率は比較的高いが、人気馬だと配当は低くなる傾向がある</li>
+                            <li><strong>最低購入金額：</strong>100円</li>
+                            <li><strong>向いている人：</strong>初心者、堅実に当てたい人</li>
+                            <li><strong>購入例：</strong>「3番の馬が1着になる」と予想して「3番の単勝」を購入</li>
+                        </ul>
+
+                        <h3 class="h5 mt-4">複勝（フクショウ）</h3>
+                        <p>指定した馬が3着以内に入れば的中となる馬券です。</p>
+                        <ul>
+                            <li><strong>特徴：</strong>単勝より的中率が高いが、配当は低め</li>
+                            <li><strong>最低購入金額：</strong>100円</li>
+                            <li><strong>向いている人：</strong>初心者、的中率を重視する人</li>
+                            <li><strong>購入例：</strong>「5番の馬が3着以内に入る」と予想して「5番の複勝」を購入</li>
+                        </ul>
+
+                        <h3 class="h5 mt-4">馬連（ウマレン）</h3>
+                        <p>1着と2着になる2頭の馬を当てる馬券です（順不同）。</p>
+                        <ul>
+                            <li><strong>特徴：</strong>単勝・複勝より的中率は下がるが、配当は上がる</li>
+                            <li><strong>最低購入金額：</strong>100円</li>
+                            <li><strong>向いている人：</strong>初心者〜中級者</li>
+                            <li><strong>購入例：</strong>「2番と7番の馬が1着と2着になる」と予想して「2-7の馬連」を購入</li>
+                        </ul>
+
+                        <h3 class="h5 mt-4">ワイド</h3>
+                        <p>指定した2頭の馬が3着以内に入れば的中となる馬券です（順不同）。</p>
+                        <ul>
+                            <li><strong>特徴：</strong>馬連より的中率が高いが、配当は低め</li>
+                            <li><strong>最低購入金額：</strong>100円</li>
+                            <li><strong>向いている人：</strong>初心者〜中級者、的中率を重視する人</li>
+                            <li><strong>購入例：</strong>「3番と8番の馬がどちらも3着以内に入る」と予想して「3-8のワイド」を購入</li>
+                        </ul>
+
+                        <h3 class="h5 mt-4">馬単（ウマタン）</h3>
+                        <p>1着と2着になる2頭の馬とその着順を当てる馬券です（順序指定）。</p>
+                        <ul>
+                            <li><strong>特徴：</strong>馬連より難しいが、配当は高くなる</li>
+                            <li><strong>最低購入金額：</strong>100円</li>
+                            <li><strong>向いている人：</strong>中級者以上、レース展開を読める人</li>
+                            <li><strong>購入例：</strong>「4番が1着、9番が2着」と予想して「4→9の馬単」を購入</li>
+                        </ul>
+
+                        <h3 class="h5 mt-4">三連複（サンレンプク）</h3>
+                        <p>1着、2着、3着になる3頭の馬を当てる馬券です（順不同）。</p>
+                        <ul>
+                            <li><strong>特徴：</strong>的中率は低いが、配当は高め</li>
+                            <li><strong>最低購入金額：</strong>100円</li>
+                            <li><strong>向いている人：</strong>中級者以上、高配当を狙いたい人</li>
+                            <li><strong>購入例：</strong>「1番、5番、8番の馬が1着、2着、3着になる」と予想して「1-5-8の三連複」を購入</li>
+                        </ul>
+
+                        <h3 class="h5 mt-4">三連単（サンレンタン）</h3>
+                        <p>1着、2着、3着になる3頭の馬とその着順を当てる馬券です（順序指定）。</p>
+                        <ul>
+                            <li><strong>特徴：</strong>最も的中率が低いが、配当は最も高くなることが多い</li>
+                            <li><strong>最低購入金額：</strong>100円</li>
+                            <li><strong>向いている人：</strong>中級者以上、高配当を狙いたい人</li>
+                            <li><strong>購入例：</strong>「6番が1着、2番が2着、7番が3着」と予想して「6→2→7の三連単」を購入</li>
+                        </ul>
+
+                        <div class="alert alert-info mt-4">
+                            <div class="d-flex">
+                                <div class="me-3">
+                                    <i class="fas fa-info-circle fa-2x"></i>
+                                </div>
+                                <div>
+                                    <h4 class="h6 alert-heading">初心者におすすめの馬券</h4>
+                                    <p class="mb-0">競馬初心者の方には、まずは単勝や複勝から始めることをおすすめします。的中率が比較的高く、馬券の仕組みを理解しやすいためです。慣れてきたら馬連やワイドにも挑戦してみましょう。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="card shadow-sm mb-5 border-0">
+                    <div class="card-body">
+                        <h2 class="h3 text-primary mb-3">馬券の購入方法</h2>
+                        
+                        <h3 class="h5 mt-4">競馬場での購入方法</h3>
+                        <p>競馬場では、窓口または自動発売機で馬券を購入することができます。</p>
+                        
+                        <h4 class="h6 mt-3">窓口での購入手順</h4>
+                        <ol>
+                            <li>購入したいレース番号、馬券の種類、馬番、金額を整理しておく</li>
+                            <li>窓口に向かい、係員に「○レース、△の◇◇、××円で」と伝える</li>
+                            <li>例：「7レース、3番の単勝、500円で」「9レース、2-5の馬連、1000円で」</li>
+                            <li>金額を支払い、馬券を受け取る</li>
+                        </ol>
+                        
+                        <h4 class="h6 mt-3">自動発売機での購入手順</h4>
+                        <ol>
+                            <li>タッチパネルの画面でレース番号を選択</li>
+                            <li>馬券の種類（単勝、複勝、馬連など）を選択</li>
+                            <li>馬番または馬番の組み合わせを選択</li>
+                            <li>購入金額を選択</li>
+                            <li>確認画面で内容を確認し、お金を投入</li>
+                            <li>馬券が発券される</li>
+                        </ol>
+
+                        <h3 class="h5 mt-4">インターネットでの購入方法（JRA-PAT）</h3>
+                        <p>JRA-PAT（パット）は、JRAが提供するインターネット・電話投票システムです。自宅からでも馬券を購入することができます。</p>
+                        
+                        <h4 class="h6 mt-3">JRA-PATの利用手順</h4>
+                        <ol>
+                            <li>JRA-PATに加入する（専用の申込書を記入し、身分証明書のコピーなどを提出）</li>
+                            <li>発行されたPAT-IDとパスワードでログイン</li>
+                            <li>投票用の残高をネットバンキングや銀行振込などで入金</li>
+                            <li>JRAのウェブサイトまたはスマートフォンアプリから投票する</li>
+                        </ol>
+                        
+                        <h4 class="h6 mt-3">スマートフォンアプリでの購入手順</h4>
+                        <ol>
+                            <li>JRA-UMATY（うまチー）などのアプリをインストール</li>
+                            <li>PAT-IDとパスワードでログイン</li>
+                            <li>投票したいレースを選択</li>
+                            <li>馬券の種類を選択し、馬番や金額を指定</li>
+                            <li>確認画面で内容を確認し、購入を確定</li>
+                        </ol>
+
+                        <div class="alert alert-warning mt-4">
+                            <div class="d-flex">
+                                <div class="me-3">
+                                    <i class="fas fa-exclamation-triangle fa-2x"></i>
+                                </div>
+                                <div>
+                                    <h4 class="h6 alert-heading">注意事項</h4>
+                                    <p class="mb-0">馬券は購入後に変更・キャンセルができません。購入前に内容をよく確認しましょう。また、JRA-PATに加入するには20歳以上であることが条件です。競馬は公営ギャンブルですので、計画的に楽しみましょう。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="card shadow-sm mb-5 border-0">
+                    <div class="card-body">
+                        <h2 class="h3 text-primary mb-3">馬券の読み方と保管</h2>
+                        
+                        <h3 class="h5 mt-4">馬券の読み方</h3>
+                        <p>馬券には以下の情報が記載されています。</p>
+                        <ul>
+                            <li><strong>開催場所と日付：</strong>どの競馬場のいつのレースか</li>
+                            <li><strong>レース番号：</strong>何レース目か</li>
+                            <li><strong>馬券の種類：</strong>単勝・複勝・馬連などの種類</li>
+                            <li><strong>馬番：</strong>購入した馬の番号または組み合わせ</li>
+                            <li><strong>金額：</strong>購入金額</li>
+                            <li><strong>通し番号：</strong>馬券ごとに振られる固有の番号</li>
+                        </ul>
+                        
+                        <h3 class="h5 mt-4">馬券の保管と換金</h3>
+                        <p>的中した馬券は大切な換金証明書です。以下の点に気をつけて保管しましょう。</p>
+                        <ul>
+                            <li>馬券は折り曲げたり、汚したりしないよう注意</li>
+                            <li>的中した馬券は、当日中に換金できるほか、開催終了後も一定期間は換金可能</li>
+                            <li>競馬場内の払戻窓口や場外馬券売り場（ウインズ）で換金できる</li>
+                            <li>JRA-PATで購入した場合は、的中金額が自動的に口座に入金される</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <section class="card shadow-sm mb-5 border-0">
+                    <div class="card-body">
+                        <h2 class="h3 text-primary mb-3">初心者向け馬券の選び方のコツ</h2>
+                        
+                        <h3 class="h5 mt-4">まずは情報収集から</h3>
+                        <p>馬券を購入する前に、競馬新聞や公式サイトで各馬の情報をチェックしましょう。</p>
+                        <ul>
+                            <li>馬の過去の成績や調子</li>
+                            <li>騎手の実績や得意コース</li>
+                            <li>天候や馬場状態</li>
+                            <li>枠順や距離適性</li>
+                        </ul>
+                        
+                        <h3 class="h5 mt-4">少額から始める</h3>
+                        <p>初心者は100円や500円など少額から始め、競馬の楽しさを理解しながら徐々に慣れていくとよいでしょう。</p>
+                        
+                        <h3 class="h5 mt-4">複数の馬券に分散する</h3>
+                        <p>一つのレースで一種類の馬券にこだわらず、単勝と馬連など複数の馬券タイプに少額ずつ分散して購入するのも一つの方法です。</p>
+                        
+                        <h3 class="h5 mt-4">予想サイトやアドバイスを参考に</h3>
+                        <p>初心者のうちは、競馬専門誌の予想や信頼できるウェブサイトの予想を参考にすると良いでしょう。馬メモでも多くの予想情報を提供しています。</p>
+                    </div>
+                </section>
+
+                <div class="card shadow-sm mb-5 border-0 bg-light">
+                    <div class="card-body">
+                        <h2 class="h4 text-primary">まとめ</h2>
+                        <p>馬券には様々な種類があり、それぞれに特徴や適した予想スタイルがあります。初心者の方は単勝や複勝から始め、慣れてきたら馬連やワイドなど、より配当の高い馬券にも挑戦してみましょう。</p>
+                        <p>馬券を購入する際は、競馬新聞や公式サイトで情報収集をし、自分なりの予想を立ててから臨むことが大切です。また、ギャンブルの一種ですので、予算を決めて計画的に楽しむことをおすすめします。</p>
+                        <p>競馬の魅力は、馬券を通じて予想の醍醐味を味わい、大きな興奮を得られることにあります。この記事を参考に、ぜひ競馬の世界を楽しんでください。</p>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between mb-5">
+                    <a href="{{ url_for('keiba_lab_content', content_path='beginners/what-is-keiba') }}" class="btn btn-outline-primary">&larr; 前の記事：競馬とは？</a>
+                    <a href="{{ url_for('keiba_lab_content', content_path='beginners/racing-terms') }}" class="btn btn-primary">次の記事：競馬用語集 &rarr;</a>
+                </div>
+            </article>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="position-sticky" style="top: 2rem;">
+                <div class="card shadow-sm mb-4 border-0">
+                    <div class="card-body">
+                        <h3 class="h5 card-title">目次</h3>
+                        <ul class="list-unstyled mb-0">
+                            <li class="mb-2"><a href="#" class="text-decoration-none">馬券とは</a></li>
+                            <li class="mb-2"><a href="#" class="text-decoration-none">馬券の種類と特徴</a></li>
+                            <li class="mb-2"><a href="#" class="text-decoration-none">馬券の購入方法</a></li>
+                            <li class="mb-2"><a href="#" class="text-decoration-none">馬券の読み方と保管</a></li>
+                            <li><a href="#" class="text-decoration-none">初心者向け馬券の選び方のコツ</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm mb-4 border-0">
+                    <div class="card-body">
+                        <h3 class="h5 card-title">関連コンテンツ</h3>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item bg-transparent border-0 ps-0">
+                                <a href="{{ url_for('keiba_lab_content', content_path='beginners/what-is-keiba') }}" class="text-decoration-none">
+                                    <i class="fas fa-chevron-right text-primary me-2"></i>競馬とは？基本的な仕組みと楽しみ方
+                                </a>
+                            </li>
+                            <li class="list-group-item bg-transparent border-0 ps-0">
+                                <a href="{{ url_for('keiba_lab_content', content_path='beginners/racing-terms') }}" class="text-decoration-none">
+                                    <i class="fas fa-chevron-right text-primary me-2"></i>競馬用語集：初心者が知っておきたい基本用語
+                                </a>
+                            </li>
+                            <li class="list-group-item bg-transparent border-0 ps-0">
+                                <a href="{{ url_for('keiba_lab_content', content_path='betting/strategy') }}" class="text-decoration-none">
+                                    <i class="fas fa-chevron-right text-primary me-2"></i>馬券の組み立て方と戦略
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
