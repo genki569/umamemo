@@ -202,7 +202,6 @@ def scrape_race_entry(page, race_url: str) -> Dict[str, any]:
     レースの基本情報（レース名、番号、開催場所など）と
     出走馬の詳細情報（馬名、騎手名、斤量など）を抽出します。
     BeautifulSoupを使用してHTML要素を解析し、正規表現でテキストから必要な情報を抽出します。
-    エラー発生時はスクリーンショットを保存し、デバッグに役立てます。
     """
     try:
         # レースページにアクセス
@@ -222,10 +221,6 @@ def scrape_race_entry(page, race_url: str) -> Dict[str, any]:
         race_id = generate_race_id(race_url)
         if not race_id:
             print(f"レースIDの生成に失敗しました: {race_url}")
-            # スクリーンショットを保存
-            screenshot_file = f"error_race_id_{datetime.now().strftime('%Y%m%d%H%M%S')}.png"
-            page.screenshot(path=screenshot_file)
-            print(f"スクリーンショットを{screenshot_file}に保存しました")
             return None
         
         # レース名と番号を取得
@@ -283,10 +278,7 @@ def scrape_race_entry(page, race_url: str) -> Dict[str, any]:
         
         if not horse_rows:
             print(f"馬情報が見つかりません: {race_url}")
-            # スクリーンショットを保存
-            screenshot_file = f"no_horses_{datetime.now().strftime('%Y%m%d%H%M%S')}.png"
-            page.screenshot(path=screenshot_file)
-            print(f"スクリーンショットを{screenshot_file}に保存しました")
+            return None
         
         print(f"出走馬数: {len(horse_rows)}")
         
@@ -406,18 +398,8 @@ def scrape_race_entry(page, race_url: str) -> Dict[str, any]:
     
     except Exception as e:
         # エラー発生時の処理
-        print(f"レース情報スクレイピングエラー: {str(e)}")
+        print(f"レース情報スクレイピングエラー ({race_url}): {str(e)}")
         traceback.print_exc()
-        try:
-            # デバッグ用にスクリーンショットを保存
-            timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
-            screenshot_path = f"error_screenshots/race_error_{timestamp}.png"
-            os.makedirs("error_screenshots", exist_ok=True)
-            page.screenshot(path=screenshot_path)
-            print(f"エラー時のスクリーンショットを保存しました: {screenshot_path}")
-        except Exception as screenshot_error:
-            print(f"スクリーンショット保存エラー: {str(screenshot_error)}")
-        
         return None
 
 def save_to_csv(data: List[Dict], csv_path: str, mode: str = 'w') -> bool:
@@ -505,108 +487,93 @@ def get_race_urls_for_date(page, date_str: str) -> List[str]:
         except Exception as e:
             print(f"ページアクセスエラー: {str(e)}")
         
-        # レースリンクを取得（すべてのリンクから探す）
+        # レースURLを格納するリスト
         race_urls = []
         
-        # すべてのリンクからraceIdを含むものを探す
-        all_links = page.query_selector_all('a[href*="race_id="]')
-        print(f"race_id=を含むリンク数: {len(all_links)}")
+        # JavaScriptの実行完了を待機
+        page.wait_for_selector('.RaceList_DataList', timeout=10000, state='attached')
         
-        for link in all_links:
-            href = link.get_attribute('href')
-            if href and 'race_id=' in href:
-                # shutuba.htmlリンクを優先
-                if 'shutuba.html' in href:
-                    match = re.search(r'race_id=(\d+)', href)
-                    if match:
-                        race_id = match.group(1)
-                        # 出馬表URLを直接使用
-                        shutuba_url = f"https://race.netkeiba.com/race/shutuba.html?race_id={race_id}"
-                        if shutuba_url not in race_urls:
-                            race_urls.append(shutuba_url)
-                # result.htmlリンクからshutuba.htmlを作成
-                elif 'result.html' in href:
-                    match = re.search(r'race_id=(\d+)', href)
-                    if match:
-                        race_id = match.group(1)
-                        # 結果ページから出馬表URLを生成
-                        shutuba_url = f"https://race.netkeiba.com/race/shutuba.html?race_id={race_id}"
-                        if shutuba_url not in race_urls:
-                            race_urls.append(shutuba_url)
+        # 現在のHTMLを取得（デバッグ用）
+        html_content = page.content()
+        with open(f"debug_html_{date_param}.html", "w", encoding="utf-8") as f:
+            f.write(html_content)
         
-        # レースURLがない場合は別の方法を試す
-        if not race_urls:
-            print("URLが取得できませんでした。HTMLからレースIDを直接探します...")
-            html_content = page.content()
-            # デバッグ用にHTMLを保存
-            with open(f"debug_html_{date_param}.html", "w", encoding="utf-8") as f:
-                f.write(html_content)
+        print("各開催場所のレース情報を取得中...")
+        
+        # 開催場所ごとの各レース情報を取得
+        race_items = page.query_selector_all('.RaceList_DataItem a[href*="race_id="]')
+        print(f"レースリンク数: {len(race_items)}")
+        
+        for item in race_items:
+            href = item.get_attribute('href')
+            if href:
+                # 相対パスを絶対パスに変換
+                if href.startswith("../race/"):
+                    href = href.replace("../race/", "https://race.netkeiba.com/race/")
+                elif not href.startswith("http"):
+                    href = f"https://race.netkeiba.com{href}"
+                
+                # 結果ページを出馬表ページに変換
+                if "result.html" in href:
+                    race_id = re.search(r'race_id=(\d+)', href).group(1)
+                    href = f"https://race.netkeiba.com/race/shutuba.html?race_id={race_id}"
+                
+                # 重複チェック
+                if href not in race_urls and "shutuba.html" in href:
+                    race_urls.append(href)
+        
+        # 予想されるレースIDからURLを構築（フォールバック）
+        if len(race_urls) == 0:
+            print("通常の方法でURLを取得できませんでした。レースIDのパターンから推測を試みます...")
             
-            # ページ内のすべてのレース番号（1R, 2R, ...）を含む要素を探す
-            race_ids = []
+            # HTMLから開催場所と開催回を抽出
+            venues = []
+            venue_elems = page.query_selector_all('.RaceList_DataTitle')
+            for venue_elem in venue_elems:
+                venue_text = venue_elem.inner_text()
+                match = re.search(r'(\d+回)([^\d]+)(\d+日)', venue_text)
+                if match:
+                    venue_name = match.group(2).strip()
+                    venues.append(venue_name)
             
-            # 画像のような開催場所ごとのグループを探す
-            venue_elements = page.query_selector_all('.RaceList_Data')
-            if venue_elements:
-                print(f"開催場所のグループ数: {len(venue_elements)}")
-                for venue_elem in venue_elements:
-                    venue_name_elem = venue_elem.query_selector('.RaceList_DataTitle')
-                    venue_name = venue_name_elem.inner_text() if venue_name_elem else "不明"
-                    print(f"開催場所: {venue_name}")
+            if venues:
+                print(f"開催場所を検出: {', '.join(venues)}")
+                
+                # 場所と日付からレースIDのパターンを推測
+                for venue in venues:
+                    venue_code = {"札幌": "01", "函館": "02", "福島": "03", "新潟": "04", 
+                                 "東京": "05", "中山": "06", "中京": "07", "京都": "08",
+                                 "阪神": "09", "小倉": "10"}.get(venue, "00")
                     
-                    # この開催場所内のレースを探す
-                    race_elems = venue_elem.query_selector_all('[class*="R"]')
-                    for race_elem in race_elems:
-                        race_text = race_elem.inner_text()
-                        if re.search(r'\d+R', race_text):
-                            # レース番号を含む要素を発見
-                            links = race_elem.query_selector_all('a')
-                            for link in links:
-                                href = link.get_attribute('href')
-                                if href and 'race_id=' in href:
-                                    match = re.search(r'race_id=(\d+)', href)
-                                    if match:
-                                        race_id = match.group(1)
-                                        if race_id not in race_ids:
-                                            race_ids.append(race_id)
-            
-            # レースIDから出馬表URLを生成
-            for race_id in race_ids:
-                shutuba_url = f"https://race.netkeiba.com/race/shutuba.html?race_id={race_id}"
-                if shutuba_url not in race_urls:
-                    race_urls.append(shutuba_url)
+                    if venue_code != "00":
+                        # 開催年月日とRレースまでを構築
+                        year = date_obj.year
+                        month = date_obj.month
+                        day = date_obj.day
+                        
+                        # レースIDの前半部分（年月場所）
+                        race_id_prefix = f"{year % 100:02d}{month:02d}{venue_code}"
+                        
+                        # 開催回と日にちは不明なので、一般的な範囲でURLを生成
+                        for kaisai_num in range(1, 6):  # 開催回（1-5回）
+                            for kaisai_day in range(1, 9):  # 開催日（1-8日）
+                                for race_num in range(1, 13):  # レース番号（1-12R）
+                                    race_id = f"20{race_id_prefix}{kaisai_num:02d}{kaisai_day:02d}{race_num:02d}"
+                                    race_url = f"https://race.netkeiba.com/race/shutuba.html?race_id={race_id}"
+                                    
+                                    # 既に追加済みのURLは追加しない
+                                    if race_url not in race_urls:
+                                        race_urls.append(race_url)
         
-        # さらにレースURLがない場合、日付タブをクリックして再試行
-        if not race_urls:
-            print("日付タブをクリックして再試行します...")
-            try:
-                date_tab = page.query_selector(f'a[href*="kaisai_date={date_param}"]')
-                if date_tab:
-                    date_tab.click()
-                    page.wait_for_timeout(5000)
-                    
-                    # 再度URLを取得する
-                    all_links = page.query_selector_all('a[href*="race_id="]')
-                    for link in all_links:
-                        href = link.get_attribute('href')
-                        if href and 'race_id=' in href:
-                            match = re.search(r'race_id=(\d+)', href)
-                            if match:
-                                race_id = match.group(1)
-                                shutuba_url = f"https://race.netkeiba.com/race/shutuba.html?race_id={race_id}"
-                                if shutuba_url not in race_urls:
-                                    race_urls.append(shutuba_url)
-            except Exception as e:
-                print(f"日付タブクリックエラー: {str(e)}")
+        # レースURLが一定数を超えたら制限（フォールバック対策）
+        if len(race_urls) > 50:
+            print(f"警告: URL数が多すぎます({len(race_urls)}件)。最初の36件に制限します。")
+            race_urls = race_urls[:36]  # 3場開催で12レースずつの最大値
         
         # デバッグ出力
         print(f"{date_str}のレースURL取得: {len(race_urls)}件")
         for i, url in enumerate(race_urls[:3], 1):  # 最初の3件だけ表示
             print(f"URL {i}: {url}")
-        
-        # それでも見つからない場合は、直接アクセスを試みるフォールバック
-        if not race_urls:
-            print(f"警告: {date_str}のレースURLが取得できませんでした。")
         
         return race_urls
     
@@ -628,6 +595,7 @@ def get_jra_race_info_for_dates(dates_list):
     Playwrightを使用してブラウザを操作し、各日付のレースページにアクセスしてデータをスクレイピングします。
     """
     all_entries = []
+    entries_by_date = {}
     
     try:
         # Playwrightの設定
@@ -641,6 +609,7 @@ def get_jra_race_info_for_dates(dates_list):
             page = context.new_page()
             
             # 各日付のレース情報を取得
+            print(f"\n処理対象日: {', '.join(dates_list)}")
             for date_str in dates_list:
                 try:
                     print(f"\n{date_str}のレース情報を取得します...")
@@ -651,6 +620,8 @@ def get_jra_race_info_for_dates(dates_list):
                     
                     if race_urls:
                         success_count = 0
+                        date_entries = []  # この日付用のエントリーリスト
+                        
                         # 各レースの出馬表を取得
                         for idx, race_url in enumerate(race_urls, 1):
                             try:
@@ -658,6 +629,9 @@ def get_jra_race_info_for_dates(dates_list):
                                 race_entry = scrape_race_entry(page, race_url)
                                 
                                 if race_entry and race_entry.get('entries') and len(race_entry['entries']) > 0:
+                                    # この日付のエントリーリストに追加
+                                    date_entries.extend(race_entry['entries'])
+                                    # 全体のエントリーリストにも追加
                                     all_entries.extend(race_entry['entries'])
                                     success_count += 1
                                     print(f"取得成功: {race_entry.get('venue', '不明')} {race_entry.get('race_number', '?')}R")
@@ -672,6 +646,12 @@ def get_jra_race_info_for_dates(dates_list):
                                 traceback.print_exc()
                                 continue
                         
+                        # 日付ごとにエントリーを記録
+                        if date_entries:
+                            date_key = date_str.replace('-', '')
+                            entries_by_date[date_key] = date_entries
+                            print(f"{date_str}の出走馬データ: {len(date_entries)}件")
+                        
                         print(f"{date_str}の処理完了: {success_count}/{len(race_urls)}件のレースを取得")
                     else:
                         print(f"{date_str}のレースが見つかりませんでした")
@@ -683,6 +663,16 @@ def get_jra_race_info_for_dates(dates_list):
             
             # ブラウザの終了
             browser.close()
+        
+        # 日付ごとのエントリー情報を保存
+        for date_key, entries in entries_by_date.items():
+            output_dir = 'data/race_entries'
+            os.makedirs(output_dir, exist_ok=True)
+            output_path = os.path.join(output_dir, f'jra_race_entries_{date_key}.csv')
+            
+            if entries and len(entries) > 0:
+                save_to_csv(entries, output_path)
+                print(f"{date_key}: {len(entries)}件のエントリーを保存しました: {output_path}")
         
     except Exception as e:
         print(f"全体の処理中にエラー発生: {str(e)}")
@@ -712,20 +702,8 @@ if __name__ == '__main__':
             print(f"指定された日付 {target_date} の出走表情報を取得します...")
             
             # 指定された日付のレース情報を取得
-            entries = get_jra_race_info_for_dates([target_date])
+            get_jra_race_info_for_dates([target_date])
             
-            # CSVファイル名を設定
-            date_str = target_date.replace('-', '')
-            output_dir = 'data/race_entries'
-            os.makedirs(output_dir, exist_ok=True)
-            output_path = os.path.join(output_dir, f'jra_race_entries_{date_str}.csv')
-            
-            # データをCSVに保存
-            if entries and len(entries) > 0:
-                save_to_csv(entries, output_path)
-                print(f"{len(entries)}件のエントリーを保存しました: {output_path}")
-            else:
-                print(f"{target_date}にレースデータが見つかりませんでした")
         except ValueError:
             # 日付形式が不正な場合のエラー処理
             print("日付の形式が不正です。YYYY-MM-DD形式で指定してください")
@@ -740,27 +718,9 @@ if __name__ == '__main__':
         print(f"処理対象日: {', '.join(dates)}")
         
         # 3日分のレース情報を取得
-        all_entries = get_jra_race_info_for_dates(dates)
+        get_jra_race_info_for_dates(dates)
         
-        # 日付ごとにエントリーを分類
-        entries_by_date = {}
-        for entry in all_entries:
-            race_date = entry.get('race_date')
-            if race_date:
-                date_key = race_date.replace('-', '')
-                if date_key not in entries_by_date:
-                    entries_by_date[date_key] = []
-                entries_by_date[date_key].append(entry)
-        
-        # 各日付のCSVに保存
-        output_dir = 'data/race_entries'
-        os.makedirs(output_dir, exist_ok=True)
-        
-        for date_key, entries in entries_by_date.items():
-            output_path = os.path.join(output_dir, f'jra_race_entries_{date_key}.csv')
-            if entries and len(entries) > 0:
-                save_to_csv(entries, output_path)
-                print(f"{date_key}: {len(entries)}件のエントリーを保存しました: {output_path}")
-            
-        if not entries_by_date:
-            print("今後3日間の開催レース情報が見つかりませんでした") 
+        # 処理完了メッセージ
+        print("\nすべての処理が完了しました")
+        print("CSVファイルは data/race_entries/ ディレクトリに保存されています")
+        print("ファイル名形式: jra_race_entries_YYYYMMDD.csv") 
