@@ -206,8 +206,13 @@ def scrape_race_entry(page, race_url: str) -> Dict[str, any]:
     """
     try:
         # レースページにアクセス
-        page.goto(race_url, wait_until='domcontentloaded', timeout=30000)
-        page.wait_for_timeout(3000)  # ページの読み込み完了を待機
+        print(f"レースページアクセス中: {race_url}")
+        try:
+            page.goto(race_url, wait_until='domcontentloaded', timeout=60000)
+        except TimeoutError:
+            print("ページの完全な読み込みはタイムアウトしましたが、処理を継続します")
+            
+        page.wait_for_timeout(5000)  # ページの読み込み完了を待機
         
         # ページのHTMLを取得してBeautifulSoupで解析
         html_content = page.content()
@@ -217,16 +222,43 @@ def scrape_race_entry(page, race_url: str) -> Dict[str, any]:
         race_id = generate_race_id(race_url)
         if not race_id:
             print(f"レースIDの生成に失敗しました: {race_url}")
+            # スクリーンショットを保存
+            screenshot_file = f"error_race_id_{datetime.now().strftime('%Y%m%d%H%M%S')}.png"
+            page.screenshot(path=screenshot_file)
+            print(f"スクリーンショットを{screenshot_file}に保存しました")
             return None
         
         # レース名と番号を取得
-        race_num_text = soup.select_one('.RaceNum').text.strip() if soup.select_one('.RaceNum') else ""
-        race_name = soup.select_one('.RaceName').text.strip() if soup.select_one('.RaceName') else ""
+        race_num_text = soup.select_one('.RaceNum')
+        if race_num_text:
+            race_num_text = race_num_text.text.strip() 
+        else:
+            print("レース番号が見つかりません。クラス名が変更された可能性があります。")
+            race_num_text = ""
+            
+        race_name_elem = soup.select_one('.RaceName')
+        if race_name_elem:
+            race_name = race_name_elem.text.strip()
+        else:
+            print("レース名が見つかりません。クラス名が変更された可能性があります。")
+            race_name = ""
+            
         race_number = int(race_num_text.replace('R', '')) if race_num_text else 0
         
         # 開催場所と日付を取得
-        race_data = soup.select_one('.RaceData').text.strip() if soup.select_one('.RaceData') else ""
-        race_datetime_text = soup.select_one('.RaceData01').text.strip() if soup.select_one('.RaceData01') else ""
+        race_data_elem = soup.select_one('.RaceData')
+        if race_data_elem:
+            race_data = race_data_elem.text.strip()
+        else:
+            print("レースデータが見つかりません。クラス名が変更された可能性があります。")
+            race_data = ""
+            
+        race_datetime_elem = soup.select_one('.RaceData01')
+        if race_datetime_elem:
+            race_datetime_text = race_datetime_elem.text.strip()
+        else:
+            print("レース日時が見つかりません。クラス名が変更された可能性があります。")
+            race_datetime_text = ""
         
         # 開催場所の抽出（例: "東京"）
         venue_pattern = r'(\d+回)([^\d]+)(\d+日)'
@@ -249,100 +281,114 @@ def scrape_race_entry(page, race_url: str) -> Dict[str, any]:
         horse_entries = []
         horse_rows = soup.select('table.Shutuba_Table tr.HorseList')
         
+        if not horse_rows:
+            print(f"馬情報が見つかりません: {race_url}")
+            # スクリーンショットを保存
+            screenshot_file = f"no_horses_{datetime.now().strftime('%Y%m%d%H%M%S')}.png"
+            page.screenshot(path=screenshot_file)
+            print(f"スクリーンショットを{screenshot_file}に保存しました")
+        
+        print(f"出走馬数: {len(horse_rows)}")
+        
         for row in horse_rows:
-            # 馬番
-            horse_number_elem = row.select_one('.Waku span')
-            horse_number = int(horse_number_elem.text) if horse_number_elem else 0
-            
-            # 枠番
-            waku_element = row.select_one('.Waku')
-            waku_class = waku_element.get('class', []) if waku_element else []
-            waku_num = 0
-            
-            # 枠番のクラス名から番号を抽出（例: "Waku1" → 1）
-            for class_name in waku_class:
-                if class_name.startswith('Waku') and len(class_name) > 4:
+            try:
+                # 馬番
+                horse_number_elem = row.select_one('.Waku span')
+                horse_number = int(horse_number_elem.text) if horse_number_elem else 0
+                
+                # 枠番
+                waku_element = row.select_one('.Waku')
+                waku_class = waku_element.get('class', []) if waku_element else []
+                waku_num = 0
+                
+                # 枠番のクラス名から番号を抽出（例: "Waku1" → 1）
+                for class_name in waku_class:
+                    if class_name.startswith('Waku') and len(class_name) > 4:
+                        try:
+                            waku_num = int(class_name[4:])
+                        except ValueError:
+                            pass
+                
+                # 馬名
+                horse_name_elem = row.select_one('.HorseName a')
+                horse_name = horse_name_elem.text.strip() if horse_name_elem else ""
+                horse_id = generate_horse_id(horse_name) if horse_name else 0
+                
+                # 馬齢と性別
+                horse_info_elem = row.select_one('.Barei')
+                horse_info = horse_info_elem.text.strip() if horse_info_elem else ""
+                
+                # 性別と年齢を抽出（例: "牡3" → 性別="牡", 年齢=3）
+                gender = ""
+                age = 0
+                if horse_info:
+                    gender = horse_info[0]  # 最初の文字（牡/牝/セ）
                     try:
-                        waku_num = int(class_name[4:])
+                        age = int(horse_info[1:])
                     except ValueError:
                         pass
-            
-            # 馬名
-            horse_name_elem = row.select_one('.HorseName a')
-            horse_name = horse_name_elem.text.strip() if horse_name_elem else ""
-            horse_id = generate_horse_id(horse_name) if horse_name else 0
-            
-            # 馬齢と性別
-            horse_info_elem = row.select_one('.Barei')
-            horse_info = horse_info_elem.text.strip() if horse_info_elem else ""
-            
-            # 性別と年齢を抽出（例: "牡3" → 性別="牡", 年齢=3）
-            gender = ""
-            age = 0
-            if horse_info:
-                gender = horse_info[0]  # 最初の文字（牡/牝/セ）
-                try:
-                    age = int(horse_info[1:])
-                except ValueError:
-                    pass
-            
-            # 斤量
-            weight_elem = row.select_one('.Jockey .JockeyWeight')
-            weight = weight_elem.text.strip() if weight_elem else ""
-            
-            # 騎手
-            jockey_elem = row.select_one('.Jockey a')
-            jockey_name = jockey_elem.text.strip() if jockey_elem else ""
-            jockey_id = generate_jockey_id(jockey_name) if jockey_name else 0
-            
-            # 馬体重
-            horse_weight_elem = row.select_one('.Weight')
-            horse_weight_text = horse_weight_elem.text.strip() if horse_weight_elem else ""
-            
-            # 馬体重と増減を抽出（例: "466(+4)" → 体重=466, 増減=+4）
-            horse_weight = 0
-            weight_diff = 0
-            
-            if horse_weight_text:
-                weight_match = re.search(r'(\d+)\(([+-]?\d+)\)', horse_weight_text)
-                if weight_match:
-                    horse_weight = int(weight_match.group(1))
-                    weight_diff = int(weight_match.group(2))
-                else:
-                    try:
-                        horse_weight = int(horse_weight_text)
-                    except ValueError:
-                        pass
-            
-            # エントリーID生成
-            entry_id = generate_entry_id(race_id, horse_number)
-            
-            # 馬の詳細情報を辞書に格納
-            entry = {
-                'entry_id': entry_id,
-                'race_id': race_id,
-                'race_date': race_date,
-                'venue': venue,
-                'venue_code': venue_code,
-                'race_number': race_number,
-                'race_name': race_name,
-                'horse_number': horse_number,
-                'frame_number': waku_num,
-                'horse_id': horse_id,
-                'horse_name': horse_name,
-                'gender': gender,
-                'age': age,
-                'weight': weight,
-                'jockey_id': jockey_id,
-                'jockey_name': jockey_name,
-                'horse_weight': horse_weight,
-                'weight_diff': weight_diff,
-                'odds': 0.0,  # オッズ情報がある場合は抽出
-                'popularity': 0,  # 人気順があれば抽出
-                'race_url': race_url
-            }
-            
-            horse_entries.append(entry)
+                
+                # 斤量
+                weight_elem = row.select_one('.Jockey .JockeyWeight')
+                weight = weight_elem.text.strip() if weight_elem else ""
+                
+                # 騎手
+                jockey_elem = row.select_one('.Jockey a')
+                jockey_name = jockey_elem.text.strip() if jockey_elem else ""
+                jockey_id = generate_jockey_id(jockey_name) if jockey_name else 0
+                
+                # 馬体重
+                horse_weight_elem = row.select_one('.Weight')
+                horse_weight_text = horse_weight_elem.text.strip() if horse_weight_elem else ""
+                
+                # 馬体重と増減を抽出（例: "466(+4)" → 体重=466, 増減=+4）
+                horse_weight = 0
+                weight_diff = 0
+                
+                if horse_weight_text:
+                    weight_match = re.search(r'(\d+)\(([+-]?\d+)\)', horse_weight_text)
+                    if weight_match:
+                        horse_weight = int(weight_match.group(1))
+                        weight_diff = int(weight_match.group(2))
+                    else:
+                        try:
+                            horse_weight = int(horse_weight_text)
+                        except ValueError:
+                            pass
+                
+                # エントリーID生成
+                entry_id = generate_entry_id(race_id, horse_number)
+                
+                # 馬の詳細情報を辞書に格納
+                entry = {
+                    'entry_id': entry_id,
+                    'race_id': race_id,
+                    'race_date': race_date,
+                    'venue': venue,
+                    'venue_code': venue_code,
+                    'race_number': race_number,
+                    'race_name': race_name,
+                    'horse_number': horse_number,
+                    'frame_number': waku_num,
+                    'horse_id': horse_id,
+                    'horse_name': horse_name,
+                    'gender': gender,
+                    'age': age,
+                    'weight': weight,
+                    'jockey_id': jockey_id,
+                    'jockey_name': jockey_name,
+                    'horse_weight': horse_weight,
+                    'weight_diff': weight_diff,
+                    'odds': 0.0,  # オッズ情報がある場合は抽出
+                    'popularity': 0,  # 人気順があれば抽出
+                    'race_url': race_url
+                }
+                
+                horse_entries.append(entry)
+                
+            except Exception as horse_error:
+                print(f"馬データ処理中にエラー: {str(horse_error)}")
+                continue
         
         # 全体のレース情報と馬リストをまとめる
         race_entry = {
@@ -443,55 +489,91 @@ def get_race_urls_for_date(page, date_str: str) -> List[str]:
         date_obj = datetime.strptime(date_str, '%Y-%m-%d')
         date_param = date_obj.strftime('%Y%m%d')
         
+        # タイムアウトを設定
+        page.set_default_timeout(60000)  # 60秒
+        
+        # まずトップページにアクセス
+        print("トップページにアクセスしています...")
+        page.goto("https://race.netkeiba.com/", wait_until='domcontentloaded')
+        page.wait_for_timeout(3000)
+        
         # カレンダーページにアクセス
         calendar_url = f"https://race.netkeiba.com/top/race_list.html?kaisai_date={date_param}"
         print(f"カレンダーページアクセス中: {calendar_url}")
-        page.goto(calendar_url, wait_until='domcontentloaded', timeout=30000)
-        page.wait_for_timeout(5000)  # 待機時間を増やす
         
-        # ページのHTMLを取得してBeautifulSoupで解析
-        html_content = page.content()
-        soup = BeautifulSoup(html_content, 'html.parser')
+        try:
+            page.goto(calendar_url, wait_until='domcontentloaded', timeout=60000)
+        except TimeoutError:
+            print("ページの完全な読み込みはタイムアウトしましたが、処理を継続します")
         
-        # レースリンクを取得
-        race_links = []
+        page.wait_for_timeout(5000)
         
-        # 直接aタグから出馬表リンクを検索
-        all_links = soup.select('a[href*="/race/shutuba.html"]')
-        for link in all_links:
-            if 'href' in link.attrs:
-                relative_link = link['href']
-                if 'shutuba.html' in relative_link:
-                    if relative_link.startswith('/'):
-                        absolute_link = f"https://race.netkeiba.com{relative_link}"
-                    else:
-                        absolute_link = f"https://race.netkeiba.com/{relative_link}"
-                    race_links.append(absolute_link)
+        # JavaScriptを実行してページの準備ができているか確認
+        is_ready = page.evaluate('''() => {
+            return document.querySelector('.RaceList_DateList') !== null;
+        }''')
         
-        # JavaScriptを使用してリンクを取得（上記方法で見つからない場合）
-        if not race_links:
-            print("JavaScriptを使用してリンクを取得します...")
-            js_links = page.evaluate('''
-                () => {
-                    const links = Array.from(document.querySelectorAll('a')).filter(a => 
-                        a.href && a.href.includes('/race/shutuba.html'));
-                    return links.map(a => a.href);
-                }
-            ''')
-            race_links = js_links
+        if not is_ready:
+            print("ページの準備ができていません。さらに待機します...")
+            page.wait_for_timeout(5000)
+        
+        # レースリンクを取得する方法1: JavaScriptで直接取得
+        print("JavaScriptを使用してリンクを取得します...")
+        js_links = page.evaluate('''
+            () => {
+                const links = Array.from(document.querySelectorAll('a')).filter(a => 
+                    a.href && a.href.includes('/race/shutuba.html'));
+                return links.map(a => a.href);
+            }
+        ''')
+        
+        race_links = js_links
+        
+        # レースリンクが見つからない場合は、HTMLから直接検索
+        if not race_links or len(race_links) == 0:
+            print("JavaScriptでリンクが見つかりませんでした。HTMLから直接検索します...")
+            
+            # ページのHTMLを取得してBeautifulSoupで解析
+            html_content = page.content()
+            soup = BeautifulSoup(html_content, 'html.parser')
+            
+            # すべてのリンクを検索
+            all_links = soup.select('a[href*="shutuba.html"]')
+            for link in all_links:
+                if 'href' in link.attrs:
+                    relative_link = link['href']
+                    if 'shutuba.html' in relative_link:
+                        # 絶対URLに変換
+                        if relative_link.startswith('/'):
+                            absolute_link = f"https://race.netkeiba.com{relative_link}"
+                        elif not relative_link.startswith('http'):
+                            absolute_link = f"https://race.netkeiba.com/{relative_link}"
+                        else:
+                            absolute_link = relative_link
+                        
+                        race_links.append(absolute_link)
+        
+        # 重複を削除
+        race_links = list(set(race_links))
         
         # デバッグ出力
         print(f"{date_str}のレースURL取得: {len(race_links)}件")
         if len(race_links) > 0:
             print(f"最初のURL: {race_links[0]}")
         else:
-            print("レースURLが見つかりませんでした。HTMLのデバッグが必要です。")
+            print("レースURLが見つかりませんでした。開催レースがないか、サイト構造が変更された可能性があります。")
             # ページ内容をデバッグのためにファイルに保存
             debug_file = f"debug_page_{date_param}.html"
             try:
+                html_content = page.content()
                 with open(debug_file, "w", encoding="utf-8") as f:
                     f.write(html_content)
                 print(f"デバッグ用にHTMLを{debug_file}に保存しました")
+                
+                # スクリーンショットも保存
+                screenshot_file = f"screenshot_{date_param}.png"
+                page.screenshot(path=screenshot_file)
+                print(f"スクリーンショットを{screenshot_file}に保存しました")
             except Exception as e:
                 print(f"デバッグファイル保存エラー: {str(e)}")
             
@@ -502,6 +584,15 @@ def get_race_urls_for_date(page, date_str: str) -> List[str]:
         error_trace = traceback.format_exc()
         print(f"レースURL取得エラー: {str(e)}")
         print(error_trace)
+        
+        # エラー時もスクリーンショットを保存
+        try:
+            screenshot_file = f"error_screenshot_{datetime.now().strftime('%Y%m%d%H%M%S')}.png"
+            page.screenshot(path=screenshot_file)
+            print(f"エラー時のスクリーンショットを{screenshot_file}に保存しました")
+        except Exception as screenshot_error:
+            print(f"スクリーンショット保存エラー: {str(screenshot_error)}")
+            
         return []
 
 def get_jra_race_info_for_dates(dates_list):
@@ -522,6 +613,7 @@ def get_jra_race_info_for_dates(dates_list):
             # ブラウザの起動（ヘッドレスモード）
             browser = playwright.chromium.launch(headless=True)
             context = browser.new_context(
+                viewport={'width': 1920, 'height': 1080},
                 user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.127 Safari/537.36'
             )
             page = context.new_page()
@@ -556,6 +648,15 @@ def get_jra_race_info_for_dates(dates_list):
                             except Exception as e:
                                 print(f"レース処理中にエラー: {str(e)}")
                                 traceback.print_exc()
+                                
+                                # エラー時にスクリーンショットを保存
+                                try:
+                                    screenshot_file = f"error_race_{datetime.now().strftime('%Y%m%d%H%M%S')}.png"
+                                    page.screenshot(path=screenshot_file)
+                                    print(f"エラー時のスクリーンショットを{screenshot_file}に保存しました")
+                                except:
+                                    pass
+                                
                                 continue
                         
                         print(f"{date_str}の処理完了: {success_count}/{len(race_urls)}件のレースを取得")
