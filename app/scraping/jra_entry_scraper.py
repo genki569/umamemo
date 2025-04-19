@@ -492,207 +492,129 @@ def get_race_urls_for_date(page, date_str: str) -> List[str]:
         # タイムアウトを設定
         page.set_default_timeout(60000)  # 60秒
         
-        # まずトップページにアクセス
-        print("トップページにアクセスしています...")
-        page.goto("https://race.netkeiba.com/", wait_until='domcontentloaded')
-        page.wait_for_timeout(3000)
+        print(f"日付: {date_str}, パラメータ: {date_param}")
         
         # カレンダーページにアクセス
         calendar_url = f"https://race.netkeiba.com/top/race_list.html?kaisai_date={date_param}"
         print(f"カレンダーページアクセス中: {calendar_url}")
         
+        # ページにアクセス
         try:
             page.goto(calendar_url, wait_until='domcontentloaded', timeout=60000)
-        except TimeoutError:
-            print("ページの完全な読み込みはタイムアウトしましたが、処理を継続します")
+            page.wait_for_timeout(5000)  # ページの読み込み完了を待機
+        except Exception as e:
+            print(f"ページアクセスエラー: {str(e)}")
         
-        page.wait_for_timeout(5000)
+        # レースリンクを取得（すべてのリンクから探す）
+        race_urls = []
         
-        # スクリーンショットを保存してページの状態を確認
-        screenshot_file = f"calendar_page_{date_param}.png"
-        page.screenshot(path=screenshot_file)
-        print(f"カレンダーページのスクリーンショットを{screenshot_file}に保存しました")
+        # すべてのリンクからraceIdを含むものを探す
+        all_links = page.query_selector_all('a[href*="race_id="]')
+        print(f"race_id=を含むリンク数: {len(all_links)}")
         
-        # JavaScriptを使用してレースIDを直接取得する
-        # このスクリプトは画像で確認したレース一覧の構造に基づいている
-        print("JavaScriptを使用してレースIDを取得します...")
-        race_ids = page.evaluate('''
-            () => {
-                // レースIDを格納する配列
-                const raceIds = [];
-                
-                // カレンダーページの各レースエリアを取得
-                const raceElements = document.querySelectorAll('[class*="R"]');
-                
-                // 各レース要素からレースIDを取得
-                for (const elem of raceElements) {
-                    // レース番号(1R, 2R...)を持つ要素
-                    if (elem.textContent && /\\d+R/.test(elem.textContent)) {
-                        // この要素内のレースリンクを探す
-                        const links = elem.querySelectorAll('a');
-                        for (const link of links) {
-                            const href = link.getAttribute('href');
-                            if (href && href.includes('race_id=')) {
-                                // URLからレースIDを抽出
-                                const match = href.match(/race_id=(\\d+)/);
-                                if (match && match[1]) {
-                                    raceIds.push(match[1]);
-                                }
-                            }
-                        }
-                    }
-                }
-                
-                return raceIds;
-            }
-        ''')
+        for link in all_links:
+            href = link.get_attribute('href')
+            if href and 'race_id=' in href:
+                # shutuba.htmlリンクを優先
+                if 'shutuba.html' in href:
+                    match = re.search(r'race_id=(\d+)', href)
+                    if match:
+                        race_id = match.group(1)
+                        # 出馬表URLを直接使用
+                        shutuba_url = f"https://race.netkeiba.com/race/shutuba.html?race_id={race_id}"
+                        if shutuba_url not in race_urls:
+                            race_urls.append(shutuba_url)
+                # result.htmlリンクからshutuba.htmlを作成
+                elif 'result.html' in href:
+                    match = re.search(r'race_id=(\d+)', href)
+                    if match:
+                        race_id = match.group(1)
+                        # 結果ページから出馬表URLを生成
+                        shutuba_url = f"https://race.netkeiba.com/race/shutuba.html?race_id={race_id}"
+                        if shutuba_url not in race_urls:
+                            race_urls.append(shutuba_url)
         
-        print(f"JavaScriptで取得したレースID数: {len(race_ids)}")
-        
-        # レースIDがない場合は別の方法を試す
-        if not race_ids:
-            print("レースID取得に失敗しました。日付タブを確認して再試行します...")
+        # レースURLがない場合は別の方法を試す
+        if not race_urls:
+            print("URLが取得できませんでした。HTMLからレースIDを直接探します...")
+            html_content = page.content()
+            # デバッグ用にHTMLを保存
+            with open(f"debug_html_{date_param}.html", "w", encoding="utf-8") as f:
+                f.write(html_content)
             
-            # 日付タブをクリックして再読み込み
+            # ページ内のすべてのレース番号（1R, 2R, ...）を含む要素を探す
+            race_ids = []
+            
+            # 画像のような開催場所ごとのグループを探す
+            venue_elements = page.query_selector_all('.RaceList_Data')
+            if venue_elements:
+                print(f"開催場所のグループ数: {len(venue_elements)}")
+                for venue_elem in venue_elements:
+                    venue_name_elem = venue_elem.query_selector('.RaceList_DataTitle')
+                    venue_name = venue_name_elem.inner_text() if venue_name_elem else "不明"
+                    print(f"開催場所: {venue_name}")
+                    
+                    # この開催場所内のレースを探す
+                    race_elems = venue_elem.query_selector_all('[class*="R"]')
+                    for race_elem in race_elems:
+                        race_text = race_elem.inner_text()
+                        if re.search(r'\d+R', race_text):
+                            # レース番号を含む要素を発見
+                            links = race_elem.query_selector_all('a')
+                            for link in links:
+                                href = link.get_attribute('href')
+                                if href and 'race_id=' in href:
+                                    match = re.search(r'race_id=(\d+)', href)
+                                    if match:
+                                        race_id = match.group(1)
+                                        if race_id not in race_ids:
+                                            race_ids.append(race_id)
+            
+            # レースIDから出馬表URLを生成
+            for race_id in race_ids:
+                shutuba_url = f"https://race.netkeiba.com/race/shutuba.html?race_id={race_id}"
+                if shutuba_url not in race_urls:
+                    race_urls.append(shutuba_url)
+        
+        # さらにレースURLがない場合、日付タブをクリックして再試行
+        if not race_urls:
+            print("日付タブをクリックして再試行します...")
             try:
                 date_tab = page.query_selector(f'a[href*="kaisai_date={date_param}"]')
                 if date_tab:
                     date_tab.click()
                     page.wait_for_timeout(5000)
                     
-                    # 再度スクリーンショットを保存
-                    page.screenshot(path=f"calendar_page_after_click_{date_param}.png")
-                    
-                    # もう一度JavaScriptでレースIDを取得
-                    race_ids = page.evaluate('''
-                        () => {
-                            const raceIds = [];
-                            // 画像に見える1R, 2R...などのテキストを含む要素を探す
-                            const rElements = Array.from(document.querySelectorAll('*')).filter(el => 
-                                el.textContent && /\\d+R/.test(el.textContent.trim()));
-                            
-                            for (const elem of rElements) {
-                                // 親要素または自身にあるリンクを取得
-                                const parent = elem.parentElement || elem;
-                                const links = parent.querySelectorAll('a');
-                                
-                                for (const link of links) {
-                                    const href = link.getAttribute('href');
-                                    if (href && href.includes('race_id=')) {
-                                        const match = href.match(/race_id=(\\d+)/);
-                                        if (match && match[1]) {
-                                            raceIds.push(match[1]);
-                                        }
-                                    }
-                                }
-                            }
-                            return raceIds;
-                        }
-                    ''')
-                    print(f"再試行後のレースID数: {len(race_ids)}")
-            except Exception as click_error:
-                print(f"日付タブクリックエラー: {str(click_error)}")
-        
-        # HTMLからもレースIDを取得してみる
-        if not race_ids:
-            print("HTMLからレースIDを探します...")
-            html_content = page.content()
-            soup = BeautifulSoup(html_content, 'html.parser')
-            
-            # すべてのリンクからレースIDを含むものを探す
-            all_links = soup.select('a[href*="race_id="]')
-            for link in all_links:
-                href = link.get('href')
-                if href:
-                    match = re.search(r'race_id=(\d+)', href)
-                    if match:
-                        race_id = match.group(1)
-                        if race_id not in race_ids:
-                            race_ids.append(race_id)
-            
-            print(f"HTMLから取得したレースID数: {len(race_ids)}")
-        
-        # レースIDからURLを生成
-        race_links = []
-        for race_id in race_ids:
-            # 出馬表URL
-            shutuba_url = f"https://race.netkeiba.com/race/shutuba.html?race_id={race_id}"
-            race_links.append(shutuba_url)
-        
-        # 重複を削除
-        race_links = list(set(race_links))
+                    # 再度URLを取得する
+                    all_links = page.query_selector_all('a[href*="race_id="]')
+                    for link in all_links:
+                        href = link.get_attribute('href')
+                        if href and 'race_id=' in href:
+                            match = re.search(r'race_id=(\d+)', href)
+                            if match:
+                                race_id = match.group(1)
+                                shutuba_url = f"https://race.netkeiba.com/race/shutuba.html?race_id={race_id}"
+                                if shutuba_url not in race_urls:
+                                    race_urls.append(shutuba_url)
+            except Exception as e:
+                print(f"日付タブクリックエラー: {str(e)}")
         
         # デバッグ出力
-        print(f"{date_str}のレースURL取得: {len(race_links)}件")
-        if len(race_links) > 0:
-            print(f"最初のURL: {race_links[0]}")
-        else:
-            print("レースURLが見つかりませんでした。結果ページからURLを取得します...")
-            
-            # 結果ページからレースIDを取得する最後の手段
-            try:
-                # まず結果ページにアクセス
-                result_url = f"https://race.netkeiba.com/top/race_list_result.html?kaisai_date={date_param}"
-                page.goto(result_url, wait_until='domcontentloaded', timeout=60000)
-                page.wait_for_timeout(5000)
-                
-                # スクリーンショットを保存
-                page.screenshot(path=f"result_page_{date_param}.png")
-                
-                # 結果ページからレースIDを取得
-                result_race_ids = page.evaluate('''
-                    () => {
-                        const raceIds = [];
-                        const links = document.querySelectorAll('a[href*="race_id="]');
-                        for (const link of links) {
-                            const href = link.getAttribute('href');
-                            const match = href.match(/race_id=(\\d+)/);
-                            if (match && match[1]) {
-                                raceIds.push(match[1]);
-                            }
-                        }
-                        return raceIds;
-                    }
-                ''')
-                
-                # 結果URLから出馬表URLを生成
-                for race_id in result_race_ids:
-                    shutuba_url = f"https://race.netkeiba.com/race/shutuba.html?race_id={race_id}"
-                    if shutuba_url not in race_links:
-                        race_links.append(shutuba_url)
-                
-                print(f"結果ページから取得したURL数: {len(race_links)}")
-            except Exception as result_error:
-                print(f"結果ページからの取得エラー: {str(result_error)}")
-            
-            # それでも見つからない場合はデバッグ情報を保存
-            if not race_links:
-                # ページ内容をデバッグのためにファイルに保存
-                debug_file = f"debug_page_{date_param}.html"
-                try:
-                    html_content = page.content()
-                    with open(debug_file, "w", encoding="utf-8") as f:
-                        f.write(html_content)
-                    print(f"デバッグ用にHTMLを{debug_file}に保存しました")
-                except Exception as e:
-                    print(f"デバッグファイル保存エラー: {str(e)}")
-            
-        return race_links
+        print(f"{date_str}のレースURL取得: {len(race_urls)}件")
+        for i, url in enumerate(race_urls[:3], 1):  # 最初の3件だけ表示
+            print(f"URL {i}: {url}")
+        
+        # それでも見つからない場合は、直接アクセスを試みるフォールバック
+        if not race_urls:
+            print(f"警告: {date_str}のレースURLが取得できませんでした。")
+        
+        return race_urls
     
     except Exception as e:
         # エラー発生時の処理
         error_trace = traceback.format_exc()
         print(f"レースURL取得エラー: {str(e)}")
         print(error_trace)
-        
-        # エラー時もスクリーンショットを保存
-        try:
-            screenshot_file = f"error_screenshot_{datetime.now().strftime('%Y%m%d%H%M%S')}.png"
-            page.screenshot(path=screenshot_file)
-            print(f"エラー時のスクリーンショットを{screenshot_file}に保存しました")
-        except Exception as screenshot_error:
-            print(f"スクリーンショット保存エラー: {str(screenshot_error)}")
-            
         return []
 
 def get_jra_race_info_for_dates(dates_list):
@@ -748,15 +670,6 @@ def get_jra_race_info_for_dates(dates_list):
                             except Exception as e:
                                 print(f"レース処理中にエラー: {str(e)}")
                                 traceback.print_exc()
-                                
-                                # エラー時にスクリーンショットを保存
-                                try:
-                                    screenshot_file = f"error_race_{datetime.now().strftime('%Y%m%d%H%M%S')}.png"
-                                    page.screenshot(path=screenshot_file)
-                                    print(f"エラー時のスクリーンショットを{screenshot_file}に保存しました")
-                                except:
-                                    pass
-                                
                                 continue
                         
                         print(f"{date_str}の処理完了: {success_count}/{len(race_urls)}件のレースを取得")
@@ -824,30 +737,30 @@ if __name__ == '__main__':
         # 今日から3日間の日付を取得
         today = datetime.now()
         dates = [(today + timedelta(days=i)).strftime('%Y-%m-%d') for i in range(3)]
+        print(f"処理対象日: {', '.join(dates)}")
         
         # 3日分のレース情報を取得
         all_entries = get_jra_race_info_for_dates(dates)
         
-        # 各日付ごとにCSVに保存
-        if all_entries and len(all_entries) > 0:
-            # 日付ごとにエントリーを分類
-            entries_by_date = {}
-            for entry in all_entries:
-                race_date = entry.get('race_date')
-                if race_date:
-                    date_key = race_date.replace('-', '')
-                    if date_key not in entries_by_date:
-                        entries_by_date[date_key] = []
-                    entries_by_date[date_key].append(entry)
+        # 日付ごとにエントリーを分類
+        entries_by_date = {}
+        for entry in all_entries:
+            race_date = entry.get('race_date')
+            if race_date:
+                date_key = race_date.replace('-', '')
+                if date_key not in entries_by_date:
+                    entries_by_date[date_key] = []
+                entries_by_date[date_key].append(entry)
+        
+        # 各日付のCSVに保存
+        output_dir = 'data/race_entries'
+        os.makedirs(output_dir, exist_ok=True)
+        
+        for date_key, entries in entries_by_date.items():
+            output_path = os.path.join(output_dir, f'jra_race_entries_{date_key}.csv')
+            if entries and len(entries) > 0:
+                save_to_csv(entries, output_path)
+                print(f"{date_key}: {len(entries)}件のエントリーを保存しました: {output_path}")
             
-            # 日付ごとにCSVに保存
-            output_dir = 'data/race_entries'
-            os.makedirs(output_dir, exist_ok=True)
-            
-            for date_key, entries in entries_by_date.items():
-                output_path = os.path.join(output_dir, f'jra_race_entries_{date_key}.csv')
-                if entries and len(entries) > 0:
-                    save_to_csv(entries, output_path)
-                    print(f"{date_key}: {len(entries)}件のエントリーを保存しました: {output_path}")
-        else:
+        if not entries_by_date:
             print("今後3日間の開催レース情報が見つかりませんでした") 
