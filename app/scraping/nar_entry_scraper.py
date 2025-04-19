@@ -118,8 +118,14 @@ def generate_jockey_id(jockey_name: str) -> str:
 def scrape_race_entry(page, race_url: str) -> Dict[str, any]:
     """出走表ページから情報を取得する"""
     try:
-        page.goto(race_url, wait_until='domcontentloaded', timeout=30000)
-        page.wait_for_timeout(3000)
+        # ナビゲーション前に短い待機時間を追加
+        page.wait_for_timeout(2000)
+        
+        # ナビゲーションタイムアウト時間を延長し、遷移が確実に完了するまで待機
+        page.goto(race_url, wait_until='networkidle', timeout=60000)
+        
+        # ナビゲーション後の待機時間を増やす
+        page.wait_for_timeout(5000)
         
         # race_idを取得（URLから）
         race_id = race_url.split('race_id=')[1].split('&')[0]
@@ -357,15 +363,26 @@ def get_race_info_for_next_three_days():
                         print(f"{date_str}のレースURL数: {len(race_urls)}")
                         
                         if race_urls:  # レースURLが存在する場合のみ処理
-                            for race_url in race_urls:
+                            for i, race_url in enumerate(race_urls):
                                 try:
+                                    # 一定間隔ごとに長めの待機を入れて連続リクエストを緩和
+                                    if i > 0 and i % 5 == 0:
+                                        print(f"{i}件処理しました。負荷軽減のため10秒待機します...")
+                                        page.wait_for_timeout(10000)
+                                    
                                     race_entry = scrape_race_entry(page, race_url)
                                     if race_entry and race_entry['entries'] and len(race_entry['entries']) > 0:
                                         save_to_csv(race_entry, filename)
                                         print(f"保存完了: {race_entry['venue_name']} {race_entry['race_number']}R")
+                                    
+                                    # 各リクエスト間に十分な間隔を空ける
+                                    page.wait_for_timeout(3000)
+                                    
                                 except Exception as e:
-                                    print(f"レース情報取得エラー: {str(e)}")
+                                    print(f"レース情報取得中にエラー: {str(e)}")
                                     traceback.print_exc()
+                                    # エラー後も十分な待機時間を設ける
+                                    page.wait_for_timeout(5000)
                             print(f"{date_str}の処理が完了しました")
                         else:
                             print(f"{date_str}のレースはありません")
@@ -415,14 +432,25 @@ def scrape_race_entries(date_str=None):
         print(f"{len(race_urls)}件のレースURLを取得しました")
         
         # 各レースの出走表を取得
-        for race_url in race_urls:
+        for i, race_url in enumerate(race_urls):
             try:
+                # 一定間隔ごとに長めの待機を入れて連続リクエストを緩和
+                if i > 0 and i % 5 == 0:
+                    print(f"{i}件処理しました。負荷軽減のため10秒待機します...")
+                    page.wait_for_timeout(10000)
+                
                 entry_info = scrape_race_entry(page, race_url)
                 if entry_info:
                     race_entries.append(entry_info)
                     print(f"レース情報を取得しました: {entry_info.get('race_name', '不明')}")
+                
+                # 各リクエスト間に十分な間隔を空ける
+                page.wait_for_timeout(3000)
+                
             except Exception as e:
                 print(f"レース情報取得エラー: {str(e)}")
+                # エラー後も十分な待機時間を設ける
+                page.wait_for_timeout(5000)
         
         browser.close()
     
