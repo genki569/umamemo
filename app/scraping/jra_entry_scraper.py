@@ -213,6 +213,12 @@ def scrape_race_entry(page, race_url: str) -> Dict[str, any]:
             
         page.wait_for_timeout(5000)  # ページの読み込み完了を待機
         
+        # HTMLが存在するか簡単に確認
+        page_title = page.title()
+        if "404" in page_title or "エラー" in page_title or "見つかりません" in page_title:
+            print(f"ページが存在しません: {race_url}")
+            return None
+        
         # ページのHTMLを取得してBeautifulSoupで解析
         html_content = page.content()
         soup = BeautifulSoup(html_content, 'html.parser')
@@ -223,58 +229,107 @@ def scrape_race_entry(page, race_url: str) -> Dict[str, any]:
             print(f"レースIDの生成に失敗しました: {race_url}")
             return None
         
-        # レース名と番号を取得
-        race_num_text = soup.select_one('.RaceNum')
-        if race_num_text:
-            race_num_text = race_num_text.text.strip() 
-        else:
+        # レース名と番号を取得（複数の可能性のあるセレクタを試す）
+        race_num_text = ""
+        for selector in ['.RaceNum', '.RaceMainMenu .RaceNum', '.RaceData .RaceNum']:
+            elem = soup.select_one(selector)
+            if elem:
+                race_num_text = elem.text.strip()
+                break
+                
+        if not race_num_text:
             print("レース番号が見つかりません。クラス名が変更された可能性があります。")
             race_num_text = ""
             
-        race_name_elem = soup.select_one('.RaceName')
-        if race_name_elem:
-            race_name = race_name_elem.text.strip()
-        else:
+        race_name = ""
+        for selector in ['.RaceName', '.RaceMainMenu .RaceName', '.RaceData .RaceName']:
+            elem = soup.select_one(selector)
+            if elem:
+                race_name = elem.text.strip()
+                break
+                
+        if not race_name:
             print("レース名が見つかりません。クラス名が変更された可能性があります。")
             race_name = ""
             
         race_number = int(race_num_text.replace('R', '')) if race_num_text else 0
         
-        # 開催場所と日付を取得
-        race_data_elem = soup.select_one('.RaceData')
-        if race_data_elem:
-            race_data = race_data_elem.text.strip()
-        else:
+        # 開催場所と日付を取得（複数の可能性のあるセレクタを試す）
+        race_data = ""
+        for selector in ['.RaceData', '.RaceMainMenu .RaceData', '.RaceSubData']:
+            elem = soup.select_one(selector)
+            if elem:
+                race_data = elem.text.strip()
+                break
+                
+        if not race_data:
             print("レースデータが見つかりません。クラス名が変更された可能性があります。")
             race_data = ""
             
-        race_datetime_elem = soup.select_one('.RaceData01')
-        if race_datetime_elem:
-            race_datetime_text = race_datetime_elem.text.strip()
-        else:
+        race_datetime_text = ""
+        for selector in ['.RaceData01', '.RaceMainMenu .RaceData01', '.RaceSubData']:
+            elem = soup.select_one(selector)
+            if elem:
+                race_datetime_text = elem.text.strip()
+                break
+                
+        if not race_datetime_text:
             print("レース日時が見つかりません。クラス名が変更された可能性があります。")
             race_datetime_text = ""
         
+        # ページソースを保存（デバッグ用）
+        with open(f"debug/race_page_{race_id}.html", "w", encoding="utf-8") as f:
+            f.write(html_content)
+        
         # 開催場所の抽出（例: "東京"）
+        venue = ""
         venue_pattern = r'(\d+回)([^\d]+)(\d+日)'
         venue_match = re.search(venue_pattern, race_data)
-        venue = venue_match.group(2) if venue_match else ""
+        if venue_match:
+            venue = venue_match.group(2)
+        else:
+            # 別のパターンで試す
+            venue_pattern2 = r'([^\d]+)(競馬場|ウインズ)'
+            venue_match2 = re.search(venue_pattern2, race_data)
+            if venue_match2:
+                venue = venue_match2.group(1)
+                
         venue_code = generate_venue_code(venue)
         
         # 日付の抽出（例: "2023年6月3日"）
-        date_pattern = r'(\d+年\d+月\d+日)'
-        date_match = re.search(date_pattern, race_datetime_text)
-        race_date_text = date_match.group(1) if date_match else ""
+        race_date = ""
+        # 複数のパターンで試す
+        date_patterns = [
+            r'(\d+年\d+月\d+日)',
+            r'(\d+/\d+/\d+)',
+            r'(\d+-\d+-\d+)'
+        ]
         
-        # 日付をYYYY-MM-DD形式に変換
-        race_date = None
-        if race_date_text:
-            race_date_text = race_date_text.replace('年', '-').replace('月', '-').replace('日', '')
-            race_date = race_date_text
+        for pattern in date_patterns:
+            date_match = re.search(pattern, race_datetime_text)
+            if date_match:
+                race_date_text = date_match.group(1)
+                # 日付フォーマットを統一
+                if '年' in race_date_text:
+                    race_date = race_date_text.replace('年', '-').replace('月', '-').replace('日', '')
+                elif '/' in race_date_text:
+                    parts = race_date_text.split('/')
+                    if len(parts) == 3:
+                        race_date = f"{parts[0]}-{parts[1]}-{parts[2]}"
+                else:
+                    race_date = race_date_text
+                break
         
-        # 出馬表テーブルから馬情報を抽出
+        # 出馬表テーブルから馬情報を抽出（複数のセレクタを試す）
         horse_entries = []
-        horse_rows = soup.select('table.Shutuba_Table tr.HorseList')
+        horse_rows = []
+        
+        # 複数の可能性のあるセレクタで馬リストを取得
+        for selector in ['table.Shutuba_Table tr.HorseList', 'table.RaceTable01 tr']:
+            rows = soup.select(selector)
+            if rows:
+                horse_rows = rows
+                break
         
         if not horse_rows:
             print(f"馬情報が見つかりません: {race_url}")
@@ -284,31 +339,53 @@ def scrape_race_entry(page, race_url: str) -> Dict[str, any]:
         
         for row in horse_rows:
             try:
-                # 馬番
-                horse_number_elem = row.select_one('.Waku span')
-                horse_number = int(horse_number_elem.text) if horse_number_elem else 0
+                # スタイルによって馬番のセレクタが異なるため複数試す
+                horse_number_elem = None
+                for selector in ['.Waku span', '.Umaban', 'td:first-child']:
+                    elem = row.select_one(selector)
+                    if elem and elem.text.strip().isdigit():
+                        horse_number_elem = elem
+                        break
+                        
+                horse_number = int(horse_number_elem.text.strip()) if horse_number_elem else 0
+                
+                if horse_number == 0:
+                    # おそらくヘッダー行なのでスキップ
+                    continue
                 
                 # 枠番
-                waku_element = row.select_one('.Waku')
-                waku_class = waku_element.get('class', []) if waku_element else []
                 waku_num = 0
+                waku_element = row.select_one('.Waku')
+                if waku_element:
+                    waku_class = waku_element.get('class', [])
+                    # 枠番のクラス名から番号を抽出（例: "Waku1" → 1）
+                    for class_name in waku_class:
+                        if class_name.startswith('Waku') and len(class_name) > 4:
+                            try:
+                                waku_num = int(class_name[4:])
+                            except ValueError:
+                                pass
                 
-                # 枠番のクラス名から番号を抽出（例: "Waku1" → 1）
-                for class_name in waku_class:
-                    if class_name.startswith('Waku') and len(class_name) > 4:
-                        try:
-                            waku_num = int(class_name[4:])
-                        except ValueError:
-                            pass
-                
-                # 馬名
-                horse_name_elem = row.select_one('.HorseName a')
-                horse_name = horse_name_elem.text.strip() if horse_name_elem else ""
+                # 馬名 - 複数のセレクタを試す
+                horse_name = ""
+                for selector in ['.HorseName a', '.HorseInfo a', 'td a[href*="horse"]']:
+                    elem = row.select_one(selector)
+                    if elem:
+                        horse_name = elem.text.strip()
+                        break
+                        
                 horse_id = generate_horse_id(horse_name) if horse_name else 0
                 
-                # 馬齢と性別
-                horse_info_elem = row.select_one('.Barei')
-                horse_info = horse_info_elem.text.strip() if horse_info_elem else ""
+                # 馬齢と性別 - 複数のセレクタを試す
+                horse_info = ""
+                for selector in ['.Barei', '.HorseInfo span', 'td:nth-child(4)']:
+                    elem = row.select_one(selector)
+                    if elem:
+                        info_text = elem.text.strip()
+                        # 性別年齢のパターン（例: 牡3, 牝5, セ6）をチェック
+                        if re.match(r'^[牡牝セ]\d+$', info_text):
+                            horse_info = info_text
+                            break
                 
                 # 性別と年齢を抽出（例: "牡3" → 性別="牡", 年齢=3）
                 gender = ""
@@ -320,18 +397,38 @@ def scrape_race_entry(page, race_url: str) -> Dict[str, any]:
                     except ValueError:
                         pass
                 
-                # 斤量
-                weight_elem = row.select_one('.Jockey .JockeyWeight')
-                weight = weight_elem.text.strip() if weight_elem else ""
+                # 斤量 - 複数のセレクタを試す
+                weight = ""
+                for selector in ['.Jockey .JockeyWeight', '.Jockey', 'td:nth-child(6)']:
+                    elem = row.select_one(selector)
+                    if elem:
+                        text = elem.text.strip()
+                        # 斤量のパターン（例: 54.0, 53.5）を検出
+                        weight_match = re.search(r'\d+\.\d+', text)
+                        if weight_match:
+                            weight = weight_match.group(0)
+                            break
                 
-                # 騎手
-                jockey_elem = row.select_one('.Jockey a')
-                jockey_name = jockey_elem.text.strip() if jockey_elem else ""
+                # 騎手 - 複数のセレクタを試す
+                jockey_name = ""
+                for selector in ['.Jockey a', 'td a[href*="jockey"]']:
+                    elem = row.select_one(selector)
+                    if elem:
+                        jockey_name = elem.text.strip()
+                        break
+                        
                 jockey_id = generate_jockey_id(jockey_name) if jockey_name else 0
                 
-                # 馬体重
-                horse_weight_elem = row.select_one('.Weight')
-                horse_weight_text = horse_weight_elem.text.strip() if horse_weight_elem else ""
+                # 馬体重 - 複数のセレクタを試す
+                horse_weight_text = ""
+                for selector in ['.Weight', 'td:nth-child(9)', 'td.Weight']:
+                    elem = row.select_one(selector)
+                    if elem:
+                        text = elem.text.strip()
+                        # 馬体重のパターン（例: 466(+4), 480(-2)）を検出
+                        if re.search(r'\d+\([+-]?\d+\)', text):
+                            horse_weight_text = text
+                            break
                 
                 # 馬体重と増減を抽出（例: "466(+4)" → 体重=466, 増減=+4）
                 horse_weight = 0
@@ -376,7 +473,9 @@ def scrape_race_entry(page, race_url: str) -> Dict[str, any]:
                     'race_url': race_url
                 }
                 
-                horse_entries.append(entry)
+                # 最低限の情報が含まれているか確認
+                if horse_name and jockey_name:
+                    horse_entries.append(entry)
                 
             except Exception as horse_error:
                 print(f"馬データ処理中にエラー: {str(horse_error)}")
@@ -655,10 +754,8 @@ def get_race_urls_for_date(page, context, date_str: str) -> List[str]:
                 priorities = ["05", "08", "09"]  # 東京、京都、阪神が優先
             elif 7 <= current_month <= 9:  # 夏
                 priorities = ["01", "02", "04", "10"]  # 札幌、函館、新潟、小倉が優先
-            elif 10 <= current_month <= 12:  # 秋
+            else:  # 秋冬（10-2月）
                 priorities = ["05", "08", "06", "09"]  # 東京、京都、中山、阪神が優先
-            else:  # 冬（1-2月）
-                priorities = ["06", "09", "07"]  # 中山、阪神、中京が優先
             
             # 現在の年から2桁の年コードを取得
             year_code = str(date_obj.year)[-2:]
@@ -668,15 +765,19 @@ def get_race_urls_for_date(page, context, date_str: str) -> List[str]:
             for venue_code in priorities:
                 print(f"- {venue_codes[venue_code]}のレースIDを試行中...")
                 
-                # 開催回と開催日を試行
+                # 開催回と開催日を試行（実際のレースID形式に合わせる）
                 for kaisai_num in range(1, 6):  # 開催回
                     for kaisai_day in range(1, 9):  # 開催日
-                        # レースIDの前半部分
-                        race_id_prefix = f"20{year_code}{month_code}{venue_code}{kaisai_num:02d}{kaisai_day:02d}"
+                        # レースIDの前半部分 - 形式: 202+YY+MM+場所コード+開催回02桁+開催日02桁
+                        # 例: 2025年4月の中山06で1回1日目 → 202504060101
+                        race_id_prefix = f"{year_code}{month_code}{venue_code}{kaisai_num:02d}{kaisai_day:02d}"
+                        
+                        # レースID形式を修正: 2025 + 04 + 06 + 01 + 01
+                        base_race_id = f"20{race_id_prefix}"
                         
                         # 各レース番号（1R-12R）を試行
                         for race_num in range(1, 13):
-                            race_id = f"{race_id_prefix}{race_num:02d}"
+                            race_id = f"{base_race_id}{race_num:02d}"
                             shutuba_url = f"https://race.netkeiba.com/race/shutuba.html?race_id={race_id}"
                             
                             # このURLが既に追加済みかチェック
