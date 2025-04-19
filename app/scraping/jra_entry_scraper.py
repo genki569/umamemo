@@ -455,11 +455,12 @@ def save_to_csv(data: List[Dict], csv_path: str, mode: str = 'w') -> bool:
         print(error_trace)
         return False
 
-def get_race_urls_for_date(page, date_str: str) -> List[str]:
+def get_race_urls_for_date(page, context, date_str: str) -> List[str]:
     """
     指定された日付のレースURLリストを取得する関数
     
     @param page: Playwrightのページオブジェクト
+    @param context: Playwrightのコンテキストオブジェクト
     @param date_str: 日付文字列 (YYYY-MM-DD形式)
     @return: レースURLのリスト、エラー時は空リスト
     
@@ -476,99 +477,160 @@ def get_race_urls_for_date(page, date_str: str) -> List[str]:
         
         print(f"日付: {date_str}, パラメータ: {date_param}")
         
+        # まずトップページにアクセス
+        print("トップページにアクセスしています...")
+        page.goto("https://race.netkeiba.com/", wait_until='domcontentloaded')
+        page.wait_for_timeout(3000)
+        
         # カレンダーページにアクセス
         calendar_url = f"https://race.netkeiba.com/top/race_list.html?kaisai_date={date_param}"
-        print(f"カレンダーページアクセス中: {calendar_url}")
+        print(f"カレンダーページにアクセス中: {calendar_url}")
         
-        # ページにアクセス
         try:
             page.goto(calendar_url, wait_until='domcontentloaded', timeout=60000)
-            page.wait_for_timeout(5000)  # ページの読み込み完了を待機
-        except Exception as e:
-            print(f"ページアクセスエラー: {str(e)}")
+        except TimeoutError:
+            print("ページの完全な読み込みはタイムアウトしましたが、処理を継続します")
         
-        # レースURLを格納するリスト
-        race_urls = []
-        
-        # JavaScriptの実行完了を待機
-        page.wait_for_selector('.RaceList_DataList', timeout=10000, state='attached')
+        # ページの読み込み完了を十分待機
+        page.wait_for_timeout(5000)
         
         # 現在のHTMLを取得（デバッグ用）
         html_content = page.content()
         with open(f"debug_html_{date_param}.html", "w", encoding="utf-8") as f:
             f.write(html_content)
         
-        print("各開催場所のレース情報を取得中...")
+        # レースURLを格納するリスト
+        race_urls = []
         
-        # 開催場所ごとの各レース情報を取得
-        race_items = page.query_selector_all('.RaceList_DataItem a[href*="race_id="]')
-        print(f"レースリンク数: {len(race_items)}")
+        # メイン方法: 直接shutuba.htmlリンクを探す
+        print("直接出走表リンクを探します...")
+        race_links = page.query_selector_all('a[href*="shutuba.html"]')
+        print(f"出走表リンク数: {len(race_links)}")
         
-        for item in race_items:
-            href = item.get_attribute('href')
-            if href:
+        for link in race_links:
+            href = link.get_attribute('href')
+            if href and 'race_id=' in href:
                 # 相対パスを絶対パスに変換
                 if href.startswith("../race/"):
-                    href = href.replace("../race/", "https://race.netkeiba.com/race/")
+                    full_url = href.replace("../race/", "https://race.netkeiba.com/race/")
                 elif not href.startswith("http"):
-                    href = f"https://race.netkeiba.com{href}"
+                    full_url = f"https://race.netkeiba.com{href}"
+                else:
+                    full_url = href
                 
-                # 結果ページを出馬表ページに変換
-                if "result.html" in href:
-                    race_id = re.search(r'race_id=(\d+)', href).group(1)
-                    href = f"https://race.netkeiba.com/race/shutuba.html?race_id={race_id}"
-                
-                # 重複チェック
-                if href not in race_urls and "shutuba.html" in href:
-                    race_urls.append(href)
+                if full_url not in race_urls:
+                    race_urls.append(full_url)
+                    print(f"出走表URL追加: {full_url}")
         
-        # 予想されるレースIDからURLを構築（フォールバック）
-        if len(race_urls) == 0:
-            print("通常の方法でURLを取得できませんでした。レースIDのパターンから推測を試みます...")
+        # サブ方法: 各開催場所から探す（NARスクリプトと同様）
+        if len(race_links) == 0:
+            print("メインページから出走表リンクが見つかりませんでした。各開催場所から探します...")
             
-            # HTMLから開催場所と開催回を抽出
-            venues = []
-            venue_elems = page.query_selector_all('.RaceList_DataTitle')
-            for venue_elem in venue_elems:
-                venue_text = venue_elem.inner_text()
-                match = re.search(r'(\d+回)([^\d]+)(\d+日)', venue_text)
-                if match:
-                    venue_name = match.group(2).strip()
-                    venues.append(venue_name)
+            # 開催場所のブロックを取得
+            venue_blocks = page.query_selector_all('dl.RaceList_DataList')
+            print(f"開催場所のブロック数: {len(venue_blocks)}")
             
-            if venues:
-                print(f"開催場所を検出: {', '.join(venues)}")
+            for venue_idx, venue_block in enumerate(venue_blocks, 1):
+                venue_title = venue_block.query_selector('.RaceList_DataTitle')
+                venue_name = venue_title.inner_text() if venue_title else f"開催場所{venue_idx}"
+                print(f"開催場所: {venue_name}")
                 
-                # 場所と日付からレースIDのパターンを推測
-                for venue in venues:
-                    venue_code = {"札幌": "01", "函館": "02", "福島": "03", "新潟": "04", 
-                                 "東京": "05", "中山": "06", "中京": "07", "京都": "08",
-                                 "阪神": "09", "小倉": "10"}.get(venue, "00")
+                # この開催場所のレースページリンクを取得
+                venue_race_links = venue_block.query_selector_all('.RaceList_DataItem a')
+                print(f"- {venue_name}のレースリンク数: {len(venue_race_links)}")
+                
+                # 開催場所特有のIDやパラメータを取得
+                venue_params = ""
+                for link in venue_race_links:
+                    href = link.get_attribute('href')
+                    if href and 'kaisai_id=' in href:
+                        match = re.search(r'kaisai_id=([^&]+)', href)
+                        if match:
+                            venue_params = f"kaisai_id={match.group(1)}"
+                            break
+                
+                if venue_params:
+                    # 各開催場所の詳細ページに移動
+                    venue_url = f"https://race.netkeiba.com/top/race_list_sub.html?{venue_params}&kaisai_date={date_param}"
+                    print(f"開催場所の詳細ページにアクセス: {venue_url}")
                     
-                    if venue_code != "00":
-                        # 開催年月日とRレースまでを構築
-                        year = date_obj.year
-                        month = date_obj.month
-                        day = date_obj.day
+                    # 新しいページで開く
+                    venue_page = context.new_page()
+                    try:
+                        venue_page.goto(venue_url, wait_until='domcontentloaded', timeout=30000)
+                        venue_page.wait_for_timeout(3000)
                         
-                        # レースIDの前半部分（年月場所）
-                        race_id_prefix = f"{year % 100:02d}{month:02d}{venue_code}"
+                        # 各レースリンクを取得
+                        race_links = venue_page.query_selector_all('a[href*="shutuba.html"]')
+                        for link in race_links:
+                            href = link.get_attribute('href')
+                            if href and 'race_id=' in href:
+                                # 相対パスを絶対パスに変換
+                                if href.startswith("../race/"):
+                                    full_url = href.replace("../race/", "https://race.netkeiba.com/race/")
+                                elif not href.startswith("http"):
+                                    full_url = f"https://race.netkeiba.com{href}"
+                                else:
+                                    full_url = href
+                                
+                                if full_url not in race_urls:
+                                    race_urls.append(full_url)
+                                    print(f"レースURL追加: {full_url}")
                         
-                        # 開催回と日にちは不明なので、一般的な範囲でURLを生成
-                        for kaisai_num in range(1, 6):  # 開催回（1-5回）
-                            for kaisai_day in range(1, 9):  # 開催日（1-8日）
-                                for race_num in range(1, 13):  # レース番号（1-12R）
-                                    race_id = f"20{race_id_prefix}{kaisai_num:02d}{kaisai_day:02d}{race_num:02d}"
-                                    race_url = f"https://race.netkeiba.com/race/shutuba.html?race_id={race_id}"
-                                    
-                                    # 既に追加済みのURLは追加しない
-                                    if race_url not in race_urls:
-                                        race_urls.append(race_url)
+                        # result.htmlページからshutuba.htmlページを生成
+                        result_links = venue_page.query_selector_all('a[href*="result.html"]')
+                        for link in result_links:
+                            href = link.get_attribute('href')
+                            if href and 'race_id=' in href:
+                                match = re.search(r'race_id=(\d+)', href)
+                                if match:
+                                    race_id = match.group(1)
+                                    shutuba_url = f"https://race.netkeiba.com/race/shutuba.html?race_id={race_id}"
+                                    if shutuba_url not in race_urls:
+                                        race_urls.append(shutuba_url)
+                                        print(f"結果ページから生成したURL追加: {shutuba_url}")
+                    
+                    except Exception as e:
+                        print(f"開催場所の詳細ページアクセス中にエラー: {str(e)}")
+                    
+                    finally:
+                        venue_page.close()
+                        time.sleep(1)  # ページを閉じた後に少し待機
         
-        # レースURLが一定数を超えたら制限（フォールバック対策）
-        if len(race_urls) > 50:
-            print(f"警告: URL数が多すぎます({len(race_urls)}件)。最初の36件に制限します。")
-            race_urls = race_urls[:36]  # 3場開催で12レースずつの最大値
+        # 結果リンクからshutuba.htmlリンクを生成（最終手段）
+        if len(race_urls) == 0:
+            print("すべての方法でURLを取得できませんでした。直接結果ページのリンクを探します...")
+            
+            result_links = page.query_selector_all('a[href*="result.html"]')
+            print(f"結果ページのリンク数: {len(result_links)}")
+            
+            for link in result_links:
+                href = link.get_attribute('href')
+                if href and 'race_id=' in href:
+                    match = re.search(r'race_id=(\d+)', href)
+                    if match:
+                        race_id = match.group(1)
+                        shutuba_url = f"https://race.netkeiba.com/race/shutuba.html?race_id={race_id}"
+                        if shutuba_url not in race_urls:
+                            race_urls.append(shutuba_url)
+        
+        # HTMLからレースIDを直接抽出（最終手段）
+        if len(race_urls) == 0:
+            print("リンクからURLを取得できませんでした。HTML内からレースIDを抽出します...")
+            
+            race_id_pattern = r'race_id=(\d+)'
+            race_ids = re.findall(race_id_pattern, html_content)
+            
+            # 重複を削除して一意なレースIDだけを使用
+            unique_race_ids = list(set(race_ids))
+            print(f"抽出したレースID数: {len(unique_race_ids)}")
+            
+            for race_id in unique_race_ids:
+                # race_idが12桁の数字かチェック
+                if re.match(r'^\d{12}$', race_id):
+                    shutuba_url = f"https://race.netkeiba.com/race/shutuba.html?race_id={race_id}"
+                    if shutuba_url not in race_urls:
+                        race_urls.append(shutuba_url)
         
         # デバッグ出力
         print(f"{date_str}のレースURL取得: {len(race_urls)}件")
@@ -614,8 +676,8 @@ def get_jra_race_info_for_dates(dates_list):
                 try:
                     print(f"\n{date_str}のレース情報を取得します...")
                     
-                    # URLを取得
-                    race_urls = get_race_urls_for_date(page, date_str)
+                    # URLを取得（contextも渡す）
+                    race_urls = get_race_urls_for_date(page, context, date_str)
                     print(f"{date_str}のレースURL数: {len(race_urls)}")
                     
                     if race_urls:
@@ -673,6 +735,8 @@ def get_jra_race_info_for_dates(dates_list):
             if entries and len(entries) > 0:
                 save_to_csv(entries, output_path)
                 print(f"{date_key}: {len(entries)}件のエントリーを保存しました: {output_path}")
+            else:
+                print(f"{date_key}: エントリーがないためCSVは保存しませんでした")
         
     except Exception as e:
         print(f"全体の処理中にエラー発生: {str(e)}")
@@ -693,6 +757,10 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='JRAの出走表情報をスクレイピングするツール')
     parser.add_argument('--date', type=str, help='スクレイピングする日付（YYYY-MM-DD形式）')
     args = parser.parse_args()
+    
+    # スクリプト実行のタイプを表示
+    script_type = "単体スクリプト" if __name__ == '__main__' else "モジュール"
+    print(f"JRA出走表スクレイピングを開始します（実行モード: {script_type}）")
     
     # 引数で日付が指定されている場合はその日付のデータを取得
     if args.date:
