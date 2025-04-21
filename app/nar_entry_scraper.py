@@ -1,5 +1,6 @@
 from playwright.sync_api import sync_playwright, TimeoutError
 import time
+import random
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
 from typing import List, Dict
@@ -9,124 +10,167 @@ import csv
 import re
 import json
 
-def scrape_race_entry(page, race_url: str) -> Dict[str, any]:
+# ユーザーエージェントリスト
+USER_AGENTS = [
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36',
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.0 Safari/605.1.15',
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:94.0) Gecko/20100101 Firefox/94.0',
+    'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.45 Safari/537.36'
+]
+
+def scrape_race_entry(page, race_url: str, max_retries=3) -> Dict[str, any]:
     """出走表ページから情報を取得する"""
-    try:
-        page.goto(race_url, wait_until='domcontentloaded', timeout=30000)
-        page.wait_for_timeout(3000)
-        
-        # race_idを取得（URLから）
-        race_id = race_url.split('race_id=')[1].split('&')[0]
-        
-        entry_info = {
-            'race_name': '',
-            'race_number': '',
-            'race_id': race_id,  # dateの代わりにrace_idを使用
-            'venue_name': '',
-            'start_time': '',
-            'course_info': '',
-            'race_details': '',
-            'entries': []  # 出走馬情報（results → entries に変更）
-        }
-        
-        # レース名と番号を取得
-        race_name_elem = page.query_selector('.RaceList_Item02 .RaceName')
-        if race_name_elem:
-            entry_info['race_name'] = race_name_elem.inner_text().strip()
-        
-        race_number_elem = page.query_selector('.Race_Num')
-        if race_number_elem:
-            entry_info['race_number'] = race_number_elem.inner_text().replace('R', '').strip()
-        
-        # 開催場所
-        venue_elem = page.query_selector('.RaceData02 span:nth-child(2)')
-        if venue_elem:
-            entry_info['venue_name'] = venue_elem.inner_text().strip()
-        
-        # 発走時刻
-        time_elem = page.query_selector('.RaceData01')
-        if time_elem:
-            time_text = time_elem.inner_text().split('発走')[0].strip()
-            entry_info['start_time'] = time_text
-        
-        # コース情報
-        course_elem = page.query_selector('.RaceData01 span')
-        if course_elem:
-            entry_info['course_info'] = course_elem.inner_text().strip()
-        
-        # レース詳細情報を取得して余分なスペースを削除
-        race_details_elem = page.query_selector('.Race_Data')
-        if race_details_elem:
-            # 改行を削除し、連続する空白を1つの空白に置換
-            race_details = ' '.join([
-                part.strip()
-                for part in race_details_elem.inner_text().strip().split()
-                if part.strip()
-            ])
-            # 全角スペースも半角スペースに統一
-            race_details = race_details.replace('　', ' ')
-            # "C1" と "12頭" の間の余分なスペースを削除
-            race_details = re.sub(r'([A-Z][0-9])\s+(\d+頭)', r'\1 \2', race_details)
-        else:
-            race_details = ''
-        
-        # 出走馬情報を取得
-        horse_rows = page.query_selector_all('tr.HorseList')
-        print(f"Found {len(horse_rows)} horse rows")
-        
-        for row in horse_rows:
-            horse_data = {}
+    retry_count = 0
+    
+    while retry_count <= max_retries:
+        try:
+            # リトライ時は待機時間を指数関数的に増加
+            if retry_count > 0:
+                wait_time = 5 * (2 ** (retry_count - 1)) * (0.5 + random.random())
+                print(f"リトライ {retry_count}/{max_retries}: {race_url} - {wait_time:.2f}秒待機します")
+                time.sleep(wait_time)
             
-            # 馬番
-            horse_number = row.query_selector('td.Umaban1, td.Umaban2, td.Umaban3, td.Umaban4, td.Umaban5, td.Umaban6, td.Umaban7, td.Umaban8')
-            if horse_number:
-                horse_data['horse_number'] = horse_number.inner_text().strip()
+            # アクセス前にランダム待機
+            pre_wait = random.uniform(3, 8)
+            print(f"アクセス前に {pre_wait:.2f}秒待機します")
+            time.sleep(pre_wait)
             
-            # 馬名
-            horse_name = row.query_selector('.HorseName a')
-            if horse_name:
-                horse_data['horse_name'] = horse_name.inner_text().strip()
+            # タイムアウト値を延長 (60秒)
+            timeout = 60000
+            print(f"レースURL: {race_url} にアクセスします（タイムアウト: {timeout/1000}秒）")
+            page.goto(race_url, wait_until='domcontentloaded', timeout=timeout)
             
-            # 性齢
-            sex_age = row.query_selector('.Age')
-            if sex_age:
-                horse_data['sex_age'] = sex_age.inner_text().strip()
+            # ページ読み込み後のランダム待機
+            wait_time = random.uniform(3, 5)
+            page.wait_for_timeout(int(wait_time * 1000))
             
-            # 斤量 - セレクタを修正
-            weight = row.query_selector('td.Txt_C:nth-child(6)')  # 6番目のtd要素を指定
-            if weight:
-                horse_data['weight'] = weight.inner_text().strip()
+            # race_idを取得（URLから）
+            race_id = race_url.split('race_id=')[1].split('&')[0]
             
-            # 騎手
-            jockey = row.query_selector('.Jockey a')
-            if jockey:
-                horse_data['jockey_name'] = jockey.inner_text().strip()
+            entry_info = {
+                'race_name': '',
+                'race_number': '',
+                'race_id': race_id,  # dateの代わりにrace_idを使用
+                'venue_name': '',
+                'start_time': '',
+                'course_info': '',
+                'race_details': '',
+                'entries': []  # 出走馬情報（results → entries に変更）
+            }
             
-            # 調教師
-            trainer = row.query_selector('.Trainer a:nth-child(2)')  # 2番目のaタグを選択
-            if trainer:
-                horse_data['trainer_name'] = trainer.inner_text().strip()
+            # レース名と番号を取得
+            race_name_elem = page.query_selector('.RaceList_Item02 .RaceName')
+            if race_name_elem:
+                entry_info['race_name'] = race_name_elem.inner_text().strip()
+            
+            race_number_elem = page.query_selector('.Race_Num')
+            if race_number_elem:
+                entry_info['race_number'] = race_number_elem.inner_text().replace('R', '').strip()
+            
+            # 開催場所
+            venue_elem = page.query_selector('.RaceData02 span:nth-child(2)')
+            if venue_elem:
+                entry_info['venue_name'] = venue_elem.inner_text().strip()
+            
+            # 発走時刻
+            time_elem = page.query_selector('.RaceData01')
+            if time_elem:
+                time_text = time_elem.inner_text().split('発走')[0].strip()
+                entry_info['start_time'] = time_text
+            
+            # コース情報
+            course_elem = page.query_selector('.RaceData01 span')
+            if course_elem:
+                entry_info['course_info'] = course_elem.inner_text().strip()
+            
+            # レース詳細情報を取得して余分なスペースを削除
+            race_details_elem = page.query_selector('.Race_Data')
+            if race_details_elem:
+                # 改行を削除し、連続する空白を1つの空白に置換
+                race_details = ' '.join([
+                    part.strip()
+                    for part in race_details_elem.inner_text().strip().split()
+                    if part.strip()
+                ])
+                # 全角スペースも半角スペースに統一
+                race_details = race_details.replace('　', ' ')
+                # "C1" と "12頭" の間の余分なスペースを削除
+                race_details = re.sub(r'([A-Z][0-9])\s+(\d+頭)', r'\1 \2', race_details)
+                entry_info['race_details'] = race_details
+            else:
+                entry_info['race_details'] = ''
+            
+            # 出走馬情報を取得
+            horse_rows = page.query_selector_all('tr.HorseList')
+            print(f"Found {len(horse_rows)} horse rows")
+            
+            for row in horse_rows:
+                horse_data = {}
+                
+                # 馬番
+                horse_number = row.query_selector('td.Umaban1, td.Umaban2, td.Umaban3, td.Umaban4, td.Umaban5, td.Umaban6, td.Umaban7, td.Umaban8')
+                if horse_number:
+                    horse_data['horse_number'] = horse_number.inner_text().strip()
+                
+                # 馬名
+                horse_name = row.query_selector('.HorseName a')
+                if horse_name:
+                    horse_data['horse_name'] = horse_name.inner_text().strip()
+                
+                # 性齢
+                sex_age = row.query_selector('.Age')
+                if sex_age:
+                    horse_data['sex_age'] = sex_age.inner_text().strip()
+                
+                # 斤量 - セレクタを修正
+                weight = row.query_selector('td.Txt_C:nth-child(6)')  # 6番目のtd要素を指定
+                if weight:
+                    horse_data['weight'] = weight.inner_text().strip()
+                
+                # 騎手
+                jockey = row.query_selector('.Jockey a')
+                if jockey:
+                    horse_data['jockey_name'] = jockey.inner_text().strip()
+                
+                # 調教師
+                trainer = row.query_selector('.Trainer a:nth-child(2)')  # 2番目のaタグを選択
+                if trainer:
+                    horse_data['trainer_name'] = trainer.inner_text().strip()
 
-            # オッズと人気を取得
-            odds_td = row.query_selector('.Popular.Txt_R')
-            if odds_td:
-                odds_text = odds_td.inner_text().strip()
-                if odds_text:
-                    horse_data['odds'] = odds_text.split('\n')[0]
+                # オッズと人気を取得
+                odds_td = row.query_selector('.Popular.Txt_R')
+                if odds_td:
+                    odds_text = odds_td.inner_text().strip()
+                    if odds_text:
+                        horse_data['odds'] = odds_text.split('\n')[0]
 
-            # 人気
-            popularity = row.query_selector('.Popular.Txt_C span')
-            if popularity:
-                horse_data['popularity'] = popularity.inner_text().strip()
+                # 人気
+                popularity = row.query_selector('.Popular.Txt_C span')
+                if popularity:
+                    horse_data['popularity'] = popularity.inner_text().strip()
 
-            print(f"Debug - Horse data: {horse_data}")
-            entry_info['entries'].append(horse_data)
-        
-        return entry_info
-        
-    except Exception as e:
-        print(f"レース情報取得中にエラー: {str(e)}")
-        return None
+                print(f"Debug - Horse data: {horse_data}")
+                entry_info['entries'].append(horse_data)
+            
+            # 出走馬情報が取得できていることを確認
+            if len(entry_info['entries']) > 0:
+                print(f"レースデータ取得成功: {entry_info['venue_name']} {entry_info['race_number']}R - 出走頭数: {len(entry_info['entries'])}")
+                return entry_info
+            else:
+                # 出走馬情報が取得できていない場合はリトライ
+                print(f"出走馬情報が取得できませんでした: {race_url} - リトライします")
+                retry_count += 1
+                continue
+                
+        except TimeoutError as e:
+            print(f"タイムアウトエラー: {race_url} - {str(e)}")
+            retry_count += 1
+        except Exception as e:
+            print(f"レース情報取得中にエラー: {str(e)}")
+            retry_count += 1
+    
+    print(f"最大リトライ回数を超えました: {race_url}")
+    return None
 
 def save_to_csv(race_entry: Dict[str, any]):
     """レース情報をCSVに保存する（1レース1行）"""
@@ -163,79 +207,132 @@ def save_to_csv(race_entry: Dict[str, any]):
             json.dumps(race_entry['entries'], ensure_ascii=False)  # 出走馬情報をJSON形式で保存
         ])
 
-def get_race_urls_for_date(page, context, date_str: str) -> List[str]:
+def get_race_urls_for_date(page, context, date_str: str, max_retries=3) -> List[str]:
     """指定日の全レースの出馬表URLを取得"""
     all_race_urls = []
-    try:
-        url = f"https://nar.netkeiba.com/top/race_list.html?kaisai_date={date_str}"
-        print(f"\n{date_str}のレース情報を取得中...")
-        
-        # タイムアウトを設定
-        page.set_default_timeout(60000)  # 60秒
-        
-        # まずトップページにアクセス
-        print("トップページにアクセスしています...")
-        page.goto("https://nar.netkeiba.com/", wait_until='domcontentloaded')
-        page.wait_for_timeout(3000)
-        
-        # 次に目的のページに遷移
-        print(f"レース一覧ページにアクセスしています: {url}")
-        try:
-            page.goto(url, wait_until='domcontentloaded', timeout=60000)
-        except TimeoutError:
-            print("ページの完全な読み込みはタイムアウトしましたが、処理を継続します")
-        
-        page.wait_for_timeout(5000)
-        
-        # JavaScriptを実行してページの準備ができているか確認
-        is_ready = page.evaluate('''() => {
-            return document.querySelector('.RaceList_ProvinceSelect') !== null;
-        }''')
-        
-        if not is_ready:
-            print("ページの準備ができていません。さらに待機します...")
-            page.wait_for_timeout(5000)
-        
-        venues = page.query_selector_all('.RaceList_ProvinceSelect li')
-        print(f"開催場所数: {len(venues)}")
-        
-        for venue in venues:
-            try:
-                venue_name = venue.inner_text().strip()
-                print(f"\n開催場所: {venue_name}")
-                
-                venue_link = venue.query_selector('a')
-                if venue_link:
-                    href = venue_link.get_attribute('href')
-                    venue_url = f"https://nar.netkeiba.com/top/race_list.html{href}"
-                    print(f"開催場所URL: {venue_url}")
-                    
-                    venue_page = context.new_page()
-                    try:
-                        venue_page.goto(venue_url, wait_until='domcontentloaded', timeout=30000)
-                        venue_page.wait_for_timeout(3000)
-                        
-                        # レース情報を取得
-                        races = venue_page.query_selector_all('dl.RaceList_DataList')
-                        for race in races:
-                            race_links = race.query_selector_all('a[href*="/race/shutuba.html"]')
-                            for link in race_links:
-                                href = link.get_attribute('href')
-                                if href:
-                                    race_url = f"https://nar.netkeiba.com{href.replace('..', '')}"
-                                    all_race_urls.append(race_url)
-                                    print(f"レースURL追加: {race_url}")
-                                    
-                    finally:
-                        venue_page.close()
-                        
-            except Exception as e:
-                print(f"開催場所の処理中にエラー: {str(e)}")
-                continue
-                
-    except Exception as e:
-        print(f"レースURL取得中にエラー: {str(e)}")
+    retry_count = 0
     
+    while retry_count <= max_retries:
+        try:
+            url = f"https://nar.netkeiba.com/top/race_list.html?kaisai_date={date_str}"
+            print(f"\n{date_str}のレース情報を取得中...")
+            
+            # リトライ時は待機時間を指数関数的に増加
+            if retry_count > 0:
+                wait_time = 10 * (2 ** (retry_count - 1)) * (0.5 + random.random())
+                print(f"リトライ {retry_count}/{max_retries}: {date_str} - {wait_time:.2f}秒待機します")
+                time.sleep(wait_time)
+            
+            # タイムアウト設定を延長
+            timeout = 90000  # 90秒
+            page.set_default_timeout(timeout)
+            
+            # サイトアクセス前にランダム待機
+            pre_wait = random.uniform(10, 15)
+            print(f"サイトアクセス前に{pre_wait:.2f}秒待機します...")
+            time.sleep(pre_wait)
+            
+            # まずトップページにアクセス
+            print("トップページにアクセスしています...")
+            try:
+                page.goto("https://nar.netkeiba.com/", wait_until='domcontentloaded', timeout=timeout)
+                page.wait_for_timeout(5000)
+            except TimeoutError as e:
+                print(f"トップページアクセスエラー (試行 {retry_count+1}/{max_retries+1}): {str(e)}")
+                retry_count += 1
+                continue
+            
+            # 次に目的のページに遷移
+            print(f"レース一覧ページにアクセスしています: {url}")
+            try:
+                page.goto(url, wait_until='domcontentloaded', timeout=timeout)
+                page.wait_for_timeout(5000)
+            except TimeoutError:
+                print("ページの完全な読み込みはタイムアウトしましたが、処理を継続します")
+            
+            # JavaScriptを実行してページの準備ができているか確認
+            is_ready = page.evaluate('''() => {
+                return document.querySelector('.RaceList_ProvinceSelect') !== null;
+            }''')
+            
+            if not is_ready:
+                print("ページの準備ができていません。さらに待機します...")
+                page.wait_for_timeout(5000)
+                
+                # 再度確認
+                is_ready = page.evaluate('''() => {
+                    return document.querySelector('.RaceList_ProvinceSelect') !== null;
+                }''')
+                
+                if not is_ready:
+                    print("ページの準備ができていません。リトライします")
+                    retry_count += 1
+                    continue
+            
+            venues = page.query_selector_all('.RaceList_ProvinceSelect li')
+            print(f"開催場所数: {len(venues)}")
+            
+            if len(venues) == 0:
+                print("開催場所が見つかりませんでした。リトライします")
+                retry_count += 1
+                continue
+            
+            for venue in venues:
+                try:
+                    venue_name = venue.inner_text().strip()
+                    print(f"\n開催場所: {venue_name}")
+                    
+                    venue_link = venue.query_selector('a')
+                    if venue_link:
+                        href = venue_link.get_attribute('href')
+                        venue_url = f"https://nar.netkeiba.com/top/race_list.html{href}"
+                        print(f"開催場所URL: {venue_url}")
+                        
+                        # 各開催場所ページアクセス前にランダム待機
+                        venue_wait = random.uniform(3, 6)
+                        print(f"開催場所ページアクセス前に {venue_wait:.2f}秒待機します")
+                        time.sleep(venue_wait)
+                        
+                        venue_page = context.new_page()
+                        try:
+                            # ランダムなユーザーエージェントを設定
+                            venue_page.set_extra_http_headers({
+                                'User-Agent': random.choice(USER_AGENTS)
+                            })
+                            
+                            venue_page.goto(venue_url, wait_until='domcontentloaded', timeout=timeout)
+                            venue_page.wait_for_timeout(3000)
+                            
+                            # レース情報を取得
+                            races = venue_page.query_selector_all('dl.RaceList_DataList')
+                            for race in races:
+                                race_links = race.query_selector_all('a[href*="/race/shutuba.html"]')
+                                for link in race_links:
+                                    href = link.get_attribute('href')
+                                    if href:
+                                        race_url = f"https://nar.netkeiba.com{href.replace('..', '')}"
+                                        all_race_urls.append(race_url)
+                                        print(f"レースURL追加: {race_url}")
+                                        
+                        finally:
+                            venue_page.close()
+                            
+                except Exception as e:
+                    print(f"開催場所の処理中にエラー: {str(e)}")
+                    continue
+            
+            # URLが取得できればループを抜ける    
+            if len(all_race_urls) > 0:
+                return all_race_urls
+            else:
+                print(f"レースURLが取得できませんでした: {date_str} - リトライします")
+                retry_count += 1
+                
+        except Exception as e:
+            print(f"レースURL取得中にエラー: {str(e)}")
+            retry_count += 1
+    
+    print(f"最大リトライ回数を超えました: {date_str}")
     return all_race_urls
 
 def get_race_info_for_next_three_days() -> List[Dict[str, any]]:
@@ -245,9 +342,14 @@ def get_race_info_for_next_three_days() -> List[Dict[str, any]]:
     
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
+        
+        # ランダムなユーザーエージェントを選択
+        user_agent = random.choice(USER_AGENTS)
+        print(f"使用するユーザーエージェント: {user_agent}")
+        
         context = browser.new_context(
             viewport={'width': 1920, 'height': 1080},
-            user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
+            user_agent=user_agent
         )
         
         try:
@@ -262,11 +364,24 @@ def get_race_info_for_next_three_days() -> List[Dict[str, any]]:
                 print(f"取得したレースURL数: {len(race_urls)}")
                 
                 # 各レースの情報を取得してすぐにCSVに保存
-                for race_url in race_urls:
+                for idx, race_url in enumerate(race_urls):
                     race_entry = scrape_race_entry(page, race_url)
                     if race_entry:
                         save_to_csv(race_entry)
                         print(f"レース情報保存: {race_entry['venue_name']} {race_entry['race_number']}R")
+                    
+                    # レース間のランダム待機（レート制限回避）
+                    if idx < len(race_urls) - 1:  # 最後のレースでなければ
+                        wait_time = random.uniform(5, 10)
+                        print(f"次のレース取得まで {wait_time:.2f}秒待機します")
+                        time.sleep(wait_time)
+                
+                # 日付間の待機
+                if i < 2:  # 最後の日付でなければ
+                    wait_time = random.uniform(15, 20)
+                    print(f"次の日付の処理まで {wait_time:.2f}秒待機します")
+                    time.sleep(wait_time)
+                    
         finally:
             context.close()
             browser.close()
