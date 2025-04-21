@@ -128,6 +128,14 @@ def generate_jockey_id(jockey_name: str) -> str:
 def scrape_race_entry(page, race_url: str) -> Dict[str, any]:
     """出走表ページから情報を取得する"""
     try:
+        # Cookieの確認を試みる
+        try:
+            cookies = page.context.cookies()
+            if cookies and len(cookies) > 0:
+                print(f"{len(cookies)}個のCookieが設定されています")
+        except Exception as e:
+            print(f"Cookie取得時にエラー: {str(e)}")
+            
         page.goto(race_url, wait_until='domcontentloaded', timeout=30000)
         page.wait_for_timeout(3000)
         
@@ -247,20 +255,36 @@ def scrape_race_entry(page, race_url: str) -> Dict[str, any]:
         return None
 
 def save_to_csv(race_entry: Dict[str, any], filename: str = None):
-    """レース情報をCSVに保存する"""
+    """
+    レース情報をCSVに保存する
+    
+    Args:
+        race_entry: 保存するレース情報
+        filename: 保存するファイル名（指定がない場合は現在の日付を使用）
+    """
     try:
+        # データディレクトリの作成
         os.makedirs('data/race_entries', exist_ok=True)
         
+        # ファイル名の処理
         if filename is None:
+            # 指定がない場合は現在の日付を使用
             current_date = datetime.now().strftime('%Y%m%d')
-            filename = f'data/race_entries/nar_race_entries_{current_date}.csv'
+            filepath = f'data/race_entries/nar_race_entries_{current_date}.csv'
+        elif '/' in filename or '\\' in filename:
+            # 既にパスが含まれている場合はそのまま使用
+            filepath = filename
         else:
-            filename = f'data/race_entries/{filename}'
+            # ファイル名のみの場合はパスを追加
+            filepath = f'data/race_entries/{filename}'
         
-        # ファイルが存在しない場合は新規作成
-        file_exists = os.path.isfile(filename)
+        # ファイルが存在するか確認
+        file_exists = os.path.isfile(filepath)
         
-        with open(filename, 'a', newline='', encoding='utf-8') as f:
+        # レース詳細情報から余分なスペースを削除
+        race_details = ' '.join(race_entry.get('race_details', '').split())
+        
+        with open(filepath, 'a', newline='', encoding='utf-8') as f:
             writer = csv.writer(f)
             
             # ヘッダーを書き込む（ファイルが新規の場合のみ）
@@ -272,17 +296,17 @@ def save_to_csv(race_entry: Dict[str, any], filename: str = None):
             
             # レース情報を1行で書き込む
             writer.writerow([
-                race_entry['race_id'],
-                race_entry['race_name'],
-                race_entry['race_number'],
-                race_entry['venue_name'],
-                race_entry['start_time'],
-                race_entry['course_info'],
-                race_entry['race_details'],
-                json.dumps(race_entry['entries'], ensure_ascii=False)  # 出走馬情報をJSON形式で保存
+                race_entry.get('race_id', ''),
+                race_entry.get('race_name', ''),
+                race_entry.get('race_number', ''),
+                race_entry.get('venue_name', ''),
+                race_entry.get('start_time', ''),
+                race_entry.get('course_info', ''),
+                race_details,
+                json.dumps(race_entry.get('entries', []), ensure_ascii=False)  # 出走馬情報をJSON形式で保存
             ])
             
-        print(f"CSVに保存しました: {filename}")
+        print(f"CSVに保存しました: {filepath}")
             
     except Exception as e:
         print(f"CSV保存エラー: {str(e)}")
@@ -409,18 +433,36 @@ def get_race_info_for_next_three_days():
                         print(f"{date_str}のレースURL数: {len(race_urls)}")
                         
                         if race_urls:  # レースURLが存在する場合のみ処理
+                            total_races = len(race_urls)
+                            processed_races = 0
+                            
                             for race_url in race_urls:
                                 try:
                                     race_entry = scrape_race_entry(page, race_url)
-                                    if race_entry and race_entry['entries'] and len(race_entry['entries']) > 0:
+                                    if race_entry and race_entry.get('entries') and len(race_entry.get('entries', [])) > 0:
                                         save_to_csv(race_entry, filename)
-                                        print(f"保存完了: {race_entry['venue_name']} {race_entry['race_number']}R")
+                                        processed_races += 1
+                                        print(f"保存完了: {race_entry.get('venue_name', '不明')} {race_entry.get('race_number', '?')}R ({processed_races}/{total_races})")
+                                    
+                                    # アクセス間隔を開ける（サーバー負荷軽減）
+                                    wait_time = random.uniform(3, 7)
+                                    print(f"次のレース取得まで {wait_time:.2f}秒待機します")
+                                    time.sleep(wait_time)
+                                    
                                 except Exception as e:
                                     print(f"レース情報取得エラー: {str(e)}")
                                     traceback.print_exc()
-                            print(f"{date_str}の処理が完了しました")
+                                    
+                            print(f"{date_str}の処理が完了しました - {processed_races}/{total_races}件のレース情報を保存")
                         else:
                             print(f"{date_str}のレースはありません")
+                            
+                        # 日付間の待機（最後の日付の場合は不要）
+                        if i < 2:
+                            wait_time = random.uniform(15, 25)
+                            print(f"次の日付の処理まで {wait_time:.2f}秒待機します")
+                            time.sleep(wait_time)
+                            
                     except Exception as e:
                         print(f"{date_str}の処理中にエラーが発生しました: {str(e)}")
                         traceback.print_exc()

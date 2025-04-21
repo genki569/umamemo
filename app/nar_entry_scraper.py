@@ -18,8 +18,71 @@ USER_AGENTS = [
     'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.45 Safari/537.36'
 ]
 
+# HTTPヘッダーのテンプレート
+HEADERS_TEMPLATE = {
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+    'Accept-Encoding': 'gzip, deflate, br',
+    'Accept-Language': 'ja,en-US;q=0.9,en;q=0.8',
+    'Cache-Control': 'max-age=0',
+    'Connection': 'keep-alive',
+    'Sec-Fetch-Dest': 'document',
+    'Sec-Fetch-Mode': 'navigate', 
+    'Sec-Fetch-Site': 'none',
+    'Sec-Fetch-User': '?1',
+    'Upgrade-Insecure-Requests': '1',
+    'sec-ch-ua': '" Not A;Brand";v="99", "Chromium";v="96", "Google Chrome";v="96"',
+    'sec-ch-ua-mobile': '?0',
+    'sec-ch-ua-platform': '"macOS"'
+}
+
+# navigator.webdriverを無効化するスクリプト
+WEBDRIVER_DISABLE_SCRIPT = """
+Object.defineProperty(navigator, 'webdriver', {
+    get: () => false,
+});
+"""
+
+# 指紋対策スクリプト
+FINGERPRINT_PROTECT_SCRIPT = """
+// Canvas指紋対策
+const originalGetContext = HTMLCanvasElement.prototype.getContext;
+HTMLCanvasElement.prototype.getContext = function(type) {
+    const context = originalGetContext.apply(this, arguments);
+    if (type === '2d') {
+        const originalGetImageData = context.getImageData;
+        context.getImageData = function() {
+            const imageData = originalGetImageData.apply(this, arguments);
+            // 少しだけノイズを加える
+            const pixels = imageData.data;
+            for (let i = 0; i < pixels.length; i += 4) {
+                const offset = Math.floor(Math.random() * 3);
+                pixels[i] = pixels[i] + offset;
+                pixels[i+1] = pixels[i+1] + offset;
+                pixels[i+2] = pixels[i+2] + offset;
+            }
+            return imageData;
+        };
+    }
+    return context;
+};
+
+// Audio指紋対策
+const originalGetChannelData = AudioBuffer.prototype.getChannelData;
+if (originalGetChannelData) {
+    AudioBuffer.prototype.getChannelData = function() {
+        const channelData = originalGetChannelData.apply(this, arguments);
+        // 少しだけノイズを加える
+        const noise = 0.0001;
+        for (let i = 0; i < channelData.length; i++) {
+            channelData[i] += (Math.random() * 2 - 1) * noise;
+        }
+        return channelData;
+    };
+}
+"""
+
 def scrape_race_entry(page, race_url: str, max_retries=3) -> Dict[str, any]:
-    """出走表ページから情報を取得する"""
+    """出走表ページから情報を取得する（リトライメカニズム付き）"""
     retry_count = 0
     
     while retry_count <= max_retries:
@@ -38,11 +101,63 @@ def scrape_race_entry(page, race_url: str, max_retries=3) -> Dict[str, any]:
             # タイムアウト値を延長 (60秒)
             timeout = 60000
             print(f"レースURL: {race_url} にアクセスします（タイムアウト: {timeout/1000}秒）")
-            page.goto(race_url, wait_until='domcontentloaded', timeout=timeout)
+            
+            # リファラーを設定
+            referer = 'https://nar.netkeiba.com/top/race_list.html'
+            
+            # Cookieの確認 - 正しくpage.contextからcookiesを取得
+            try:
+                cookies = page.context.cookies()
+                if cookies and len(cookies) > 0:
+                    print(f"{len(cookies)}個のCookieが設定されています")
+            except Exception as e:
+                print(f"Cookie取得時にエラー: {str(e)}")
+            
+            # ヒューマンライクな動作を模倣（前のページでのマウス動作など）
+            page.evaluate('''() => {
+                // マウスを動かすようなランダムな動き
+                const events = ['mousemove', 'mousedown', 'mouseup'];
+                const randomEvent = events[Math.floor(Math.random() * events.length)];
+                const x = Math.floor(Math.random() * window.innerWidth);
+                const y = Math.floor(Math.random() * window.innerHeight);
+                const event = new MouseEvent(randomEvent, {
+                    bubbles: true,
+                    cancelable: true,
+                    view: window,
+                    clientX: x,
+                    clientY: y
+                });
+                document.body.dispatchEvent(event);
+            }''')
+            
+            # リファラーを指定してアクセス
+            page.goto(race_url, wait_until='domcontentloaded', timeout=timeout, referer=referer)
             
             # ページ読み込み後のランダム待機
             wait_time = random.uniform(3, 5)
             page.wait_for_timeout(int(wait_time * 1000))
+            
+            # スクロール動作を模倣
+            page.evaluate('''() => {
+                const scrollHeight = Math.floor(Math.random() * 300);
+                window.scrollTo({
+                    top: scrollHeight,
+                    left: 0,
+                    behavior: 'smooth'
+                });
+                
+                // 少し時間をかけて徐々にスクロール
+                setTimeout(() => {
+                    window.scrollTo({
+                        top: scrollHeight + Math.floor(Math.random() * 200),
+                        left: 0,
+                        behavior: 'smooth'
+                    });
+                }, Math.floor(Math.random() * 1000) + 500);
+            }''')
+            
+            # さらに待機
+            page.wait_for_timeout(random.randint(1000, 2000))
             
             # race_idを取得（URLから）
             race_id = race_url.split('race_id=')[1].split('&')[0]
@@ -100,9 +215,24 @@ def scrape_race_entry(page, race_url: str, max_retries=3) -> Dict[str, any]:
             else:
                 entry_info['race_details'] = ''
             
+            # 出走馬情報を取得前にさらにスクロール
+            page.evaluate('''() => {
+                window.scrollTo({
+                    top: 400,
+                    left: 0,
+                    behavior: 'smooth'
+                });
+            }''')
+            
+            # 少し待機
+            page.wait_for_timeout(random.randint(1000, 2000))
+            
             # 出走馬情報を取得
             horse_rows = page.query_selector_all('tr.HorseList')
             print(f"Found {len(horse_rows)} horse rows")
+            
+            # 各行を処理する前に、ランダムな待機を入れる
+            row_delay = random.uniform(0.2, 0.5)
             
             for row in horse_rows:
                 horse_data = {}
@@ -151,6 +281,9 @@ def scrape_race_entry(page, race_url: str, max_retries=3) -> Dict[str, any]:
 
                 print(f"Debug - Horse data: {horse_data}")
                 entry_info['entries'].append(horse_data)
+                
+                # 各行の処理間に短いランダム待機（ボット検出回避）
+                time.sleep(row_delay)
             
             # 出走馬情報が取得できていることを確認
             if len(entry_info['entries']) > 0:
@@ -208,7 +341,7 @@ def save_to_csv(race_entry: Dict[str, any]):
         ])
 
 def get_race_urls_for_date(page, context, date_str: str, max_retries=3) -> List[str]:
-    """指定日の全レースの出馬表URLを取得"""
+    """指定日の全レースの出馬表URLを取得（リトライメカニズム付き）"""
     all_race_urls = []
     retry_count = 0
     
@@ -222,7 +355,7 @@ def get_race_urls_for_date(page, context, date_str: str, max_retries=3) -> List[
                 wait_time = 10 * (2 ** (retry_count - 1)) * (0.5 + random.random())
                 print(f"リトライ {retry_count}/{max_retries}: {date_str} - {wait_time:.2f}秒待機します")
                 time.sleep(wait_time)
-            
+                
             # タイムアウト設定を延長
             timeout = 90000  # 90秒
             page.set_default_timeout(timeout)
@@ -235,8 +368,25 @@ def get_race_urls_for_date(page, context, date_str: str, max_retries=3) -> List[
             # まずトップページにアクセス
             print("トップページにアクセスしています...")
             try:
+                # Cookieの消去とブラウザキャッシュのクリア
+                context.clear_cookies()
+                
+                # クッキー同意画面を回避するための設定
                 page.goto("https://nar.netkeiba.com/", wait_until='domcontentloaded', timeout=timeout)
-                page.wait_for_timeout(5000)
+                
+                # ヒューマンライクな遅延を模倣
+                page.wait_for_timeout(random.randint(3000, 5000))
+                
+                # スクロールして人間らしい動きを模倣
+                page.evaluate('''() => {
+                    window.scrollTo(0, Math.floor(Math.random() * 100));
+                    setTimeout(() => {
+                        window.scrollTo(0, Math.floor(Math.random() * 300));
+                    }, Math.floor(Math.random() * 1000) + 500);
+                }''')
+                
+                page.wait_for_timeout(1000)
+                
             except TimeoutError as e:
                 print(f"トップページアクセスエラー (試行 {retry_count+1}/{max_retries+1}): {str(e)}")
                 retry_count += 1
@@ -245,8 +395,36 @@ def get_race_urls_for_date(page, context, date_str: str, max_retries=3) -> List[
             # 次に目的のページに遷移
             print(f"レース一覧ページにアクセスしています: {url}")
             try:
-                page.goto(url, wait_until='domcontentloaded', timeout=timeout)
+                # URL変更前にランダムな動きを挿入
+                page.evaluate('''() => {
+                    // マウスを動かすようなランダムな動き
+                    const events = ['mousemove', 'mousedown', 'mouseup'];
+                    const randomEvent = events[Math.floor(Math.random() * events.length)];
+                    const x = Math.floor(Math.random() * window.innerWidth);
+                    const y = Math.floor(Math.random() * window.innerHeight);
+                    const event = new MouseEvent(randomEvent, {
+                        bubbles: true,
+                        cancelable: true,
+                        view: window,
+                        clientX: x,
+                        clientY: y
+                    });
+                    document.body.dispatchEvent(event);
+                }''')
+                
+                # リファラーを設定してページ遷移
+                page.goto(url, wait_until='domcontentloaded', timeout=timeout, referer='https://nar.netkeiba.com/')
                 page.wait_for_timeout(5000)
+                
+                # スクロールを模倣
+                page.evaluate('''() => {
+                    window.scrollTo({
+                        top: 100,
+                        left: 0,
+                        behavior: 'smooth'
+                    });
+                }''')
+                
             except TimeoutError:
                 print("ページの完全な読み込みはタイムアウトしましたが、処理を継続します")
             
@@ -293,15 +471,38 @@ def get_race_urls_for_date(page, context, date_str: str, max_retries=3) -> List[
                         print(f"開催場所ページアクセス前に {venue_wait:.2f}秒待機します")
                         time.sleep(venue_wait)
                         
+                        # 新しいページを作成
                         venue_page = context.new_page()
+                        
                         try:
-                            # ランダムなユーザーエージェントを設定
-                            venue_page.set_extra_http_headers({
-                                'User-Agent': random.choice(USER_AGENTS)
-                            })
+                            # ランダムなユーザーエージェントを選択
+                            random_ua = random.choice(USER_AGENTS)
+                            headers = HEADERS_TEMPLATE.copy()
+                            headers['User-Agent'] = random_ua
                             
-                            venue_page.goto(venue_url, wait_until='domcontentloaded', timeout=timeout)
-                            venue_page.wait_for_timeout(3000)
+                            # ヘッダーを設定
+                            venue_page.set_extra_http_headers(headers)
+                            
+                            # webdriver検出回避スクリプトを実行
+                            venue_page.add_init_script(WEBDRIVER_DISABLE_SCRIPT)
+                            venue_page.add_init_script(FINGERPRINT_PROTECT_SCRIPT)
+                            
+                            # リファラーを設定してページ遷移
+                            venue_page.goto(venue_url, wait_until='domcontentloaded', timeout=timeout, referer=url)
+                            
+                            # ヒューマンライクな待機と動作
+                            venue_page.wait_for_timeout(random.randint(2000, 4000))
+                            
+                            # スクロールを模倣
+                            venue_page.evaluate('''() => {
+                                window.scrollTo({
+                                    top: Math.random() * 200,
+                                    left: 0,
+                                    behavior: 'smooth'
+                                });
+                            }''')
+                            
+                            venue_page.wait_for_timeout(1000)
                             
                             # レース情報を取得
                             races = venue_page.query_selector_all('dl.RaceList_DataList')
@@ -341,19 +542,66 @@ def get_race_info_for_next_three_days() -> List[Dict[str, any]]:
     today = datetime.now()
     
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
+        # ブラウザの起動設定を強化
+        browser = p.chromium.launch(
+            headless=True,
+            args=[
+                '--disable-blink-features=AutomationControlled',
+                '--disable-features=IsolateOrigins,site-per-process',
+                '--no-sandbox',
+                '--disable-setuid-sandbox',
+                '--disable-dev-shm-usage',
+                '--disable-accelerated-2d-canvas',
+                '--no-first-run',
+                '--no-zygote',
+                '--disable-gpu',
+                '--hide-scrollbars',
+                '--mute-audio',
+                '--disable-background-networking',
+                '--disable-background-timer-throttling',
+                '--disable-backgrounding-occluded-windows',
+                '--disable-breakpad',
+                '--disable-component-extensions-with-background-pages',
+                '--disable-extensions',
+                '--disable-features=TranslateUI,BlinkGenPropertyTrees',
+                '--disable-ipc-flooding-protection',
+                '--disable-renderer-backgrounding',
+                '--enable-features=NetworkService,NetworkServiceInProcess',
+                '--force-color-profile=srgb',
+                '--metrics-recording-only',
+            ]
+        )
         
         # ランダムなユーザーエージェントを選択
         user_agent = random.choice(USER_AGENTS)
         print(f"使用するユーザーエージェント: {user_agent}")
         
+        # HTTPヘッダーのコピーを作成し、User-Agentを設定
+        headers = HEADERS_TEMPLATE.copy()
+        headers['User-Agent'] = user_agent
+        
+        # 本物のブラウザに近いコンテキスト設定
         context = browser.new_context(
             viewport={'width': 1920, 'height': 1080},
-            user_agent=user_agent
+            user_agent=user_agent,
+            extra_http_headers=headers,
+            locale='ja-JP',
+            timezone_id='Asia/Tokyo',
+            geolocation={'latitude': 35.6762, 'longitude': 139.6503},  # 東京
+            permissions=['geolocation'],
+            color_scheme='light',
+            device_scale_factor=1,
+            is_mobile=False,
+            has_touch=False,
+            java_script_enabled=True,
+            bypass_csp=True
         )
         
         try:
+            # webdriver検出回避スクリプトとフィンガープリント保護を追加
             page = context.new_page()
+            page.add_init_script(WEBDRIVER_DISABLE_SCRIPT)
+            page.add_init_script(FINGERPRINT_PROTECT_SCRIPT)
             
             for i in range(3):
                 target_date = today + timedelta(days=i)
@@ -396,8 +644,6 @@ if __name__ == '__main__':
     
     # 全レース情報をCSVに保存
     if all_race_entries:
-        today = datetime.now().strftime('%Y%m%d')
-        filename = f"nar_race_entries_{today}.csv"
-        for race_entry in all_race_entries:
-            save_to_csv(race_entry, filename)
         print(f"\n取得したレース数: {len(all_race_entries)}")
+        for race_entry in all_race_entries:
+            save_to_csv(race_entry)
